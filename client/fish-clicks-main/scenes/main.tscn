@@ -1,0 +1,93 @@
+[gd_scene format=3 uid="uid://bxcwld43d6ph0"]
+
+[ext_resource type="Script" uid="uid://cwqjlq8k1q0ls" path="res://scenes/main.gd" id="1_0wfyh"]
+[ext_resource type="Texture2D" uid="uid://dpjfj2i5btbj8" path="res://assets/fondo1.jpeg" id="1_o5qli"]
+[ext_resource type="Script" uid="uid://cw3knghd0miub" path="res://scenes/cofre.gd" id="3_jyhfs"]
+[ext_resource type="Texture2D" uid="uid://dj7r3qo376quo" path="res://assets/cofre1.png" id="4_tbgi4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
+size = Vector2(261, 242)
+
+[node name="Main" type="Node2D" unique_id=1758773918]
+script = ExtResource("1_0wfyh")
+
+[node name="Background" type="Sprite2D" parent="." unique_id=1624938129]
+position = Vector2(574.5, 324.5)
+scale = Vector2(0.60572916, 0.6120371)
+texture = ExtResource("1_o5qli")
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=237109990]
+
+[node name="HUD" type="Control" parent="UI" unique_id=182761723]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="DoblonesLabel" type="Label" parent="UI/HUD" unique_id=914565459]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 21.0
+offset_right = 116.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Doblones: 0"
+
+[node name="DpsLabel" type="Label" parent="UI/HUD" unique_id=1869966431]
+layout_mode = 0
+offset_left = 29.0
+offset_top = 62.0
+offset_right = 78.0
+offset_bottom = 85.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "DPS: 0"
+
+[node name="TiendaPanel" type="Panel" parent="UI" unique_id=1545511951]
+offset_left = 854.0
+offset_top = 21.0
+offset_right = 1128.0
+offset_bottom = 611.0
+
+[node name="MejoraCofreButton" type="Button" parent="UI/TiendaPanel" unique_id=306516594]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 97.0
+offset_right = 133.0
+offset_bottom = 128.0
+text = "Mejorar cofre"
+
+[node name="CompraPezButton" type="Button" parent="UI/TiendaPanel" unique_id=378092034]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 33.0
+offset_right = 123.0
+offset_bottom = 64.0
+text = "Comprar pez"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/TiendaPanel" unique_id=935002165]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ToggleTiendaButton" type="Button" parent="UI" unique_id=305432852]
+offset_left = 1089.0
+offset_top = 26.0
+offset_right = 1123.0
+offset_bottom = 57.0
+text = "▼"
+
+[node name="Cofre" type="Area2D" parent="." unique_id=379332226]
+script = ExtResource("3_jyhfs")
+
+[node name="Sprite2D" type="Sprite2D" parent="Cofre" unique_id=1706070275]
+position = Vector2(152, 518)
+scale = Vector2(0.29398158, 0.2740741)
+texture = ExtResource("4_tbgi4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Cofre" unique_id=1343405143]
+position = Vector2(152.5, 506)
+shape = SubResource("RectangleShape2D_tefeu")
+
+[connection signal="pressed" from="UI/TiendaPanel/MejoraCofreButton" to="." method="_on_mejora_cofre_button_pressed"]
+[connection signal="pressed" from="UI/ToggleTiendaButton" to="." method="_on_toggle_tienda_button_pressed"]
+[connection signal="input_event" from="Cofre" to="Cofre" method="_on_input_event"]

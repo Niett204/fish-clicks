@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:16
+    container_name: fishclicks_db
+    restart: always
+    environment:
+      POSTGRES_USER: doblon
+      POSTGRES_PASSWORD: 0Pm2k13)yN8m
+      POSTGRES_DB: fishclicks
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  postgres_data:
