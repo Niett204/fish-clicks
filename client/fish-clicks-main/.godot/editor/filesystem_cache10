@@ -1,5 +1,6 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1772121175
+::res://::1772132313
+export_presets.cfg::TextFile::-1::1772130770::0::1::::<><><>0<>0<><>::
 icon.svg::CompressedTexture2D::4334459046159358899::1771669991::1771670001::1::::<><><>0<>0<>3b53763b61da07aac68bd440df64e7d9<>res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex::
 ::res://addons/::1772021509
 ::res://addons/godot-git-plugin/::1772021509
@@ -7,23 +8,27 @@ git_plugin.gdextension::GDExtension::3717660418660673389::1772021509::0::1::::<>
 THIRDPARTY.md::TextFile::-1::1772021509::0::1::::<><><>0<>0<><>::
 ::res://addons/godot-git-plugin/linux/::1772021509
 ::res://addons/godot-git-plugin/macos/::1772021509
-::res://addons/godot-git-plugin/windows/::1772121170
-::res://assets/::1772021697
-cofre1.png::CompressedTexture2D::7858104786374930798::1771939347::1772021697::1::::<><><>0<>0<>e727668a998a50b335c14cf648a66102<>res://.godot/imported/cofre1.png-2245de93b11c8a6afa10561a7757673b.ctex::
-doblon.png::CompressedTexture2D::5665644143353979802::1772018722::1772021697::1::::<><><>0<>0<>08e5063cf424295961d087bba73aea09<>res://.godot/imported/doblon.png-fc174b53e03995f3a3ca3e9b70ec4950.ctex::
-fondo1.jpeg::CompressedTexture2D::8230995194399339839::1771938191::1772021697::1::::<><><>0<>0<>2d58115a1ea029ce41e58b343dbd0e1a<>res://.godot/imported/fondo1.jpeg-3cb33d423beb967105f927e411817bda.ctex::
-::res://assets/ui/::1772112683
-puntero.png::CompressedTexture2D::6078938505612064548::1772021159::1772021696::1::::<><><>0<>0<>113de7c2710371c725b31628803198bc<>res://.godot/imported/puntero.png-71473a536a83c90952368e934221929e.ctex::
+::res://addons/godot-git-plugin/windows/::1772132309
+::res://assets/::1772131901
+::res://assets/estructuras/::1772131904
+cofre1.png::CompressedTexture2D::7858104786374930798::1771939347::1772131904::1::::<><><>0<>0<>f7ca45074a2d4d755b7f4ff33ddeaada<>res://.godot/imported/cofre1.png-d731bb5969b65a8507f0342074fd446e.ctex::
+::res://assets/fondos/::1772131904
+fondo1.jpeg::CompressedTexture2D::8230995194399339839::1771938191::1772131904::1::::<><><>0<>0<>0fd3e24080e404b35eeecb50abaa81af<>res://.godot/imported/fondo1.jpeg-e4e74416e1fa29d5eba8b40160e2c1a5.ctex::
+::res://assets/misc/::1772131904
+puntero.png::CompressedTexture2D::6078938505612064548::1772021159::1772131904::1::::<><><>0<>0<>75d2ea28441d62492bfc944e9d8a2336<>res://.godot/imported/puntero.png-88df16f5cd98b3306de7c156a10dbf34.ctex::
+::res://assets/peces/::1772131904
+doblon.png::CompressedTexture2D::5665644143353979802::1772018722::1772131904::1::::<><><>0<>0<>745b21a126285ce6e0ffad6b47545b7c<>res://.godot/imported/doblon.png-598263ce4a24577e0f36beee02eff5a4.ctex::
+::res://assets/ui/::1772131897
 tabla.png::CompressedTexture2D::3862074653884722790::1772105984::1772105987::1::::<><><>0<>0<>16ff62ac977c9979e2b68e6b179eeafc<>res://.godot/imported/tabla.png-78cca5d4246994159b9b449a6553aa3b.ctex::
 tabla_bloqueada (1).png::CompressedTexture2D::4058527631982719655::1772112649::1772112683::1::::<><><>0<>0<>8ed08a863de8b0cc6f5d665a2eb3bdca<>res://.godot/imported/tabla_bloqueada (1).png-70bfb31e33787c559a67627f079ab52a.ctex::
-::res://scenes/::1772114113
+::res://scenes/::1772132304
 cofre.gd::GDScript::6375429215908944601::1771942522::0::1::::<>Area2D<><>0<>0<><>::
 FloatingText.tscn::PackedScene::7748546762019514784::1772027890::0::1::::<><><>0<>0<><>::uid://djcsisw87mens::::res://scenes/floating_text.gd
 floating_text.gd::GDScript::7796198572499357916::1772026552::0::1::::<>Label<><>0<>0<><>::
-main.gd::GDScript::6350592959997628172::1772113946::0::1::::<>Node2D<><>0<>0<><>::
-main.tscn::PackedScene::4006248464096596907::1772113946::0::1::::<><><>0<>0<><>::uid://cwqjlq8k1q0ls::::res://scenes/main.gd<>uid://dpjfj2i5btbj8::::res://assets/fondo1.jpeg<>uid://ubk2btwo8ltc::::res://scenes/pez.tscn<>uid://dinpoywkt4vsq::::res://scenes/FloatingText.tscn<>uid://cw3knghd0miub::::res://scenes/cofre.gd<>uid://cfhhda8qg0bq0::::res://scenes/ShopItemCard.tscn<>uid://dj7r3qo376quo::::res://assets/cofre1.png
+main.gd::GDScript::6350592959997628172::1772132175::0::1::::<>Node2D<><>0<>0<><>::
+main.tscn::PackedScene::4006248464096596907::1772132235::0::1::::<><><>0<>0<><>::uid://cwqjlq8k1q0ls::::res://scenes/main.gd<>res://assets/fondo1.jpeg<>uid://ubk2btwo8ltc::::res://scenes/pez.tscn<>uid://dinpoywkt4vsq::::res://scenes/FloatingText.tscn<>uid://cw3knghd0miub::::res://scenes/cofre.gd<>uid://cfhhda8qg0bq0::::res://scenes/ShopItemCard.tscn<>res://assets/cofre1.png
 pez.gd::GDScript::8061017105763768285::1772019682::0::1::::<>Node2D<><>0<>0<><>::
-pez.tscn::PackedScene::1406496719772036764::1772021436::0::1::::<><><>0<>0<><>::uid://dm321k0nr5kgj::::res://scenes/pez.gd<>uid://cmyqli7vqrbdi::::res://assets/doblon.png
-ShopItemCard.tscn::PackedScene::5138666657900377253::1772114113::0::1::::<><><>0<>0<><>::uid://bk086nx0y3smj::::res://scenes/shop_item_card.gd<>uid://cmyqli7vqrbdi::::res://assets/doblon.png<>uid://bva22m6ipd063::::res://assets/ui/tabla.png<>uid://bx28me4bvwn16::::res://assets/ui/tabla_bloqueada (1).png
+pez.tscn::PackedScene::1406496719772036764::1772132304::0::1::::<><><>0<>0<><>::uid://dm321k0nr5kgj::::res://scenes/pez.gd<>uid://cmyqli7vqrbdi::::res://assets/peces/doblon.png
+ShopItemCard.tscn::PackedScene::5138666657900377253::1772131989::0::1::::<><><>0<>0<><>::uid://bk086nx0y3smj::::res://scenes/shop_item_card.gd<>res://assets/doblon.png<>uid://bva22m6ipd063::::res://assets/ui/tabla.png<>uid://bx28me4bvwn16::::res://assets/ui/tabla_bloqueada (1).png
 shop_item_card.gd::GDScript::3141978303800397225::1772114099::0::1::::<>Button<><>0<>0<><>::
 ::res://scripts/::1771938091

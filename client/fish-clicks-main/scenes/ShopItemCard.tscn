@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cfhhda8qg0bq0"]
 
 [ext_resource type="Script" uid="uid://bk086nx0y3smj" path="res://scenes/shop_item_card.gd" id="1_87dkc"]
-[ext_resource type="Texture2D" uid="uid://cmyqli7vqrbdi" path="res://assets/doblon.png" id="2_mluul"]
+[ext_resource type="Texture2D" uid="uid://cmyqli7vqrbdi" path="res://assets/peces/doblon.png" id="2_mluul"]
 [ext_resource type="Texture2D" uid="uid://bva22m6ipd063" path="res://assets/ui/tabla.png" id="2_njvbf"]
 [ext_resource type="Texture2D" uid="uid://bx28me4bvwn16" path="res://assets/ui/tabla_bloqueada (1).png" id="3_jykwe"]
 
@@ -34,6 +34,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
 [node name="BG" type="TextureRect" parent="LockedView" unique_id=733583465]
 layout_mode = 1
@@ -61,6 +62,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
 [node name="PlankBG" type="NinePatchRect" parent="NormalView" unique_id=274591146]
 layout_mode = 1

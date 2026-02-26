@@ -5,16 +5,16 @@ extends Node2D
 @export var dps_per_fish: float = 1.0
 @export var shop_item_card_scene: PackedScene
 
-@onready var coins_label: Label = $UI/HUD/DoblonesLabel
-@onready var shop_panel: Control = $UI/TiendaPanel
-@onready var toggle_button: Button = $UI/ToggleTiendaButton
+@onready var coins_label: Label = $UI/Root/HUD/DoblonesLabel
+@onready var shop_panel: Control = $UI/Root/TiendaPanel
+@onready var toggle_button: Button = $UI/Root/ToggleTiendaButton
 @onready var chest: Area2D = $Cofre
 @onready var chest_sprite: Sprite2D = $Cofre/Sprite2D
 @onready var fish_layer = $PecesLayer
-@onready var dps_label: Label = $UI/HUD/DpsLabel
-@onready var tab_container: TabContainer = $UI/TiendaPanel/TabContainer
-@onready var list_peces: VBoxContainer = $UI/TiendaPanel/TabContainer/Peces/ScrollContainer/ListPeces
-@onready var list_estructuras: VBoxContainer = $UI/TiendaPanel/TabContainer/Estructuras/ScrollContainer/ListEstructuras
+@onready var dps_label: Label = $UI/Root/HUD/DpsLabel
+@onready var tab_container: TabContainer = $UI/Root/TiendaPanel/TabContainer
+@onready var list_peces: VBoxContainer = $UI/Root/TiendaPanel/TabContainer/Peces/ScrollContainer/ListPeces
+@onready var list_estructuras: VBoxContainer = $UI/Root/TiendaPanel/TabContainer/Estructuras/ScrollContainer/ListEstructuras
 
 var dps: float = 0.0
 var coins: float = 0.0
@@ -56,7 +56,7 @@ func add_fish_card():
 	list_peces.add_child(card)
 
 	var icon_tex: Texture2D = null
-	var icon_path := "res://assets/doblon.png"
+	var icon_path := "res://assets/peces/doblon.png"
 
 	if ResourceLoader.exists(icon_path):
 		icon_tex = load(icon_path)
@@ -118,6 +118,7 @@ func _on_toggle_tienda_button_pressed() -> void:
 	shop_panel.visible = !shop_panel.visible
 	
 	if shop_panel.visible:
+		_on_tab_changed($UI/Root/TiendaPanel/TabContainer.current_tab)
 		toggle_button.text = "▲"
 	else:
 		toggle_button.text = "▼"
@@ -163,7 +164,7 @@ func add_cofre_card():
 	list_estructuras.add_child(card)
 
 	var icon_tex: Texture2D = null
-	var icon_path := "res://assets/cofre1.png" # o tu icono del cofre
+	var icon_path := "res://assets/estructuras/cofre1.png" # o tu icono del cofre
 
 	if ResourceLoader.exists(icon_path):
 		icon_tex = load(icon_path)

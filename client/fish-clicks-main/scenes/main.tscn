@@ -1,15 +1,15 @@
 [gd_scene format=3 uid="uid://bxcwld43d6ph0"]
 
 [ext_resource type="Script" uid="uid://cwqjlq8k1q0ls" path="res://scenes/main.gd" id="1_0wfyh"]
-[ext_resource type="Texture2D" uid="uid://dpjfj2i5btbj8" path="res://assets/fondo1.jpeg" id="1_o5qli"]
+[ext_resource type="Texture2D" uid="uid://dpjfj2i5btbj8" path="res://assets/fondos/fondo1.jpeg" id="1_o5qli"]
 [ext_resource type="PackedScene" uid="uid://ubk2btwo8ltc" path="res://scenes/pez.tscn" id="2_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://dinpoywkt4vsq" path="res://scenes/FloatingText.tscn" id="2_tefeu"]
 [ext_resource type="Script" uid="uid://cw3knghd0miub" path="res://scenes/cofre.gd" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://cfhhda8qg0bq0" path="res://scenes/ShopItemCard.tscn" id="4_o6xl0"]
-[ext_resource type="Texture2D" uid="uid://dj7r3qo376quo" path="res://assets/cofre1.png" id="4_tbgi4"]
+[ext_resource type="Texture2D" uid="uid://dj7r3qo376quo" path="res://assets/estructuras/cofre1.png" id="4_tbgi4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
-size = Vector2(261, 242)
+size = Vector2(268, 237)
 
 [node name="Main" type="Node2D" unique_id=1758773918]
 script = ExtResource("1_0wfyh")
@@ -17,95 +17,19 @@ floating_text_scene = ExtResource("2_tefeu")
 fish_scene = ExtResource("2_tbgi4")
 shop_item_card_scene = ExtResource("4_o6xl0")
 
-[node name="Background" type="Sprite2D" parent="." unique_id=1624938129]
-position = Vector2(574.5, 324.5)
-scale = Vector2(0.60572916, 0.6120371)
+[node name="BG" type="CanvasLayer" parent="." unique_id=1211954479]
+layer = -1
+
+[node name="Background" type="TextureRect" parent="BG" unique_id=1958190654]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("1_o5qli")
-
-[node name="UI" type="CanvasLayer" parent="." unique_id=237109990]
-
-[node name="HUD" type="Control" parent="UI" unique_id=182761723]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="DoblonesLabel" type="Label" parent="UI/HUD" unique_id=914565459]
-layout_mode = 0
-offset_left = 25.0
-offset_top = 21.0
-offset_right = 116.0
-offset_bottom = 44.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "Doblones: 0"
-
-[node name="DpsLabel" type="Label" parent="UI/HUD" unique_id=1869966431]
-layout_mode = 0
-offset_left = 29.0
-offset_top = 62.0
-offset_right = 78.0
-offset_bottom = 85.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "DPS: 0"
-
-[node name="TiendaPanel" type="Panel" parent="UI" unique_id=1545511951]
-offset_left = 854.0
-offset_top = 21.0
-offset_right = 1128.0
-offset_bottom = 611.0
-
-[node name="TabContainer" type="TabContainer" parent="UI/TiendaPanel" unique_id=1785782234]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 5.0
-offset_bottom = 5.0
-grow_horizontal = 2
-grow_vertical = 2
-current_tab = 0
-
-[node name="Estructuras" type="Control" parent="UI/TiendaPanel/TabContainer" unique_id=1013639139]
-layout_mode = 2
-metadata/_tab_index = 0
-
-[node name="ScrollContainer" type="ScrollContainer" parent="UI/TiendaPanel/TabContainer/Estructuras" unique_id=1450220889]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="ListEstructuras" type="VBoxContainer" parent="UI/TiendaPanel/TabContainer/Estructuras/ScrollContainer" unique_id=669970207]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
-
-[node name="Peces" type="Control" parent="UI/TiendaPanel/TabContainer" unique_id=438741302]
-visible = false
-layout_mode = 2
-metadata/_tab_index = 1
-
-[node name="ScrollContainer" type="ScrollContainer" parent="UI/TiendaPanel/TabContainer/Peces" unique_id=458589617]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="ListPeces" type="VBoxContainer" parent="UI/TiendaPanel/TabContainer/Peces/ScrollContainer" unique_id=1508419207]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
-
-[node name="ToggleTiendaButton" type="Button" parent="UI" unique_id=305432852]
-offset_left = 1090.0
-offset_top = 24.0
-offset_right = 1124.0
-offset_bottom = 55.0
-text = "▼"
+expand_mode = 1
+stretch_mode = 6
 
 [node name="Cofre" type="Area2D" parent="." unique_id=379332226]
 script = ExtResource("3_jyhfs")
@@ -116,11 +40,110 @@ scale = Vector2(0.29398158, 0.2740741)
 texture = ExtResource("4_tbgi4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Cofre" unique_id=1343405143]
-visible = false
-position = Vector2(152.5, 506)
+position = Vector2(188, 507.5)
 shape = SubResource("RectangleShape2D_tefeu")
 
 [node name="PecesLayer" type="Node2D" parent="." unique_id=342514123]
 
-[connection signal="pressed" from="UI/ToggleTiendaButton" to="." method="_on_toggle_tienda_button_pressed"]
+[node name="UI" type="CanvasLayer" parent="." unique_id=237109990]
+
+[node name="Root" type="Control" parent="UI" unique_id=1783480798]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="HUD" type="Control" parent="UI/Root" unique_id=182761723]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="DoblonesLabel" type="Label" parent="UI/Root/HUD" unique_id=914565459]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 21.0
+offset_right = 116.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Doblones: 0"
+
+[node name="DpsLabel" type="Label" parent="UI/Root/HUD" unique_id=1869966431]
+layout_mode = 0
+offset_left = 29.0
+offset_top = 62.0
+offset_right = 78.0
+offset_bottom = 85.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "DPS: 0"
+
+[node name="TiendaPanel" type="Panel" parent="UI/Root" unique_id=1545511951]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="TabContainer" type="TabContainer" parent="UI/Root/TiendaPanel" unique_id=1785782234]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 5.0
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+current_tab = 0
+
+[node name="Estructuras" type="Control" parent="UI/Root/TiendaPanel/TabContainer" unique_id=1013639139]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/TiendaPanel/TabContainer/Estructuras" unique_id=1450220889]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ListEstructuras" type="VBoxContainer" parent="UI/Root/TiendaPanel/TabContainer/Estructuras/ScrollContainer" unique_id=669970207]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Peces" type="Control" parent="UI/Root/TiendaPanel/TabContainer" unique_id=438741302]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/TiendaPanel/TabContainer/Peces" unique_id=458589617]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ListPeces" type="VBoxContainer" parent="UI/Root/TiendaPanel/TabContainer/Peces/ScrollContainer" unique_id=1508419207]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="ToggleTiendaButton" type="Button" parent="UI/Root" unique_id=305432852]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -34.0
+offset_bottom = 31.0
+grow_horizontal = 0
+text = "▼"
+
 [connection signal="input_event" from="Cofre" to="Cofre" method="_on_input_event"]
+[connection signal="pressed" from="UI/Root/ToggleTiendaButton" to="." method="_on_toggle_tienda_button_pressed"]

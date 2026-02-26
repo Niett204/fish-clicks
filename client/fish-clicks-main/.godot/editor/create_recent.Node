@@ -1,7 +1,8 @@
-Label
-CenterContainer
+CanvasLayer
 TextureRect
 Control
+Label
+CenterContainer
 NinePatchRect
 TabContainer
 HBoxContainer
