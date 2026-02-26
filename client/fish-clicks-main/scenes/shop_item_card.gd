@@ -100,3 +100,20 @@ func _apply_unlocked_visual() -> void:
 	stat_left.text = _left_normal
 	stat_right.text = _right_normal
 	level_lbl.text = _level_normal
+
+func set_dynamic(
+	new_price: float,
+	new_left: String,
+	new_right: String,
+	new_level: String
+) -> void:
+	price = new_price
+	_left_normal = new_left
+	_right_normal = new_right
+	_level_normal = new_level
+
+	# Si ya está desbloqueada, actualiza lo visible al momento
+	if is_unlocked:
+		stat_left.text = _left_normal
+		stat_right.text = _right_normal
+		level_lbl.text = _level_normal

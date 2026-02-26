@@ -16,11 +16,35 @@ extends Node2D
 @onready var list_peces: VBoxContainer = $UI/Root/TiendaPanel/TabContainer/Peces/ScrollContainer/ListPeces
 @onready var list_estructuras: VBoxContainer = $UI/Root/TiendaPanel/TabContainer/Estructuras/ScrollContainer/ListEstructuras
 
+const ITEMS := {
+	"fish_basic": {
+		"tab": "Peces",
+		"title": "Pez Común",
+		"right": "DPS +1",
+		"icon": "res://assets/peces/doblon.png",
+	},
+	
+	"cofre": {
+		"tab": "Estructuras",
+		"title": "Cofre",
+		"right": "+1 Click",
+		"icon": "res://assets/estructuras/cofre1.png",
+	},
+	"boat": {
+		"tab": "Estructuras",
+		"title": "Barco",
+		"right": "DPS +5",
+		"icon": "res://assets/estructuras/cofre1.png",
+	}
+}
+
 var dps: float = 0.0
 var coins: float = 0.0
 var click_power: int = 1
 var fish_count: int = 0
 var chest_base_scale: Vector2
+var chest_level: int = 0
+var boat_count: int = 0
 
 func _ready() -> void:
 	shop_panel.visible = false
@@ -38,18 +62,18 @@ func _on_tab_changed(tab: int) -> void:
 	var tab_name := tab_container.get_tab_title(tab)
 
 	if tab_name == "Peces" and list_peces.get_child_count() == 0:
-		add_fish_card()
+		_populate_tab("Peces", list_peces)
 
 	if tab_name == "Estructuras" and list_estructuras.get_child_count() == 0:
-		add_cofre_card()
+		_populate_tab("Estructuras", list_estructuras)
 
-	update_shop_cards() # <--- para refrescar al entrar
+	update_shop_cards()
 
-	if tab_name == "Peces" and list_peces.get_child_count() == 0:
-		add_fish_card()
-
-	if tab_name == "Estructuras" and list_estructuras.get_child_count() == 0:
-		add_cofre_card()
+func _populate_tab(tab_name: String, list: VBoxContainer) -> void:
+	for k in ITEMS.keys():
+		var id: String = String(k)
+		if String(ITEMS[id]["tab"]) == tab_name:
+			add_item_card(id)
 
 func add_fish_card():
 	var card = shop_item_card_scene.instantiate()
@@ -74,13 +98,6 @@ func add_fish_card():
 
 	card.buy_pressed.connect(_on_buy_pressed)
 
-func _on_buy_pressed(id: String) -> void:
-	match id:
-		"fish_basic":
-			_on_compra_pez_button_pressed()
-		"cofre":
-			_on_mejora_cofre_button_pressed()
-
 func _on_chest_clicked() -> void:
 	coins += click_power
 	_update_ui()
@@ -100,19 +117,6 @@ func _spawn_floating_text() -> void:
 func _update_ui() -> void:
 	coins_label.text = "Doblones: " + str(int(coins))
 	update_shop_cards()
-
-func _on_mejora_cofre_button_pressed() -> void:
-	var price := 10  # precio fijo por ahora
-	
-	if coins < price:
-		return
-	
-	coins -= price
-	click_power += 1
-	
-	print("Nuevo click power:", click_power)  # debug opcional
-	
-	_update_ui()
 	
 func _on_toggle_tienda_button_pressed() -> void:
 	shop_panel.visible = !shop_panel.visible
@@ -132,26 +136,6 @@ func _update_dps_ui() -> void:
 
 func _process(delta: float) -> void:
 	coins += dps * delta
-	_update_ui()
-
-func _on_compra_pez_button_pressed() -> void:
-	var price := 25
-	
-	if coins < price:
-		return
-	
-	coins -= price
-	fish_count += 1
-	
-	# Crear pez
-	var fish = fish_scene.instantiate()
-	fish_layer.add_child(fish)
-	fish.position = Vector2(
-		randi_range(200, 1000),
-		randi_range(300, 600)
-	)
-	
-	_update_cps()
 	_update_ui()
 	
 func _play_click_animation() -> void:
@@ -182,8 +166,111 @@ func add_cofre_card():
 
 	card.buy_pressed.connect(_on_buy_pressed)
 
+func fish_price() -> int:
+	return int(round(25 * pow(1.15, fish_count)))
+
+func chest_upgrade_price() -> int:
+	# click_power empieza en 1; la primera mejora cuesta 10
+	return int(round(10 * pow(1.25, click_power - 1)))
+
+func get_level(id: String) -> int:
+	match id:
+		"fish_basic":
+			return fish_count
+		"cofre":
+			return click_power
+		"boat":
+			return boat_count
+		_:
+			return 0
+
+func get_price(id: String) -> int:
+	match id:
+		"fish_basic":
+			return int(round(25 * pow(1.15, fish_count)))
+		"cofre":
+			return int(round(10 * pow(1.25, click_power - 1)))
+		"boat":
+			return int(round(200 * pow(1.20, boat_count)))
+		_:
+			return 999999
+
+func apply_purchase(id: String) -> void:
+	match id:
+		"fish_basic":
+			fish_count += 1
+			var fish = fish_scene.instantiate()
+			fish_layer.add_child(fish)
+			fish.position = Vector2(randi_range(200, 1000), randi_range(300, 600))
+			_update_cps()
+		"cofre":
+			chest_level += 1
+			click_power = int(round(1 * pow(1.3, chest_level)))
+		"boat":
+			boat_count += 1
+			dps += 5
+			_update_dps_ui()
+		_:
+			pass
+
+func add_item_card(id: String) -> void:
+	var def: Dictionary = ITEMS[id]
+	var category: String = String(def.get("tab", def.get("tab", "")))
+	
+	var card = shop_item_card_scene.instantiate()
+	
+	var list: VBoxContainer = list_peces if category == "Peces" else list_estructuras
+	list.add_child(card)
+
+	var icon_tex: Texture2D = null
+	if ResourceLoader.exists(def.icon):
+		icon_tex = load(def.icon)
+
+	# setup inicial (luego se refresca en update_shop_cards)
+	card.setup(
+		id,
+		def.title,
+		"",               # left (precio) lo pondremos dinámico
+		def.right,
+		str(get_level(id)),
+		icon_tex,
+		get_price(id),
+		0                # unlock_price si lo quieres, también lo generalizamos luego
+	)
+
+	card.buy_pressed.connect(_on_buy_pressed)
+	
+func get_list_for_category(category: String) -> VBoxContainer:
+	match category:
+		"Peces":
+			return list_peces
+		"Estructuras":
+			return list_estructuras
+		_:
+			return list_peces
+
+func _on_buy_pressed(id: String) -> void:
+	var price := get_price(id)
+	if coins < price:
+		return
+	coins -= price
+	apply_purchase(id)
+	_update_ui()
+
 func update_shop_cards() -> void:
 	for card in list_peces.get_children():
-		card.update_state(coins)
+		_refresh_card(card)
 	for card in list_estructuras.get_children():
-		card.update_state(coins)
+		_refresh_card(card)
+
+func _refresh_card(card) -> void:
+	var id: String = String(card.item_id)
+	var p: int = get_price(id)
+
+	card.set_dynamic(
+		p,
+		"Precio: %d" % p,
+		String(ITEMS[id]["right"]),
+		str(get_level(id))
+	)
+	card.update_state(coins)
