@@ -1,0 +1,50 @@
+# =========================
+# Godot 4
+# =========================
+
+# Carpeta de importaciones (se regenera sola)
+.import/
+
+# Archivos generados automáticamente
+.export/
+export.cfg
+export_presets.cfg
+
+# Caché del editor
+.godot/
+
+# Archivos temporales
+*.translation
+*.tmp
+*.log
+
+# Archivos específicos del sistema
+.DS_Store
+Thumbs.db
+
+# =========================
+# IDEs
+# =========================
+
+# VSCode
+.vscode/
+
+# JetBrains (Rider, etc.)
+.idea/
+
+# =========================
+# Binarios exportados
+# =========================
+
+*.exe
+*.apk
+*.aab
+*.x86_64
+*.pck
+*.zip
+
+# =========================
+# Otros
+# =========================
+
+*.import
