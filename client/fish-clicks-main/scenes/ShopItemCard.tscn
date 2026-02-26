@@ -1,0 +1,139 @@
+[gd_scene format=3 uid="uid://cfhhda8qg0bq0"]
+
+[ext_resource type="Script" uid="uid://bk086nx0y3smj" path="res://scenes/shop_item_card.gd" id="1_87dkc"]
+[ext_resource type="Texture2D" uid="uid://cmyqli7vqrbdi" path="res://assets/doblon.png" id="2_mluul"]
+[ext_resource type="Texture2D" uid="uid://bva22m6ipd063" path="res://assets/ui/tabla.png" id="2_njvbf"]
+[ext_resource type="Texture2D" uid="uid://bx28me4bvwn16" path="res://assets/ui/tabla_bloqueada (1).png" id="3_jykwe"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jykwe"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_okpyy"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_niagg"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_njvbf"]
+
+[node name="Button" type="Button" unique_id=1514485555]
+clip_contents = true
+custom_minimum_size = Vector2(0, 64)
+offset_right = 237.0
+offset_bottom = 64.0
+size_flags_horizontal = 3
+focus_mode = 0
+theme_override_styles/normal = SubResource("StyleBoxEmpty_jykwe")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_okpyy")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_niagg")
+script = ExtResource("1_87dkc")
+plank_normal = ExtResource("2_njvbf")
+plank_locked = ExtResource("3_jykwe")
+
+[node name="LockedView" type="Control" parent="." unique_id=171752989]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG" type="TextureRect" parent="LockedView" unique_id=733583465]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="LockedView" unique_id=2141987534]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="LockedLabel" type="Label" parent="LockedView/CenterContainer" unique_id=510866101]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NormalView" type="Control" parent="." unique_id=2051389865]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PlankBG" type="NinePatchRect" parent="NormalView" unique_id=274591146]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_njvbf")
+
+[node name="Padding" type="MarginContainer" parent="NormalView" unique_id=167069263]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -19.5
+offset_top = -2.0
+offset_right = 216.5
+offset_bottom = 26.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 10
+
+[node name="Content" type="HBoxContainer" parent="NormalView/Padding" unique_id=1118350031]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="IconBox" type="PanelContainer" parent="NormalView/Padding/Content" unique_id=162583001]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_njvbf")
+
+[node name="Icon" type="TextureRect" parent="NormalView/Padding/Content/IconBox" unique_id=89659702]
+layout_mode = 2
+texture = ExtResource("2_mluul")
+expand_mode = 2
+stretch_mode = 5
+
+[node name="TextCol" type="VBoxContainer" parent="NormalView/Padding/Content" unique_id=1466391575]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="NormalView/Padding/Content/TextCol" unique_id=2120161620]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Doblon"
+
+[node name="SubRow" type="HBoxContainer" parent="NormalView/Padding/Content/TextCol" unique_id=104940987]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="StatLeft" type="Label" parent="NormalView/Padding/Content/TextCol/SubRow" unique_id=436047321]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "25 Doblones"
+
+[node name="StatRight" type="Label" parent="NormalView/Padding/Content/TextCol/SubRow" unique_id=1552114755]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "1 DPS"
+
+[node name="Level" type="Label" parent="NormalView/Padding/Content" unique_id=1721037276]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "10"
+horizontal_alignment = 2
+vertical_alignment = 1

@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://ubk2btwo8ltc" path="res://scenes/pez.tscn" id="2_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://dinpoywkt4vsq" path="res://scenes/FloatingText.tscn" id="2_tefeu"]
 [ext_resource type="Script" uid="uid://cw3knghd0miub" path="res://scenes/cofre.gd" id="3_jyhfs"]
+[ext_resource type="PackedScene" uid="uid://cfhhda8qg0bq0" path="res://scenes/ShopItemCard.tscn" id="4_o6xl0"]
 [ext_resource type="Texture2D" uid="uid://dj7r3qo376quo" path="res://assets/cofre1.png" id="4_tbgi4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
@@ -14,6 +15,7 @@ size = Vector2(261, 242)
 script = ExtResource("1_0wfyh")
 floating_text_scene = ExtResource("2_tefeu")
 fish_scene = ExtResource("2_tbgi4")
+shop_item_card_scene = ExtResource("4_o6xl0")
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1624938129]
 position = Vector2(574.5, 324.5)
@@ -52,49 +54,73 @@ offset_top = 21.0
 offset_right = 1128.0
 offset_bottom = 611.0
 
-[node name="MejoraCofreButton" type="Button" parent="UI/TiendaPanel" unique_id=306516594]
-layout_mode = 0
-offset_left = 19.0
-offset_top = 97.0
-offset_right = 133.0
-offset_bottom = 128.0
-text = "Mejorar cofre"
+[node name="TabContainer" type="TabContainer" parent="UI/TiendaPanel" unique_id=1785782234]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 5.0
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+current_tab = 0
 
-[node name="CompraPezButton" type="Button" parent="UI/TiendaPanel" unique_id=378092034]
-layout_mode = 0
-offset_left = 15.0
-offset_top = 33.0
-offset_right = 123.0
-offset_bottom = 64.0
-text = "Comprar pez"
+[node name="Estructuras" type="Control" parent="UI/TiendaPanel/TabContainer" unique_id=1013639139]
+layout_mode = 2
+metadata/_tab_index = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/TiendaPanel" unique_id=935002165]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/TiendaPanel/TabContainer/Estructuras" unique_id=1450220889]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ListEstructuras" type="VBoxContainer" parent="UI/TiendaPanel/TabContainer/Estructuras/ScrollContainer" unique_id=669970207]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Peces" type="Control" parent="UI/TiendaPanel/TabContainer" unique_id=438741302]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/TiendaPanel/TabContainer/Peces" unique_id=458589617]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ListPeces" type="VBoxContainer" parent="UI/TiendaPanel/TabContainer/Peces/ScrollContainer" unique_id=1508419207]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
 
 [node name="ToggleTiendaButton" type="Button" parent="UI" unique_id=305432852]
-offset_left = 1089.0
-offset_top = 26.0
-offset_right = 1123.0
-offset_bottom = 57.0
+offset_left = 1090.0
+offset_top = 24.0
+offset_right = 1124.0
+offset_bottom = 55.0
 text = "▼"
 
 [node name="Cofre" type="Area2D" parent="." unique_id=379332226]
 script = ExtResource("3_jyhfs")
 
 [node name="Sprite2D" type="Sprite2D" parent="Cofre" unique_id=1706070275]
-position = Vector2(152, 518)
+position = Vector2(193, 514.00006)
 scale = Vector2(0.29398158, 0.2740741)
 texture = ExtResource("4_tbgi4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Cofre" unique_id=1343405143]
+visible = false
 position = Vector2(152.5, 506)
 shape = SubResource("RectangleShape2D_tefeu")
 
 [node name="PecesLayer" type="Node2D" parent="." unique_id=342514123]
 
-[connection signal="pressed" from="UI/TiendaPanel/MejoraCofreButton" to="." method="_on_mejora_cofre_button_pressed"]
-[connection signal="pressed" from="UI/TiendaPanel/CompraPezButton" to="." method="_on_compra_pez_button_pressed"]
 [connection signal="pressed" from="UI/ToggleTiendaButton" to="." method="_on_toggle_tienda_button_pressed"]
 [connection signal="input_event" from="Cofre" to="Cofre" method="_on_input_event"]
