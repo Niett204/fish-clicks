@@ -44,11 +44,15 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+texture = ExtResource("3_jykwe")
 
 [node name="CenterContainer" type="CenterContainer" parent="LockedView" unique_id=2141987534]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="LockedLabel" type="Label" parent="LockedView/CenterContainer" unique_id=510866101]
 layout_mode = 2
@@ -78,15 +82,14 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -19.5
-offset_top = -2.0
-offset_right = 216.5
-offset_bottom = 26.0
+offset_left = 1.0
+offset_top = -6.0
+offset_bottom = 4.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 10
+theme_override_constants/margin_top = 19
 theme_override_constants/margin_right = 30
 theme_override_constants/margin_bottom = 10
 
@@ -97,8 +100,10 @@ theme_override_constants/separation = 10
 alignment = 1
 
 [node name="IconBox" type="PanelContainer" parent="NormalView/Padding/Content" unique_id=162583001]
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(54, 54)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_njvbf")
 
@@ -119,23 +124,14 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Doblon"
 
-[node name="SubRow" type="HBoxContainer" parent="NormalView/Padding/Content/TextCol" unique_id=104940987]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="StatLeft" type="Label" parent="NormalView/Padding/Content/TextCol/SubRow" unique_id=436047321]
+[node name="StatLeft" type="Label" parent="NormalView/Padding/Content/TextCol" unique_id=436047321]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "25 Doblones"
 
-[node name="StatRight" type="Label" parent="NormalView/Padding/Content/TextCol/SubRow" unique_id=1552114755]
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "1 DPS"
-
 [node name="Level" type="Label" parent="NormalView/Padding/Content" unique_id=1721037276]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
-text = "10"
+text = "1"
 horizontal_alignment = 2
 vertical_alignment = 1

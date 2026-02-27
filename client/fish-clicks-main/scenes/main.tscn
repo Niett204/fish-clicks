@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bxcwld43d6ph0"]
 
 [ext_resource type="Script" uid="uid://cwqjlq8k1q0ls" path="res://scenes/main.gd" id="1_0wfyh"]
-[ext_resource type="Texture2D" uid="uid://dpjfj2i5btbj8" path="res://assets/fondos/fondo1.jpeg" id="1_o5qli"]
+[ext_resource type="Texture2D" uid="uid://cr5yogl8hvnw3" path="res://assets/fondos/fondo1.png" id="1_o5qli"]
 [ext_resource type="PackedScene" uid="uid://ubk2btwo8ltc" path="res://scenes/pez.tscn" id="2_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://dinpoywkt4vsq" path="res://scenes/FloatingText.tscn" id="2_tefeu"]
 [ext_resource type="Script" uid="uid://cw3knghd0miub" path="res://scenes/cofre.gd" id="3_jyhfs"]
@@ -57,9 +57,13 @@ grow_vertical = 2
 mouse_filter = 1
 
 [node name="HUD" type="Control" parent="UI/Root" unique_id=182761723]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
 
 [node name="DoblonesLabel" type="Label" parent="UI/Root/HUD" unique_id=914565459]
 layout_mode = 0
@@ -80,12 +84,15 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "DPS: 0"
 
 [node name="TiendaPanel" type="Panel" parent="UI/Root" unique_id=1545511951]
-custom_minimum_size = Vector2(300, 0)
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 1
 anchors_preset = 11
 anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -250.0
+offset_top = 46.0
+offset_bottom = -102.0
 grow_horizontal = 0
 grow_vertical = 2
 
@@ -140,8 +147,10 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -34.0
-offset_bottom = 31.0
+offset_left = -42.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 39.0
 grow_horizontal = 0
 text = "▼"
 

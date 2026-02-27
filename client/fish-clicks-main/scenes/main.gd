@@ -22,6 +22,7 @@ const ITEMS := {
 		"title": "Pez Común",
 		"right": "DPS +1",
 		"icon": "res://assets/peces/doblon.png",
+		"unlock_price": 25,
 	},
 	
 	"cofre": {
@@ -29,14 +30,18 @@ const ITEMS := {
 		"title": "Cofre",
 		"right": "+1 Click",
 		"icon": "res://assets/estructuras/cofre1.png",
+		"unlock_price": 0,
 	},
 	"boat": {
 		"tab": "Estructuras",
 		"title": "Barco",
 		"right": "DPS +5",
 		"icon": "res://assets/estructuras/cofre1.png",
+		"unlock_price": 300,
 	}
 }
+
+var unlocked: Dictionary = {}  # id -> bool
 
 var dps: float = 0.0
 var coins: float = 0.0
@@ -45,8 +50,16 @@ var fish_count: int = 0
 var chest_base_scale: Vector2
 var chest_level: int = 0
 var boat_count: int = 0
+var shop_open := false
+var shop_tween: Tween
+var shop_x_open: float
+var shop_x_closed: float
 
 func _ready() -> void:
+	for k in ITEMS.keys():
+		var id := String(k)
+		var up := int(ITEMS[id].get("unlock_price", 0))
+		unlocked[id] = (up == 0)
 	shop_panel.visible = false
 	chest_base_scale = chest_sprite.scale
 	toggle_button.text = "▼"
@@ -57,46 +70,84 @@ func _ready() -> void:
 
 	_update_cps()
 	_update_ui()
+	
+	await get_tree().process_frame  # asegura tamaños correctos
+	
+	shop_x_open = shop_panel.position.x
+	shop_x_closed = shop_x_open + shop_panel.size.x + 20  # 20px extra fuera
+	
+	shop_panel.position.x = shop_x_closed
+	shop_panel.visible = true  # importante: visible para que pueda animarse
+	shop_open = false
+
+func toggle_shop() -> void:
+	shop_open = !shop_open
+	
+	if shop_tween and shop_tween.is_running():
+		shop_tween.kill()
+
+	shop_tween = create_tween()
+	shop_tween.set_trans(Tween.TRANS_QUAD)
+	shop_tween.set_ease(Tween.EASE_OUT)
+
+	var target_x := shop_x_open if shop_open else shop_x_closed
+	shop_tween.tween_property(shop_panel, "position:x", target_x, 0.25)
+
+	toggle_button.text = "▲" if shop_open else "▼"
+
+	if shop_open:
+		_on_tab_changed(tab_container.current_tab)
 
 func _on_tab_changed(tab: int) -> void:
 	var tab_name := tab_container.get_tab_title(tab)
 
-	if tab_name == "Peces" and list_peces.get_child_count() == 0:
-		_populate_tab("Peces", list_peces)
-
-	if tab_name == "Estructuras" and list_estructuras.get_child_count() == 0:
-		_populate_tab("Estructuras", list_estructuras)
+	if tab_name == "Peces":
+		_rebuild_tab("Peces", list_peces)
+	elif tab_name == "Estructuras":
+		_rebuild_tab("Estructuras", list_estructuras)
 
 	update_shop_cards()
+
+func _rebuild_tab(tab_name: String, list: VBoxContainer) -> void:
+	for c in list.get_children():
+		c.queue_free()
+	await get_tree().process_frame
+	_populate_tab(tab_name, list)
 
 func _populate_tab(tab_name: String, list: VBoxContainer) -> void:
 	for k in ITEMS.keys():
 		var id: String = String(k)
 		if String(ITEMS[id]["tab"]) == tab_name:
-			add_item_card(id)
+			add_item_card_to_list(id, list)
 
-func add_fish_card():
+func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
+	var def: Dictionary = ITEMS[id]
+
 	var card = shop_item_card_scene.instantiate()
-	list_peces.add_child(card)
+	list.add_child(card)
 
+	# icono
 	var icon_tex: Texture2D = null
-	var icon_path := "res://assets/peces/doblon.png"
-
-	if ResourceLoader.exists(icon_path):
+	var icon_path: String = String(def.get("icon", ""))
+	if icon_path != "" and ResourceLoader.exists(icon_path):
 		icon_tex = load(icon_path)
 
+	var unlock_price: int = int(def.get("unlock_price", 0))
+
 	card.setup(
-		"fish_basic",
-		"Pez Común",
-		"Precio: 25",
-		"DPS +1",
-		str(fish_count),
+		id,
+		String(def.get("title", id)),
+		"", # left dinámico
+		String(def.get("right", "")),
+		str(get_level(id)),
 		icon_tex,
-		25, # price
-		25  # unlock_price (ajústalo a lo que quieras)
+		get_price(id),
+		unlock_price
 	)
 
+	card.set_unlocked(bool(unlocked.get(id, unlock_price == 0)))
 	card.buy_pressed.connect(_on_buy_pressed)
+	card.unlock_pressed.connect(_on_unlock_pressed)
 
 func _on_chest_clicked() -> void:
 	coins += click_power
@@ -119,13 +170,7 @@ func _update_ui() -> void:
 	update_shop_cards()
 	
 func _on_toggle_tienda_button_pressed() -> void:
-	shop_panel.visible = !shop_panel.visible
-	
-	if shop_panel.visible:
-		_on_tab_changed($UI/Root/TiendaPanel/TabContainer.current_tab)
-		toggle_button.text = "▲"
-	else:
-		toggle_button.text = "▼"
+	toggle_shop()
 		
 func _update_cps() -> void:
 	dps = fish_count * dps_per_fish
@@ -142,29 +187,6 @@ func _play_click_animation() -> void:
 	var tween = create_tween()
 	tween.tween_property(chest_sprite, "scale", chest_base_scale * 1.08, 0.06)
 	tween.tween_property(chest_sprite, "scale", chest_base_scale, 0.08)
-	
-func add_cofre_card():
-	var card = shop_item_card_scene.instantiate()
-	list_estructuras.add_child(card)
-
-	var icon_tex: Texture2D = null
-	var icon_path := "res://assets/estructuras/cofre1.png" # o tu icono del cofre
-
-	if ResourceLoader.exists(icon_path):
-		icon_tex = load(icon_path)
-
-	card.setup(
-		"cofre",
-		"Cofre",
-		"Precio: 10",
-		"+1 Click",
-		str(click_power),
-		icon_tex,
-		10, # price
-		0   # unlock_price
-	)
-
-	card.buy_pressed.connect(_on_buy_pressed)
 
 func fish_price() -> int:
 	return int(round(25 * pow(1.15, fish_count)))
@@ -212,33 +234,6 @@ func apply_purchase(id: String) -> void:
 			_update_dps_ui()
 		_:
 			pass
-
-func add_item_card(id: String) -> void:
-	var def: Dictionary = ITEMS[id]
-	var category: String = String(def.get("tab", def.get("tab", "")))
-	
-	var card = shop_item_card_scene.instantiate()
-	
-	var list: VBoxContainer = list_peces if category == "Peces" else list_estructuras
-	list.add_child(card)
-
-	var icon_tex: Texture2D = null
-	if ResourceLoader.exists(def.icon):
-		icon_tex = load(def.icon)
-
-	# setup inicial (luego se refresca en update_shop_cards)
-	card.setup(
-		id,
-		def.title,
-		"",               # left (precio) lo pondremos dinámico
-		def.right,
-		str(get_level(id)),
-		icon_tex,
-		get_price(id),
-		0                # unlock_price si lo quieres, también lo generalizamos luego
-	)
-
-	card.buy_pressed.connect(_on_buy_pressed)
 	
 func get_list_for_category(category: String) -> VBoxContainer:
 	match category:
@@ -257,6 +252,18 @@ func _on_buy_pressed(id: String) -> void:
 	apply_purchase(id)
 	_update_ui()
 
+func _on_unlock_pressed(id: String) -> void:
+	if bool(unlocked.get(id, false)):
+		return
+
+	var unlock_price: int = int(ITEMS[id].get("unlock_price", 0))
+	if coins < unlock_price:
+		return
+
+	coins -= unlock_price
+	unlocked[id] = true
+	_update_ui()  # esto refresca cards
+
 func update_shop_cards() -> void:
 	for card in list_peces.get_children():
 		_refresh_card(card)
@@ -265,8 +272,9 @@ func update_shop_cards() -> void:
 
 func _refresh_card(card) -> void:
 	var id: String = String(card.item_id)
-	var p: int = get_price(id)
+	card.set_unlocked(bool(unlocked.get(id, true)))
 
+	var p: int = get_price(id)
 	card.set_dynamic(
 		p,
 		"Precio: %d" % p,

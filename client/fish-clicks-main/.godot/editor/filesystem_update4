@@ -1,4 +1,4 @@
 res://scenes/ShopItemCard.tscn
-res://scenes/pez.tscn
-res://scenes/main.gd
 res://scenes/shop_item_card.gd
+res://scenes/main.gd
+res://scenes/main.tscn
