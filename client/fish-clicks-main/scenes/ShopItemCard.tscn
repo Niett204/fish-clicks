@@ -11,6 +11,12 @@
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_niagg"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dkuh8"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_csjsk"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_37hb1"]
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_njvbf"]
 
 [node name="Button" type="Button" unique_id=1514485555]
@@ -23,6 +29,9 @@ focus_mode = 0
 theme_override_styles/normal = SubResource("StyleBoxEmpty_jykwe")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_okpyy")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_niagg")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_dkuh8")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_csjsk")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_37hb1")
 script = ExtResource("1_87dkc")
 plank_normal = ExtResource("2_njvbf")
 plank_locked = ExtResource("3_jykwe")

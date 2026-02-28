@@ -13,8 +13,9 @@ extends Button
 @onready var title_lbl: Label = $NormalView/Padding/Content/TextCol/Title
 @onready var stat_left: Label = $NormalView/Padding/Content/TextCol/StatLeft
 @onready var level_lbl: Label = $NormalView/Padding/Content/Level
-@onready var plank_normall: TextureRect = $NormalView/Plank
-@onready var plank_lockedd: TextureRect = $LockedView/PlankLocked  # si tienes
+
+@onready var plank_normal_bg = $NormalView/PlankBG        # ajusta nombre/path
+@onready var plank_locked_bg = $LockedView/BG    # si tienes fondo locked
 
 signal unlock_pressed(item_id: String)
 signal buy_pressed(item_id: String)
@@ -31,9 +32,72 @@ var _right_normal := ""
 var _level_normal := ""
 var _icon_normal: Texture2D
 
+var _hovered := false
+var _pressed := false
+var _can_afford := true
+var hover_rotation := 2.0
+var pressed_rotation := 5.0
+var click_rotation := 5.0
+var tween: Tween
+
 func _ready() -> void:
-	print("level_lbl:", level_lbl)
-	pressed.connect(_on_pressed)
+	normal_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	locked_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	locked_price_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	mouse_entered.connect(func():
+		_hovered = true
+		_apply_plank_tint()
+		if not _pressed:
+			_animate_rotation(hover_rotation, 0.15)
+	)
+
+	mouse_exited.connect(func():
+		_hovered = false
+		_pressed = false
+		_apply_plank_tint()
+		_animate_rotation(0.0, 0.15)
+	)
+
+	button_down.connect(func():
+		_pressed = true
+		_apply_plank_tint()
+		_animate_rotation(pressed_rotation, 0.08)  # mientras mantienes
+	)
+
+	button_up.connect(func():
+		_pressed = false
+		_apply_plank_tint()
+		# vuelve a hover si sigues encima, si no a 0
+		_animate_rotation(hover_rotation if _hovered else 0.0, 0.12)
+	)
+
+	pressed.connect(_on_card_pressed)
+
+	_apply_view()
+	_apply_plank_tint()
+
+func _on_card_pressed() -> void:
+	if is_unlocked:
+		buy_pressed.emit(item_id)
+	else:
+		unlock_pressed.emit(item_id)
+
+func _apply_plank_tint() -> void:
+	# Base según si puedes comprar
+	var c := Color(1, 1, 1, 1) if _can_afford else Color(0.55, 0.55, 0.55, 1)
+
+	# Encima de eso, hover/click (solo si puedes, o si quieres también cuando no puedes)
+	if _pressed:
+		c = c * Color(0.85, 0.85, 0.85, 1)
+	elif _hovered:
+		c = c * Color(0.93, 0.93, 0.93, 1)
+
+	# Aplica al fondo visible
+	if plank_normal_bg:
+		plank_normal_bg.modulate = c
+	if plank_locked_bg:
+		plank_locked_bg.modulate = c
 
 func _on_pressed() -> void:
 	if is_unlocked:
@@ -68,13 +132,12 @@ func set_unlocked(v: bool) -> void:
 	_apply_view()
 
 func update_state(coins: float) -> void:
-	if is_unlocked:
-		disabled = coins < price
-	else:
-		disabled = coins < unlock_price
+	var needed := price if is_unlocked else unlock_price
+	_can_afford = coins >= needed
+	_apply_plank_tint()
 
 func _apply_locked_visual() -> void:
-	disabled = true
+	disabled = false  # para que puedas clicar y emitir unlock_pressed
 
 	if plank_locked:
 		plank_bg.texture = plank_locked
@@ -121,5 +184,30 @@ func _apply_view() -> void:
 	normal_view.visible = is_unlocked
 	locked_view.visible = !is_unlocked
 
-	if !is_unlocked:
+	if is_unlocked:
+		_apply_unlocked_visual()
+	else:
+		_apply_locked_visual()
 		locked_price_lbl.text = "Desbloquear: %d" % unlock_price
+
+	_apply_plank_tint()
+
+func _animate_rotation(target: float, duration: float) -> void:
+	if tween:
+		tween.kill()
+	tween = create_tween()
+	tween.tween_property(self, "rotation_degrees", target, duration) \
+		.set_trans(Tween.TRANS_SINE) \
+		.set_ease(Tween.EASE_OUT)
+
+func _wiggle_click() -> void:
+	if tween:
+		tween.kill()
+
+	tween = create_tween()
+	tween.tween_property(self, "rotation_degrees", click_rotation, 0.08)
+	tween.tween_property(self, "rotation_degrees", -click_rotation, 0.08)
+	tween.tween_property(self, "rotation_degrees", 0.0, 0.10)
+
+func _reset_rotation_smooth() -> void:
+	_animate_rotation(0.0, 0.15)

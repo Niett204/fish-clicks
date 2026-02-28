@@ -59,7 +59,7 @@ func _ready() -> void:
 	for k in ITEMS.keys():
 		var id := String(k)
 		var up := int(ITEMS[id].get("unlock_price", 0))
-		unlocked[id] = (up == 0)
+		unlocked[id] = false
 	shop_panel.visible = false
 	chest_base_scale = chest_sprite.scale
 	toggle_button.text = "▼"
@@ -200,7 +200,7 @@ func get_level(id: String) -> int:
 		"fish_basic":
 			return fish_count
 		"cofre":
-			return click_power
+			return chest_level
 		"boat":
 			return boat_count
 		_:
@@ -211,7 +211,7 @@ func get_price(id: String) -> int:
 		"fish_basic":
 			return int(round(25 * pow(1.15, fish_count)))
 		"cofre":
-			return int(round(10 * pow(1.25, click_power - 1)))
+			return int(round(10 * pow(1.05, click_power - 1)))
 		"boat":
 			return int(round(200 * pow(1.20, boat_count)))
 		_:
