@@ -18,6 +18,9 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a8y0u"]
+size = Vector2(1022, 516)
+
 [node name="Main" type="Node2D" unique_id=1758773918]
 script = ExtResource("1_0wfyh")
 floating_text_scene = ExtResource("2_tefeu")
@@ -302,6 +305,12 @@ grow_vertical = 0
 texture_normal = ExtResource("9_trceg")
 ignore_texture_size = true
 stretch_mode = 5
+
+[node name="SwimArea" type="Node2D" parent="." unique_id=1141987209]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SwimArea" unique_id=1106963454]
+position = Vector2(577, 322)
+shape = SubResource("RectangleShape2D_a8y0u")
 
 [connection signal="input_event" from="Cofre" to="Cofre" method="_on_input_event"]
 [connection signal="pressed" from="UI/Root/HUD/TopBar/RightGroup/BtnShop" to="." method="_on_btn_shop_pressed"]

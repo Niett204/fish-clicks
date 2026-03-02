@@ -254,6 +254,7 @@ func apply_purchase(id: String) -> void:
 		"fish_basic":
 			fish_count += 1
 			var fish = fish_scene.instantiate()
+			fish.swim_area = $SwimArea
 			fish_layer.add_child(fish)
 			fish.position = Vector2(randi_range(200, 1000), randi_range(300, 600))
 			_update_cps()
@@ -340,8 +341,17 @@ func _update_chest_sprite_by_level() -> void:
 	else:
 		chest_sprite.texture = TEX_CHEST_FULL
 
-
 func _chest_level_up_fx() -> void:
 	var t := create_tween()
 	t.tween_property(chest_sprite, "scale", chest_base_scale * 1.12, 0.08)
 	t.tween_property(chest_sprite, "scale", chest_base_scale, 0.10)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		var click_pos: Vector2 = get_viewport().get_mouse_position()
+
+		# Asusta peces cercanos al click
+		for fish in fish_layer.get_children():
+			if fish.has_method("scare_from"):
+				if fish.global_position.distance_to(click_pos) < 120:
+					fish.scare_from(click_pos)

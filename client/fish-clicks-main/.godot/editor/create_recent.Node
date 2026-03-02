@@ -1,3 +1,5 @@
+CollisionShape2D
+Node2D
 TextureButton
 Button
 VBoxContainer
@@ -11,4 +13,3 @@ CenterContainer
 NinePatchRect
 TabContainer
 PanelContainer
-MarginContainer
