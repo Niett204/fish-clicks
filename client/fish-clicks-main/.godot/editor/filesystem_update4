@@ -1,5 +1,5 @@
-res://scenes/ShopItemCard.tscn
-res://scenes/shop_item_card.gd
 res://scenes/main.tscn
+res://scenes/info_extra_panel.gd
+res://scenes/shop_item_card.gd
 res://scenes/main.gd
-res://scenes/pez.tscn
+res://scenes/FloatingText.tscn

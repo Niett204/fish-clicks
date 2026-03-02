@@ -20,6 +20,15 @@ extends Button
 signal unlock_pressed(item_id: String)
 signal buy_pressed(item_id: String)
 
+# -------- INFO EXTRA --------
+@export var info_panel_path: NodePath
+@onready var info_panel: Control = get_node_or_null(info_panel_path)
+
+@export var extra_title := ""
+@export var extra_desc := ""
+@export var extra_stats := ""
+# ----------------------------
+
 var is_unlocked: bool = false
 var unlock_price: int = 0
 var price: int = 0
@@ -76,6 +85,21 @@ func _ready() -> void:
 
 	_apply_view()
 	_apply_plank_tint()
+	
+	mouse_entered.connect(_on_enter_info)
+	mouse_exited.connect(_on_exit_info)
+
+func _on_enter_info() -> void:
+	if get_tree().get_first_node_in_group("main") and get_tree().get_first_node_in_group("main")._block_info_hover:
+		return
+	if info_panel == null:
+		print("INFO: info_panel_path no asignado o mal:", info_panel_path)
+		return
+	info_panel.show_for_card(self, extra_title, extra_desc, extra_stats)
+
+func _on_exit_info() -> void:
+	if info_panel:
+		info_panel.schedule_hide(0.06)
 
 func _on_card_pressed() -> void:
 	if is_unlocked:

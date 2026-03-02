@@ -15,6 +15,7 @@ extends Node2D
 @onready var tab_container: TabContainer = $UI/Root/TiendaPanel/TabContainer
 @onready var list_peces: VBoxContainer = $UI/Root/TiendaPanel/TabContainer/Peces/ScrollContainer/ListPeces
 @onready var list_estructuras: VBoxContainer = $UI/Root/TiendaPanel/TabContainer/Estructuras/ScrollContainer/ListEstructuras
+@onready var info_panel: Control = $UI/Root/InfoExtraPanel
 
 const ITEMS := {
 	"fish_basic": {
@@ -22,7 +23,7 @@ const ITEMS := {
 		"title": "Pez Común",
 		"right": "DPS +1",
 		"icon": "res://assets/peces/doblon.png",
-		"unlock_price": 25,
+		"unlock_price": 0,
 	},
 	
 	"cofre": {
@@ -54,11 +55,11 @@ var shop_open := false
 var shop_tween: Tween
 var shop_x_open: float
 var shop_x_closed: float
+var _block_info_hover := false
 
 func _ready() -> void:
 	for k in ITEMS.keys():
 		var id := String(k)
-		var up := int(ITEMS[id].get("unlock_price", 0))
 		unlocked[id] = false
 	shop_panel.visible = false
 	chest_base_scale = chest_sprite.scale
@@ -82,9 +83,9 @@ func _ready() -> void:
 
 func toggle_shop() -> void:
 	shop_open = !shop_open
-	
-	if shop_tween and shop_tween.is_running():
-		shop_tween.kill()
+
+	if not shop_open and info_panel:
+		info_panel.request_hide()
 
 	shop_tween = create_tween()
 	shop_tween.set_trans(Tween.TRANS_QUAD)
@@ -99,6 +100,10 @@ func toggle_shop() -> void:
 		_on_tab_changed(tab_container.current_tab)
 
 func _on_tab_changed(tab: int) -> void:
+	_block_info_hover = true
+	if info_panel:
+		info_panel.visible = false
+	
 	var tab_name := tab_container.get_tab_title(tab)
 
 	if tab_name == "Peces":
@@ -107,6 +112,9 @@ func _on_tab_changed(tab: int) -> void:
 		_rebuild_tab("Estructuras", list_estructuras)
 
 	update_shop_cards()
+	
+	await get_tree().process_frame
+	_block_info_hover = false
 
 func _rebuild_tab(tab_name: String, list: VBoxContainer) -> void:
 	for c in list.get_children():
@@ -124,6 +132,7 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 	var def: Dictionary = ITEMS[id]
 
 	var card = shop_item_card_scene.instantiate()
+	card.info_panel_path = info_panel.get_path()
 	list.add_child(card)
 
 	# icono
@@ -144,6 +153,10 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 		get_price(id),
 		unlock_price
 	)
+
+	card.extra_title = String(def.get("title", id))
+	card.extra_desc  = String(def.get("right", ""))   # o una descripción real
+	card.extra_stats = "Precio: %d" % get_price(id)   # lo que quieras
 
 	card.set_unlocked(bool(unlocked.get(id, unlock_price == 0)))
 	card.buy_pressed.connect(_on_buy_pressed)
@@ -209,7 +222,7 @@ func get_level(id: String) -> int:
 func get_price(id: String) -> int:
 	match id:
 		"fish_basic":
-			return int(round(25 * pow(1.15, fish_count)))
+			return int(round(0 * pow(1.15, fish_count)))
 		"cofre":
 			return int(round(10 * pow(1.05, click_power - 1)))
 		"boat":

@@ -7,6 +7,8 @@
 [ext_resource type="Script" uid="uid://cw3knghd0miub" path="res://scenes/cofre.gd" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://cfhhda8qg0bq0" path="res://scenes/ShopItemCard.tscn" id="4_o6xl0"]
 [ext_resource type="Texture2D" uid="uid://dj7r3qo376quo" path="res://assets/estructuras/cofre1.png" id="4_tbgi4"]
+[ext_resource type="Script" uid="uid://dl0sgr2smpium" path="res://scenes/info_extra_panel.gd" id="8_tipki"]
+[ext_resource type="Texture2D" uid="uid://bva22m6ipd063" path="res://assets/ui/tabla.png" id="9_85g3d"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
@@ -141,6 +143,54 @@ grow_vertical = 2
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
+
+[node name="InfoExtraPanel" type="Control" parent="UI/Root" unique_id=1578223614]
+top_level = true
+z_index = 100
+custom_minimum_size = Vector2(260, 80)
+layout_mode = 1
+anchors_preset = 0
+offset_left = 902.0
+offset_top = 46.0
+offset_right = 942.0
+offset_bottom = 86.0
+script = ExtResource("8_tipki")
+
+[node name="Banner" type="TextureRect" parent="UI/Root/InfoExtraPanel" unique_id=433949685]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("9_85g3d")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CardBox" type="Panel" parent="UI/Root/InfoExtraPanel" unique_id=677308730]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="UI/Root/InfoExtraPanel/CardBox" unique_id=467748443]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="UI/Root/InfoExtraPanel/CardBox/VBox" unique_id=2109725913]
+layout_mode = 2
+
+[node name="Desc" type="Label" parent="UI/Root/InfoExtraPanel/CardBox/VBox" unique_id=1326418190]
+layout_mode = 2
+
+[node name="Stats" type="Label" parent="UI/Root/InfoExtraPanel/CardBox/VBox" unique_id=1262020269]
+layout_mode = 2
 
 [node name="ToggleTiendaButton" type="Button" parent="UI/Root" unique_id=305432852]
 layout_mode = 1
