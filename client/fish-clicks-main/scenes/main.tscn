@@ -6,9 +6,14 @@
 [ext_resource type="PackedScene" uid="uid://dinpoywkt4vsq" path="res://scenes/FloatingText.tscn" id="2_tefeu"]
 [ext_resource type="Script" uid="uid://cw3knghd0miub" path="res://scenes/cofre.gd" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://cfhhda8qg0bq0" path="res://scenes/ShopItemCard.tscn" id="4_o6xl0"]
-[ext_resource type="Texture2D" uid="uid://dj7r3qo376quo" path="res://assets/estructuras/cofre1.png" id="4_tbgi4"]
+[ext_resource type="Texture2D" uid="uid://bumfn7ywlc7r5" path="res://assets/estructuras/cofre_abierto_lleno.png" id="7_a8y0u"]
+[ext_resource type="Texture2D" uid="uid://di0p043eru4vj" path="res://assets/ui/iconos/icono_perfil.png" id="8_eb6dy"]
 [ext_resource type="Script" uid="uid://dl0sgr2smpium" path="res://scenes/info_extra_panel.gd" id="8_tipki"]
 [ext_resource type="Texture2D" uid="uid://bva22m6ipd063" path="res://assets/ui/tabla.png" id="9_85g3d"]
+[ext_resource type="Texture2D" uid="uid://bapfvmfpgbe7p" path="res://assets/ui/iconos/icono_opciones.png" id="9_trceg"]
+[ext_resource type="Texture2D" uid="uid://casqwt2ogwyax" path="res://assets/ui/iconos/icono_stats.png" id="10_a8y0u"]
+[ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
+[ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
@@ -39,7 +44,7 @@ script = ExtResource("3_jyhfs")
 [node name="Sprite2D" type="Sprite2D" parent="Cofre" unique_id=1706070275]
 position = Vector2(193, 514.00006)
 scale = Vector2(0.29398158, 0.2740741)
-texture = ExtResource("4_tbgi4")
+texture = ExtResource("7_a8y0u")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Cofre" unique_id=1343405143]
 position = Vector2(188, 507.5)
@@ -67,25 +72,113 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 
-[node name="DoblonesLabel" type="Label" parent="UI/Root/HUD" unique_id=914565459]
-layout_mode = 0
-offset_left = 25.0
-offset_top = 21.0
-offset_right = 116.0
-offset_bottom = 44.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "Doblones: 0"
+[node name="TopBar" type="Control" parent="UI/Root/HUD" unique_id=323055221]
+layout_mode = 1
+anchor_right = 1.0
+offset_bottom = 35.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
-[node name="DpsLabel" type="Label" parent="UI/Root/HUD" unique_id=1869966431]
+[node name="LeftGroup" type="HBoxContainer" parent="UI/Root/HUD/TopBar" unique_id=348199901]
+layout_mode = 1
+offset_left = 20.0
+offset_top = 15.0
+offset_right = 60.0
+offset_bottom = 55.0
+theme_override_constants/separation = 12
+
+[node name="BtnProfile" type="TextureButton" parent="UI/Root/HUD/TopBar/LeftGroup" unique_id=736051834]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture_normal = ExtResource("8_eb6dy")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="BtnOptions" type="TextureButton" parent="UI/Root/HUD/TopBar/LeftGroup" unique_id=544079481]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture_normal = ExtResource("9_trceg")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="BtnStats" type="TextureButton" parent="UI/Root/HUD/TopBar/LeftGroup" unique_id=226584191]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture_normal = ExtResource("10_a8y0u")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="RightGroup" type="HBoxContainer" parent="UI/Root/HUD/TopBar" unique_id=469046478]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -122.0
+offset_top = 15.0
+offset_right = -20.0
+offset_bottom = 55.0
+grow_horizontal = 0
+theme_override_constants/separation = 12
+
+[node name="BtnEvent" type="TextureButton" parent="UI/Root/HUD/TopBar/RightGroup" unique_id=1631156383]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture_normal = ExtResource("9_trceg")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="BtnWorld" type="TextureButton" parent="UI/Root/HUD/TopBar/RightGroup" unique_id=266951714]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture_normal = ExtResource("9_trceg")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="BtnEncyclopedia" type="TextureButton" parent="UI/Root/HUD/TopBar/RightGroup" unique_id=1034668082]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture_normal = ExtResource("9_trceg")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="BtnInventory" type="TextureButton" parent="UI/Root/HUD/TopBar/RightGroup" unique_id=5795540]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture_normal = ExtResource("11_a8y0u")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="BtnShop" type="TextureButton" parent="UI/Root/HUD/TopBar/RightGroup" unique_id=110734671]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture_normal = ExtResource("12_jkv2x")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="LeftInfoPanel" type="Panel" parent="UI/Root/HUD" unique_id=1672445034]
+layout_mode = 1
+offset_left = 20.0
+offset_top = 70.0
+offset_right = 240.0
+offset_bottom = 160.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Root/HUD/LeftInfoPanel" unique_id=1724032618]
 layout_mode = 0
-offset_left = 29.0
-offset_top = 62.0
-offset_right = 78.0
-offset_bottom = 85.0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="DpsLabel" type="Label" parent="UI/Root/HUD/LeftInfoPanel/VBoxContainer" unique_id=1869966431]
+layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "DPS: 0"
 
-[node name="TiendaPanel" type="Panel" parent="UI/Root" unique_id=1545511951]
+[node name="DoblonesLabel" type="Label" parent="UI/Root/HUD/LeftInfoPanel/VBoxContainer" unique_id=914565459]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Doblones: 0"
+
+[node name="TiendaPanel" type="Panel" parent="UI/Root/HUD" unique_id=1545511951]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 1
 anchors_preset = 11
@@ -93,12 +186,12 @@ anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -250.0
-offset_top = 46.0
-offset_bottom = -102.0
+offset_top = 70.0
+offset_bottom = -78.0
 grow_horizontal = 0
 grow_vertical = 2
 
-[node name="TabContainer" type="TabContainer" parent="UI/Root/TiendaPanel" unique_id=1785782234]
+[node name="TabContainer" type="TabContainer" parent="UI/Root/HUD/TiendaPanel" unique_id=1785782234]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -109,11 +202,11 @@ grow_horizontal = 2
 grow_vertical = 2
 current_tab = 0
 
-[node name="Estructuras" type="Control" parent="UI/Root/TiendaPanel/TabContainer" unique_id=1013639139]
+[node name="Estructuras" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1013639139]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/TiendaPanel/TabContainer/Estructuras" unique_id=1450220889]
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Estructuras" unique_id=1450220889]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -121,17 +214,17 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ListEstructuras" type="VBoxContainer" parent="UI/Root/TiendaPanel/TabContainer/Estructuras/ScrollContainer" unique_id=669970207]
+[node name="ListEstructuras" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Estructuras/ScrollContainer" unique_id=669970207]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="Peces" type="Control" parent="UI/Root/TiendaPanel/TabContainer" unique_id=438741302]
+[node name="Peces" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=438741302]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/TiendaPanel/TabContainer/Peces" unique_id=458589617]
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces" unique_id=458589617]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -139,12 +232,12 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ListPeces" type="VBoxContainer" parent="UI/Root/TiendaPanel/TabContainer/Peces/ScrollContainer" unique_id=1508419207]
+[node name="ListPeces" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer" unique_id=1508419207]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="InfoExtraPanel" type="Control" parent="UI/Root" unique_id=1578223614]
+[node name="InfoExtraPanel" type="Control" parent="UI/Root/HUD" unique_id=1578223614]
 top_level = true
 z_index = 100
 custom_minimum_size = Vector2(260, 80)
@@ -152,11 +245,11 @@ layout_mode = 1
 anchors_preset = 0
 offset_left = 902.0
 offset_top = 46.0
-offset_right = 942.0
-offset_bottom = 86.0
+offset_right = 1162.0
+offset_bottom = 126.0
 script = ExtResource("8_tipki")
 
-[node name="Banner" type="TextureRect" parent="UI/Root/InfoExtraPanel" unique_id=433949685]
+[node name="Banner" type="TextureRect" parent="UI/Root/HUD/InfoExtraPanel" unique_id=433949685]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -167,7 +260,7 @@ texture = ExtResource("9_85g3d")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="CardBox" type="Panel" parent="UI/Root/InfoExtraPanel" unique_id=677308730]
+[node name="CardBox" type="Panel" parent="UI/Root/HUD/InfoExtraPanel" unique_id=677308730]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -175,7 +268,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="UI/Root/InfoExtraPanel/CardBox" unique_id=467748443]
+[node name="VBox" type="VBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/CardBox" unique_id=467748443]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -183,26 +276,33 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Title" type="Label" parent="UI/Root/InfoExtraPanel/CardBox/VBox" unique_id=2109725913]
+[node name="Title" type="Label" parent="UI/Root/HUD/InfoExtraPanel/CardBox/VBox" unique_id=2109725913]
 layout_mode = 2
 
-[node name="Desc" type="Label" parent="UI/Root/InfoExtraPanel/CardBox/VBox" unique_id=1326418190]
+[node name="Desc" type="Label" parent="UI/Root/HUD/InfoExtraPanel/CardBox/VBox" unique_id=1326418190]
 layout_mode = 2
 
-[node name="Stats" type="Label" parent="UI/Root/InfoExtraPanel/CardBox/VBox" unique_id=1262020269]
+[node name="Stats" type="Label" parent="UI/Root/HUD/InfoExtraPanel/CardBox/VBox" unique_id=1262020269]
 layout_mode = 2
 
-[node name="ToggleTiendaButton" type="Button" parent="UI/Root" unique_id=305432852]
+[node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 1
-anchors_preset = 1
+anchors_preset = 3
 anchor_left = 1.0
+anchor_top = 1.0
 anchor_right = 1.0
-offset_left = -42.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = 39.0
+anchor_bottom = 1.0
+offset_left = -58.0
+offset_top = -58.0
+offset_right = -10.0
+offset_bottom = -10.0
 grow_horizontal = 0
-text = "▼"
+grow_vertical = 0
+texture_normal = ExtResource("9_trceg")
+ignore_texture_size = true
+stretch_mode = 5
 
 [connection signal="input_event" from="Cofre" to="Cofre" method="_on_input_event"]
-[connection signal="pressed" from="UI/Root/ToggleTiendaButton" to="." method="_on_toggle_tienda_button_pressed"]
+[connection signal="pressed" from="UI/Root/HUD/TopBar/RightGroup/BtnShop" to="." method="_on_btn_shop_pressed"]
+[connection signal="pressed" from="UI/Root/BtnHideHUD" to="." method="_on_btn_hide_hud_pressed"]

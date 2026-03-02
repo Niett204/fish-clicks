@@ -5,17 +5,19 @@ extends Node2D
 @export var dps_per_fish: float = 1.0
 @export var shop_item_card_scene: PackedScene
 
-@onready var coins_label: Label = $UI/Root/HUD/DoblonesLabel
-@onready var shop_panel: Control = $UI/Root/TiendaPanel
-@onready var toggle_button: Button = $UI/Root/ToggleTiendaButton
+@onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/DoblonesLabel
+@onready var shop_panel: Control = $UI/Root/HUD/TiendaPanel
+@onready var btn_shop_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnShop
 @onready var chest: Area2D = $Cofre
 @onready var chest_sprite: Sprite2D = $Cofre/Sprite2D
 @onready var fish_layer = $PecesLayer
-@onready var dps_label: Label = $UI/Root/HUD/DpsLabel
-@onready var tab_container: TabContainer = $UI/Root/TiendaPanel/TabContainer
-@onready var list_peces: VBoxContainer = $UI/Root/TiendaPanel/TabContainer/Peces/ScrollContainer/ListPeces
-@onready var list_estructuras: VBoxContainer = $UI/Root/TiendaPanel/TabContainer/Estructuras/ScrollContainer/ListEstructuras
-@onready var info_panel: Control = $UI/Root/InfoExtraPanel
+@onready var dps_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/DpsLabel
+@onready var tab_container: TabContainer = $UI/Root/HUD/TiendaPanel/TabContainer
+@onready var list_peces: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer/ListPeces
+@onready var list_estructuras: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Estructuras/ScrollContainer/ListEstructuras
+@onready var info_panel: Control = $UI/Root/HUD/InfoExtraPanel
+@onready var hud: Control = $UI/Root/HUD
+@onready var btn_hide: TextureButton = $UI/Root/BtnHideHUD
 
 const ITEMS := {
 	"fish_basic": {
@@ -56,6 +58,7 @@ var shop_tween: Tween
 var shop_x_open: float
 var shop_x_closed: float
 var _block_info_hover := false
+var hud_visible := true
 
 func _ready() -> void:
 	for k in ITEMS.keys():
@@ -63,7 +66,16 @@ func _ready() -> void:
 		unlocked[id] = false
 	shop_panel.visible = false
 	chest_base_scale = chest_sprite.scale
-	toggle_button.text = "▼"
+
+	btn_hide.pressed.connect(func():
+		play_squish(btn_shop_icon)
+		_toggle_hud()
+	)
+	
+	btn_shop_icon.pressed.connect(func():
+		play_squish(btn_shop_icon)
+		toggle_shop()
+	)
 
 	tab_container.tab_changed.connect(_on_tab_changed)
 
@@ -81,6 +93,10 @@ func _ready() -> void:
 	shop_panel.visible = true  # importante: visible para que pueda animarse
 	shop_open = false
 
+func _toggle_hud():
+	hud_visible = !hud_visible
+	hud.visible = hud_visible
+
 func toggle_shop() -> void:
 	shop_open = !shop_open
 
@@ -93,8 +109,6 @@ func toggle_shop() -> void:
 
 	var target_x := shop_x_open if shop_open else shop_x_closed
 	shop_tween.tween_property(shop_panel, "position:x", target_x, 0.25)
-
-	toggle_button.text = "▲" if shop_open else "▼"
 
 	if shop_open:
 		_on_tab_changed(tab_container.current_tab)
@@ -295,3 +309,18 @@ func _refresh_card(card) -> void:
 		str(get_level(id))
 	)
 	card.update_state(coins)
+
+func play_squish(node: Control) -> void:
+	var t := create_tween()
+	t.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	node.scale = Vector2(1, 1)
+	t.tween_property(node, "scale", Vector2(0.92, 0.88), 0.06)
+	t.tween_property(node, "scale", Vector2(1.02, 1.02), 0.08)
+	t.tween_property(node, "scale", Vector2(1, 1), 0.08)
+
+func _on_btn_shop_pressed() -> void:
+	pass # Replace with function body.
+
+
+func _on_btn_hide_hud_pressed() -> void:
+	pass # Replace with function body.
