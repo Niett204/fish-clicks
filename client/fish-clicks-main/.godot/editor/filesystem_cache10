@@ -4,9 +4,11 @@ export_presets.cfg::TextFile::-1::1772275879::0::1::::<><><>0<>0<><>::
 icon.svg::CompressedTexture2D::4334459046159358899::1771669991::1771670001::1::::<><><>0<>0<>3b53763b61da07aac68bd440df64e7d9<>res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex::
 ::res://addons/::1772443769
 ::res://assets/::1772131901
-::res://assets/estructuras/::1772465630
-cofre1.png::CompressedTexture2D::7858104786374930798::1771939347::1772131904::1::::<><><>0<>0<>f7ca45074a2d4d755b7f4ff33ddeaada<>res://.godot/imported/cofre1.png-d731bb5969b65a8507f0342074fd446e.ctex::
-cofre_abierto_lleno.png::CompressedTexture2D::3815298608623967840::1772465619::1772465633::1::::<><><>0<>0<>3cb2a75be624e5891dfcc2cbc650af22<>res://.godot/imported/cofre_abierto_lleno.png-6b5fc6ce34a0c062cdf087e79321c2cd.ctex::
+::res://assets/estructuras/::1772466913
+cofre_abierto_lleno.png::CompressedTexture2D::3815298608623967840::1772466908::1772465633::1::::<><><>0<>0<>3cb2a75be624e5891dfcc2cbc650af22<>res://.godot/imported/cofre_abierto_lleno.png-6b5fc6ce34a0c062cdf087e79321c2cd.ctex::
+cofre_abierto_medio.png::CompressedTexture2D::3931961447699599239::1772466907::1772466917::1::::<><><>0<>0<>c24c13df22bb11d167807f1af9bfbe97<>res://.godot/imported/cofre_abierto_medio.png-3450aca1844e95c997de3158c1e21414.ctex::
+cofre_abierto_vacio.png::CompressedTexture2D::4384482294747992143::1772466907::1772466917::1::::<><><>0<>0<>7483c3c63a865e090de6c9cef6c10595<>res://.godot/imported/cofre_abierto_vacio.png-2ba315a8049a035c67df6f0b70b7a70e.ctex::
+cofre_cerrado.png::CompressedTexture2D::1921145205946680261::1772466907::1772466917::1::::<><><>0<>0<>a4fff7ff8cb4a1ad52c472e8a3489089<>res://.godot/imported/cofre_cerrado.png-e0405bc0ce28279673f416726c7b7613.ctex::
 ::res://assets/fondos/::1772138845
 fondo1.png::CompressedTexture2D::6029465584438123572::1772138828::1772138845::1::::<><><>0<>0<>cca33fd5a4c70bfcdfe5dab0bcdc6612<>res://.godot/imported/fondo1.png-aab7a07ec56144c4d25fa97ce150d248.ctex::
 ::res://assets/misc/::1772131904
@@ -22,13 +24,13 @@ icono_opciones.png::CompressedTexture2D::2417728075333651047::1772463907::177246
 icono_perfil.png::CompressedTexture2D::7773339210411133559::1772463907::1772463914::1::::<><><>0<>0<>6266887fff86a7ff55c41ffaafa5473e<>res://.godot/imported/icono_perfil.png-96a89bc54b5b64686fec8b2442644034.ctex::
 icono_stats.png::CompressedTexture2D::4811011966607827591::1772463907::1772463914::1::::<><><>0<>0<>6506a58c8f6e4c680d521871c7acbaf3<>res://.godot/imported/icono_stats.png-0f6bb9929b59bf1e8bb5d4f13c8d5633.ctex::
 icono_tienda.png::CompressedTexture2D::1949802868311054618::1772463907::1772463914::1::::<><><>0<>0<>c23398cbafe03682250a0b0c17b841b6<>res://.godot/imported/icono_tienda.png-42c4ef324ff30fff230ad31244aba265.ctex::
-::res://scenes/::1772465470
+::res://scenes/::1772466888
 cofre.gd::GDScript::6375429215908944601::1771942522::0::1::::<>Area2D<><>0<>0<><>::
 FloatingText.tscn::PackedScene::7748546762019514784::1772451196::0::1::::<><><>0<>0<><>::uid://djcsisw87mens::::res://scenes/floating_text.gd
 floating_text.gd::GDScript::7796198572499357916::1772026552::0::1::::<>Label<><>0<>0<><>::
 info_extra_panel.gd::GDScript::7984053331023524364::1772451009::0::1::::<>Control<><>0<>0<><>::
-main.gd::GDScript::6350592959997628172::1772465470::0::1::::<>Node2D<><>0<>0<><>::
-main.tscn::PackedScene::4006248464096596907::1772465470::0::1::::<><><>0<>0<><>::uid://cwqjlq8k1q0ls::::res://scenes/main.gd<>uid://cr5yogl8hvnw3::::res://assets/fondos/fondo1.png<>uid://ubk2btwo8ltc::::res://scenes/pez.tscn<>uid://dinpoywkt4vsq::::res://scenes/FloatingText.tscn<>uid://cw3knghd0miub::::res://scenes/cofre.gd<>uid://cfhhda8qg0bq0::::res://scenes/ShopItemCard.tscn<>uid://dj7r3qo376quo::::res://assets/estructuras/cofre1.png<>uid://di0p043eru4vj::::res://assets/ui/iconos/icono_perfil.png<>uid://dl0sgr2smpium::::res://scenes/info_extra_panel.gd<>uid://bva22m6ipd063::::res://assets/ui/tabla.png<>uid://bapfvmfpgbe7p::::res://assets/ui/iconos/icono_opciones.png<>uid://casqwt2ogwyax::::res://assets/ui/iconos/icono_stats.png<>uid://bdp4yakc85yet::::res://assets/ui/iconos/icono_inventario.png<>uid://21q76o4ppybq::::res://assets/ui/iconos/icono_tienda.png
+main.gd::GDScript::6350592959997628172::1772466888::0::1::::<>Node2D<><>0<>0<><>::
+main.tscn::PackedScene::4006248464096596907::1772466888::0::1::::<><><>0<>0<><>::uid://cwqjlq8k1q0ls::::res://scenes/main.gd<>uid://cr5yogl8hvnw3::::res://assets/fondos/fondo1.png<>uid://ubk2btwo8ltc::::res://scenes/pez.tscn<>uid://dinpoywkt4vsq::::res://scenes/FloatingText.tscn<>uid://cw3knghd0miub::::res://scenes/cofre.gd<>uid://cfhhda8qg0bq0::::res://scenes/ShopItemCard.tscn<>uid://bumfn7ywlc7r5::::res://assets/estructuras/cofre_abierto_lleno.png<>uid://di0p043eru4vj::::res://assets/ui/iconos/icono_perfil.png<>uid://dl0sgr2smpium::::res://scenes/info_extra_panel.gd<>uid://bva22m6ipd063::::res://assets/ui/tabla.png<>uid://bapfvmfpgbe7p::::res://assets/ui/iconos/icono_opciones.png<>uid://casqwt2ogwyax::::res://assets/ui/iconos/icono_stats.png<>uid://bdp4yakc85yet::::res://assets/ui/iconos/icono_inventario.png<>uid://21q76o4ppybq::::res://assets/ui/iconos/icono_tienda.png
 pez.gd::GDScript::8061017105763768285::1772279498::0::1::::<>Node2D<><>0<>0<><>::
 pez.tscn::PackedScene::1406496719772036764::1772279048::0::1::::<><><>0<>0<><>::uid://dm321k0nr5kgj::::res://scenes/pez.gd<>uid://cmyqli7vqrbdi::::res://assets/peces/doblon.png
 ShopItemCard.tscn::PackedScene::5138666657900377253::1772272932::0::1::::<><><>0<>0<><>::uid://bk086nx0y3smj::::res://scenes/shop_item_card.gd<>uid://cmyqli7vqrbdi::::res://assets/peces/doblon.png<>uid://bva22m6ipd063::::res://assets/ui/tabla.png<>uid://bx28me4bvwn16::::res://assets/ui/tabla_bloqueada (1).png

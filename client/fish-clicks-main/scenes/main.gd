@@ -32,7 +32,7 @@ const ITEMS := {
 		"tab": "Estructuras",
 		"title": "Cofre",
 		"right": "+1 Click",
-		"icon": "res://assets/estructuras/cofre1.png",
+		"icon": "res://assets/estructuras/cofre_cerrado.png",
 		"unlock_price": 0,
 	},
 	"boat": {
@@ -43,6 +43,11 @@ const ITEMS := {
 		"unlock_price": 300,
 	}
 }
+
+const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado.png")
+const TEX_CHEST_EMPTY  := preload("res://assets/estructuras/cofre_abierto_vacio.png")
+const TEX_CHEST_MID    := preload("res://assets/estructuras/cofre_abierto_medio.png")
+const TEX_CHEST_FULL   := preload("res://assets/estructuras/cofre_abierto_lleno.png")
 
 var unlocked: Dictionary = {}  # id -> bool
 
@@ -78,7 +83,7 @@ func _ready() -> void:
 	)
 
 	tab_container.tab_changed.connect(_on_tab_changed)
-
+	_update_chest_sprite_by_level()
 	chest.clicked.connect(_on_chest_clicked)
 
 	_update_cps()
@@ -255,6 +260,7 @@ func apply_purchase(id: String) -> void:
 		"cofre":
 			chest_level += 1
 			click_power = int(round(1 * pow(1.3, chest_level)))
+			_update_chest_sprite_by_level()
 		"boat":
 			boat_count += 1
 			dps += 5
@@ -321,6 +327,21 @@ func play_squish(node: Control) -> void:
 func _on_btn_shop_pressed() -> void:
 	pass # Replace with function body.
 
-
 func _on_btn_hide_hud_pressed() -> void:
 	pass # Replace with function body.
+
+func _update_chest_sprite_by_level() -> void:
+	if chest_level <= 0:
+		chest_sprite.texture = TEX_CHEST_CLOSED
+	elif chest_level <= 3:
+		chest_sprite.texture = TEX_CHEST_EMPTY
+	elif chest_level <= 7:
+		chest_sprite.texture = TEX_CHEST_MID
+	else:
+		chest_sprite.texture = TEX_CHEST_FULL
+
+
+func _chest_level_up_fx() -> void:
+	var t := create_tween()
+	t.tween_property(chest_sprite, "scale", chest_base_scale * 1.12, 0.08)
+	t.tween_property(chest_sprite, "scale", chest_base_scale, 0.10)
