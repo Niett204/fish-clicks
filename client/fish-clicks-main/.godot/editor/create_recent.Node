@@ -1,13 +1,13 @@
+TextureRect
+HBoxContainer
 Panel
 CollisionShape2D
 Node2D
 TextureButton
 Button
 VBoxContainer
-HBoxContainer
 Control
 Label
-TextureRect
 CanvasLayer
 CenterContainer
 NinePatchRect

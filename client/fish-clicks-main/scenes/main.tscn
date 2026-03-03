@@ -15,10 +15,15 @@
 [ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://b33wxaxja8jx0" path="res://assets/ui/red.png" id="13_jkv2x"]
+[ext_resource type="Texture2D" uid="uid://c5ht6q767emx5" path="res://assets/ui/botella_mensaje.png" id="13_muem4"]
+[ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
 [ext_resource type="Texture2D" uid="uid://bx28me4bvwn16" path="res://assets/ui/tabla_bloqueada (1).png" id="14_jbj1t"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dp3eg"]
+texture = ExtResource("13_muem4")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jbj1t"]
 
@@ -181,25 +186,67 @@ stretch_mode = 5
 
 [node name="LeftInfoPanel" type="Panel" parent="UI/Root/HUD" unique_id=1672445034]
 layout_mode = 1
-offset_left = 20.0
-offset_top = 70.0
-offset_right = 240.0
-offset_bottom = 160.0
+offset_left = 254.38159
+offset_top = 216.94739
+offset_right = 487.76318
+offset_bottom = 360.89478
+rotation = 3.1415927
+theme_override_styles/panel = SubResource("StyleBoxTexture_dp3eg")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/Root/HUD/LeftInfoPanel" unique_id=1724032618]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 198.38159
+offset_top = 101.94737
+offset_right = 93.0
+offset_bottom = -6.0000153
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -3.1415927
+theme_override_constants/separation = -2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/Root/HUD/LeftInfoPanel/VBoxContainer" unique_id=1391268203]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer" unique_id=1188764714]
+layout_mode = 2
+texture = ExtResource("14_dp3eg")
+expand_mode = 2
+
+[node name="DoblonesLabel" type="Label" parent="UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer" unique_id=914565459]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 15
+text = "0"
+
+[node name="UnidadesLabel" type="Label" parent="UI/Root/HUD/LeftInfoPanel/VBoxContainer" unique_id=1869966431]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 9
+text = "mil doblones"
+horizontal_alignment = 1
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="UI/Root/HUD/LeftInfoPanel" unique_id=2139161527]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 198.38159
+offset_top = 66.94737
+offset_right = 326.3816
+offset_bottom = 84.94737
+rotation = -3.1415927
+theme_override_constants/separation = 12
 
-[node name="DpsLabel" type="Label" parent="UI/Root/HUD/LeftInfoPanel/VBoxContainer" unique_id=1869966431]
+[node name="DpsLabel" type="Label" parent="UI/Root/HUD/LeftInfoPanel/VBoxContainer2" unique_id=2137151849]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "DPS: 0"
-
-[node name="DoblonesLabel" type="Label" parent="UI/Root/HUD/LeftInfoPanel/VBoxContainer" unique_id=914565459]
-layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "Doblones: 0"
+theme_override_font_sizes/font_size = 9
+text = "por segundo: 0.0"
+horizontal_alignment = 1
 
 [node name="TiendaPanel" type="Panel" parent="UI/Root/HUD" unique_id=1545511951]
 custom_minimum_size = Vector2(250, 0)

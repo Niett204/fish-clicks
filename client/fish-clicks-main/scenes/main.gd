@@ -5,13 +5,14 @@ extends Node2D
 @export var dps_per_fish: float = 1.0
 @export var shop_item_card_scene: PackedScene
 
-@onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/DoblonesLabel
+@onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var shop_panel: Control = $UI/Root/HUD/TiendaPanel
 @onready var btn_shop_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnShop
 @onready var chest: Area2D = $Cofre
 @onready var chest_sprite: Sprite2D = $Cofre/Sprite2D
 @onready var fish_layer = $PecesLayer
-@onready var dps_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/DpsLabel
+@onready var dps_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer2/DpsLabel
+@onready var unidades_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/UnidadesLabel
 @onready var tab_container: TabContainer = $UI/Root/HUD/TiendaPanel/TabContainer
 @onready var list_peces: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer/ListPeces
 @onready var list_estructuras: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Estructuras/ScrollContainer/ListEstructuras
@@ -52,9 +53,9 @@ const TEX_CHEST_FULL   := preload("res://assets/estructuras/cofre_abierto_lleno.
 var unlocked: Dictionary = {}  # id -> bool
 
 var dps: float = 0.0
-var coins: float = 0.0
+var coins: float = 0.0 
 var click_power: int = 1
-var fish_count: int = 0
+var fish_count: int = 123455666
 var chest_base_scale: Vector2
 var chest_level: int = 0
 var boat_count: int = 0
@@ -198,7 +199,9 @@ func _spawn_floating_text() -> void:
 	t.z_index = 1000
 
 func _update_ui() -> void:
-	coins_label.text = "Doblones: " + str(int(coins))
+	var parts := format_doblones_parts(coins)
+	coins_label.text = parts.value
+	unidades_label.text = parts.unit
 	update_shop_cards()
 	
 func _on_toggle_tienda_button_pressed() -> void:
@@ -209,8 +212,9 @@ func _update_cps() -> void:
 	_update_dps_ui()
 
 func _update_dps_ui() -> void:
-	dps_label.text = "DPS: " + str(snapped(dps, 0.01))
-
+	var parts: Dictionary = format_doblones_parts(dps)
+	dps_label.text = "+" + parts.value + " " + parts.unit.replace(" de doblones", "").replace(" doblones", "") + "/s"
+	
 func _process(delta: float) -> void:
 	coins += dps * delta
 	_update_ui()
@@ -355,3 +359,54 @@ func _unhandled_input(event: InputEvent) -> void:
 			if fish.has_method("scare_from"):
 				if fish.global_position.distance_to(click_pos) < 120:
 					fish.scare_from(click_pos)
+
+func format_doblones_parts(n: float) -> Dictionary:
+	var abs_n: float = abs(n)
+
+	# 🔹 Menos de 1 millón → número completo sin prefijo
+	if abs_n < 1_000_000.0:
+		var txt := format_with_separator(int(round(n)))
+		return {"value": txt, "unit": "doblones"}
+
+	var value: float
+	var unit: String
+
+	if abs_n < 1_000_000.0:
+		value = n / 1_000.0
+		unit = "mil doblones"
+	elif abs_n < 1_000_000_000.0:
+		value = n / 1_000_000.0
+		unit = "millón de doblones" if abs(value) < 2.0 else "millones de doblones"
+	elif abs_n < 1_000_000_000_000.0:
+		value = n / 1_000_000_000.0
+		unit = "mil millones de doblones"
+	elif abs_n < 1_000_000_000_000_000.0:
+		value = n / 1_000_000_000_000.0
+		unit = "billón de doblones" if abs(value) < 2.0 else "billones de doblones"
+	elif abs_n < 1_000_000_000_000_000_000.0:
+		value = n / 1_000_000_000_000_000.0
+		unit = "mil billones de doblones"
+	else:
+		value = n / 1_000_000_000_000_000_000.0
+		unit = "trillón de doblones" if abs(value) < 2.0 else "trillones de doblones"
+
+	var decimals: int
+
+	if abs(value) < 10.0:
+		decimals = 2
+	elif abs(value) < 100.0:
+		decimals = 2
+	else:
+		decimals = 2
+	var txt := ("%0." + str(decimals) + "f") % value
+	txt = txt.replace(".", ",")
+
+	return {"value": txt, "unit": unit}
+
+func format_with_separator(n: int) -> String:
+	var s := str(n)
+	var result := ""
+	while s.length() > 3:
+		result = "." + s.substr(s.length() - 3, 3) + result
+		s = s.substr(0, s.length() - 3)
+	return s + result
