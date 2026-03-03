@@ -1,9 +1,9 @@
+Panel
 CollisionShape2D
 Node2D
 TextureButton
 Button
 VBoxContainer
-Panel
 HBoxContainer
 Control
 Label
@@ -12,4 +12,3 @@ CanvasLayer
 CenterContainer
 NinePatchRect
 TabContainer
-PanelContainer
