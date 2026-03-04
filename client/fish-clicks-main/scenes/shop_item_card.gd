@@ -25,8 +25,11 @@ signal buy_pressed(item_id: String)
 @onready var info_panel: Control = get_node_or_null(info_panel_path)
 
 @export var extra_title := ""
-@export var extra_desc := ""
-@export var extra_stats := ""
+@export var extra_desc := ""      # la frase tipo "Autoclicks once every..."
+@export var extra_b1 := ""
+@export var extra_b2 := ""
+@export var extra_b3 := ""
+@export var extra_footer := ""    # la barra de abajo tipo "X clicked so far"
 # ----------------------------
 
 var is_unlocked: bool = false
@@ -90,12 +93,28 @@ func _ready() -> void:
 	mouse_exited.connect(_on_exit_info)
 
 func _on_enter_info() -> void:
-	if get_tree().get_first_node_in_group("main") and get_tree().get_first_node_in_group("main")._block_info_hover:
+	var main = get_tree().get_first_node_in_group("main")
+	if main and main._block_info_hover:
 		return
+
 	if info_panel == null:
 		print("INFO: info_panel_path no asignado o mal:", info_panel_path)
 		return
-	info_panel.show_for_card(self, extra_title, extra_desc, extra_stats)
+
+	var owned := 0
+	if level_lbl:
+		owned = int(level_lbl.text) # en tu UI el level es el "owned"
+
+	info_panel.show_for_card(
+		self,
+		extra_title,
+		owned,
+		extra_desc,
+		extra_b1,
+		extra_b2,
+		extra_b3,
+		extra_footer
+	)
 
 func _on_exit_info() -> void:
 	if info_panel:

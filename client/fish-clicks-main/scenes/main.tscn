@@ -18,6 +18,7 @@
 [ext_resource type="Texture2D" uid="uid://c5ht6q767emx5" path="res://assets/ui/botella_mensaje.png" id="13_muem4"]
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
 [ext_resource type="Texture2D" uid="uid://bx28me4bvwn16" path="res://assets/ui/tabla_bloqueada (1).png" id="14_jbj1t"]
+[ext_resource type="Texture2D" uid="uid://bgs77das3fpu1" path="res://assets/ui/bandera.png" id="19_0ld40"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
@@ -272,6 +273,7 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_gqmmt")
 
 [node name="TabContainer" type="TabContainer" parent="UI/Root/HUD/TiendaPanel" unique_id=1785782234]
+z_index = 5
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -334,13 +336,14 @@ theme_override_constants/separation = 10
 visible = false
 top_level = true
 z_index = 100
-custom_minimum_size = Vector2(260, 80)
+custom_minimum_size = Vector2(0, 80)
 layout_mode = 1
-anchors_preset = 0
-offset_left = 902.0
-offset_top = 46.0
-offset_right = 1162.0
-offset_bottom = 126.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("8_tipki")
 
 [node name="Banner" type="TextureRect" parent="UI/Root/HUD/InfoExtraPanel" unique_id=433949685]
@@ -348,36 +351,61 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -97.0
+offset_bottom = -90.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("9_85g3d")
+mouse_filter = 2
+texture = ExtResource("19_0ld40")
 expand_mode = 1
-stretch_mode = 5
 
-[node name="CardBox" type="Panel" parent="UI/Root/HUD/InfoExtraPanel" unique_id=677308730]
+[node name="CardBox" type="MarginContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner" unique_id=1981931913]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 18
 
-[node name="VBox" type="VBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/CardBox" unique_id=467748443]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="VBox" type="VBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox" unique_id=2030723900]
+layout_mode = 2
+mouse_filter = 2
 
-[node name="Title" type="Label" parent="UI/Root/HUD/InfoExtraPanel/CardBox/VBox" unique_id=2109725913]
+[node name="Header" type="HBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox" unique_id=1573833251]
 layout_mode = 2
 
-[node name="Desc" type="Label" parent="UI/Root/HUD/InfoExtraPanel/CardBox/VBox" unique_id=1326418190]
+[node name="Title" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Header" unique_id=1406141069]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Titulo
+"
+
+[node name="Owned" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Header" unique_id=1125482062]
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="Desc" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox" unique_id=346078448]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+
+[node name="Bullets" type="VBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox" unique_id=1943120877]
 layout_mode = 2
 
-[node name="Stats" type="Label" parent="UI/Root/HUD/InfoExtraPanel/CardBox/VBox" unique_id=1262020269]
+[node name="B1" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=721015527]
 layout_mode = 2
+theme_override_font_sizes/font_size = 10
+
+[node name="B2" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=1311210386]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+
+[node name="B3" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=404563973]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]
 custom_minimum_size = Vector2(48, 48)

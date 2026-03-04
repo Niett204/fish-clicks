@@ -1,13 +1,14 @@
-TextureRect
+MarginContainer
+VBoxContainer
+Label
 HBoxContainer
+TextureRect
 Panel
 CollisionShape2D
 Node2D
 TextureButton
 Button
-VBoxContainer
 Control
-Label
 CanvasLayer
 CenterContainer
 NinePatchRect

@@ -2,6 +2,9 @@ extends Control
 
 @export var anim_time := 0.18
 @export var offset := Vector2(20, 0)
+@export var panel_width := 200.0
+@export var min_height := 200.0
+@export var padding := Vector2(24, 24) # (x,y)
 
 var _tw: Tween
 var _hover_panel := false
@@ -11,8 +14,7 @@ var _hide_timer: SceneTreeTimer
 var _show_token := 0  # sube cada vez que se muestra (anti hides viejos)
 
 func _ready() -> void:
-	set_as_top_level(true)
-	z_index = 100
+	z_as_relative = false
 	visible = false
 
 	mouse_entered.connect(func():
@@ -25,22 +27,56 @@ func _ready() -> void:
 		schedule_hide(0.06)
 	)
 
-func show_for_card(card: Control, title: String, desc: String, stats: String) -> void:
+func show_for_card(
+	card: Control,
+	title: String,
+	owned: int,
+	desc: String,
+	b1: String,
+	b2: String,
+	b3: String,
+	extra: String
+) -> void:
 	_show_token += 1
 	_cancel_hide()
 
-	$CardBox/VBox/Title.text = title
-	$CardBox/VBox/Desc.text = desc
-	$CardBox/VBox/Stats.text = stats
+	$Banner/CardBox/VBox/Header/Title.text = title
+	$Banner/CardBox/VBox/Header/Owned.text = "owned: %d" % owned
+
+	$Banner/CardBox/VBox/Desc.text = desc
+
+	$Banner/CardBox/VBox/Bullets/B1.text = "• " + b1
+	$Banner/CardBox/VBox/Bullets/B2.text = "• " + b2
+	$Banner/CardBox/VBox/Bullets/B3.text = "• " + b3
 
 	visible = true
 	_showing = true
 
-	# asegúrate de que size esté calculado
+	# 1) Forzamos ancho fijo
+	$Banner.size.x = panel_width
+	$Banner.position = Vector2.ZERO
+
+	# Si CardBox es contenedor del VBox, dale también ancho
+	$Banner/CardBox.size.x = panel_width
+
+	# 2) Espera a que el VBox calcule alturas con ese ancho
 	await get_tree().process_frame
 
-	var x := card.global_position.x - size.x - offset.x
-	var y := card.global_position.y + (card.size.y - size.y) * 0.5
+	var vbox: Control = $Banner/CardBox/VBox
+	var h2: float = vbox.get_combined_minimum_size().y + padding.y
+	h2 = max(h2, min_height)  # 👈 cuelga más
+	size = Vector2(panel_width, h2)
+
+	# 3) Fondo ocupa todo el panel
+	$Banner.size = size
+	$Banner.position = Vector2.ZERO
+
+	var w := float(size.x)
+	var h := float(size.y)
+
+	var x := float(card.global_position.x) - w + float(offset.x)
+	var y := float(card.global_position.y) + (float(card.size.y) - h) * 0.5 + 80
+
 	global_position = Vector2(x, y)
 
 	_slide_in()
