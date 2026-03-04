@@ -42,7 +42,45 @@ const ITEMS := {
 		"right": "DPS +5",
 		"icon": "res://assets/estructuras/cofre1.png",
 		"unlock_price": 300,
+	},
+		"boat1234": {
+		"tab": "Estructuras",
+		"title": "Barco",
+		"right": "DPS +5",
+		"icon": "res://assets/estructuras/cofre1.png",
+		"unlock_price": 300,
+	},	"boat123": {
+		"tab": "Estructuras",
+		"title": "Barco",
+		"right": "DPS +5",
+		"icon": "res://assets/estructuras/cofre1.png",
+		"unlock_price": 300,
+	},	"boat56": {
+		"tab": "Estructuras",
+		"title": "Barco",
+		"right": "DPS +5",
+		"icon": "res://assets/estructuras/cofre1.png",
+		"unlock_price": 300,
+	},	"boat5": {
+		"tab": "Estructuras",
+		"title": "Barco",
+		"right": "DPS +5",
+		"icon": "res://assets/estructuras/cofre1.png",
+		"unlock_price": 300,
+	},	"boat66": {
+		"tab": "Estructuras",
+		"title": "Barco",
+		"right": "DPS +5",
+		"icon": "res://assets/estructuras/cofre1.png",
+		"unlock_price": 300,
+	},	"boat6": {
+		"tab": "Estructuras",
+		"title": "Barco",
+		"right": "DPS +5",
+		"icon": "res://assets/estructuras/cofre1.png",
+		"unlock_price": 300,
 	}
+	
 }
 
 const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado.png")
@@ -175,8 +213,23 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 	)
 
 	card.extra_title = String(def.get("title", id))
-	card.extra_desc  = String(def.get("right", ""))   # o una descripción real
-	card.extra_stats = "Precio: %d" % get_price(id)   # lo que quieras
+	card.extra_desc  = "\"Mejora tu producción.\""
+
+	var p := get_price(id)
+	var right := String(def.get("right", ""))
+
+	card.extra_b1 = "Efecto: %s" % right
+	card.extra_b2 = "Precio actual: %d" % p
+
+	# Si está bloqueado, enseña unlock; si no, algo útil
+	var unlock_p := int(def.get("unlock_price", 0))
+	if unlock_p > 0 and not bool(unlocked.get(id, false)):
+		card.extra_b3 = "Desbloquear: %d doblones" % unlock_p
+	else:
+		card.extra_b3 = "Nivel actual: %d" % get_level(id)
+
+	# Footer tipo “cookies clicked so far”
+	card.extra_footer = "%s doblones acumulados" % format_with_separator(int(coins))
 
 	card.set_unlocked(bool(unlocked.get(id, unlock_price == 0)))
 	card.buy_pressed.connect(_on_buy_pressed)
