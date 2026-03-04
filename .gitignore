@@ -1,41 +1,28 @@
 # =========================
-# Godot 4
+# GODOT 4
 # =========================
 
-# Carpeta de importaciones (se regenera sola)
+# Editor cache (NO versionar nunca)
+.godot/
+
+# Import metadata
 .import/
 
-# Archivos generados automáticamente
+# Export config generada
 .export/
 export.cfg
 export_presets.cfg
 
-# Caché del editor
-.godot/
-
-# Archivos temporales
+# Godot editor temp files
 *.translation
 *.tmp
 *.log
 
-# Archivos específicos del sistema
-.DS_Store
-Thumbs.db
-
 # =========================
-# IDEs
+# BUILD / EXPORTS
 # =========================
 
-# VSCode
-.vscode/
-
-# JetBrains (Rider, etc.)
-.idea/
-
-# =========================
-# Binarios exportados
-# =========================
-
+# Ejecutables
 *.exe
 *.apk
 *.aab
@@ -44,7 +31,22 @@ Thumbs.db
 *.zip
 
 # =========================
-# Otros
+# ADDONS LOCALES (IMPORTANTE)
 # =========================
 
-*.import
+# Si el plugin godot-git es solo tuyo local
+client/fish-clicks-main/addons/godot-git-plugin/
+
+# =========================
+# IDE
+# =========================
+
+.vscode/
+.idea/
+
+# =========================
+# SISTEMA
+# =========================
+
+.DS_Store
+Thumbs.db
