@@ -55,7 +55,7 @@ var unlocked: Dictionary = {}  # id -> bool
 var dps: float = 0.0
 var coins: float = 0.0 
 var click_power: int = 1
-var fish_count: int = 123455666
+var fish_count: int = 0
 var chest_base_scale: Vector2
 var chest_level: int = 0
 var boat_count: int = 0
@@ -187,6 +187,7 @@ func _on_chest_clicked() -> void:
 	_update_ui()
 	_play_click_animation()
 	_spawn_floating_text()
+	_mostrar_monedas_y_burbujas()
 
 func _spawn_floating_text() -> void:
 	var t: Label = floating_text_scene.instantiate()
@@ -410,3 +411,77 @@ func format_with_separator(n: int) -> String:
 		result = "." + s.substr(s.length() - 3, 3) + result
 		s = s.substr(0, s.length() - 3)
 	return s + result
+	
+func _mostrar_monedas_y_burbujas() -> void:
+	# Carga imágenes
+	var coin_tex: Texture2D = load("res://assets/doblon_tres_cuartos.png")
+	var bubble_tex: Texture2D = load("res://assets/burbuja.png")
+
+	# Punto de spawn: un poco más arriba del sprite del cofre 
+	var base_pos: Vector2 = chest_sprite.global_position + Vector2(0, -60)
+
+	# Añade los FX al mundo
+	var parent: Node = get_tree().current_scene
+
+	# --- Ajuste de escala automático a un tamaño “bonito” en pantalla ---
+	var moneda_escalada_px: float = 28.0
+	var burbuja_escalada_px: float = 22.0
+
+	var coin_scale: float = 1.0
+	if coin_tex and coin_tex.get_size().x > 0:
+		coin_scale = moneda_escalada_px / coin_tex.get_size().x
+
+	var bubble_scale: float = 1.0
+	if bubble_tex and bubble_tex.get_size().x > 0:
+		bubble_scale = burbuja_escalada_px / bubble_tex.get_size().x
+
+	# --- MONEDAS ---
+	for i in 8:
+		var spr := Sprite2D.new()
+		spr.texture = coin_tex
+		parent.add_child(spr)
+
+		spr.global_position = base_pos
+		spr.scale = Vector2.ONE * coin_scale * randf_range(0.9, 1.2)
+		spr.z_index = 2000
+
+		var target := base_pos + Vector2(
+			randf_range(-140, 140),
+			-randf_range(80, 220)
+		)
+
+		var t := create_tween()
+		t.set_parallel(true)
+		t.tween_property(spr, "global_position", target, 0.55)\
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		t.tween_property(spr, "rotation", randf_range(-2.2, 2.2), 0.55)
+		t.tween_property(spr, "modulate:a", 0.0, 0.55)\
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+		# Limpieza
+		t.finished.connect(Callable(spr, "queue_free"))
+
+	# --- BURBUJAS ---
+	for i in 12:
+		var b := Sprite2D.new()
+		b.texture = bubble_tex
+		parent.add_child(b)
+
+		b.global_position = base_pos + Vector2(randf_range(-12, 12), randf_range(-8, 8))
+		b.scale = Vector2.ONE * bubble_scale * randf_range(0.8, 1.4)
+		b.modulate.a = randf_range(0.55, 0.9)
+		b.z_index = 1990
+
+		var target_b := b.global_position + Vector2(
+			randf_range(-70, 70),
+			-randf_range(140, 260)
+		)
+
+		var tb := create_tween()
+		tb.set_parallel(true)
+		tb.tween_property(b, "global_position", target_b, 0.95)\
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		tb.tween_property(b, "modulate:a", 0.0, 0.95)\
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+		tb.finished.connect(Callable(b, "queue_free"))
