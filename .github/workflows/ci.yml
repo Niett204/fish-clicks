@@ -15,26 +15,15 @@ on:
 jobs:
   build-backend:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Show backend files (debug)
-        run: |
-          ls -la
-          ls -la fish-clicks-api || true
-          ls -la fish-clicks-api/mvnw || true
 
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "21"
 
-      - name: Make mvnw executable
-        shell: bash
-        run: chmod +x fish-clicks-api/mvnw
-
-      - name: Build & test
+      - name: Build & test (no chmod needed)
         working-directory: fish-clicks-api
         shell: bash
-        run: ./mvnw -B clean verify
+        run: bash ./mvnw -B clean verify
