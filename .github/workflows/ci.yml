@@ -5,25 +5,36 @@ on:
     branches: ["develop", "main"]
     paths:
       - "fish-clicks-api/**"
+      - ".github/workflows/**"
   push:
     branches: ["develop", "main"]
     paths:
       - "fish-clicks-api/**"
+      - ".github/workflows/**"
 
 jobs:
-  build:
+  build-backend:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: fish-clicks-api
 
     steps:
       - uses: actions/checkout@v4
 
+      - name: Show backend files (debug)
+        run: |
+          ls -la
+          ls -la fish-clicks-api || true
+          ls -la fish-clicks-api/mvnw || true
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: "21"
 
-      - run: ./mvnw clean verify
+      - name: Make mvnw executable
+        shell: bash
+        run: chmod +x fish-clicks-api/mvnw
+
+      - name: Build & test
+        working-directory: fish-clicks-api
+        shell: bash
+        run: ./mvnw -B clean verify
