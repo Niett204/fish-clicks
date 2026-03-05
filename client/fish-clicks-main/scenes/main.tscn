@@ -9,16 +9,17 @@
 [ext_resource type="Texture2D" uid="uid://bumfn7ywlc7r5" path="res://assets/estructuras/cofre_abierto_lleno.png" id="7_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://di0p043eru4vj" path="res://assets/ui/iconos/icono_perfil.png" id="8_eb6dy"]
 [ext_resource type="Script" uid="uid://dl0sgr2smpium" path="res://scenes/info_extra_panel.gd" id="8_tipki"]
-[ext_resource type="Texture2D" uid="uid://bva22m6ipd063" path="res://assets/ui/tabla.png" id="9_85g3d"]
 [ext_resource type="Texture2D" uid="uid://bapfvmfpgbe7p" path="res://assets/ui/iconos/icono_opciones.png" id="9_trceg"]
 [ext_resource type="Texture2D" uid="uid://casqwt2ogwyax" path="res://assets/ui/iconos/icono_stats.png" id="10_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
+[ext_resource type="Texture2D" uid="uid://rljxhda6odwj" path="res://assets/ui/iconos/icono_enciclopedia.png" id="11_yc10j"]
 [ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://b33wxaxja8jx0" path="res://assets/ui/red.png" id="13_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://c5ht6q767emx5" path="res://assets/ui/botella_mensaje.png" id="13_muem4"]
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
-[ext_resource type="Texture2D" uid="uid://bx28me4bvwn16" path="res://assets/ui/tabla_bloqueada (1).png" id="14_jbj1t"]
-[ext_resource type="Texture2D" uid="uid://bgs77das3fpu1" path="res://assets/ui/bandera.png" id="19_0ld40"]
+[ext_resource type="Texture2D" uid="uid://tyjvk13keej5" path="res://assets/ui/alga.png" id="18_yc10j"]
+[ext_resource type="Texture2D" uid="uid://bf4pt3ldg3d0c" path="res://assets/ui/bandera.png" id="19_0ld40"]
+[ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
@@ -34,10 +35,17 @@ texture = ExtResource("13_jkv2x")
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jkv2x"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_0ld40"]
-texture = ExtResource("14_jbj1t")
+texture = ExtResource("18_yc10j")
+modulate_color = Color(0.48178947, 0.48178947, 0.48178947, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_yc10j"]
+texture = ExtResource("18_yc10j")
+texture_margin_left = 5.0
+texture_margin_right = 5.0
+modulate_color = Color(0.83033526, 0.83033514, 0.83033514, 1)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jbj1t"]
-texture = ExtResource("9_85g3d")
+texture = ExtResource("18_yc10j")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_muem4"]
 
@@ -75,6 +83,7 @@ scale = Vector2(0.29398158, 0.2740741)
 texture = ExtResource("7_a8y0u")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Cofre" unique_id=1343405143]
+visible = false
 position = Vector2(188, 507.5)
 shape = SubResource("RectangleShape2D_tefeu")
 
@@ -167,7 +176,7 @@ stretch_mode = 5
 [node name="BtnEncyclopedia" type="TextureButton" parent="UI/Root/HUD/TopBar/RightGroup" unique_id=1034668082]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-texture_normal = ExtResource("9_trceg")
+texture_normal = ExtResource("11_yc10j")
 ignore_texture_size = true
 stretch_mode = 5
 
@@ -284,6 +293,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_jkv2x")
 theme_override_styles/tab_unselected = SubResource("StyleBoxTexture_0ld40")
+theme_override_styles/tab_hovered = SubResource("StyleBoxTexture_yc10j")
 theme_override_styles/tab_selected = SubResource("StyleBoxTexture_jbj1t")
 current_tab = 0
 
@@ -408,24 +418,25 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 10
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -58.0
-offset_top = -58.0
-offset_right = -10.0
-offset_bottom = -10.0
+offset_left = -48.0
+offset_top = -48.0
+offset_right = -16.0
+offset_bottom = -16.0
 grow_horizontal = 0
 grow_vertical = 0
-texture_normal = ExtResource("9_trceg")
+texture_normal = ExtResource("21_jscy8")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="SwimArea" type="Node2D" parent="." unique_id=1141987209]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SwimArea" unique_id=1106963454]
 position = Vector2(577, 322)

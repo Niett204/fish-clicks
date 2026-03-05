@@ -34,8 +34,7 @@ func show_for_card(
 	desc: String,
 	b1: String,
 	b2: String,
-	b3: String,
-	extra: String
+	b3: String
 ) -> void:
 	_show_token += 1
 	_cancel_hide()

@@ -112,8 +112,7 @@ func _on_enter_info() -> void:
 		extra_desc,
 		extra_b1,
 		extra_b2,
-		extra_b3,
-		extra_footer
+		extra_b3
 	)
 
 func _on_exit_info() -> void:

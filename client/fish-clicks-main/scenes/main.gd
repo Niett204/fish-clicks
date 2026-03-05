@@ -467,8 +467,8 @@ func format_with_separator(n: int) -> String:
 	
 func _mostrar_monedas_y_burbujas() -> void:
 	# Carga imágenes
-	var coin_tex: Texture2D = load("res://assets/doblon_tres_cuartos.png")
-	var bubble_tex: Texture2D = load("res://assets/burbuja.png")
+	var coin_tex: Texture2D = load("res://assets/misc/doblon_tres_cuartos.png")
+	var bubble_tex: Texture2D = load("res://assets/misc/burbuja.png")
 
 	# Punto de spawn: un poco más arriba del sprite del cofre 
 	var base_pos: Vector2 = chest_sprite.global_position + Vector2(0, -60)
