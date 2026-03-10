@@ -49,8 +49,6 @@ texture = ExtResource("18_yc10j")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_muem4"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dp3eg"]
-
 [sub_resource type="SystemFont" id="SystemFont_gqmmt"]
 font_italic = true
 
@@ -325,25 +323,25 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="Peces" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=438741302]
+[node name="Peces" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1632976240]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces" unique_id=458589617]
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces" unique_id=1377723967]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 25.0
 offset_top = 47.0
-offset_right = 230.0
-offset_bottom = 410.0
+offset_right = -20.0
+offset_bottom = -59.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_dp3eg")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_muem4")
 
-[node name="ListPeces" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer" unique_id=279585929]
+[node name="ListPeces" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer" unique_id=1158215447]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
