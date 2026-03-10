@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cfhhda8qg0bq0"]
 
 [ext_resource type="Script" uid="uid://bk086nx0y3smj" path="res://scenes/shop_item_card.gd" id="1_87dkc"]
-[ext_resource type="Texture2D" uid="uid://cmyqli7vqrbdi" path="res://assets/peces/doblon.png" id="2_mluul"]
+[ext_resource type="Texture2D" uid="uid://caccnasaooopc" path="res://assets/peces/doblon.png" id="2_mluul"]
 [ext_resource type="Texture2D" uid="uid://bva22m6ipd063" path="res://assets/ui/tabla.png" id="2_njvbf"]
 [ext_resource type="Texture2D" uid="uid://bx28me4bvwn16" path="res://assets/ui/tabla_bloqueada (1).png" id="3_jykwe"]
 
