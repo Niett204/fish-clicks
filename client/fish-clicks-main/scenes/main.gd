@@ -19,84 +19,64 @@ extends Node2D
 @onready var info_panel: Control = $UI/Root/HUD/InfoExtraPanel
 @onready var hud: Control = $UI/Root/HUD
 @onready var btn_hide: TextureButton = $UI/Root/BtnHideHUD
+@onready var http_request: HTTPRequest = $HTTPRequest
 
 const ITEMS := {
 	"fish_basic": {
 		"tab": "Peces",
 		"title": "Pez Común",
-		"right": "DPS +1",
 		"icon": "res://assets/peces/doblon.png",
 		"unlock_price": 0,
+		"kind": "passive",
+		"base_price": 25.0,
+		"price_growth": 1.15,
+		"base_value": 1.0,
+		"value_label": "DPS"
 	},
-	
 	"cofre": {
 		"tab": "Estructuras",
 		"title": "Cofre",
-		"right": "+1 Click",
 		"icon": "res://assets/estructuras/cofre_cerrado.png",
-		"unlock_price": 0,
+		"unlock_price": 25,
+		"kind": "click",
+		"base_price": 10.0,
+		"price_growth": 1.05,
+		"base_value": 1.3,
+		"value_label": "clicks"
 	},
 	"boat": {
 		"tab": "Estructuras",
 		"title": "Barco",
-		"right": "DPS +5",
-		"icon": "res://assets/estructuras/cofre1.png",
+		"icon": "res://assets/estructuras/cofre_cerrado.png",
 		"unlock_price": 300,
-	},
-		"boat1234": {
-		"tab": "Estructuras",
-		"title": "Barco",
-		"right": "DPS +5",
-		"icon": "res://assets/estructuras/cofre1.png",
-		"unlock_price": 300,
-	},	"boat123": {
-		"tab": "Estructuras",
-		"title": "Barco",
-		"right": "DPS +5",
-		"icon": "res://assets/estructuras/cofre1.png",
-		"unlock_price": 300,
-	},	"boat56": {
-		"tab": "Estructuras",
-		"title": "Barco",
-		"right": "DPS +5",
-		"icon": "res://assets/estructuras/cofre1.png",
-		"unlock_price": 300,
-	},	"boat5": {
-		"tab": "Estructuras",
-		"title": "Barco",
-		"right": "DPS +5",
-		"icon": "res://assets/estructuras/cofre1.png",
-		"unlock_price": 300,
-	},	"boat66": {
-		"tab": "Estructuras",
-		"title": "Barco",
-		"right": "DPS +5",
-		"icon": "res://assets/estructuras/cofre1.png",
-		"unlock_price": 300,
-	},	"boat6": {
-		"tab": "Estructuras",
-		"title": "Barco",
-		"right": "DPS +5",
-		"icon": "res://assets/estructuras/cofre1.png",
-		"unlock_price": 300,
+		"kind": "passive",
+		"base_price": 200.0,
+		"price_growth": 1.20,
+		"base_value": 5.0,
+		"value_label": "DPS"
 	}
-	
+}
+
+var lifetime_generated: Dictionary = {
+	"fish_basic": 0.0,
+	"cofre": 0.0,
+	"boat": 0.0
 }
 
 const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado.png")
 const TEX_CHEST_EMPTY  := preload("res://assets/estructuras/cofre_abierto_vacio.png")
 const TEX_CHEST_MID    := preload("res://assets/estructuras/cofre_abierto_medio.png")
 const TEX_CHEST_FULL   := preload("res://assets/estructuras/cofre_abierto_lleno.png")
+const ICON_HIDE = preload("res://assets/ui/iconos/icono_hud_abierto.png")
+const ICON_SHOW = preload("res://assets/ui/iconos/icono_hud_cerrado.png")
 
 var unlocked: Dictionary = {}  # id -> bool
+var levels: Dictionary = {}
 
 var dps: float = 0.0
 var coins: float = 0.0 
 var click_power: int = 1
-var fish_count: int = 0
 var chest_base_scale: Vector2
-var chest_level: int = 0
-var boat_count: int = 0
 var shop_open := false
 var shop_tween: Tween
 var shop_x_open: float
@@ -105,9 +85,16 @@ var _block_info_hover := false
 var hud_visible := true
 
 func _ready() -> void:
+	http_request.request_completed.connect(_on_request_completed)
+	
+	var url := "https://fish-clicks.onrender.com/api/test"
+	http_request.request(url)
+	
 	for k in ITEMS.keys():
 		var id := String(k)
-		unlocked[id] = false
+		levels[id] = 0
+		unlocked[id] = int(ITEMS[id].get("unlock_price", 0)) == 0
+		lifetime_generated[id] = 0.0
 	shop_panel.visible = false
 	chest_base_scale = chest_sprite.scale
 
@@ -137,9 +124,18 @@ func _ready() -> void:
 	shop_panel.visible = true  # importante: visible para que pueda animarse
 	shop_open = false
 
+func _on_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+	print("Código:", response_code)
+	print("Respuesta:", body.get_string_from_utf8())
+
 func _toggle_hud():
 	hud_visible = !hud_visible
 	hud.visible = hud_visible
+	
+	if hud.visible:
+		btn_hide.texture_normal = ICON_HIDE
+	else:
+		btn_hide.texture_normal = ICON_SHOW
 
 func toggle_shop() -> void:
 	shop_open = !shop_open
@@ -193,50 +189,35 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 	card.info_panel_path = info_panel.get_path()
 	list.add_child(card)
 
-	# icono
-	var icon_tex: Texture2D = null
-	var icon_path: String = String(def.get("icon", ""))
-	if icon_path != "" and ResourceLoader.exists(icon_path):
-		icon_tex = load(icon_path)
-
 	var unlock_price: int = int(def.get("unlock_price", 0))
+	var icon_texture: Texture2D = load(String(def.get("icon", "")))
 
 	card.setup(
 		id,
 		String(def.get("title", id)),
-		"", # left dinámico
-		String(def.get("right", "")),
+		"Precio: %d" % get_price(id),
+		get_item_effect_text(id),
 		str(get_level(id)),
-		icon_tex,
+		icon_texture,
 		get_price(id),
 		unlock_price
 	)
 
 	card.extra_title = String(def.get("title", id))
-	card.extra_desc  = "\"Mejora tu producción.\""
-
-	var p := get_price(id)
-	var right := String(def.get("right", ""))
-
-	card.extra_b1 = "Efecto: %s" % right
-	card.extra_b2 = "Precio actual: %d" % p
-
-	# Si está bloqueado, enseña unlock; si no, algo útil
-	var unlock_p := int(def.get("unlock_price", 0))
-	if unlock_p > 0 and not bool(unlocked.get(id, false)):
-		card.extra_b3 = "Desbloquear: %d doblones" % unlock_p
-	else:
-		card.extra_b3 = "Nivel actual: %d" % get_level(id)
-
-	# Footer tipo “cookies clicked so far”
-	card.extra_footer = "%s doblones acumulados" % format_with_separator(int(coins))
+	card.extra_desc = "\"Mejora tu producción.\""
+	card.extra_b1 = get_tooltip_line_1(id)
+	card.extra_b2 = get_tooltip_line_2(id)
+	card.extra_b3 = get_tooltip_line_3(id)
 
 	card.set_unlocked(bool(unlocked.get(id, unlock_price == 0)))
+	card.update_state(coins) # <- importante
 	card.buy_pressed.connect(_on_buy_pressed)
 	card.unlock_pressed.connect(_on_unlock_pressed)
 
 func _on_chest_clicked() -> void:
 	coins += click_power
+	lifetime_generated["cofre"] += click_power
+
 	_update_ui()
 	_play_click_animation()
 	_spawn_floating_text()
@@ -253,80 +234,86 @@ func _spawn_floating_text() -> void:
 	t.z_index = 1000
 
 func _update_ui() -> void:
-	var parts := format_doblones_parts(coins)
-	coins_label.text = parts.value
-	unidades_label.text = parts.unit
-	update_shop_cards()
+	_update_currency_ui()
+	_update_dps_ui()
+
+	if shop_open:
+		update_shop_cards()
 	
 func _on_toggle_tienda_button_pressed() -> void:
 	toggle_shop()
 		
 func _update_cps() -> void:
-	dps = fish_count * dps_per_fish
+	dps = get_total_passive_dps()
 	_update_dps_ui()
+
+func get_total_passive_dps() -> float:
+	var total: float = 0.0
+
+	for key in ITEMS.keys():
+		var id := String(key)
+		var def: Dictionary = ITEMS[id]
+		if String(def.get("kind", "")) == "passive":
+			total += get_item_current_value(id)
+
+	return total
 
 func _update_dps_ui() -> void:
 	var parts: Dictionary = format_doblones_parts(dps)
 	dps_label.text = "+" + parts.value + " " + parts.unit.replace(" de doblones", "").replace(" doblones", "") + "/s"
 	
 func _process(delta: float) -> void:
-	coins += dps * delta
-	_update_ui()
-	
+	var total_generated: float = get_total_passive_dps() * delta
+	coins += total_generated
+
+	lifetime_generated["fish_basic"] += float(get_level("fish_basic")) * dps_per_fish * delta
+	lifetime_generated["boat"] += float(get_level("boat")) * 5.0 * delta
+
+	_update_currency_ui()
+
+func _update_currency_ui() -> void:
+	var parts := format_doblones_parts(coins)
+	coins_label.text = parts.value
+	unidades_label.text = parts.unit
+
 func _play_click_animation() -> void:
 	var tween = create_tween()
 	tween.tween_property(chest_sprite, "scale", chest_base_scale * 1.08, 0.06)
 	tween.tween_property(chest_sprite, "scale", chest_base_scale, 0.08)
 
-func fish_price() -> int:
-	return int(round(25 * pow(1.15, fish_count)))
-
-func chest_upgrade_price() -> int:
-	# click_power empieza en 1; la primera mejora cuesta 10
-	return int(round(10 * pow(1.25, click_power - 1)))
-
 func get_level(id: String) -> int:
-	match id:
-		"fish_basic":
-			return fish_count
-		"cofre":
-			return chest_level
-		"boat":
-			return boat_count
-		_:
-			return 0
+	return int(levels.get(id, 0))
 
 func get_price(id: String) -> int:
-	match id:
-		"fish_basic":
-			return int(round(0 * pow(1.15, fish_count)))
-		"cofre":
-			return int(round(10 * pow(1.05, click_power - 1)))
-		"boat":
-			return int(round(200 * pow(1.20, boat_count)))
-		_:
-			return 999999
+	var def: Dictionary = ITEMS[id]
+	var base_price: float = float(def.get("base_price", 10.0))
+	var growth: float = float(def.get("price_growth", 1.1))
+	return int(round(base_price * pow(growth, get_level(id))))
 
 func apply_purchase(id: String) -> void:
+	levels[id] = get_level(id) + 1
+
 	match id:
 		"fish_basic":
-			fish_count += 1
-			var fish = fish_scene.instantiate()
-			fish.swim_area = $SwimArea
-			fish_layer.add_child(fish)
-			fish.position = Vector2(randi_range(200, 1000), randi_range(300, 600))
-			_update_cps()
+			_spawn_fish()
 		"cofre":
-			chest_level += 1
-			click_power = int(round(1 * pow(1.3, chest_level)))
+			click_power = int(round(get_item_current_value("cofre")))
 			_update_chest_sprite_by_level()
-		"boat":
-			boat_count += 1
-			dps += 5
-			_update_dps_ui()
-		_:
-			pass
-	
+
+	_update_cps()
+
+func _spawn_fish() -> void:
+	var fish = fish_scene.instantiate()
+	print("Fish instance:", fish)
+
+	if "swim_area" in fish:
+		fish.swim_area = $SwimArea
+	else:
+		push_error("El pez no tiene propiedad swim_area")
+
+	fish_layer.add_child(fish)
+	fish.position = Vector2(randi_range(200, 1000), randi_range(300, 600))
+
 func get_list_for_category(category: String) -> VBoxContainer:
 	match category:
 		"Peces":
@@ -340,6 +327,7 @@ func _on_buy_pressed(id: String) -> void:
 	var price := get_price(id)
 	if coins < price:
 		return
+
 	coins -= price
 	apply_purchase(id)
 	_update_ui()
@@ -364,16 +352,50 @@ func update_shop_cards() -> void:
 
 func _refresh_card(card) -> void:
 	var id: String = String(card.item_id)
-	card.set_unlocked(bool(unlocked.get(id, true)))
-
 	var p: int = get_price(id)
+
+	card.set_unlocked(bool(unlocked.get(id, true)))
 	card.set_dynamic(
 		p,
 		"Precio: %d" % p,
-		String(ITEMS[id]["right"]),
+		get_item_effect_text(id),
 		str(get_level(id))
 	)
 	card.update_state(coins)
+
+	card.extra_b1 = get_tooltip_line_1(id)
+	card.extra_b2 = get_tooltip_line_2(id)
+	card.extra_b3 = get_tooltip_line_3(id)
+
+	if card.has_method("refresh_info_panel_if_hovered"):
+		card.refresh_info_panel_if_hovered()
+
+func get_item_effect_text(id: String) -> String:
+	var def: Dictionary = ITEMS[id]
+	var kind: String = String(def.get("kind", ""))
+	var base_value: float = float(def.get("base_value", 0.0))
+	var value_label: String = String(def.get("value_label", ""))
+
+	match kind:
+		"passive":
+			return "%s +%d" % [value_label, int(round(base_value))]
+		"click":
+			return "+%d %s" % [int(round(base_value)), value_label]
+		_:
+			return ""
+
+func get_tooltip_line_1(id: String) -> String:
+	if id == "cofre":
+		return "Potencia de clic: %d" % click_power
+	return "Produce ahora: %s" % get_current_production_text(id)
+
+func get_tooltip_line_2(id: String) -> String:
+	if id == "cofre":
+		return "Aporte pasivo: ninguno"
+	return "Aporta al DPS total: %.1f%%" % get_current_dps_contribution(id)
+
+func get_tooltip_line_3(id: String) -> String:
+	return "Generado total: %s" % get_lifetime_generated_text(id)
 
 func play_squish(node: Control) -> void:
 	var t := create_tween()
@@ -390,6 +412,8 @@ func _on_btn_hide_hud_pressed() -> void:
 	pass # Replace with function body.
 
 func _update_chest_sprite_by_level() -> void:
+	var chest_level: int = get_level("cofre")
+
 	if chest_level <= 0:
 		chest_sprite.texture = TEX_CHEST_CLOSED
 	elif chest_level <= 3:
@@ -416,10 +440,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func format_doblones_parts(n: float) -> Dictionary:
 	var abs_n: float = abs(n)
-
+	var txt := ""
 	# 🔹 Menos de 1 millón → número completo sin prefijo
 	if abs_n < 1_000_000.0:
-		var txt := format_with_separator(int(round(n)))
+		txt = format_with_separator(int(round(n)))
 		return {"value": txt, "unit": "doblones"}
 
 	var value: float
@@ -452,7 +476,7 @@ func format_doblones_parts(n: float) -> Dictionary:
 		decimals = 2
 	else:
 		decimals = 2
-	var txt := ("%0." + str(decimals) + "f") % value
+	txt = ("%0." + str(decimals) + "f") % value
 	txt = txt.replace(".", ",")
 
 	return {"value": txt, "unit": unit}
@@ -538,3 +562,40 @@ func _mostrar_monedas_y_burbujas() -> void:
 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
 		tb.finished.connect(Callable(b, "queue_free"))
+
+func get_current_production_text(id: String) -> String:
+	var def: Dictionary = ITEMS[id]
+	var value_label: String = String(def.get("value_label", ""))
+	var value: float = get_item_current_value(id)
+	return "%d %s" % [int(round(value)), value_label]
+
+func get_item_current_value(id: String) -> float:
+	var def: Dictionary = ITEMS[id]
+	var kind: String = String(def.get("kind", ""))
+	var base_value: float = float(def.get("base_value", 1.0))
+	var level: int = get_level(id)
+
+	match kind:
+		"passive":
+			return float(level) * base_value
+		"click":
+			if level <= 0:
+				return 1.0
+			return pow(base_value, level)
+		_:
+			return 0.0
+
+func get_current_dps_contribution(id: String) -> float:
+	var total_dps: float = get_total_passive_dps()
+	if total_dps <= 0.0:
+		return 0.0
+
+	var def: Dictionary = ITEMS[id]
+	if String(def.get("kind", "")) != "passive":
+		return 0.0
+
+	return (get_item_current_value(id) / total_dps) * 100.0
+
+func get_lifetime_generated_text(id: String) -> String:
+	var amount := float(lifetime_generated.get(id, 0.0))
+	return "%s doblones" % format_with_separator(int(amount))

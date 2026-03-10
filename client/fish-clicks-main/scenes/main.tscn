@@ -51,6 +51,9 @@ texture = ExtResource("18_yc10j")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dp3eg"]
 
+[sub_resource type="SystemFont" id="SystemFont_gqmmt"]
+font_italic = true
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a8y0u"]
 size = Vector2(1022, 516)
 
@@ -160,6 +163,7 @@ grow_horizontal = 0
 theme_override_constants/separation = 12
 
 [node name="BtnEvent" type="TextureButton" parent="UI/Root/HUD/TopBar/RightGroup" unique_id=1631156383]
+visible = false
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture_normal = ExtResource("9_trceg")
@@ -167,6 +171,7 @@ ignore_texture_size = true
 stretch_mode = 5
 
 [node name="BtnWorld" type="TextureButton" parent="UI/Root/HUD/TopBar/RightGroup" unique_id=266951714]
+visible = false
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture_normal = ExtResource("9_trceg")
@@ -259,6 +264,7 @@ text = "por segundo: 0.0"
 horizontal_alignment = 1
 
 [node name="TiendaPanel" type="Panel" parent="UI/Root/HUD" unique_id=1545511951]
+visible = false
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 1
 anchors_preset = 11
@@ -345,7 +351,7 @@ theme_override_constants/separation = 10
 [node name="InfoExtraPanel" type="Control" parent="UI/Root/HUD" unique_id=1578223614]
 visible = false
 top_level = true
-z_index = 100
+z_index = 5
 custom_minimum_size = Vector2(0, 80)
 layout_mode = 1
 anchors_preset = 15
@@ -357,14 +363,11 @@ mouse_filter = 2
 script = ExtResource("8_tipki")
 
 [node name="Banner" type="TextureRect" parent="UI/Root/HUD/InfoExtraPanel" unique_id=433949685]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = -97.0
-offset_bottom = -90.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 0
+offset_left = 16.0
+offset_top = 18.0
+offset_right = 1136.0
+offset_bottom = 630.0
 mouse_filter = 2
 texture = ExtResource("19_0ld40")
 expand_mode = 1
@@ -374,12 +377,16 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 168.0
+offset_top = 132.0
+offset_right = -275.0
+offset_bottom = -160.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 18
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 18
+theme_override_constants/margin_left = 80
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 22
 
 [node name="VBox" type="VBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox" unique_id=2030723900]
 layout_mode = 2
@@ -391,31 +398,34 @@ layout_mode = 2
 [node name="Title" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Header" unique_id=1406141069]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 14
 text = "Titulo
 "
 
 [node name="Owned" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Header" unique_id=1125482062]
 layout_mode = 2
+theme_override_font_sizes/font_size = 12
 horizontal_alignment = 2
 
 [node name="Desc" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox" unique_id=346078448]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_fonts/font = SubResource("SystemFont_gqmmt")
+theme_override_font_sizes/font_size = 10
 
 [node name="Bullets" type="VBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox" unique_id=1943120877]
 layout_mode = 2
 
 [node name="B1" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=721015527]
 layout_mode = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 8
 
 [node name="B2" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=1311210386]
 layout_mode = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 8
 
 [node name="B3" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=404563973]
 layout_mode = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 8
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]
 custom_minimum_size = Vector2(32, 32)
@@ -441,6 +451,8 @@ visible = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SwimArea" unique_id=1106963454]
 position = Vector2(577, 322)
 shape = SubResource("RectangleShape2D_a8y0u")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=121986834]
 
 [connection signal="input_event" from="Cofre" to="Cofre" method="_on_input_event"]
 [connection signal="pressed" from="UI/Root/HUD/TopBar/RightGroup/BtnShop" to="." method="_on_btn_shop_pressed"]
