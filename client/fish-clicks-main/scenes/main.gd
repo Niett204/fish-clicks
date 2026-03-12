@@ -5,9 +5,12 @@ extends Node2D
 @export var dps_per_fish: float = 1.0
 @export var shop_item_card_scene: PackedScene
 
-@onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var shop_panel: Control = $UI/Root/HUD/TiendaPanel
 @onready var btn_shop_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnShop
+@onready var encyclopedia_panel: Control = $UI/Root/HUD/EncyclopediaPanel
+@onready var btn_encyclopedia_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnEncyclopedia
+
+@onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var chest: Area2D = $Cofre
 @onready var chest_sprite: Sprite2D = $Cofre/Sprite2D
 @onready var fish_layer = $PecesLayer
@@ -81,6 +84,9 @@ var shop_open := false
 var shop_tween: Tween
 var shop_x_open: float
 var shop_x_closed: float
+
+var encyclopedia_open := false
+
 var _block_info_hover := false
 var hud_visible := true
 
@@ -96,6 +102,7 @@ func _ready() -> void:
 		unlocked[id] = int(ITEMS[id].get("unlock_price", 0)) == 0
 		lifetime_generated[id] = 0.0
 	shop_panel.visible = false
+	encyclopedia_panel.visible = false
 	chest_base_scale = chest_sprite.scale
 
 	btn_hide.pressed.connect(func():
@@ -107,7 +114,12 @@ func _ready() -> void:
 		play_squish(btn_shop_icon)
 		toggle_shop()
 	)
-
+	
+	btn_encyclopedia_icon.pressed.connect(func():
+		play_squish(btn_encyclopedia_icon)
+		toggle_encyclopedia()
+	)
+	
 	tab_container.tab_changed.connect(_on_tab_changed)
 	_update_chest_sprite_by_level()
 	chest.clicked.connect(_on_chest_clicked)
@@ -140,6 +152,10 @@ func _toggle_hud():
 func toggle_shop() -> void:
 	shop_open = !shop_open
 
+	if shop_open:
+		encyclopedia_open = false
+		encyclopedia_panel.visible = false
+
 	if not shop_open and info_panel:
 		info_panel.request_hide()
 
@@ -152,6 +168,18 @@ func toggle_shop() -> void:
 
 	if shop_open:
 		_on_tab_changed(tab_container.current_tab)
+		
+
+func toggle_encyclopedia() -> void:
+	encyclopedia_open = !encyclopedia_open
+	if encyclopedia_open:
+		shop_open = false
+		if info_panel:
+			info_panel.request_hide()
+		if shop_tween:
+			shop_tween.kill()
+		shop_panel.position.x = shop_x_closed
+	encyclopedia_panel.visible = encyclopedia_open
 
 func _on_tab_changed(tab: int) -> void:
 	_block_info_hover = true
