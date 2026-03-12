@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://0ltfv88bqor3"]
+
+[ext_resource type="Texture2D" uid="uid://di3gqgp5im78d" path="res://assets/ui/inventario/estanteria_estante_individual.png" id="1_htf4r"]
+[ext_resource type="Script" uid="uid://dan0luy4veobc" path="res://scenes/inventory_shelf_row.gd" id="1_pft2b"]
+
+[node name="ShelfRow" type="Control" unique_id=1791268366]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 3
+script = ExtResource("1_pft2b")
+
+[node name="ShelfBoard" type="TextureRect" parent="." unique_id=1550669412]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -34.0
+grow_horizontal = 2
+grow_vertical = 0
+texture = ExtResource("1_htf4r")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="ItemsMargin" type="MarginContainer" parent="." unique_id=750688402]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_right = -12.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ItemsRow" type="HBoxContainer" parent="ItemsMargin" unique_id=669883505]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 8
+alignment = 1

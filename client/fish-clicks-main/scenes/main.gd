@@ -14,7 +14,8 @@ const ENCYCLOPEDIA_FISH_IDS := {
 @onready var btn_shop_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnShop
 @onready var encyclopedia_panel: Control = $UI/Root/HUD/EncyclopediaPanel
 @onready var btn_encyclopedia_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnEncyclopedia
-
+@onready var inventory_panel: Control = $UI/Root/HUD/Inventario
+@onready var btn_inventory_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnInventory
 @onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var chest: Area2D = $Cofre
 @onready var chest_sprite: Sprite2D = $Cofre/Sprite2D
@@ -35,7 +36,6 @@ const ITEMS := {
 		"title": "Doblon",
 		"icon": "res://assets/peces/doblon.png",
 		"unlock_price": 10,
-		"unlock_price": 1,
 		"kind": "passive",
 		"base_price": 25.0,
 		"price_growth": 1.15,
@@ -65,6 +65,53 @@ const ITEMS := {
 		"value_label": "DPS"
 	}
 }
+
+############################################################################
+const HABITATS := {
+	"habitat_1": {
+		"name": "Acuario",
+		"background": preload("res://assets/fondos/fondo1.png")
+	}
+	# en el futuro:
+	# "habitat_2": {
+	# 	"name": "Hábitat 2",
+	# 	"background": preload("res://assets/fondos/fondo2.png")
+	# }
+}
+
+var unlocked_habitats: Array[String] = ["habitat_1"]
+var current_habitat: String = "habitat_1"
+
+var aquarium_data := {
+	"habitat_1": [null, null, null, null, null, null, null, null, null, null]
+}
+
+var fish_inventory := {
+	"fish_basic": 4,
+	"sobrasada": 3,
+	"pacos": 1000,
+	"fish_shiny": 2
+}
+
+var fish_defs := {
+	"fish_basic": {
+		"name": "Doblon",
+		"icon": preload("res://assets/peces/doblon.png")
+	},
+	"sobrasada": {
+		"name": "Doblon",
+		"icon": preload("res://assets/peces/doblon.png")
+	},
+	"pacos": {
+		"name": "Doblon",
+		"icon": preload("res://assets/peces/doblon.png")
+	},
+	"fish_shiny": {
+		"name": "Doblon shiny",
+		"icon": preload("res://assets/peces/doblon.png")
+	}
+}
+############################################################################
 
 var lifetime_generated: Dictionary = {
 	"fish_basic": 0.0,
@@ -125,6 +172,11 @@ func _ready() -> void:
 		toggle_encyclopedia()
 	)
 
+	btn_inventory_icon.pressed.connect(func():
+		play_squish(btn_inventory_icon)
+		toggle_inventario()
+	)
+
 	tab_container.tab_changed.connect(_on_tab_changed)
 	_update_chest_sprite_by_level()
 	chest.clicked.connect(_on_chest_clicked)
@@ -133,7 +185,10 @@ func _ready() -> void:
 	_update_ui()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
 
-	await get_tree().process_frame
+	inventory_panel.move_fish_to_inventory.connect(_on_move_fish_to_inventory)
+	inventory_panel.move_fish_to_aquarium.connect(_on_move_fish_to_aquarium)
+
+	await get_tree().process_frame  # asegura tamaños correctos
 
 	shop_x_open = shop_panel.position.x
 	shop_x_closed = shop_x_open + shop_panel.size.x + 20
@@ -173,7 +228,7 @@ func toggle_shop() -> void:
 
 	if shop_open:
 		_on_tab_changed(tab_container.current_tab)
-		
+
 func toggle_encyclopedia() -> void:
 	encyclopedia_panel.visible = !encyclopedia_panel.visible
 
@@ -185,7 +240,31 @@ func toggle_encyclopedia() -> void:
 		if shop_tween:
 			shop_tween.kill()
 		shop_panel.position.x = shop_x_closed
-		
+
+func toggle_inventario() -> void:
+	inventory_panel.visible = !inventory_panel.visible
+
+	if inventory_panel.visible:
+		shop_open = false
+		encyclopedia_panel.visible = false
+
+		if info_panel:
+			info_panel.request_hide()
+
+		if shop_tween:
+			shop_tween.kill()
+
+		shop_panel.position.x = shop_x_closed
+
+		inventory_panel.set_inventory_data(
+			HABITATS,
+			unlocked_habitats,
+			current_habitat,
+			aquarium_data,
+			fish_defs,
+			fish_inventory
+		)
+
 func _on_tab_changed(tab: int) -> void:
 	_block_info_hover = true
 	if info_panel:
@@ -337,7 +416,6 @@ func apply_purchase(id: String) -> void:
 
 func _spawn_fish() -> void:
 	var fish = fish_scene.instantiate()
-	print("Fish instance:", fish)
 
 	if "swim_area" in fish:
 		fish.swim_area = $SwimArea
@@ -363,6 +441,23 @@ func _on_buy_pressed(id: String) -> void:
 
 	coins -= price
 	apply_purchase(id)
+
+	if fish_defs.has(id):
+		var added_to_aquarium := try_add_fish_to_aquarium(current_habitat, id)
+
+		if not added_to_aquarium:
+			fish_inventory[id] = int(fish_inventory.get(id, 0)) + 1
+
+	if inventory_panel.visible:
+		inventory_panel.set_inventory_data(
+			HABITATS,
+			unlocked_habitats,
+			current_habitat,
+			aquarium_data,
+			fish_defs,
+			fish_inventory
+		)
+
 	_update_ui()
 
 func _on_unlock_pressed(id: String) -> void:
@@ -644,3 +739,63 @@ func _actualizar_peces_desbloqueados_en_enciclopedia() -> void:
 
 	if encyclopedia_panel.has_method("set_pez_ids_desbloqueados"):
 		encyclopedia_panel.set_pez_ids_desbloqueados(ids_desbloqueados)
+
+func try_add_fish_to_aquarium(habitat_id: String, fish_id: String) -> bool:
+	if not aquarium_data.has(habitat_id):
+		return false
+
+	var slots: Array = aquarium_data[habitat_id]
+
+	for i in range(slots.size()):
+		if slots[i] == null:
+			slots[i] = fish_id
+			aquarium_data[habitat_id] = slots
+			return true
+
+	return false
+func _on_move_fish_to_inventory(fish_id: String, slot_index: int, habitat_id: String) -> void:
+	print("MAIN move to inventory:", fish_id, slot_index, habitat_id)
+
+	if not aquarium_data.has(habitat_id):
+		return
+
+	var slots: Array = aquarium_data[habitat_id]
+
+	if slot_index < 0 or slot_index >= slots.size():
+		return
+
+	if slots[slot_index] != fish_id:
+		return
+
+	slots[slot_index] = null
+	aquarium_data[habitat_id] = slots
+
+	fish_inventory[fish_id] = int(fish_inventory.get(fish_id, 0)) + 1
+
+	refresh_inventory_panel_data()
+
+
+func _on_move_fish_to_aquarium(fish_id: String, habitat_id: String) -> void:
+	print("MAIN move to aquarium:", fish_id, habitat_id)
+
+	if int(fish_inventory.get(fish_id, 0)) <= 0:
+		return
+
+	var added := try_add_fish_to_aquarium(habitat_id, fish_id)
+	if not added:
+		return
+
+	fish_inventory[fish_id] = int(fish_inventory.get(fish_id, 0)) - 1
+
+	refresh_inventory_panel_data()
+
+func refresh_inventory_panel_data() -> void:
+	if inventory_panel.visible:
+		inventory_panel.set_inventory_data(
+			HABITATS,
+			unlocked_habitats,
+			current_habitat,
+			aquarium_data,
+			fish_defs,
+			fish_inventory
+		)
