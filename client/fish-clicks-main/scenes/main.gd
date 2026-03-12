@@ -24,9 +24,9 @@ extends Node2D
 const ITEMS := {
 	"fish_basic": {
 		"tab": "Peces",
-		"title": "Pez Común",
+		"title": "Doblon",
 		"icon": "res://assets/peces/doblon.png",
-		"unlock_price": 0,
+		"unlock_price": 10,
 		"kind": "passive",
 		"base_price": 25.0,
 		"price_growth": 1.15,
@@ -37,7 +37,7 @@ const ITEMS := {
 		"tab": "Estructuras",
 		"title": "Cofre",
 		"icon": "res://assets/estructuras/cofre_cerrado.png",
-		"unlock_price": 25,
+		"unlock_price": 0,
 		"kind": "click",
 		"base_price": 10.0,
 		"price_growth": 1.05,
