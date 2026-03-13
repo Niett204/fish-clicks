@@ -1,0 +1,109 @@
+[gd_scene format=3 uid="uid://dxlxsrqe6elta"]
+
+[ext_resource type="Texture2D" uid="uid://b33wxaxja8jx0" path="res://assets/ui/red.png" id="1_vadoq"]
+[ext_resource type="Texture2D" uid="uid://tyjvk13keej5" path="res://assets/ui/alga.png" id="2_rso3n"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jbj1t"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gqmmt"]
+texture = ExtResource("1_vadoq")
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jkv2x"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_0ld40"]
+texture = ExtResource("2_rso3n")
+modulate_color = Color(0.48178947, 0.48178947, 0.48178947, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_yc10j"]
+texture = ExtResource("2_rso3n")
+texture_margin_left = 5.0
+texture_margin_right = 5.0
+modulate_color = Color(0.83033526, 0.83033514, 0.83033514, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jbj1t"]
+texture = ExtResource("2_rso3n")
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_muem4"]
+
+[node name="TiendaPanel" type="Panel" unique_id=1777192360]
+custom_minimum_size = Vector2(250, 0)
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -250.0
+offset_top = 70.0
+offset_bottom = -78.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_jbj1t")
+
+[node name="NetFrame" type="Panel" parent="." unique_id=1295084589]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_gqmmt")
+
+[node name="TabContainer" type="TabContainer" parent="." unique_id=864211158]
+z_index = 5
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 5.0
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_jkv2x")
+theme_override_styles/tab_unselected = SubResource("StyleBoxTexture_0ld40")
+theme_override_styles/tab_hovered = SubResource("StyleBoxTexture_yc10j")
+theme_override_styles/tab_selected = SubResource("StyleBoxTexture_jbj1t")
+current_tab = 0
+
+[node name="Estructuras" type="Control" parent="TabContainer" unique_id=1564055864]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Estructuras" unique_id=833672880]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = 47.0
+offset_right = -20.0
+offset_bottom = -59.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_muem4")
+
+[node name="ListEstructuras" type="VBoxContainer" parent="TabContainer/Estructuras/ScrollContainer" unique_id=438229080]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Peces" type="Control" parent="TabContainer" unique_id=566260111]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Peces" unique_id=663587469]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = 47.0
+offset_right = -20.0
+offset_bottom = -59.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_muem4")
+
+[node name="ListPeces" type="VBoxContainer" parent="TabContainer/Peces/ScrollContainer" unique_id=1331356175]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
