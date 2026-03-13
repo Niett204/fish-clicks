@@ -3,14 +3,8 @@ name: CI
 on:
   pull_request:
     branches: ["develop", "main"]
-    paths:
-      - "fish-clicks-api/**"
-      - ".github/workflows/**"
   push:
     branches: ["develop", "main"]
-    paths:
-      - "fish-clicks-api/**"
-      - ".github/workflows/**"
 
 jobs:
   build-backend:
@@ -23,7 +17,6 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      - name: Build & test (no chmod needed)
+      - name: Build & test
         working-directory: fish-clicks-api
-        shell: bash
         run: bash ./mvnw -B clean verify
