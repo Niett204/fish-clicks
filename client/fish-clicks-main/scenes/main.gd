@@ -85,8 +85,6 @@ var shop_tween: Tween
 var shop_x_open: float
 var shop_x_closed: float
 
-var encyclopedia_open := false
-
 var _block_info_hover := false
 var hud_visible := true
 
@@ -153,7 +151,6 @@ func toggle_shop() -> void:
 	shop_open = !shop_open
 
 	if shop_open:
-		encyclopedia_open = false
 		encyclopedia_panel.visible = false
 
 	if not shop_open and info_panel:
@@ -169,18 +166,17 @@ func toggle_shop() -> void:
 	if shop_open:
 		_on_tab_changed(tab_container.current_tab)
 		
-
 func toggle_encyclopedia() -> void:
-	encyclopedia_open = !encyclopedia_open
-	if encyclopedia_open:
+	encyclopedia_panel.visible = !encyclopedia_panel.visible
+
+	if encyclopedia_panel.visible:
 		shop_open = false
 		if info_panel:
 			info_panel.request_hide()
 		if shop_tween:
 			shop_tween.kill()
 		shop_panel.position.x = shop_x_closed
-	encyclopedia_panel.visible = encyclopedia_open
-
+		
 func _on_tab_changed(tab: int) -> void:
 	_block_info_hover = true
 	if info_panel:

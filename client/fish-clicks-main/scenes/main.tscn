@@ -19,9 +19,8 @@
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
 [ext_resource type="Texture2D" uid="uid://tyjvk13keej5" path="res://assets/ui/alga.png" id="18_yc10j"]
 [ext_resource type="Texture2D" uid="uid://bf4pt3ldg3d0c" path="res://assets/ui/bandera.png" id="19_0ld40"]
-[ext_resource type="Texture2D" uid="uid://casgo8fwtfcga" path="res://assets/ui/libro_abierto.png" id="20_yc10j"]
+[ext_resource type="PackedScene" uid="uid://crojbj03flfr6" path="res://scenes/UI/encyclopedia_panel.tscn" id="20_yc10j"]
 [ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
-[ext_resource type="Texture2D" uid="uid://caccnasaooopc" path="res://assets/peces/doblon.png" id="21_pm3ni"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
@@ -429,116 +428,8 @@ theme_override_font_sizes/font_size = 8
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 
-[node name="EncyclopediaPanel" type="Control" parent="UI/Root/HUD" unique_id=1060261240]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="FondoLibro" type="TextureRect" parent="UI/Root/HUD/EncyclopediaPanel" unique_id=1443498219]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 182.0
-offset_top = -100.99999
-offset_right = 182.0
-offset_bottom = -100.99999
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(20.212515, 20.870224)
-texture = ExtResource("20_yc10j")
-expand_mode = 4
-stretch_mode = 5
-
-[node name="PaginaIzq" type="Control" parent="UI/Root/HUD/EncyclopediaPanel/FondoLibro" unique_id=152406354]
-anchors_preset = 0
-offset_left = 3.56215
-offset_top = 8.672643
-offset_right = 19.542347
-offset_bottom = 32.151066
-
-[node name="TagRarezaIzq" type="Label" parent="UI/Root/HUD/EncyclopediaPanel/FondoLibro/PaginaIzq" unique_id=1116185472]
+[node name="EncyclopediaPanel" parent="UI/Root/HUD" unique_id=1091957969 instance=ExtResource("20_yc10j")]
 layout_mode = 0
-offset_top = -16.674473
-offset_right = 13.0
-offset_bottom = 6.325527
-
-[node name="PezIzq" type="TextureRect" parent="UI/Root/HUD/EncyclopediaPanel/FondoLibro/PaginaIzq" unique_id=479318093]
-custom_minimum_size = Vector2(1, 1)
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.25100002
-anchor_top = 0.135
-anchor_right = 0.814
-anchor_bottom = 0.33400002
-offset_left = -1.0920463
-offset_top = -2.2112846
-offset_right = -0.24351025
-offset_bottom = 1.7902317
-texture = ExtResource("21_pm3ni")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="NombrePezIzq" type="Label" parent="UI/Root/HUD/EncyclopediaPanel/FondoLibro/PaginaIzq" unique_id=1065740323]
-layout_mode = 0
-offset_left = 3.8589952
-offset_top = 8.480981
-offset_right = 136.859
-offset_bottom = 31.48098
-scale = Vector2(0.056835253, 0.0751883)
-text = "Doblon Doblones"
-
-[node name="DescripcionIzq" type="RichTextLabel" parent="UI/Root/HUD/EncyclopediaPanel/FondoLibro/PaginaIzq" unique_id=1307602661]
-layout_mode = 0
-offset_top = -16.674473
-offset_right = 13.0
-offset_bottom = -16.674473
-
-[node name="StatIzq" type="Label" parent="UI/Root/HUD/EncyclopediaPanel/FondoLibro/PaginaIzq" unique_id=1988649998]
-layout_mode = 0
-offset_top = -16.674473
-offset_right = 13.0
-offset_bottom = 6.325527
-
-[node name="PaginaDer" type="Control" parent="UI/Root/HUD/EncyclopediaPanel/FondoLibro" unique_id=1791349316]
-anchors_preset = 0
-offset_left = 19.78972
-offset_top = 8.241406
-offset_right = 36.413086
-offset_bottom = 31.767746
-
-[node name="TagRarezaDer" type="Label" parent="UI/Root/HUD/EncyclopediaPanel/FondoLibro/PaginaDer" unique_id=650313653]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-
-[node name="PezDer" type="TextureRect" parent="UI/Root/HUD/EncyclopediaPanel/FondoLibro/PaginaDer" unique_id=389832240]
-layout_mode = 0
-offset_right = 40.0
-
-[node name="NombrePezDer" type="Label" parent="UI/Root/HUD/EncyclopediaPanel/FondoLibro/PaginaDer" unique_id=1685104519]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-
-[node name="DescripcionDer" type="RichTextLabel" parent="UI/Root/HUD/EncyclopediaPanel/FondoLibro/PaginaDer" unique_id=311840674]
-layout_mode = 0
-offset_right = 40.0
-
-[node name="StatDer" type="Label" parent="UI/Root/HUD/EncyclopediaPanel/FondoLibro/PaginaDer" unique_id=887499354]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-
-[node name="BtnAnterior" type="TextureButton" parent="UI/Root/HUD/EncyclopediaPanel" unique_id=930111122]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="BtnSiguiente" type="TextureButton" parent="UI/Root/HUD/EncyclopediaPanel" unique_id=1640615403]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]
 custom_minimum_size = Vector2(32, 32)
