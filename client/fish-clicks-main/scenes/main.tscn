@@ -8,17 +8,15 @@
 [ext_resource type="PackedScene" uid="uid://cfhhda8qg0bq0" path="res://scenes/ShopItemCard.tscn" id="4_o6xl0"]
 [ext_resource type="Texture2D" uid="uid://bumfn7ywlc7r5" path="res://assets/estructuras/cofre_abierto_lleno.png" id="7_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://di0p043eru4vj" path="res://assets/ui/iconos/icono_perfil.png" id="8_eb6dy"]
-[ext_resource type="Script" uid="uid://dl0sgr2smpium" path="res://scenes/info_extra_panel.gd" id="8_tipki"]
 [ext_resource type="Texture2D" uid="uid://bapfvmfpgbe7p" path="res://assets/ui/iconos/icono_opciones.png" id="9_trceg"]
 [ext_resource type="Texture2D" uid="uid://casqwt2ogwyax" path="res://assets/ui/iconos/icono_stats.png" id="10_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://rljxhda6odwj" path="res://assets/ui/iconos/icono_enciclopedia.png" id="11_yc10j"]
 [ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
-[ext_resource type="Texture2D" uid="uid://b33wxaxja8jx0" path="res://assets/ui/red.png" id="13_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://c5ht6q767emx5" path="res://assets/ui/botella_mensaje.png" id="13_muem4"]
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
-[ext_resource type="Texture2D" uid="uid://tyjvk13keej5" path="res://assets/ui/alga.png" id="18_yc10j"]
-[ext_resource type="Texture2D" uid="uid://bf4pt3ldg3d0c" path="res://assets/ui/bandera.png" id="19_0ld40"]
+[ext_resource type="PackedScene" uid="uid://dxlxsrqe6elta" path="res://scenes/tienda_panel.tscn" id="16_0ld40"]
+[ext_resource type="PackedScene" uid="uid://syr14kxtcpdh" path="res://scenes/info_extra_panel.tscn" id="17_dp3eg"]
 [ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
@@ -26,30 +24,6 @@ size = Vector2(268, 237)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dp3eg"]
 texture = ExtResource("13_muem4")
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jbj1t"]
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gqmmt"]
-texture = ExtResource("13_jkv2x")
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jkv2x"]
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_0ld40"]
-texture = ExtResource("18_yc10j")
-modulate_color = Color(0.48178947, 0.48178947, 0.48178947, 1)
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_yc10j"]
-texture = ExtResource("18_yc10j")
-texture_margin_left = 5.0
-texture_margin_right = 5.0
-modulate_color = Color(0.83033526, 0.83033514, 0.83033514, 1)
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jbj1t"]
-texture = ExtResource("18_yc10j")
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_muem4"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dp3eg"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a8y0u"]
 size = Vector2(1022, 516)
@@ -160,6 +134,7 @@ grow_horizontal = 0
 theme_override_constants/separation = 12
 
 [node name="BtnEvent" type="TextureButton" parent="UI/Root/HUD/TopBar/RightGroup" unique_id=1631156383]
+visible = false
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture_normal = ExtResource("9_trceg")
@@ -167,6 +142,7 @@ ignore_texture_size = true
 stretch_mode = 5
 
 [node name="BtnWorld" type="TextureButton" parent="UI/Root/HUD/TopBar/RightGroup" unique_id=266951714]
+visible = false
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture_normal = ExtResource("9_trceg")
@@ -258,164 +234,23 @@ theme_override_font_sizes/font_size = 9
 text = "por segundo: 0.0"
 horizontal_alignment = 1
 
-[node name="TiendaPanel" type="Panel" parent="UI/Root/HUD" unique_id=1545511951]
-custom_minimum_size = Vector2(250, 0)
-layout_mode = 1
-anchors_preset = 11
-anchor_left = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -250.0
-offset_top = 70.0
-offset_bottom = -78.0
-grow_horizontal = 0
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_jbj1t")
-
-[node name="NetFrame" type="Panel" parent="UI/Root/HUD/TiendaPanel" unique_id=1330065260]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxTexture_gqmmt")
-
-[node name="TabContainer" type="TabContainer" parent="UI/Root/HUD/TiendaPanel" unique_id=1785782234]
-z_index = 5
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 5.0
-offset_bottom = 5.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_jkv2x")
-theme_override_styles/tab_unselected = SubResource("StyleBoxTexture_0ld40")
-theme_override_styles/tab_hovered = SubResource("StyleBoxTexture_yc10j")
-theme_override_styles/tab_selected = SubResource("StyleBoxTexture_jbj1t")
-current_tab = 0
-
-[node name="Estructuras" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1013639139]
-layout_mode = 2
-metadata/_tab_index = 0
-
-[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Estructuras" unique_id=1450220889]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 25.0
-offset_top = 47.0
-offset_right = -20.0
-offset_bottom = -59.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_muem4")
-
-[node name="ListEstructuras" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Estructuras/ScrollContainer" unique_id=669970207]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
-
-[node name="Peces" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=438741302]
+[node name="TiendaPanel" parent="UI/Root/HUD" unique_id=1777192360 instance=ExtResource("16_0ld40")]
 visible = false
-layout_mode = 2
-metadata/_tab_index = 1
+layout_mode = 0
+anchors_preset = 0
+anchor_left = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 250.0
+offset_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
 
-[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces" unique_id=458589617]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 25.0
-offset_top = 47.0
-offset_right = 230.0
-offset_bottom = 410.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_dp3eg")
-
-[node name="ListPeces" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer" unique_id=279585929]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 10
-
-[node name="InfoExtraPanel" type="Control" parent="UI/Root/HUD" unique_id=1578223614]
+[node name="InfoExtraPanel" parent="UI/Root/HUD" unique_id=740572350 instance=ExtResource("17_dp3eg")]
 visible = false
-top_level = true
-z_index = 100
-custom_minimum_size = Vector2(0, 80)
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-script = ExtResource("8_tipki")
-
-[node name="Banner" type="TextureRect" parent="UI/Root/HUD/InfoExtraPanel" unique_id=433949685]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = -97.0
-offset_bottom = -90.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("19_0ld40")
-expand_mode = 1
-
-[node name="CardBox" type="MarginContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner" unique_id=1981931913]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 18
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 18
-
-[node name="VBox" type="VBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox" unique_id=2030723900]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="Header" type="HBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox" unique_id=1573833251]
-layout_mode = 2
-
-[node name="Title" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Header" unique_id=1406141069]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Titulo
-"
-
-[node name="Owned" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Header" unique_id=1125482062]
-layout_mode = 2
-horizontal_alignment = 2
-
-[node name="Desc" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox" unique_id=346078448]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-
-[node name="Bullets" type="VBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox" unique_id=1943120877]
-layout_mode = 2
-
-[node name="B1" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=721015527]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-
-[node name="B2" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=1311210386]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-
-[node name="B3" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=404563973]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]
 custom_minimum_size = Vector2(32, 32)
@@ -441,6 +276,8 @@ visible = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SwimArea" unique_id=1106963454]
 position = Vector2(577, 322)
 shape = SubResource("RectangleShape2D_a8y0u")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=121986834]
 
 [connection signal="input_event" from="Cofre" to="Cofre" method="_on_input_event"]
 [connection signal="pressed" from="UI/Root/HUD/TopBar/RightGroup/BtnShop" to="." method="_on_btn_shop_pressed"]

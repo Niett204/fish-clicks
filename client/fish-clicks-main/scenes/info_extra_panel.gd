@@ -2,16 +2,16 @@ extends Control
 
 @export var anim_time := 0.18
 @export var offset := Vector2(20, 0)
-@export var panel_width := 200.0
+@export var panel_width := 300.0
 @export var min_height := 200.0
-@export var padding := Vector2(24, 24) # (x,y)
+@export var padding := Vector2(100, 100) # (x,y)
 
 var _tw: Tween
 var _hover_panel := false
 var _showing := false
 
 var _hide_timer: SceneTreeTimer
-var _show_token := 0  # sube cada vez que se muestra (anti hides viejos)
+var _show_token := 0 
 
 func _ready() -> void:
 	z_as_relative = false
@@ -40,7 +40,7 @@ func show_for_card(
 	_cancel_hide()
 
 	$Banner/CardBox/VBox/Header/Title.text = title
-	$Banner/CardBox/VBox/Header/Owned.text = "owned: %d" % owned
+	$Banner/CardBox/VBox/Header/Owned.text = "LVL: %d" % owned
 
 	$Banner/CardBox/VBox/Desc.text = desc
 

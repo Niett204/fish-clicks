@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://ubk2btwo8ltc"]
 
 [ext_resource type="Script" uid="uid://dm321k0nr5kgj" path="res://scenes/pez.gd" id="1_v4xfs"]
-[ext_resource type="Texture2D" uid="uid://cmyqli7vqrbdi" path="res://assets/peces/doblon.png" id="2_omyef"]
+[ext_resource type="Texture2D" uid="uid://caccnasaooopc" path="res://assets/peces/doblon.png" id="2_omyef"]
 
 [node name="Pez" type="Node2D" unique_id=1429265579]
 script = ExtResource("1_v4xfs")

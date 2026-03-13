@@ -1,0 +1,86 @@
+[gd_scene format=3 uid="uid://syr14kxtcpdh"]
+
+[ext_resource type="Script" uid="uid://dl0sgr2smpium" path="res://scenes/info_extra_panel.gd" id="1_ntpen"]
+[ext_resource type="Texture2D" uid="uid://bf4pt3ldg3d0c" path="res://assets/ui/bandera.png" id="2_flwoy"]
+
+[sub_resource type="SystemFont" id="SystemFont_gqmmt"]
+font_italic = true
+subpixel_positioning = 0
+
+[node name="InfoExtraPanel" type="Control" unique_id=740572350]
+top_level = true
+z_index = 5
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_ntpen")
+
+[node name="Banner" type="TextureRect" parent="." unique_id=1876078681]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 18.0
+offset_right = 1136.0
+offset_bottom = 630.0
+mouse_filter = 2
+texture = ExtResource("2_flwoy")
+expand_mode = 1
+
+[node name="CardBox" type="MarginContainer" parent="Banner" unique_id=1536101280]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 168.0
+offset_top = 132.0
+offset_right = -275.0
+offset_bottom = -160.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 80
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 22
+
+[node name="VBox" type="VBoxContainer" parent="Banner/CardBox" unique_id=544918513]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Header" type="HBoxContainer" parent="Banner/CardBox/VBox" unique_id=1162866555]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Banner/CardBox/VBox/Header" unique_id=721117291]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 14
+text = "Titulo
+"
+
+[node name="Owned" type="Label" parent="Banner/CardBox/VBox/Header" unique_id=2006159339]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 2
+
+[node name="Desc" type="Label" parent="Banner/CardBox/VBox" unique_id=1266374886]
+layout_mode = 2
+theme_override_fonts/font = SubResource("SystemFont_gqmmt")
+theme_override_font_sizes/font_size = 10
+
+[node name="Bullets" type="VBoxContainer" parent="Banner/CardBox/VBox" unique_id=644450823]
+layout_mode = 2
+
+[node name="B1" type="Label" parent="Banner/CardBox/VBox/Bullets" unique_id=642299367]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+
+[node name="B2" type="Label" parent="Banner/CardBox/VBox/Bullets" unique_id=1161009359]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+
+[node name="B3" type="Label" parent="Banner/CardBox/VBox/Bullets" unique_id=1772417886]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8

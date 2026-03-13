@@ -53,6 +53,7 @@ var click_rotation := 5.0
 var tween: Tween
 
 func _ready() -> void:
+	z_index = 10
 	normal_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	locked_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	locked_price_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -147,21 +148,27 @@ func _on_pressed() -> void:
 	else:
 		unlock_pressed.emit(item_id)
 
-func setup(_id: String, title: String, left: String, right: String, level: String,
-	icon: Texture2D, _price: int, _unlock_price: int) -> void:
-
+func setup(
+	_id: String,
+	title: String,
+	left: String,
+	right: String,
+	level: String,
+	icon_texture: Texture2D,
+	_price: int,
+	_unlock_price: int
+) -> void:
 	item_id = _id
 	price = _price
 	unlock_price = _unlock_price
 	is_unlocked = (unlock_price == 0)
 
 	_title_normal = title
-	_left_normal  = left
+	_left_normal = left
 	_right_normal = right
 	_level_normal = level
-	_icon_normal  = icon
+	_icon_normal = icon_texture
 
-	# Pinta los datos normales (para que no se quede con "Doblon" por defecto)
 	title_lbl.text = _title_normal
 	stat_left.text = _left_normal
 	level_lbl.text = _level_normal
@@ -209,17 +216,17 @@ func _apply_unlocked_visual() -> void:
 	stat_left.text = _left_normal
 	level_lbl.text = _level_normal
 
-func set_dynamic(new_price: float, new_left: String, new_right: String,
-	new_level: String ) -> void:
-	price = new_price
+func set_dynamic(new_price: float, new_left: String, new_right: String, new_level: String) -> void:
+	price = int(new_price)
 	_left_normal = new_left
 	_right_normal = new_right
 	_level_normal = new_level
 
-	# Si ya está desbloqueada, actualiza lo visible al momento
 	if is_unlocked:
 		stat_left.text = _left_normal
 		level_lbl.text = _level_normal
+
+	refresh_info_panel_if_hovered()
 		
 
 func _apply_view() -> void:
@@ -253,3 +260,23 @@ func _wiggle_click() -> void:
 
 func _reset_rotation_smooth() -> void:
 	_animate_rotation(0.0, 0.15)
+
+func refresh_info_panel_if_hovered() -> void:
+	if not _hovered:
+		return
+	if info_panel == null:
+		return
+
+	var owned := 0
+	if level_lbl:
+		owned = int(level_lbl.text)
+
+	info_panel.show_for_card(
+		self,
+		extra_title,
+		owned,
+		extra_desc,
+		extra_b1,
+		extra_b2,
+		extra_b3
+	)
