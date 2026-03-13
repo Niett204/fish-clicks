@@ -1,11 +1,11 @@
-Label
 VBoxContainer
+HTTPRequest
+Label
 TextureButton
 RichTextLabel
 TextureRect
 Control
 Panel
-HTTPRequest
 MarginContainer
 HBoxContainer
 CollisionShape2D
