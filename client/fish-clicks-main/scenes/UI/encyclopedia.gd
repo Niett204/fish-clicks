@@ -23,7 +23,6 @@ var current_page: int = 0
 var rareza_actual: String = ""
 var rarezas_disponibles: Array = []
 
-# Esto luego lo rellenaremos desde tu juego real
 var pez_ids_desbloqueados: Array[int] = [1]
 
 enum RequestMode {

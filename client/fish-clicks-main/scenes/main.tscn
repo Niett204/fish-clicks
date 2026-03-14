@@ -256,7 +256,12 @@ visible = false
 layout_mode = 1
 
 [node name="EncyclopediaPanel" parent="UI/Root/HUD" unique_id=1091957969 instance=ExtResource("20_yc10j")]
-layout_mode = 0
+layout_mode = 1
+offset_left = 33.0
+offset_top = 18.0
+offset_right = -22.35254
+offset_bottom = -29.48291
+scale = Vector2(0.99211466, 1.0108906)
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]
 custom_minimum_size = Vector2(32, 32)
