@@ -3,17 +3,19 @@ extends Control
 @onready var http_request: HTTPRequest = $HTTPRequest
 @onready var rareza_container: VBoxContainer = $FondoLibro/RarezaContainer
 
-@onready var tag_rareza_izq: Label = $FondoLibro/PaginaIzq/TagRarezaIzq
-@onready var pez_izq: TextureRect = $FondoLibro/PaginaIzq/PezIzq
-@onready var nombre_izq: Label = $FondoLibro/PaginaIzq/NombrePezIzq
-@onready var descripcion_izq: RichTextLabel = $FondoLibro/PaginaIzq/DescripcionIzq
-@onready var stat_izq: Label = $FondoLibro/PaginaIzq/StatIzq
+@onready var tag_bg_izq: TextureRect = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/tag_bg_izq
+@onready var tag_rareza_izq: Label = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/tag_bg_izq/TagRarezaIzq
+@onready var pez_izq: TextureRect = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/PezIzq
+@onready var nombre_izq: Label = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/NombrePezIzq
+@onready var descripcion_izq: RichTextLabel = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/DescripcionIzq
+@onready var stat_izq: Label = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/StatIzq
 
-@onready var tag_rareza_der: Label = $FondoLibro/PaginaDer/TagRarezaDer
-@onready var pez_der: TextureRect = $FondoLibro/PaginaDer/PezDer
-@onready var nombre_der: Label = $FondoLibro/PaginaDer/NombrePezDer
-@onready var descripcion_der: RichTextLabel = $FondoLibro/PaginaDer/DescripcionDer
-@onready var stat_der: Label = $FondoLibro/PaginaDer/StatDer
+@onready var tag_bg_der: TextureRect = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/tag_bg_der
+@onready var tag_rareza_der: Label = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/tag_bg_der/TagRarezaDer
+@onready var pez_der: TextureRect = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/PezDer
+@onready var nombre_der: Label = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/NombrePezDer
+@onready var descripcion_der: RichTextLabel = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/DescripcionDer
+@onready var stat_der: Label = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/StatDer
 
 @onready var btn_anterior: TextureButton = $BtnAnterior
 @onready var btn_siguiente: TextureButton = $BtnSiguiente
@@ -32,22 +34,27 @@ enum RequestMode {
 
 var request_mode: int = RequestMode.LOAD_ALL_FOR_RAREZAS
 
+
 func _ready() -> void:
 	print("ENCICLOPEDIA READY")
 	visible = false
+
 	http_request.request_completed.connect(_on_request_completed)
 	btn_anterior.pressed.connect(_on_btn_anterior_pressed)
 	btn_siguiente.pressed.connect(_on_btn_siguiente_pressed)
 
 	cargar_rarezas_iniciales()
 
+
 func cargar_rarezas_iniciales() -> void:
 	request_mode = RequestMode.LOAD_ALL_FOR_RAREZAS
 	hacer_request_peces()
 
+
 func load_fishes(rareza: String = "") -> void:
 	request_mode = RequestMode.LOAD_FILTERED_FISHES
 	hacer_request_peces(rareza)
+
 
 func hacer_request_peces(rareza: String = "") -> void:
 	var url := "https://fish-clicks.onrender.com/enciclopedia/peces"
@@ -80,7 +87,13 @@ func hacer_request_peces(rareza: String = "") -> void:
 	if err != OK:
 		push_error("No se pudo lanzar la request de peces")
 
-func _on_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+
+func _on_request_completed(
+	_result: int,
+	response_code: int,
+	_headers: PackedStringArray,
+	body: PackedByteArray
+) -> void:
 	print("Código:", response_code)
 	print("Respuesta:", body.get_string_from_utf8())
 
@@ -115,6 +128,7 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 			current_page = 0
 			update_book()
 
+
 func guardar_rarezas_disponibles(data: Array) -> void:
 	rarezas_disponibles.clear()
 
@@ -122,6 +136,7 @@ func guardar_rarezas_disponibles(data: Array) -> void:
 		var rareza := str(pez.get("rareza", "")).to_lower()
 		if rareza != "" and not rareza in rarezas_disponibles:
 			rarezas_disponibles.append(rareza)
+
 
 func crear_botones_rareza() -> void:
 	for child in rareza_container.get_children():
@@ -140,6 +155,7 @@ func crear_botones_rareza() -> void:
 		btn.pressed.connect(func(): cambiar_rareza(r))
 		rareza_container.add_child(btn)
 
+
 func cambiar_rareza(nueva_rareza: String) -> void:
 	if rareza_actual == nueva_rareza:
 		return
@@ -147,6 +163,7 @@ func cambiar_rareza(nueva_rareza: String) -> void:
 	rareza_actual = nueva_rareza
 	current_page = 0
 	load_fishes(rareza_actual)
+
 
 func update_book() -> void:
 	var left_index := current_page * 2
@@ -158,6 +175,7 @@ func update_book() -> void:
 	btn_anterior.disabled = current_page == 0
 	btn_siguiente.disabled = right_index >= fishes.size() - 1
 
+
 func _fill_page(index: int, is_left: bool) -> void:
 	if index >= fishes.size():
 		limpiar_pagina(is_left)
@@ -165,72 +183,90 @@ func _fill_page(index: int, is_left: bool) -> void:
 
 	var fish: Dictionary = fishes[index]
 
-	var rareza := capitalizar_rareza(str(fish.get("rareza", "")))
+	var rareza_raw := str(fish.get("rareza", ""))
+	var rareza := capitalizar_rareza(rareza_raw)
 	var nombre := str(fish.get("nombre", ""))
 	var descripcion := str(fish.get("descripcion", ""))
 	var efecto := str(fish.get("efecto_descripcion", ""))
 
 	if is_left:
 		tag_rareza_izq.text = rareza
+		tag_bg_izq.texture = get_rareza_texture(rareza_raw)
 		nombre_izq.text = nombre
 		descripcion_izq.text = descripcion
 		stat_izq.text = efecto
 		pez_izq.texture = get_fish_texture(int(fish.get("id", -1)))
 	else:
 		tag_rareza_der.text = rareza
+		tag_bg_der.texture = get_rareza_texture(rareza_raw)
 		nombre_der.text = nombre
 		descripcion_der.text = descripcion
 		stat_der.text = efecto
 		pez_der.texture = get_fish_texture(int(fish.get("id", -1)))
 
+
 func limpiar_pagina(is_left: bool) -> void:
 	if is_left:
 		tag_rareza_izq.text = ""
+		tag_bg_izq.texture = null
 		nombre_izq.text = ""
 		descripcion_izq.text = ""
 		stat_izq.text = ""
 		pez_izq.texture = null
 	else:
 		tag_rareza_der.text = ""
+		tag_bg_der.texture = null
 		nombre_der.text = ""
 		descripcion_der.text = ""
 		stat_der.text = ""
 		pez_der.texture = null
+
 
 func _on_btn_anterior_pressed() -> void:
 	if current_page > 0:
 		current_page -= 1
 		update_book()
 
+
 func _on_btn_siguiente_pressed() -> void:
 	if (current_page + 1) * 2 < fishes.size():
 		current_page += 1
 		update_book()
+
 
 func capitalizar_rareza(texto: String) -> String:
 	if texto.is_empty():
 		return ""
 	return texto.substr(0, 1).to_upper() + texto.substr(1)
 
+
 func get_fish_texture(fish_id: int) -> Texture2D:
 	match fish_id:
 		1:
-			return load("res://assets/peces/pez_1.png")
-		2:
-			return load("res://assets/peces/pez_2.png")
-		5:
-			return load("res://assets/peces/pez_5.png")
+			return load("res://assets/peces/doblon.png")
+		_:
+			return null
+
+func get_rareza_texture(rareza: String) -> Texture2D:
+	match rareza.to_lower():
+		"comun":
+			var tex = load("res://assets/ui/rarezas/tag_rareza_comun.png")
+			print("TEXTURA COMUN: ", tex)
+			return tex
 		_:
 			return null
 
 func set_pez_ids_desbloqueados(ids: Array[int]) -> void:
 	pez_ids_desbloqueados = ids
 
+
 func open() -> void:
 	visible = true
 
+
 func close() -> void:
 	visible = false
+
 
 func toggle() -> void:
 	visible = !visible
