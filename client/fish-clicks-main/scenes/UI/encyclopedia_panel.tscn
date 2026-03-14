@@ -9,6 +9,12 @@
 font = ExtResource("3_k3767")
 font_size = 24
 
+[sub_resource type="LabelSettings" id="LabelSettings_k3767"]
+paragraph_spacing = 1.0
+font = ExtResource("3_k3767")
+font_size = 27
+font_color = Color(0.2269584, 0.10857486, 0.008638387, 1)
+
 [node name="EncyclopediaPanel" type="Control" unique_id=1091957969]
 layout_mode = 3
 anchors_preset = 15
@@ -59,13 +65,12 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 31.818184
-offset_top = 6.2499914
-offset_right = 31.818176
-offset_bottom = 6.25
+offset_left = 52.272743
+offset_top = 2.0833278
+offset_right = 17.272736
+offset_bottom = 2.083313
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(0.8691711, 1)
 theme_override_constants/margin_left = 40
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 40
@@ -103,17 +108,35 @@ max_lines_visible = 1
 language = "es"
 
 [node name="PezIzq" type="TextureRect" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq" unique_id=672969919]
-custom_minimum_size = Vector2(1, 1)
+custom_minimum_size = Vector2(170, 170)
 layout_mode = 2
-texture = ExtResource("2_4h8ff")
-expand_mode = 1
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 4
 stretch_mode = 5
 
 [node name="NombrePezIzq" type="Label" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq" unique_id=244178706]
+custom_minimum_size = Vector2(10, 10)
 layout_mode = 2
+text = "Doblón"
+label_settings = SubResource("LabelSettings_k3767")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
 
 [node name="DescripcionIzq" type="RichTextLabel" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq" unique_id=1518738575]
 layout_mode = 2
+theme_override_colors/default_color = Color(0.43137255, 0.29411766, 0.11764706, 1)
+theme_override_fonts/normal_font = ExtResource("3_k3767")
+theme_override_fonts/bold_font = ExtResource("3_k3767")
+theme_override_font_sizes/normal_font_size = 20
+text = "Conocido como el legendario \\\"Doblón de Doblones\\\", este pez dorado vive cerca del cofre del tesoro. Se dice que cada moneda que cae en el cofre atrae a más de su especie, como si el oro mismo les diera vida."
+fit_content = true
+tab_size = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+text_direction = 1
+language = "es_ES"
 
 [node name="StatIzq" type="Label" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq" unique_id=1730993597]
 layout_mode = 2
