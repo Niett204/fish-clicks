@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1773507400
+::res://::1773511594
 icon.svg::CompressedTexture2D::4334459046159358899::1772123122::1773309294::1::::<><><>0<>0<>3b53763b61da07aac68bd440df64e7d9<>res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex::
 ::res://assets/::1773490007
 ::res://assets/estructuras/::1773309295
@@ -36,7 +36,7 @@ icono_opciones.png::CompressedTexture2D::2417728075333651047::1773160520::177330
 icono_perfil.png::CompressedTexture2D::7773339210411133559::1773160520::1773309295::1::::<><><>0<>0<>6266887fff86a7ff55c41ffaafa5473e<>res://.godot/imported/icono_perfil.png-96a89bc54b5b64686fec8b2442644034.ctex::
 icono_stats.png::CompressedTexture2D::4811011966607827591::1773160520::1773309295::1::::<><><>0<>0<>6506a58c8f6e4c680d521871c7acbaf3<>res://.godot/imported/icono_stats.png-0f6bb9929b59bf1e8bb5d4f13c8d5633.ctex::
 icono_tienda.png::CompressedTexture2D::1949802868311054618::1773160520::1773309295::1::::<><><>0<>0<>c23398cbafe03682250a0b0c17b841b6<>res://.godot/imported/icono_tienda.png-42c4ef324ff30fff230ad31244aba265.ctex::
-::res://assets/ui/rarezas/::1773509984
+::res://assets/ui/rarezas/::1773509985
 tag_rareza_comun.png::CompressedTexture2D::1160892992449789652::1773509984::1773509985::1::::<><><>0<>0<>705ce4ed2e0f05071f02949739509460<>res://.godot/imported/tag_rareza_comun.png-c39d4ee742e30596503eadc4c6ee3d74.ctex::
 tag_rareza_raro.png::CompressedTexture2D::920424881632355384::1773509984::1773509985::1::::<><><>0<>0<>ac5fcb2711c5aee4efdd20372fd87597<>res://.godot/imported/tag_rareza_raro.png-04b81a4a8932cc9cc578eea1da385f11.ctex::
 ::res://scenes/::1773489027
@@ -51,6 +51,6 @@ pez.gd::GDScript::8061017105763768285::1773160520::0::1::::<>Node2D<><>0<>0<><>:
 pez.tscn::PackedScene::1406496719772036764::1773161900::0::1::::<><><>0<>0<><>::uid://dm321k0nr5kgj::::res://scenes/pez.gd<>uid://caccnasaooopc::::res://assets/peces/doblon.png
 ShopItemCard.tscn::PackedScene::5138666657900377253::1773161900::0::1::::<><><>0<>0<><>::uid://bk086nx0y3smj::::res://scenes/shop_item_card.gd<>uid://caccnasaooopc::::res://assets/peces/doblon.png<>uid://bva22m6ipd063::::res://assets/ui/tabla.png<>uid://bx28me4bvwn16::::res://assets/ui/tabla_bloqueada (1).png
 shop_item_card.gd::GDScript::3141978303800397225::1773161900::0::1::::<>Button<><>0<>0<><>::
-::res://scenes/UI/::1773509954
-encyclopedia.gd::GDScript::8437767220568998826::1773509954::0::1::::<>Control<><>0<>0<><>::
-encyclopedia_panel.tscn::PackedScene::5995501749127966557::1773509954::0::1::::<><><>0<>0<><>::uid://dshk18d2tj4io::::res://scenes/UI/encyclopedia.gd<>uid://casgo8fwtfcga::::res://assets/ui/libro_abierto.png<>uid://caccnasaooopc::::res://assets/peces/doblon.png<>uid://blwqct8vf4mt8::::res://assets/fuentes/PirataOne-Regular.ttf
+::res://scenes/UI/::1773511531
+encyclopedia.gd::GDScript::8437767220568998826::1773510601::0::1::::<>Control<><>0<>0<><>::
+encyclopedia_panel.tscn::PackedScene::5995501749127966557::1773511531::0::1::::<><><>0<>0<><>::uid://dshk18d2tj4io::::res://scenes/UI/encyclopedia.gd<>uid://casgo8fwtfcga::::res://assets/ui/libro_abierto.png<>uid://caccnasaooopc::::res://assets/peces/doblon.png<>uid://blwqct8vf4mt8::::res://assets/fuentes/PirataOne-Regular.ttf
