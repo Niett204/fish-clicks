@@ -1,13 +1,13 @@
+TextureRect
+HBoxContainer
 VBoxContainer
+MarginContainer
 HTTPRequest
 Label
 TextureButton
 RichTextLabel
-TextureRect
 Control
 Panel
-MarginContainer
-HBoxContainer
 CollisionShape2D
 Node2D
 Button
