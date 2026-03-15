@@ -87,6 +87,7 @@ grow_vertical = 2
 mouse_filter = 1
 
 [node name="TopBar" type="Control" parent="UI/Root/HUD" unique_id=323055221]
+top_level = true
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0

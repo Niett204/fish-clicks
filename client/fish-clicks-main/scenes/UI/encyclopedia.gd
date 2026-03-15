@@ -5,17 +5,20 @@ extends Control
 
 @onready var tag_bg_izq: TextureRect = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/tag_bg_izq
 @onready var tag_rareza_izq: Label = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/tag_bg_izq/TagRarezaIzq
-@onready var pez_izq: TextureRect = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/PezIzq
+@onready var pez_izq: TextureRect = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/marco_pez_izq/PezIzq
 @onready var nombre_izq: Label = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/NombrePezIzq
 @onready var descripcion_izq: RichTextLabel = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/DescripcionIzq
-@onready var stat_izq: Label = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/StatIzq
+@onready var stat_izq: Label = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/HBoxIzq/tag_bg_izq2/StatIzq
+@onready var habitat_izq: Label = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/HBoxIzq/tag_bg_izq3/HabitatIzq
+
 
 @onready var tag_bg_der: TextureRect = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/tag_bg_der
 @onready var tag_rareza_der: Label = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/tag_bg_der/TagRarezaDer
-@onready var pez_der: TextureRect = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/PezDer
+@onready var pez_der: TextureRect = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/marco_pez_der/PezDer
 @onready var nombre_der: Label = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/NombrePezDer
 @onready var descripcion_der: RichTextLabel = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/DescripcionDer
-@onready var stat_der: Label = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/StatDer
+@onready var stat_der: Label = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/HBoxDer/tag_bg_der2/StatDer
+@onready var habitat_der: Label = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/HBoxDer/tag_bg_der3/HabitatDer
 
 @onready var btn_anterior: TextureButton = $BtnAnterior
 @onready var btn_siguiente: TextureButton = $BtnSiguiente
@@ -36,7 +39,6 @@ var request_mode: int = RequestMode.LOAD_ALL_FOR_RAREZAS
 
 
 func _ready() -> void:
-	print("ENCICLOPEDIA READY")
 	visible = false
 
 	http_request.request_completed.connect(_on_request_completed)
@@ -73,9 +75,6 @@ func hacer_request_peces(rareza: String = "") -> void:
 
 	var body_json := JSON.stringify(body_dict)
 	var headers := ["Content-Type: application/json"]
-
-	print("URL:", url)
-	print("BODY:", body_json)
 
 	var err := http_request.request(
 		url,
@@ -187,7 +186,8 @@ func _fill_page(index: int, is_left: bool) -> void:
 	var rareza := capitalizar_rareza(rareza_raw)
 	var nombre := str(fish.get("nombre", ""))
 	var descripcion := str(fish.get("descripcion", ""))
-	var efecto := str(fish.get("efecto_descripcion", ""))
+	var efecto := str(fish.get("efectoDescripcion", ""))
+	var habitat := str(fish.get("habitat", ""))
 
 	if is_left:
 		tag_rareza_izq.text = rareza
@@ -195,6 +195,7 @@ func _fill_page(index: int, is_left: bool) -> void:
 		nombre_izq.text = nombre
 		descripcion_izq.text = descripcion
 		stat_izq.text = efecto
+		habitat_izq.text = habitat
 		pez_izq.texture = get_fish_texture(int(fish.get("id", -1)))
 	else:
 		tag_rareza_der.text = rareza
@@ -202,6 +203,7 @@ func _fill_page(index: int, is_left: bool) -> void:
 		nombre_der.text = nombre
 		descripcion_der.text = descripcion
 		stat_der.text = efecto
+		habitat_der.text = habitat
 		pez_der.texture = get_fish_texture(int(fish.get("id", -1)))
 
 
@@ -212,6 +214,7 @@ func limpiar_pagina(is_left: bool) -> void:
 		nombre_izq.text = ""
 		descripcion_izq.text = ""
 		stat_izq.text = ""
+		habitat_izq.text = ""
 		pez_izq.texture = null
 	else:
 		tag_rareza_der.text = ""
@@ -219,6 +222,7 @@ func limpiar_pagina(is_left: bool) -> void:
 		nombre_der.text = ""
 		descripcion_der.text = ""
 		stat_der.text = ""
+		habitat_der.text = ""
 		pez_der.texture = null
 
 

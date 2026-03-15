@@ -1,5 +1,5 @@
-TextureRect
 HBoxContainer
+TextureRect
 VBoxContainer
 MarginContainer
 HTTPRequest
