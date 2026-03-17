@@ -40,14 +40,6 @@ texture = ExtResource("1_g574a")
 expand_mode = 3
 stretch_mode = 5
 
-[node name="RarezaContainer" type="VBoxContainer" parent="FondoLibro" unique_id=1042103093]
-layout_mode = 0
-offset_left = 952.99994
-offset_top = 89.0
-offset_right = 990.8478
-offset_bottom = 120.18362
-scale = Vector2(0.88416237, 16.308983)
-
 [node name="ContenedorLibro" type="HBoxContainer" parent="FondoLibro" unique_id=1023908088]
 layout_mode = 1
 anchors_preset = 15
@@ -220,10 +212,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 52.272743
-offset_top = 2.0833278
-offset_right = 17.272736
-offset_bottom = 2.083313
+offset_left = 5.0
+offset_top = 2.083
+offset_right = -30.0
+offset_bottom = 2.0830078
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 40
@@ -237,7 +229,7 @@ layout_mode = 2
 [node name="tag_bg_der" type="TextureRect" parent="FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer" unique_id=923994571]
 custom_minimum_size = Vector2(80, 70)
 layout_mode = 2
-size_flags_horizontal = 0
+size_flags_horizontal = 8
 expand_mode = 2
 stretch_mode = 5
 
@@ -360,6 +352,25 @@ autowrap_mode = 3
 max_lines_visible = 1
 text_direction = 1
 language = "es"
+
+[node name="RarezaPanel" type="Control" parent="FondoLibro" unique_id=1887276510]
+custom_minimum_size = Vector2(30, 220)
+anchors_preset = 0
+offset_left = 956.0
+offset_top = 84.0
+offset_right = 1006.0
+offset_bottom = 304.0
+scale = Vector2(0.67999756, 2.1999996)
+
+[node name="RarezaContainer" type="VBoxContainer" parent="FondoLibro/RarezaPanel" unique_id=1042103093]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -90.0
+offset_right = -90.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="BtnAnterior" type="TextureButton" parent="." unique_id=30782975]
 layout_mode = 0

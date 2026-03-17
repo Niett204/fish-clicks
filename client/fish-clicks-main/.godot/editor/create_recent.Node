@@ -1,3 +1,4 @@
+Control
 HBoxContainer
 TextureRect
 VBoxContainer
@@ -6,7 +7,6 @@ HTTPRequest
 Label
 TextureButton
 RichTextLabel
-Control
 Panel
 CollisionShape2D
 Node2D
