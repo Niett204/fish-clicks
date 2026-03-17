@@ -1,7 +1,7 @@
 extends Control
 
 @onready var http_request: HTTPRequest = $HTTPRequest
-@onready var rareza_container: VBoxContainer = $FondoLibro/RarezaContainer
+@onready var rareza_container: VBoxContainer = $FondoLibro/RarezaPanel/RarezaContainer
 
 @onready var tag_bg_izq: TextureRect = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/tag_bg_izq
 @onready var tag_rareza_izq: Label = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/tag_bg_izq/TagRarezaIzq
@@ -10,7 +10,9 @@ extends Control
 @onready var descripcion_izq: RichTextLabel = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/DescripcionIzq
 @onready var stat_izq: Label = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/HBoxIzq/tag_bg_izq2/StatIzq
 @onready var habitat_izq: Label = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/HBoxIzq/tag_bg_izq3/HabitatIzq
-
+@onready var marco_pez_izq: TextureRect = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/marco_pez_izq
+@onready var tag_bg_izq2: TextureRect = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/HBoxIzq/tag_bg_izq2
+@onready var tag_bg_izq3: TextureRect = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/HBoxIzq/tag_bg_izq3
 
 @onready var tag_bg_der: TextureRect = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/tag_bg_der
 @onready var tag_rareza_der: Label = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/tag_bg_der/TagRarezaDer
@@ -19,6 +21,9 @@ extends Control
 @onready var descripcion_der: RichTextLabel = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/DescripcionDer
 @onready var stat_der: Label = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/HBoxDer/tag_bg_der2/StatDer
 @onready var habitat_der: Label = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/HBoxDer/tag_bg_der3/HabitatDer
+@onready var marco_pez_der: TextureRect = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/marco_pez_der
+@onready var tag_bg_der2: TextureRect = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/HBoxDer/tag_bg_der2
+@onready var tag_bg_der3: TextureRect = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/HBoxDer/tag_bg_der3
 
 @onready var btn_anterior: TextureButton = $BtnAnterior
 @onready var btn_siguiente: TextureButton = $BtnSiguiente
@@ -28,7 +33,7 @@ var current_page: int = 0
 var rareza_actual: String = ""
 var rarezas_disponibles: Array = []
 
-var pez_ids_desbloqueados: Array[int] = [1]
+var pez_ids_desbloqueados: Array[int] = [1,2]
 
 enum RequestMode {
 	LOAD_ALL_FOR_RAREZAS,
@@ -141,19 +146,72 @@ func crear_botones_rareza() -> void:
 	for child in rareza_container.get_children():
 		child.queue_free()
 
-	var btn_todas := Button.new()
-	btn_todas.text = "Todas"
-	btn_todas.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	btn_todas.pressed.connect(func(): cambiar_rareza(""))
-	rareza_container.add_child(btn_todas)
+	_anadir_tab_todos()
 
 	for r in rarezas_disponibles:
-		var btn := Button.new()
-		btn.text = capitalizar_rareza(r)
-		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn.pressed.connect(func(): cambiar_rareza(r))
-		rareza_container.add_child(btn)
+		_anadir_tab_rareza(r)
 
+
+func _anadir_tab_rareza(rareza: String) -> void:
+	var btn := TextureButton.new()
+
+	var textura := get_boton_rareza_texture(rareza)
+	if textura == null:
+		return
+
+	btn.texture_normal = textura
+	btn.texture_hover = textura
+	btn.texture_pressed = textura
+
+	# Estas dos cosas son las que tú necesitas
+	btn.ignore_texture_size = true
+	btn.stretch_mode = TextureButton.STRETCH_SCALE
+	btn.custom_minimum_size = Vector2(40, 30)
+
+	# Evita que el VBox lo estire
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+	btn.pressed.connect(func(): cambiar_rareza(rareza))
+
+	rareza_container.add_child(btn)
+	
+func get_boton_rareza_texture(rareza: String) -> Texture2D:
+	match rareza.to_lower():
+		"comun":
+			return load("res://assets/ui/tags/tag_comun_vertical_OK.png")
+		"raro":
+			return load("res://assets/ui/tags/tag_raro_vertical_OK.png")
+		"epico":
+			return load("res://assets/ui/tags/tag_epico_vertical_OK.png")
+		"mitico":
+			return load("res://assets/ui/tags/tag_mitico_vertical_OK.png")
+		"ancestral":
+			return load("res://assets/ui/tags/tag_ancestral_vertical_OK.png")
+		_:
+			return null
+			
+func _anadir_tab_todos() -> void:
+	var btn := TextureButton.new()
+
+	var textura := load("res://assets/ui/tags/tag_todos_vertical_OK.png")
+	if textura == null:
+		return
+
+	btn.texture_normal = textura
+	btn.texture_hover = textura
+	btn.texture_pressed = textura
+
+	btn.ignore_texture_size = true
+	btn.stretch_mode = TextureButton.STRETCH_SCALE
+	btn.custom_minimum_size = Vector2(40, 30)
+
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+	btn.pressed.connect(func(): cambiar_rareza(""))
+
+	rareza_container.add_child(btn)
 
 func cambiar_rareza(nueva_rareza: String) -> void:
 	if rareza_actual == nueva_rareza:
@@ -192,38 +250,72 @@ func _fill_page(index: int, is_left: bool) -> void:
 	if is_left:
 		tag_rareza_izq.text = rareza
 		tag_bg_izq.texture = get_rareza_texture(rareza_raw)
+
+		marco_pez_izq.texture = get_marco_pez_texture()
+		pez_izq.texture = get_fish_texture(int(fish.get("id", -1)))
+
 		nombre_izq.text = nombre
 		descripcion_izq.text = descripcion
+
+		tag_bg_izq2.texture = get_tag_info_texture()
 		stat_izq.text = efecto
+
+		tag_bg_izq3.texture = get_tag_info_texture()
 		habitat_izq.text = habitat
-		pez_izq.texture = get_fish_texture(int(fish.get("id", -1)))
 	else:
 		tag_rareza_der.text = rareza
 		tag_bg_der.texture = get_rareza_texture(rareza_raw)
+
+		marco_pez_der.texture = get_marco_pez_texture()
+		pez_der.texture = get_fish_texture(int(fish.get("id", -1)))
+
 		nombre_der.text = nombre
 		descripcion_der.text = descripcion
+
+		tag_bg_der2.texture = get_tag_info_texture()
 		stat_der.text = efecto
+
+		tag_bg_der3.texture = get_tag_info_texture()
 		habitat_der.text = habitat
-		pez_der.texture = get_fish_texture(int(fish.get("id", -1)))
 
 
 func limpiar_pagina(is_left: bool) -> void:
 	if is_left:
 		tag_rareza_izq.text = ""
 		tag_bg_izq.texture = null
+
+		marco_pez_izq.texture = null
+		pez_izq.texture = null
+
 		nombre_izq.text = ""
 		descripcion_izq.text = ""
+
+		tag_bg_izq2.texture = null
 		stat_izq.text = ""
+
+		tag_bg_izq3.texture = null
 		habitat_izq.text = ""
-		pez_izq.texture = null
 	else:
 		tag_rareza_der.text = ""
 		tag_bg_der.texture = null
+
+		marco_pez_der.texture = null
+		pez_der.texture = null
+
 		nombre_der.text = ""
 		descripcion_der.text = ""
+
+		tag_bg_der2.texture = null
 		stat_der.text = ""
+
+		tag_bg_der3.texture = null
 		habitat_der.text = ""
-		pez_der.texture = null
+		
+func get_marco_pez_texture() -> Texture2D:
+	return load("res://assets/ui/marco_peces.png")
+
+func get_tag_info_texture() -> Texture2D:
+	return load("res://assets/ui/rarezas/tag_rareza_default.png")
 
 
 func _on_btn_anterior_pressed() -> void:
@@ -248,20 +340,24 @@ func get_fish_texture(fish_id: int) -> Texture2D:
 	match fish_id:
 		1:
 			return load("res://assets/peces/doblon.png")
+		2:
+			return load("res://assets/peces/sobrasada.png")
 		_:
 			return null
-
 func get_rareza_texture(rareza: String) -> Texture2D:
 	match rareza.to_lower():
 		"comun":
 			var tex = load("res://assets/ui/rarezas/tag_rareza_comun.png")
-			print("TEXTURA COMUN: ", tex)
+			return tex
+		"raro":
+			var tex = load("res://assets/ui/rarezas/tag_rareza_raro.png")
 			return tex
 		_:
 			return null
 
 func set_pez_ids_desbloqueados(ids: Array[int]) -> void:
 	pez_ids_desbloqueados = ids
+	cargar_rarezas_iniciales()
 
 
 func open() -> void:
