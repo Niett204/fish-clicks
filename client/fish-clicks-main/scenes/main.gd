@@ -1,13 +1,21 @@
 extends Node2D
 
+const ENCYCLOPEDIA_FISH_IDS := {
+	"fish_basic": 1,
+	"fish_sobrasada": 2,
+	"fish_rufinus": 3,
+}
 @export var floating_text_scene: PackedScene
 @export var fish_scene: PackedScene
 @export var dps_per_fish: float = 1.0
 @export var shop_item_card_scene: PackedScene
 
-@onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var shop_panel: Control = $UI/Root/HUD/TiendaPanel
 @onready var btn_shop_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnShop
+@onready var encyclopedia_panel: Control = $UI/Root/HUD/EncyclopediaPanel
+@onready var btn_encyclopedia_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnEncyclopedia
+
+@onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var chest: Area2D = $Cofre
 @onready var chest_sprite: Sprite2D = $Cofre/Sprite2D
 @onready var fish_layer = $PecesLayer
@@ -27,6 +35,7 @@ const ITEMS := {
 		"title": "Doblon",
 		"icon": "res://assets/peces/doblon.png",
 		"unlock_price": 10,
+		"unlock_price": 1,
 		"kind": "passive",
 		"base_price": 25.0,
 		"price_growth": 1.15,
@@ -81,31 +90,39 @@ var shop_open := false
 var shop_tween: Tween
 var shop_x_open: float
 var shop_x_closed: float
+
 var _block_info_hover := false
 var hud_visible := true
 
 func _ready() -> void:
 	http_request.request_completed.connect(_on_request_completed)
-	
+
 	var url := "https://fish-clicks.onrender.com/api/test"
 	http_request.request(url)
-	
+
 	for k in ITEMS.keys():
 		var id := String(k)
 		levels[id] = 0
 		unlocked[id] = int(ITEMS[id].get("unlock_price", 0)) == 0
 		lifetime_generated[id] = 0.0
+
 	shop_panel.visible = false
+	encyclopedia_panel.visible = false
 	chest_base_scale = chest_sprite.scale
 
 	btn_hide.pressed.connect(func():
 		play_squish(btn_shop_icon)
 		_toggle_hud()
 	)
-	
+
 	btn_shop_icon.pressed.connect(func():
 		play_squish(btn_shop_icon)
 		toggle_shop()
+	)
+
+	btn_encyclopedia_icon.pressed.connect(func():
+		play_squish(btn_encyclopedia_icon)
+		toggle_encyclopedia()
 	)
 
 	tab_container.tab_changed.connect(_on_tab_changed)
@@ -114,14 +131,15 @@ func _ready() -> void:
 
 	_update_cps()
 	_update_ui()
-	
-	await get_tree().process_frame  # asegura tamaños correctos
-	
+	_actualizar_peces_desbloqueados_en_enciclopedia()
+
+	await get_tree().process_frame
+
 	shop_x_open = shop_panel.position.x
-	shop_x_closed = shop_x_open + shop_panel.size.x + 20  # 20px extra fuera
-	
+	shop_x_closed = shop_x_open + shop_panel.size.x + 20
+
 	shop_panel.position.x = shop_x_closed
-	shop_panel.visible = true  # importante: visible para que pueda animarse
+	shop_panel.visible = true
 	shop_open = false
 
 func _on_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
@@ -140,6 +158,9 @@ func _toggle_hud():
 func toggle_shop() -> void:
 	shop_open = !shop_open
 
+	if shop_open:
+		encyclopedia_panel.visible = false
+
 	if not shop_open and info_panel:
 		info_panel.request_hide()
 
@@ -152,7 +173,19 @@ func toggle_shop() -> void:
 
 	if shop_open:
 		_on_tab_changed(tab_container.current_tab)
+		
+func toggle_encyclopedia() -> void:
+	encyclopedia_panel.visible = !encyclopedia_panel.visible
 
+	if encyclopedia_panel.visible:
+		_actualizar_peces_desbloqueados_en_enciclopedia()
+		shop_open = false
+		if info_panel:
+			info_panel.request_hide()
+		if shop_tween:
+			shop_tween.kill()
+		shop_panel.position.x = shop_x_closed
+		
 func _on_tab_changed(tab: int) -> void:
 	_block_info_hover = true
 	if info_panel:
@@ -342,7 +375,8 @@ func _on_unlock_pressed(id: String) -> void:
 
 	coins -= unlock_price
 	unlocked[id] = true
-	_update_ui()  # esto refresca cards
+	_update_ui()
+	_actualizar_peces_desbloqueados_en_enciclopedia()
 
 func update_shop_cards() -> void:
 	for card in list_peces.get_children():
@@ -599,3 +633,14 @@ func get_current_dps_contribution(id: String) -> float:
 func get_lifetime_generated_text(id: String) -> String:
 	var amount := float(lifetime_generated.get(id, 0.0))
 	return "%s doblones" % format_with_separator(int(amount))
+
+# ENCICLOPEDIA
+func _actualizar_peces_desbloqueados_en_enciclopedia() -> void:
+	var ids_desbloqueados: Array[int] = []
+
+	for item_id in ENCYCLOPEDIA_FISH_IDS.keys():
+		if bool(unlocked.get(item_id, false)):
+			ids_desbloqueados.append(int(ENCYCLOPEDIA_FISH_IDS[item_id]))
+
+	if encyclopedia_panel.has_method("set_pez_ids_desbloqueados"):
+		encyclopedia_panel.set_pez_ids_desbloqueados(ids_desbloqueados)

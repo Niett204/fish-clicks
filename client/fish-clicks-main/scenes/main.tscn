@@ -17,6 +17,9 @@
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
 [ext_resource type="PackedScene" uid="uid://dxlxsrqe6elta" path="res://scenes/tienda_panel.tscn" id="16_0ld40"]
 [ext_resource type="PackedScene" uid="uid://syr14kxtcpdh" path="res://scenes/info_extra_panel.tscn" id="17_dp3eg"]
+[ext_resource type="Texture2D" uid="uid://tyjvk13keej5" path="res://assets/ui/alga.png" id="18_yc10j"]
+[ext_resource type="Texture2D" uid="uid://bf4pt3ldg3d0c" path="res://assets/ui/bandera.png" id="19_0ld40"]
+[ext_resource type="PackedScene" uid="uid://crojbj03flfr6" path="res://scenes/UI/encyclopedia_panel.tscn" id="20_yc10j"]
 [ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
@@ -84,6 +87,7 @@ grow_vertical = 2
 mouse_filter = 1
 
 [node name="TopBar" type="Control" parent="UI/Root/HUD" unique_id=323055221]
+top_level = true
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -251,6 +255,14 @@ grow_vertical = 1
 [node name="InfoExtraPanel" parent="UI/Root/HUD" unique_id=740572350 instance=ExtResource("17_dp3eg")]
 visible = false
 layout_mode = 1
+
+[node name="EncyclopediaPanel" parent="UI/Root/HUD" unique_id=1091957969 instance=ExtResource("20_yc10j")]
+layout_mode = 1
+offset_left = 33.0
+offset_top = 18.0
+offset_right = -22.35254
+offset_bottom = -29.48291
+scale = Vector2(0.99211466, 1.0108906)
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]
 custom_minimum_size = Vector2(32, 32)
