@@ -41,7 +41,7 @@ var current_page: int = 0
 var rareza_actual: String = ""
 var rarezas_disponibles: Array = []
 
-var pez_ids_desbloqueados: Array[int] = [1,2,3]
+var pez_ids_desbloqueados: Array[int] = []
 
 enum RequestMode {
 	LOAD_ALL_FOR_RAREZAS,
