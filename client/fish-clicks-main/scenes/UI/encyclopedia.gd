@@ -27,13 +27,21 @@ extends Control
 
 @onready var btn_anterior: TextureButton = $BtnAnterior
 @onready var btn_siguiente: TextureButton = $BtnSiguiente
+@onready var btn_salir: TextureButton = $BtnSalir
+
+const BUTTON_MODULATE_NORMAL := Color(1.0, 1.0, 1.0, 1.0)
+const BUTTON_MODULATE_HOVER := Color(0.85, 0.85, 0.85, 1.0)
+const BUTTON_MODULATE_PRESSED := Color(0.65, 0.65, 0.65, 1.0)
+
+const NAV_HOVER_OFFSET := 6.0
+const NAV_PRESSED_OFFSET := 2.0
 
 var fishes: Array = []
 var current_page: int = 0
 var rareza_actual: String = ""
 var rarezas_disponibles: Array = []
 
-var pez_ids_desbloqueados: Array[int] = [1,2]
+var pez_ids_desbloqueados: Array[int] = [1,2,3]
 
 enum RequestMode {
 	LOAD_ALL_FOR_RAREZAS,
@@ -50,8 +58,45 @@ func _ready() -> void:
 	btn_anterior.pressed.connect(_on_btn_anterior_pressed)
 	btn_siguiente.pressed.connect(_on_btn_siguiente_pressed)
 
-	cargar_rarezas_iniciales()
+	_configurar_boton_navegacion(btn_anterior, -1)
+	_configurar_boton_navegacion(btn_siguiente, 1)
 
+	btn_salir.pressed.connect(_on_btn_salir_pressed)
+	_configurar_boton_salir(btn_salir)
+
+	cargar_rarezas_iniciales()
+	
+func _on_btn_salir_pressed() -> void:
+	close()
+	
+func _configurar_boton_salir(btn: TextureButton) -> void:
+	var pos_original: Vector2 = btn.position
+
+	btn.modulate = BUTTON_MODULATE_NORMAL
+
+	btn.mouse_entered.connect(func():
+		btn.modulate = BUTTON_MODULATE_HOVER
+		btn.position = pos_original + Vector2(0, -3)
+	)
+
+	btn.mouse_exited.connect(func():
+		btn.modulate = BUTTON_MODULATE_NORMAL
+		btn.position = pos_original
+	)
+
+	btn.button_down.connect(func():
+		btn.modulate = BUTTON_MODULATE_PRESSED
+		btn.position = pos_original + Vector2(0, -1)
+	)
+
+	btn.button_up.connect(func():
+		if btn.get_rect().has_point(btn.get_local_mouse_position()):
+			btn.modulate = BUTTON_MODULATE_HOVER
+			btn.position = pos_original + Vector2(0, -3)
+		else:
+			btn.modulate = BUTTON_MODULATE_NORMAL
+			btn.position = pos_original
+	)
 
 func cargar_rarezas_iniciales() -> void:
 	request_mode = RequestMode.LOAD_ALL_FOR_RAREZAS
@@ -131,6 +176,35 @@ func _on_request_completed(
 			fishes = data
 			current_page = 0
 			update_book()
+			
+func _configurar_boton_navegacion(btn: TextureButton, direccion: int) -> void:
+	var pos_original: Vector2 = btn.position
+
+	btn.modulate = BUTTON_MODULATE_NORMAL
+
+	btn.mouse_entered.connect(func():
+		btn.modulate = BUTTON_MODULATE_HOVER
+		btn.position = pos_original + Vector2(NAV_HOVER_OFFSET * direccion, 0)
+	)
+
+	btn.mouse_exited.connect(func():
+		btn.modulate = BUTTON_MODULATE_NORMAL
+		btn.position = pos_original
+	)
+
+	btn.button_down.connect(func():
+		btn.modulate = BUTTON_MODULATE_PRESSED
+		btn.position = pos_original + Vector2(NAV_PRESSED_OFFSET * direccion, 0)
+	)
+
+	btn.button_up.connect(func():
+		if btn.get_rect().has_point(btn.get_local_mouse_position()):
+			btn.modulate = BUTTON_MODULATE_HOVER
+			btn.position = pos_original + Vector2(NAV_HOVER_OFFSET * direccion, 0)
+		else:
+			btn.modulate = BUTTON_MODULATE_NORMAL
+			btn.position = pos_original
+	)
 
 
 func guardar_rarezas_disponibles(data: Array) -> void:
@@ -163,18 +237,43 @@ func _anadir_tab_rareza(rareza: String) -> void:
 	btn.texture_hover = textura
 	btn.texture_pressed = textura
 
-	# Estas dos cosas son las que tú necesitas
 	btn.ignore_texture_size = true
 	btn.stretch_mode = TextureButton.STRETCH_SCALE
 	btn.custom_minimum_size = Vector2(40, 30)
 
-	# Evita que el VBox lo estire
 	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
 	btn.pressed.connect(func(): cambiar_rareza(rareza))
 
+	_configurar_estados_boton(btn)
+
 	rareza_container.add_child(btn)
+	
+func _configurar_estados_boton(btn: TextureButton) -> void:
+	btn.modulate = BUTTON_MODULATE_NORMAL
+
+	btn.mouse_entered.connect(func():
+		if btn.button_pressed:
+			btn.modulate = BUTTON_MODULATE_PRESSED
+		else:
+			btn.modulate = BUTTON_MODULATE_HOVER
+	)
+
+	btn.mouse_exited.connect(func():
+		btn.modulate = BUTTON_MODULATE_NORMAL
+	)
+
+	btn.button_down.connect(func():
+		btn.modulate = BUTTON_MODULATE_PRESSED
+	)
+
+	btn.button_up.connect(func():
+		if btn.get_rect().has_point(btn.get_local_mouse_position()):
+			btn.modulate = BUTTON_MODULATE_HOVER
+		else:
+			btn.modulate = BUTTON_MODULATE_NORMAL
+	)
 	
 func get_boton_rareza_texture(rareza: String) -> Texture2D:
 	match rareza.to_lower():
@@ -210,6 +309,8 @@ func _anadir_tab_todos() -> void:
 	btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
 	btn.pressed.connect(func(): cambiar_rareza(""))
+
+	_configurar_estados_boton(btn)
 
 	rareza_container.add_child(btn)
 

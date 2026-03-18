@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1773762817
+::res://::1773858138
 icon.svg::CompressedTexture2D::4334459046159358899::1772123122::1773681429::1::::<><><>0<>0<>3b53763b61da07aac68bd440df64e7d9<>res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex::
 ::res://assets/::1773490007
 ::res://assets/estructuras/::1773309295
@@ -17,13 +17,15 @@ burbuja.png::CompressedTexture2D::2671062636980613846::1773160520::1773309295::1
 doblon_frontal.png::CompressedTexture2D::5748067032500775508::1773160520::1773309295::1::::<><><>0<>0<>41cf38d21f9975523a03a496ac156656<>res://.godot/imported/doblon_frontal.png-81db1eca2f074975c93a0f866119f38d.ctex::
 doblon_tres_cuartos.png::CompressedTexture2D::3287642687685271042::1773160520::1773309295::1::::<><><>0<>0<>ad30cfea1fbff87365d383729dcfae14<>res://.godot/imported/doblon_tres_cuartos.png-cc1a7af9b151613d8b5d684dd983a9c9.ctex::
 puntero.png::CompressedTexture2D::2236634966310082616::1773160520::1773309294::1::::<><><>0<>0<>771b97a5c378167fc26e205f79ac532e<>res://.godot/imported/puntero.png-88df16f5cd98b3306de7c156a10dbf34.ctex::
-::res://assets/peces/::1773771467
+::res://assets/peces/::1773858139
 doblon.png::CompressedTexture2D::4777114800026373384::1773160520::1773309295::1::::<><><>0<>0<>8e2e07011dd5345ade8ee9ca5c9391a5<>res://.godot/imported/doblon.png-598263ce4a24577e0f36beee02eff5a4.ctex::
-sobrasada.png::CompressedTexture2D::563310522696041991::1773771466::1773771467::1::::<><><>0<>0<>2553fb071d520ea967d646e6c255724e<>res://.godot/imported/sobrasada.png-3cbb1dc7447b871d5cdf878b531ff819.ctex::
-::res://assets/ui/::1773766407
+sobrasada.png::CompressedTexture2D::779959216162865858::1773858127::1773858139::1::::<><><>0<>0<>cf3ae8a8908c77d70ca363feb68bc7f3<>res://.godot/imported/sobrasada.png-3cbb1dc7447b871d5cdf878b531ff819.ctex::
+::res://assets/ui/::1773858587
 alga.png::CompressedTexture2D::1383717616511084576::1773160520::1773309295::1::::<><><>0<>0<>10cee48cd076f68b61b0844be8e177ae<>res://.godot/imported/alga.png-eb6cc19c7ea62864e5e50bb78d2840cc.ctex::
 bandera.png::CompressedTexture2D::2798178029518768192::1773160520::1773309295::1::::<><><>0<>0<>26c6f9e93117b0700fe8365f0a803087<>res://.godot/imported/bandera.png-ea02409f15eafcdd9dd594071fc4c5e0.ctex::
 botella_mensaje.png::CompressedTexture2D::6894167194537983068::1773160520::1773309295::1::::<><><>0<>0<>35dffd27d2df6d89e7295ed9f14cd60e<>res://.godot/imported/botella_mensaje.png-344e7e0f3e35de9f17d0eedede9349d1.ctex::
+cruz.png::CompressedTexture2D::459419309488178803::1773858587::1773858587::1::::<><><>0<>0<>459ae9f2846aa5762db2ebe27f1d5ada<>res://.godot/imported/cruz.png-a0448d6ccc3a6fa7ca743378f8c1a5cf.ctex::
+flecha.png::CompressedTexture2D::161813753778461481::1773856695::1773856695::1::::<><><>0<>0<>b741979f609cd082a205b82c21637893<>res://.godot/imported/flecha.png-b1e95098e2236800012642f116b05aea.ctex::
 libro_abierto.png::CompressedTexture2D::4810391212050290988::1773311811::1773311813::1::::<><><>0<>0<>dedb5cf86ef10960d59b0f871bffc521<>res://.godot/imported/libro_abierto.png-0106dbe9647d5c2befb628ff3e7c066e.ctex::
 marco_peces.png::CompressedTexture2D::8056175174391649970::1773568037::1773568038::1::::<><><>0<>0<>e6f305c04928889569b8f5b2faa07f32<>res://.godot/imported/marco_peces.png-cb958d84d3bc9799e95ab14e63709da7.ctex::
 marco_stats.png::CompressedTexture2D::5690870401930399492::1773568050::1773568052::1::::<><><>0<>0<>659f9c48aa6e3bdd972f87f244f42682<>res://.godot/imported/marco_stats.png-02c11de3d238121da7ca99ac05011229.ctex::
@@ -43,7 +45,7 @@ icono_tienda.png::CompressedTexture2D::1949802868311054618::1773160520::17733092
 tag_rareza_comun.png::CompressedTexture2D::1160892992449789652::1773509984::1773509985::1::::<><><>0<>0<>705ce4ed2e0f05071f02949739509460<>res://.godot/imported/tag_rareza_comun.png-c39d4ee742e30596503eadc4c6ee3d74.ctex::
 tag_rareza_default.png::CompressedTexture2D::5212631502677450957::1773569299::1773569309::1::::<><><>0<>0<>6f21608eb9be4f6b7c2c71e35a9021e9<>res://.godot/imported/tag_rareza_default.png-15e74a2394361cba2eeb2643de257762.ctex::
 tag_rareza_raro.png::CompressedTexture2D::920424881632355384::1773509984::1773509985::1::::<><><>0<>0<>ac5fcb2711c5aee4efdd20372fd87597<>res://.godot/imported/tag_rareza_raro.png-04b81a4a8932cc9cc578eea1da385f11.ctex::
-::res://assets/ui/tags/::1773771746
+::res://assets/ui/tags/::1773771747
 tag_ancestral_vertical_OK.png::CompressedTexture2D::6027199568792061770::1773768422::1773768422::1::::<><><>0<>0<>1ee8d07c754a1f949147b47f3599d9b9<>res://.godot/imported/tag_ancestral_vertical_OK.png-3a42f825ea1eeb49d3f980ae70d15964.ctex::
 tag_comun_vertical_OK.png::CompressedTexture2D::3731262094878358449::1773766418::1773766418::1::::<><><>0<>0<>cda8e8211d02a8a1aeb1801b6d412781<>res://.godot/imported/tag_comun_vertical_OK.png-01574c5a3b23658547d4145137795ea1.ctex::
 tag_epico_vertical_OK.png::CompressedTexture2D::9196478362115957342::1773768422::1773768422::1::::<><><>0<>0<>5ee6590a86e430d7a837b575031cb5c9<>res://.godot/imported/tag_epico_vertical_OK.png-1a7da601c2aba1411fdddccd9e78ca77.ctex::
@@ -62,6 +64,6 @@ pez.gd::GDScript::8061017105763768285::1773160520::0::1::::<>Node2D<><>0<>0<><>:
 pez.tscn::PackedScene::1406496719772036764::1773161900::0::1::::<><><>0<>0<><>::uid://dm321k0nr5kgj::::res://scenes/pez.gd<>uid://caccnasaooopc::::res://assets/peces/doblon.png
 ShopItemCard.tscn::PackedScene::5138666657900377253::1773161900::0::1::::<><><>0<>0<><>::uid://bk086nx0y3smj::::res://scenes/shop_item_card.gd<>uid://caccnasaooopc::::res://assets/peces/doblon.png<>uid://bva22m6ipd063::::res://assets/ui/tabla.png<>uid://bx28me4bvwn16::::res://assets/ui/tabla_bloqueada (1).png
 shop_item_card.gd::GDScript::3141978303800397225::1773161900::0::1::::<>Button<><>0<>0<><>::
-::res://scenes/UI/::1773771411
-encyclopedia.gd::GDScript::8437767220568998826::1773771325::0::1::::<>Control<><>0<>0<><>::
-encyclopedia_panel.tscn::PackedScene::5995501749127966557::1773771411::0::1::::<><><>0<>0<><>::uid://dshk18d2tj4io::::res://scenes/UI/encyclopedia.gd<>uid://casgo8fwtfcga::::res://assets/ui/libro_abierto.png<>uid://blwqct8vf4mt8::::res://assets/fuentes/PirataOne-Regular.ttf<>uid://dm1qa7qppmo7k::::res://assets/ui/marco_peces.png<>uid://cgjbjq3ublcr2::::res://assets/ui/rarezas/tag_rareza_default.png
+::res://scenes/UI/::1773858568
+encyclopedia.gd::GDScript::8437767220568998826::1773858529::0::1::::<>Control<><>0<>0<><>::
+encyclopedia_panel.tscn::PackedScene::5995501749127966557::1773858568::0::1::::<><><>0<>0<><>::uid://dshk18d2tj4io::::res://scenes/UI/encyclopedia.gd<>uid://casgo8fwtfcga::::res://assets/ui/libro_abierto.png<>uid://blwqct8vf4mt8::::res://assets/fuentes/PirataOne-Regular.ttf<>uid://dm1qa7qppmo7k::::res://assets/ui/marco_peces.png<>uid://cgjbjq3ublcr2::::res://assets/ui/rarezas/tag_rareza_default.png<>uid://cknbwrkydgsv::::res://assets/ui/flecha.png

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ld22xmxq3as5"
-path="res://.godot/imported/sobrasada.png-3cbb1dc7447b871d5cdf878b531ff819.ctex"
+uid="uid://gsstlwiuecw6"
+path="res://.godot/imported/cruz.png-a0448d6ccc3a6fa7ca743378f8c1a5cf.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/peces/sobrasada.png"
-dest_files=["res://.godot/imported/sobrasada.png-3cbb1dc7447b871d5cdf878b531ff819.ctex"]
+source_file="res://assets/ui/cruz.png"
+dest_files=["res://.godot/imported/cruz.png-a0448d6ccc3a6fa7ca743378f8c1a5cf.ctex"]
 
 [params]
 
