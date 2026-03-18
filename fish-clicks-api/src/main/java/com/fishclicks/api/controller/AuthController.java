@@ -1,4 +1,8 @@
-import org.apache.catalina.User;
+package com.fishclicks.api.controller;
+
+import com.fishclicks.api.dto.LoginRequest;
+import com.fishclicks.api.dto.LoginResponse;
+import com.fishclicks.api.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,13 +18,13 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request){
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request){
 
-        User user = authService.login(
+        LoginResponse loginResponse = authService.login(
                 request.getEmail(),
                 request.getPassword()
         );
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(loginResponse);
     }
 }

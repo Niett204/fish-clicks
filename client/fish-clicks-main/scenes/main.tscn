@@ -18,6 +18,8 @@
 [ext_resource type="PackedScene" uid="uid://dxlxsrqe6elta" path="res://scenes/tienda_panel.tscn" id="16_0ld40"]
 [ext_resource type="PackedScene" uid="uid://syr14kxtcpdh" path="res://scenes/info_extra_panel.tscn" id="17_dp3eg"]
 [ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
+[ext_resource type="Script" path="res://scenes/profile_button.gd" id="22_profile"]
+[ext_resource type="PackedScene" uid="uid://dlvwq3w2fj13" path="res://scenes/LoginPanel.tscn" id="23_login"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
@@ -106,6 +108,8 @@ layout_mode = 2
 texture_normal = ExtResource("8_eb6dy")
 ignore_texture_size = true
 stretch_mode = 5
+script = ExtResource("22_profile")
+login_panel_scene = ExtResource("23_login")
 
 [node name="BtnOptions" type="TextureButton" parent="UI/Root/HUD/TopBar/LeftGroup" unique_id=544079481]
 custom_minimum_size = Vector2(48, 48)

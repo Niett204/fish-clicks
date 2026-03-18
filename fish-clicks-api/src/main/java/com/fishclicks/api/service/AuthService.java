@@ -1,4 +1,8 @@
-import org.apache.catalina.User;
+package com.fishclicks.api.service;
+
+import com.fishclicks.api.dto.LoginResponse;
+import com.fishclicks.api.entity.User;
+import com.fishclicks.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +12,10 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
-    public User login(String email, String password){
+    @Autowired
+    private JwtService jwtService;
+
+    public LoginResponse login(String email, String password){
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -17,6 +24,8 @@ public class AuthService {
             throw new RuntimeException("Invalid password");
         }
 
-        return user;
+        String token = jwtService.generateToken(user.getId(), user.getEmail());
+
+        return new LoginResponse(token, user.getId());
     }
 }
