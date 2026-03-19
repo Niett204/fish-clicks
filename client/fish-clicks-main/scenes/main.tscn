@@ -19,10 +19,9 @@
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
 [ext_resource type="Texture2D" uid="uid://tyjvk13keej5" path="res://assets/ui/alga.png" id="18_yc10j"]
 [ext_resource type="Texture2D" uid="uid://bf4pt3ldg3d0c" path="res://assets/ui/bandera.png" id="19_0ld40"]
-[ext_resource type="Texture2D" uid="uid://casgo8fwtfcga" path="res://assets/ui/libro_abierto.png" id="20_yc10j"]
 [ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
 [ext_resource type="PackedScene" uid="uid://d4kjqemcayt4t" path="res://scenes/inventario.tscn" id="21_pm3ni"]
-[ext_resource type="Texture2D" uid="uid://caccnasaooopc" path="res://assets/peces/doblon.png" id="21_pm3ni"]
+[ext_resource type="PackedScene" uid="uid://crojbj03flfr6" path="res://scenes/ui/encyclopedia_panel.tscn" id="23_ency"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
@@ -51,8 +50,6 @@ modulate_color = Color(0.83033526, 0.83033514, 0.83033514, 1)
 texture = ExtResource("18_yc10j")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_muem4"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dp3eg"]
 
 [sub_resource type="SystemFont" id="SystemFont_gqmmt"]
 font_italic = true
@@ -431,7 +428,8 @@ theme_override_font_sizes/font_size = 8
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 
-[node name="EncyclopediaPanel" parent="UI/Root/HUD" unique_id=1091957969 instance=ExtResource("20_yc10j")]
+[node name="EncyclopediaPanel" parent="UI/Root/HUD" unique_id=1091957969 instance=ExtResource("23_ency")]
+visible = false
 layout_mode = 1
 offset_left = 33.0
 offset_top = 18.0

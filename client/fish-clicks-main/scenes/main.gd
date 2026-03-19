@@ -1,10 +1,13 @@
 extends Node2D
 
 const ENCYCLOPEDIA_FISH_IDS := {
-	"fish_basic": 1,
-	"fish_sobrasada": 2,
-	"fish_rufinus": 3,
+	"doblon": 1,
+	"sobrasada": 2,
+	"pistacho": 3,
+	"cacho": 4,
+	"ciprion": 5,
 }
+
 @export var floating_text_scene: PackedScene
 @export var fish_scene: PackedScene
 @export var dps_per_fish: float = 1.0
