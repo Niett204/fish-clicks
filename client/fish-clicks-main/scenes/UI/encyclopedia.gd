@@ -49,7 +49,7 @@ enum RequestMode {
 }
 
 var request_mode: int = RequestMode.LOAD_ALL_FOR_RAREZAS
-
+var request_en_curso: bool = false
 
 func _ready() -> void:
 	visible = false
@@ -63,8 +63,6 @@ func _ready() -> void:
 
 	btn_salir.pressed.connect(_on_btn_salir_pressed)
 	_configurar_boton_salir(btn_salir)
-
-	cargar_rarezas_iniciales()
 	
 func _on_btn_salir_pressed() -> void:
 	close()
@@ -109,6 +107,9 @@ func load_fishes(rareza: String = "") -> void:
 
 
 func hacer_request_peces(rareza: String = "") -> void:
+	if request_en_curso:
+		return
+	
 	var url := "https://fish-clicks.onrender.com/enciclopedia/peces"
 
 	var query_params: Array[String] = []
@@ -126,6 +127,8 @@ func hacer_request_peces(rareza: String = "") -> void:
 	var body_json := JSON.stringify(body_dict)
 	var headers := ["Content-Type: application/json"]
 
+	request_en_curso = true
+
 	var err := http_request.request(
 		url,
 		headers,
@@ -134,6 +137,7 @@ func hacer_request_peces(rareza: String = "") -> void:
 	)
 
 	if err != OK:
+		request_en_curso = false
 		push_error("No se pudo lanzar la request de peces")
 
 
@@ -145,6 +149,7 @@ func _on_request_completed(
 ) -> void:
 	print("Código:", response_code)
 	print("Respuesta:", body.get_string_from_utf8())
+	request_en_curso = false
 
 	if response_code != 200:
 		push_error("Error cargando peces: %s" % response_code)
@@ -315,6 +320,9 @@ func _anadir_tab_todos() -> void:
 	rareza_container.add_child(btn)
 
 func cambiar_rareza(nueva_rareza: String) -> void:
+	if request_en_curso:
+		return
+
 	if rareza_actual == nueva_rareza:
 		return
 
