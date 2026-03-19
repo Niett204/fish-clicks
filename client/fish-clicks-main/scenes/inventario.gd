@@ -2,19 +2,23 @@ extends Control
 
 signal close_requested
 signal move_fish_to_inventory(fish_id: String, slot_index: int, habitat_id: String)
-signal move_fish_to_aquarium(fish_id: String, habitat_id: String)
+signal move_fish_to_aquarium(fish_id: String, habitat_id: String, slot_index: int)
+signal move_fish_within_aquarium(from_slot_index: int, to_slot_index: int, habitat_id: String)
+signal habitat_changed(habitat_id: String)
 
 const AQUARIUM_SLOT_SCENE := preload("res://scenes/aquarium_slot.tscn")
 const SHELF_ROW_SCENE := preload("res://scenes/inventory_shelf_row.tscn")
 const INVENTORY_FISH_ITEM_SCENE := preload("res://scenes/inventory_fish_item.tscn")
 const BAG_TEXTURE := preload("res://assets/ui/inventario/bolsa_vacia.png")
+const HABITAT_TAB_TEXTURE := preload("res://assets/ui/rarezas/tag_rareza_comun.png")
 const DROP_DARK_BASE := 0.42
 const DROP_LIGHT_BASE := 0.28
 const DROP_PULSE_AMPLITUDE := 0.10
 const DROP_PULSE_SPEED := 5.5
+const HABITAT_TAB_FONT := preload("res://assets/fuentes/PirataOne-Regular.ttf")
 
-@onready var btn_close: TextureButton = $MarginContainer/Fondo/BtnClose
-@onready var habitat_tabs: HBoxContainer = $MarginContainer/Fondo/HabitatTabs
+@onready var btn_close: TextureButton = $BtnClose
+@onready var habitat_tabs: HBoxContainer = $HabitatTabs
 @onready var pecera_background: TextureRect = $MarginContainer/Fondo/Content/LeftSide/VBoxContainer/PeceraPanel/GlassArea/PeceraBackground
 @onready var label_titulo_pecera: Label = $MarginContainer/Fondo/Content/LeftSide/LabelTituloPecera
 @onready var pecera_grid: GridContainer = $MarginContainer/Fondo/Content/LeftSide/VBoxContainer/PeceraPanel/GlassArea/PeceraBackground/MarginContainer/PeceraGrid
@@ -32,7 +36,7 @@ var current_habitat: String = ""
 var aquarium_data: Dictionary = {}
 var fish_defs: Dictionary = {}
 var fish_inventory: Dictionary = {}
-var min_shelves := 3
+var min_shelves := 4
 
 var drag_fish_id: String = ""
 var drag_source: String = "" # "aquarium" o "inventory"
@@ -45,11 +49,15 @@ var pending_source: String = ""
 var pending_slot_index: int = -1
 var drag_start_mouse_pos: Vector2 = Vector2.ZERO
 const DRAG_THRESHOLD := 10.0
+var aquarium_slots: Array = []
+var hovered_aquarium_slot = null
 
-func _ready() -> void:
-	btn_close.pressed.connect(func():
-		close_requested.emit()
-	)
+func _ready():
+	btn_close.pressed.connect(_on_btn_close_pressed)
+	btn_close.mouse_entered.connect(_on_btn_close_mouse_entered)
+	btn_close.mouse_exited.connect(_on_btn_close_mouse_exited)
+	btn_close.button_down.connect(_on_btn_close_button_down)
+	btn_close.button_up.connect(_on_btn_close_button_up)
 
 	aquarium_drop_zone.visible = false
 	shelf_drop_zone.visible = false
@@ -61,10 +69,10 @@ func _ready() -> void:
 	pecera_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	shelf_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	glass_area.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	habitat_tabs.add_theme_constant_override("separation", 0)
 
 	await get_tree().process_frame
-	print("aquarium_drop_zone rect:", aquarium_drop_zone.get_global_rect())
-	print("shelf_drop_zone rect:", shelf_drop_zone.get_global_rect())
 
 func set_inventory_data(
 	p_habitats: Dictionary,
@@ -87,9 +95,9 @@ func set_inventory_data(
 	if not unlocked_habitats.has(current_habitat):
 		current_habitat = unlocked_habitats[0]
 
+	rebuild_habitat_tabs()
 	build_aquarium_grid()
 	build_shelf_list()
-	rebuild_habitat_tabs()
 	refresh_panel()
 
 func rebuild_habitat_tabs() -> void:
@@ -98,29 +106,125 @@ func rebuild_habitat_tabs() -> void:
 
 	await get_tree().process_frame
 
-	# si solo hay un hábitat, puedes ocultar la barra
 	habitat_tabs.visible = unlocked_habitats.size() > 1
+	habitat_tabs.add_theme_constant_override("separation", 0)
 
 	for habitat_id in unlocked_habitats:
 		if not habitats.has(habitat_id):
 			continue
 
-		var btn := Button.new()
-		btn.text = habitats[habitat_id]["name"]
-		btn.custom_minimum_size = Vector2(140, 48)
+		var btn := TextureButton.new()
+		btn.texture_normal = HABITAT_TAB_TEXTURE
+		btn.ignore_texture_size = true
+		btn.stretch_mode = TextureButton.STRETCH_SCALE
+		btn.mouse_filter = Control.MOUSE_FILTER_STOP
+		btn.clip_contents = true
+
+		var is_selected := habitat_id == current_habitat
+
+		if is_selected:
+			btn.modulate = Color(0.95, 0.85, 0.65, 1.0)
+		else:
+			btn.modulate = Color(1, 1, 1, 1)
+
+		var label := Label.new()
+		label.text = habitats[habitat_id]["name"]
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		label.set_anchors_preset(Control.PRESET_FULL_RECT)
+		label.add_theme_font_override("font", HABITAT_TAB_FONT)
+		label.add_theme_font_size_override("font_size", 16)
+		label.modulate = Color(0.2, 0.12, 0.05, 1.0)
+		
+		var base_scale := Vector2.ONE
+		var hover_scale := Vector2(1.05, 1.05)
+
+		var base_modulate := btn.modulate
+		var hover_modulate := Color(
+			min(base_modulate.r + 0.08, 1.0),
+			min(base_modulate.g + 0.08, 1.0),
+			min(base_modulate.b + 0.08, 1.0),
+			base_modulate.a
+		)
+
+		btn.mouse_entered.connect(func():
+			if habitat_id == current_habitat:
+				return
+
+			var tween := create_tween()
+			tween.set_trans(Tween.TRANS_QUAD)
+			tween.set_ease(Tween.EASE_OUT)
+			tween.parallel().tween_property(btn, "scale", hover_scale, 0.10)
+			tween.parallel().tween_property(btn, "modulate", hover_modulate, 0.10)
+		)
+
+		btn.mouse_exited.connect(func():
+			if habitat_id == current_habitat:
+				return
+
+			var tween := create_tween()
+			tween.set_trans(Tween.TRANS_QUAD)
+			tween.set_ease(Tween.EASE_OUT)
+			tween.parallel().tween_property(btn, "scale", base_scale, 0.10)
+			tween.parallel().tween_property(btn, "modulate", base_modulate, 0.10)
+		)
+		
+		btn.button_down.connect(func():
+			if habitat_id == current_habitat:
+				return
+
+			var tween := create_tween()
+			tween.set_trans(Tween.TRANS_QUAD)
+			tween.set_ease(Tween.EASE_OUT)
+			tween.tween_property(btn, "scale", Vector2(0.97, 0.97), 0.05)
+		)
+
+		btn.button_up.connect(func():
+			if habitat_id == current_habitat:
+				return
+
+			var is_hover := btn.get_global_rect().has_point(get_global_mouse_position())
+			var target_scale := hover_scale if is_hover else base_scale
+			var target_modulate := hover_modulate if is_hover else base_modulate
+
+			var tween := create_tween()
+			tween.set_trans(Tween.TRANS_QUAD)
+			tween.set_ease(Tween.EASE_OUT)
+			tween.parallel().tween_property(btn, "scale", target_scale, 0.08)
+			tween.parallel().tween_property(btn, "modulate", target_modulate, 0.08)
+		)
+		
+		var text_width := HABITAT_TAB_FONT.get_string_size(label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16).x
+
+		btn.custom_minimum_size = Vector2(maxf(ceil(text_width) + 10.0, 76.0), 38.0)
+
+		btn.add_child(label)
 
 		btn.pressed.connect(func():
 			set_current_habitat(habitat_id)
 		)
 
-		habitat_tabs.add_child(btn)
+		var wrap := MarginContainer.new()
+		wrap.add_theme_constant_override("margin_right", -8)
+		wrap.add_child(btn)
+		habitat_tabs.add_child(wrap)
 
 func set_current_habitat(habitat_id: String) -> void:
 	if not unlocked_habitats.has(habitat_id):
 		return
 
+	if current_habitat == habitat_id:
+		return
+
+	clear_drag()
 	current_habitat = habitat_id
+
+	build_aquarium_grid()
+	rebuild_habitat_tabs()
 	refresh_panel()
+
+	habitat_changed.emit(habitat_id)
 
 func refresh_panel() -> void:
 	if not habitats.has(current_habitat):
@@ -135,6 +239,9 @@ func build_aquarium_grid() -> void:
 	for child in pecera_grid.get_children():
 		child.queue_free()
 
+	aquarium_slots.clear()
+	hovered_aquarium_slot = null
+
 	await get_tree().process_frame
 
 	pecera_grid.columns = 5
@@ -144,6 +251,7 @@ func build_aquarium_grid() -> void:
 	for i in range(slots.size()):
 		var slot = AQUARIUM_SLOT_SCENE.instantiate()
 		pecera_grid.add_child(slot)
+		aquarium_slots.append(slot)
 
 		var fish_id = slots[i]
 
@@ -154,6 +262,20 @@ func build_aquarium_grid() -> void:
 			slot.setup(null, i, "")
 		
 		slot.pressed_slot.connect(_on_aquarium_slot_pressed)
+
+func _start_aquarium_slot_highlights() -> void:
+	for slot in aquarium_slots:
+		if slot.my_fish_id == "":
+			slot.start_highlight()
+		else:
+			slot.stop_highlight()
+
+func _stop_aquarium_slot_highlights() -> void:
+	for slot in aquarium_slots:
+		slot.stop_highlight()
+		slot.set_hover_drop_feedback(false)
+
+	hovered_aquarium_slot = null
 
 func build_shelf_list() -> void:
 	for child in shelf_list.get_children():
@@ -185,13 +307,19 @@ func build_shelf_list() -> void:
 			var fish_id := visible_fish[fish_index]
 			var item = INVENTORY_FISH_ITEM_SCENE.instantiate()
 			shelf_row.items_row.add_child(item)
+			var is_shiny := fish_id.ends_with("_shiny")
+			var base_fish_id := fish_id.replace("_shiny", "")
+			var icon_to_use: Texture2D = fish_defs[base_fish_id]["icon"]
+			if fish_defs.has(fish_id):
+				icon_to_use = fish_defs[fish_id]["icon"]
 
 			item.setup(
-				fish_defs[fish_id]["icon"],
+				icon_to_use,
 				int(fish_inventory[fish_id]),
 				BAG_TEXTURE,
 				fish_id,
-				fish_defs[fish_id].get("name", fish_id)
+				fish_defs[base_fish_id].get("name", base_fish_id),
+				is_shiny
 			)
 
 			item.pressed_item.connect(_on_inventory_item_pressed)
@@ -231,9 +359,7 @@ func begin_pending_drag(fish_id: String, source: String, slot_index: int) -> voi
 func start_drag(fish_id: String, source: String, slot_index: int) -> void:
 	if not fish_defs.has(fish_id):
 		return
-
-	print("start_drag | fish:", fish_id, " source:", source, " slot:", slot_index)
-
+		
 	drag_fish_id = fish_id
 	drag_source = source
 	drag_slot_index = slot_index
@@ -241,13 +367,15 @@ func start_drag(fish_id: String, source: String, slot_index: int) -> void:
 
 	aquarium_drop_zone.visible = false
 	shelf_drop_zone.visible = false
-
+	
 	if source == "aquarium":
 		shelf_drop_zone.visible = true
 		shelf_drop_zone.color = Color(0, 0, 0, 0.18)
+		_start_aquarium_slot_highlights()
 	elif source == "inventory":
 		aquarium_drop_zone.visible = true
 		aquarium_drop_zone.color = Color(0, 0, 0, 0.18)
+		_start_aquarium_slot_highlights()
 
 	if drag_preview:
 		drag_preview.queue_free()
@@ -263,6 +391,12 @@ func start_drag(fish_id: String, source: String, slot_index: int) -> void:
 
 	var mouse_pos = get_viewport().get_mouse_position()
 	drag_preview.global_position = mouse_pos - drag_preview.custom_minimum_size / 2.0
+	
+func _get_aquarium_slot_under_mouse(mouse_pos: Vector2):
+	for slot in aquarium_slots:
+		if slot.get_global_rect().has_point(mouse_pos):
+			return slot
+	return null	
 	
 func _process(_delta: float) -> void:
 	var mouse_pos = get_viewport().get_mouse_position()
@@ -294,6 +428,18 @@ func _process(_delta: float) -> void:
 				aquarium_drop_zone.color = Color(0, 0, 0, light_alpha)
 			else:
 				aquarium_drop_zone.color = Color(0, 0, 0, dark_alpha)
+		
+		if drag_source == "inventory":
+			var slot_under_mouse = _get_aquarium_slot_under_mouse(mouse_pos)
+
+			if slot_under_mouse != hovered_aquarium_slot:
+				if hovered_aquarium_slot != null:
+					hovered_aquarium_slot.set_hover_drop_feedback(false)
+
+				hovered_aquarium_slot = slot_under_mouse
+
+				if hovered_aquarium_slot != null and hovered_aquarium_slot.my_fish_id == "":
+					hovered_aquarium_slot.set_hover_drop_feedback(true)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
@@ -308,19 +454,19 @@ func finish_drag() -> void:
 
 	var mouse_pos = get_viewport().get_mouse_position()
 
-	var over_aquarium := _is_point_inside_control(pecera_background, mouse_pos)
 	var over_shelf := _is_point_inside_control(shelf_panel, mouse_pos)
+	var slot_under_mouse = _get_aquarium_slot_under_mouse(mouse_pos)
 
-	print("mouse_pos:", mouse_pos)
-	print("glass_area rect:", glass_area.get_global_rect())
-	print("shelf_panel rect:", shelf_panel.get_global_rect())
-	print("finish_drag | source:", drag_source, " fish:", drag_fish_id, " over_aquarium:", over_aquarium, " over_shelf:", over_shelf)
+	if drag_source == "aquarium":
+		if over_shelf:
+			move_fish_to_inventory.emit(drag_fish_id, drag_slot_index, current_habitat)
+		elif slot_under_mouse != null and slot_under_mouse.my_slot_index != drag_slot_index:
+			move_fish_within_aquarium.emit(drag_slot_index, slot_under_mouse.my_slot_index, current_habitat)
 
-	if drag_source == "aquarium" and over_shelf:
-		move_fish_to_inventory.emit(drag_fish_id, drag_slot_index, current_habitat)
-	elif drag_source == "inventory" and over_aquarium:
-		move_fish_to_aquarium.emit(drag_fish_id, current_habitat)
-
+	elif drag_source == "inventory":
+		if slot_under_mouse != null:
+			move_fish_to_aquarium.emit(drag_fish_id, current_habitat, slot_under_mouse.my_slot_index)
+		
 	clear_drag()
 
 func clear_drag() -> void:
@@ -328,6 +474,8 @@ func clear_drag() -> void:
 	drag_fish_id = ""
 	drag_source = ""
 	drag_slot_index = -1
+
+	_stop_aquarium_slot_highlights()
 
 	aquarium_drop_zone.visible = false
 	shelf_drop_zone.visible = false
@@ -338,3 +486,34 @@ func clear_drag() -> void:
 
 func _is_point_inside_control(control: Control, point: Vector2) -> bool:
 	return control.get_global_rect().has_point(point)
+
+func _on_btn_close_pressed() -> void:
+	close_requested.emit()
+
+func _on_btn_close_mouse_entered() -> void:
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(btn_close, "scale", Vector2(1.08, 1.08), 0.08)
+	tween.parallel().tween_property(btn_close, "modulate", Color(0.85, 0.85, 0.85, 1.0), 0.08)
+
+func _on_btn_close_mouse_exited() -> void:
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(btn_close, "scale", Vector2.ONE, 0.08)
+	tween.parallel().tween_property(btn_close, "modulate", Color(1, 1, 1, 1), 0.08)
+
+func _on_btn_close_button_down() -> void:
+	var tween := create_tween()
+	tween.tween_property(btn_close, "scale", Vector2(0.94, 0.94), 0.05)
+	btn_close.modulate = Color(0.7, 0.7, 0.7, 1.0)
+
+func _on_btn_close_button_up() -> void:
+	var hover := btn_close.get_global_rect().has_point(get_global_mouse_position())
+	var target_scale := Vector2(1.08, 1.08) if hover else Vector2.ONE
+	var target_modulate := Color(0.85, 0.85, 0.85, 1.0) if hover else Color(1, 1, 1, 1)
+
+	var tween := create_tween()
+	tween.tween_property(btn_close, "scale", target_scale, 0.06)
+	tween.parallel().tween_property(btn_close, "modulate", target_modulate, 0.06)

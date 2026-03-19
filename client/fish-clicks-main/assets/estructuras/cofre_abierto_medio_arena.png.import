@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ia4v3fqsr7p8"
-path="res://.godot/imported/sobrasada.png-3cbb1dc7447b871d5cdf878b531ff819.ctex"
+uid="uid://dbqc7i7nqo1d8"
+path="res://.godot/imported/cofre_abierto_medio_arena.png-ecb3c04271a91dd5a2806091481ba6f2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/peces/sobrasada.png"
-dest_files=["res://.godot/imported/sobrasada.png-3cbb1dc7447b871d5cdf878b531ff819.ctex"]
+source_file="res://assets/estructuras/cofre_abierto_medio_arena.png"
+dest_files=["res://.godot/imported/cofre_abierto_medio_arena.png-ecb3c04271a91dd5a2806091481ba6f2.ctex"]
 
 [params]
 

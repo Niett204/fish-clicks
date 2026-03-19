@@ -31,7 +31,7 @@ const ENCYCLOPEDIA_FISH_IDS := {
 @onready var http_request: HTTPRequest = $HTTPRequest
 
 const ITEMS := {
-	"fish_basic": {
+	"doblon": {
 		"tab": "Peces",
 		"title": "Doblon",
 		"icon": "res://assets/peces/doblon.png",
@@ -42,6 +42,51 @@ const ITEMS := {
 		"base_value": 1.0,
 		"value_label": "DPS"
 	},
+	"sobrasada": {
+		"tab": "Peces",
+		"title": "Sobrasada",
+		"icon": "res://assets/peces/sobrasada.png",
+		"unlock_price": 10,
+		"kind": "passive",
+		"base_price": 25.0,
+		"price_growth": 1.15,
+		"base_value": 1.0,
+		"value_label": "DPS"
+	},
+	"pistacho": {
+		"tab": "Peces",
+		"title": "Pistacho",
+		"icon": "res://assets/peces/pistacho.png",
+		"unlock_price": 10,
+		"kind": "passive",
+		"base_price": 25.0,
+		"price_growth": 1.15,
+		"base_value": 1.0,
+		"value_label": "DPS"
+	},
+	"cacho": {
+		"tab": "Peces",
+		"title": "Cacho",
+		"icon": "res://assets/peces/cacho.png",
+		"unlock_price": 10,
+		"kind": "passive",
+		"base_price": 25.0,
+		"price_growth": 1.15,
+		"base_value": 1.0,
+		"value_label": "DPS"
+	},
+	"ciprion": {
+		"tab": "Peces",
+		"title": "Ciprión",
+		"icon": "res://assets/peces/ciprion.png",
+		"unlock_price": 10,
+		"kind": "passive",
+		"base_price": 25.0,
+		"price_growth": 1.15,
+		"base_value": 1.0,
+		"value_label": "DPS"
+	},
+
 	"cofre": {
 		"tab": "Estructuras",
 		"title": "Cofre",
@@ -71,46 +116,78 @@ const HABITATS := {
 	"habitat_1": {
 		"name": "Acuario",
 		"background": preload("res://assets/fondos/fondo1.png")
+	},
+	"habitat_2": {
+		"name": "Vacío",
+		"background": preload("res://assets/fondos/fondo2.png")
 	}
-	# en el futuro:
-	# "habitat_2": {
-	# 	"name": "Hábitat 2",
-	# 	"background": preload("res://assets/fondos/fondo2.png")
-	# }
 }
 
-var unlocked_habitats: Array[String] = ["habitat_1"]
+var unlocked_habitats: Array[String] = ["habitat_1", "habitat_2"]
 var current_habitat: String = "habitat_1"
 
 var aquarium_data := {
-	"habitat_1": [null, null, null, null, null, null, null, null, null, null]
+	"habitat_1": [null, null, null, null, null, null, null, null, null, null],
+	"habitat_2": [null, null, null, null, null, null, null, null, null, null]
 }
 
 var fish_inventory := {
-	"fish_basic": 4,
+	"doblon": 4,
+	"doblon_shiny": 1,
 	"sobrasada": 3,
-	"pacos": 1000,
-	"fish_shiny": 2
+	"sobrasada_shiny": 1,
+	"pistacho": 2,
+	"cacho": 1,
+	"ciprion": 2
 }
 
 var fish_defs := {
-	"fish_basic": {
+	"doblon": {
 		"name": "Doblon",
 		"icon": preload("res://assets/peces/doblon.png")
 	},
+	"doblon_shiny": {
+		"name": "Doblon",
+		"icon": preload("res://assets/peces/doblon_shiny.png")
+	},
+
 	"sobrasada": {
-		"name": "Doblon",
-		"icon": preload("res://assets/peces/doblon.png")
+		"name": "Sobrasada",
+		"icon": preload("res://assets/peces/sobrasada.png")
 	},
-	"pacos": {
-		"name": "Doblon",
-		"icon": preload("res://assets/peces/doblon.png")
+	"sobrasada_shiny": {
+		"name": "Sobrasada",
+		"icon": preload("res://assets/peces/sobrasada_shiny.png")
 	},
-	"fish_shiny": {
-		"name": "Doblon shiny",
-		"icon": preload("res://assets/peces/doblon.png")
+
+	"pistacho": {
+		"name": "Pistacho",
+		"icon": preload("res://assets/peces/pistacho.png")
+	},
+	"pistacho_shiny": {
+		"name": "Pistacho",
+		"icon": preload("res://assets/peces/doblon_shiny.png")
+	},
+
+	"cacho": {
+		"name": "Cacho",
+		"icon": preload("res://assets/peces/cacho.png")
+	},
+	"cacho_shiny": {
+		"name": "Cacho",
+		"icon": preload("res://assets/peces/doblon_shiny.png")
+	},
+
+	"ciprion": {
+		"name": "Ciprión",
+		"icon": preload("res://assets/peces/ciprion.png")
+	},
+	"ciprion_shiny": {
+		"name": "Ciprión",
+		"icon": preload("res://assets/peces/doblon_shiny.png")
 	}
 }
+
 ############################################################################
 
 var lifetime_generated: Dictionary = {
@@ -119,10 +196,10 @@ var lifetime_generated: Dictionary = {
 	"boat": 0.0
 }
 
-const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado.png")
-const TEX_CHEST_EMPTY  := preload("res://assets/estructuras/cofre_abierto_vacio.png")
-const TEX_CHEST_MID    := preload("res://assets/estructuras/cofre_abierto_medio.png")
-const TEX_CHEST_FULL   := preload("res://assets/estructuras/cofre_abierto_lleno.png")
+const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado_arena.png")
+const TEX_CHEST_EMPTY  := preload("res://assets/estructuras/cofre_abierto_vacio_arena.png")
+const TEX_CHEST_MID    := preload("res://assets/estructuras/cofre_abierto_medio_arena.png")
+const TEX_CHEST_FULL   := preload("res://assets/estructuras/cofre_abierto_lleno_arena.png")
 const ICON_HIDE = preload("res://assets/ui/iconos/icono_hud_abierto.png")
 const ICON_SHOW = preload("res://assets/ui/iconos/icono_hud_cerrado.png")
 
@@ -130,7 +207,7 @@ var unlocked: Dictionary = {}  # id -> bool
 var levels: Dictionary = {}
 
 var dps: float = 0.0
-var coins: float = 0.0 
+var coins: float = 0.0
 var click_power: int = 1
 var chest_base_scale: Vector2
 var shop_open := false
@@ -187,6 +264,11 @@ func _ready() -> void:
 
 	inventory_panel.move_fish_to_inventory.connect(_on_move_fish_to_inventory)
 	inventory_panel.move_fish_to_aquarium.connect(_on_move_fish_to_aquarium)
+	inventory_panel.move_fish_within_aquarium.connect(_on_move_fish_within_aquarium)
+	inventory_panel.habitat_changed.connect(_on_inventory_habitat_changed)
+	inventory_panel.close_requested.connect(func():
+		inventory_panel.visible = false
+	)
 
 	await get_tree().process_frame  # asegura tamaños correctos
 
@@ -406,15 +488,13 @@ func apply_purchase(id: String) -> void:
 	levels[id] = get_level(id) + 1
 
 	match id:
-		"fish_basic":
-			_spawn_fish()
 		"cofre":
 			click_power = int(round(get_item_current_value("cofre")))
 			_update_chest_sprite_by_level()
 
 	_update_cps()
 
-func _spawn_fish() -> void:
+func _spawn_fish(fish_id: String, habitat_id: String, slot_index: int) -> void:
 	var fish = fish_scene.instantiate()
 
 	if "swim_area" in fish:
@@ -423,7 +503,23 @@ func _spawn_fish() -> void:
 		push_error("El pez no tiene propiedad swim_area")
 
 	fish_layer.add_child(fish)
-	fish.position = Vector2(randi_range(200, 1000), randi_range(300, 600))
+
+	if fish.has_method("setup_fish_instance"):
+		fish.setup_fish_instance(fish_id, habitat_id, slot_index)
+
+	if fish_defs.has(fish_id) and fish.has_method("set_fish_texture"):
+		var tex: Texture2D = fish_defs[fish_id]["icon"]
+		fish.set_fish_texture(tex)
+
+	var target_pos := Vector2(
+		randi_range(120, 920),
+		randi_range(120, 520)
+	)
+
+	if fish.has_method("play_spawn_arc"):
+		fish.play_spawn_arc(target_pos)
+	else:
+		fish.position = target_pos
 
 func get_list_for_category(category: String) -> VBoxContainer:
 	match category:
@@ -443,21 +539,19 @@ func _on_buy_pressed(id: String) -> void:
 	apply_purchase(id)
 
 	if fish_defs.has(id):
-		var added_to_aquarium := try_add_fish_to_aquarium(current_habitat, id)
+		var spawned_fish_id := id
 
-		if not added_to_aquarium:
-			fish_inventory[id] = int(fish_inventory.get(id, 0)) + 1
+		if randf() < 0.01 and fish_defs.has(id + "_shiny"):
+			spawned_fish_id = id + "_shiny"
 
-	if inventory_panel.visible:
-		inventory_panel.set_inventory_data(
-			HABITATS,
-			unlocked_habitats,
-			current_habitat,
-			aquarium_data,
-			fish_defs,
-			fish_inventory
-		)
+		var slot_index := try_add_fish_to_aquarium(current_habitat, spawned_fish_id)
 
+		if slot_index != -1:
+			_spawn_fish(spawned_fish_id, current_habitat, slot_index)
+		else:
+			fish_inventory[spawned_fish_id] = int(fish_inventory.get(spawned_fish_id, 0)) + 1
+
+	refresh_inventory_panel_data()
 	_update_ui()
 
 func _on_unlock_pressed(id: String) -> void:
@@ -740,9 +834,9 @@ func _actualizar_peces_desbloqueados_en_enciclopedia() -> void:
 	if encyclopedia_panel.has_method("set_pez_ids_desbloqueados"):
 		encyclopedia_panel.set_pez_ids_desbloqueados(ids_desbloqueados)
 
-func try_add_fish_to_aquarium(habitat_id: String, fish_id: String) -> bool:
+func try_add_fish_to_aquarium(habitat_id: String, fish_id: String) -> int:
 	if not aquarium_data.has(habitat_id):
-		return false
+		return -1
 
 	var slots: Array = aquarium_data[habitat_id]
 
@@ -750,12 +844,11 @@ func try_add_fish_to_aquarium(habitat_id: String, fish_id: String) -> bool:
 		if slots[i] == null:
 			slots[i] = fish_id
 			aquarium_data[habitat_id] = slots
-			return true
+			return i
 
-	return false
+	return -1
+
 func _on_move_fish_to_inventory(fish_id: String, slot_index: int, habitat_id: String) -> void:
-	print("MAIN move to inventory:", fish_id, slot_index, habitat_id)
-
 	if not aquarium_data.has(habitat_id):
 		return
 
@@ -770,24 +863,95 @@ func _on_move_fish_to_inventory(fish_id: String, slot_index: int, habitat_id: St
 	slots[slot_index] = null
 	aquarium_data[habitat_id] = slots
 
+	_remove_spawned_fish_from_aquarium(habitat_id, slot_index)
+
 	fish_inventory[fish_id] = int(fish_inventory.get(fish_id, 0)) + 1
 
 	refresh_inventory_panel_data()
 
-
-func _on_move_fish_to_aquarium(fish_id: String, habitat_id: String) -> void:
-	print("MAIN move to aquarium:", fish_id, habitat_id)
-
+func _on_move_fish_to_aquarium(fish_id: String, habitat_id: String, slot_index: int) -> void:
 	if int(fish_inventory.get(fish_id, 0)) <= 0:
 		return
 
-	var added := try_add_fish_to_aquarium(habitat_id, fish_id)
-	if not added:
+	if not aquarium_data.has(habitat_id):
 		return
 
+	var slots: Array = aquarium_data[habitat_id]
+
+	if slot_index < 0 or slot_index >= slots.size():
+		return
+
+	var replaced_fish_id = slots[slot_index]
+
+	# Si había un pez en ese slot, vuelve al inventario
+	if replaced_fish_id != null:
+		fish_inventory[replaced_fish_id] = int(fish_inventory.get(replaced_fish_id, 0)) + 1
+		_remove_spawned_fish_from_aquarium(habitat_id, slot_index)
+
+	# Colocar el nuevo pez en el slot elegido
+	slots[slot_index] = fish_id
+	aquarium_data[habitat_id] = slots
+
 	fish_inventory[fish_id] = int(fish_inventory.get(fish_id, 0)) - 1
+	if int(fish_inventory[fish_id]) <= 0:
+		fish_inventory.erase(fish_id)
+
+	_spawn_fish(fish_id, habitat_id, slot_index)
+	refresh_inventory_panel_data()
+
+func _on_move_fish_within_aquarium(from_slot_index: int, to_slot_index: int, habitat_id: String) -> void:
+	if not aquarium_data.has(habitat_id):
+		return
+
+	var slots: Array = aquarium_data[habitat_id]
+
+	if from_slot_index < 0 or from_slot_index >= slots.size():
+		return
+	if to_slot_index < 0 or to_slot_index >= slots.size():
+		return
+	if from_slot_index == to_slot_index:
+		return
+	if slots[from_slot_index] == null:
+		return
+
+	var from_fish_id = slots[from_slot_index]
+	var to_fish_id = slots[to_slot_index]
+
+	# Intercambio lógico
+	slots[from_slot_index] = to_fish_id
+	slots[to_slot_index] = from_fish_id
+	aquarium_data[habitat_id] = slots
+
+	_swap_spawned_fish_slots(habitat_id, from_slot_index, to_slot_index)
 
 	refresh_inventory_panel_data()
+
+func _on_inventory_habitat_changed(habitat_id: String) -> void:
+	current_habitat = habitat_id
+
+func _swap_spawned_fish_slots(habitat_id: String, from_slot_index: int, to_slot_index: int) -> void:
+	var fish_from = null
+	var fish_to = null
+
+	for child in fish_layer.get_children():
+		if child.get("habitat_id") != habitat_id:
+			continue
+
+		if child.get("slot_index") == from_slot_index:
+			fish_from = child
+		elif child.get("slot_index") == to_slot_index:
+			fish_to = child
+
+	if fish_from != null:
+		fish_from.slot_index = to_slot_index
+	if fish_to != null:
+		fish_to.slot_index = from_slot_index
+
+func _move_spawned_fish_to_aquarium_slot(habitat_id: String, from_slot_index: int, to_slot_index: int) -> void:
+	for child in fish_layer.get_children():
+		if child.get("habitat_id") == habitat_id and child.get("slot_index") == from_slot_index:
+			child.slot_index = to_slot_index
+			return
 
 func refresh_inventory_panel_data() -> void:
 	if inventory_panel.visible:
@@ -799,3 +963,9 @@ func refresh_inventory_panel_data() -> void:
 			fish_defs,
 			fish_inventory
 		)
+
+func _remove_spawned_fish_from_aquarium(habitat_id: String, slot_index: int) -> void:
+	for child in fish_layer.get_children():
+		if child.get("habitat_id") == habitat_id and child.get("slot_index") == slot_index:
+			child.queue_free()
+			return

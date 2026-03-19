@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ia4v3fqsr7p8"
-path="res://.godot/imported/sobrasada.png-3cbb1dc7447b871d5cdf878b531ff819.ctex"
+uid="uid://dfp36yiexkc3q"
+path="res://.godot/imported/ciprion.png-cb353b4eb87c6793f86149f85ea5e3d5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/peces/sobrasada.png"
-dest_files=["res://.godot/imported/sobrasada.png-3cbb1dc7447b871d5cdf878b531ff819.ctex"]
+source_file="res://assets/peces/ciprion.png"
+dest_files=["res://.godot/imported/ciprion.png-cb353b4eb87c6793f86149f85ea5e3d5.ctex"]
 
 [params]
 

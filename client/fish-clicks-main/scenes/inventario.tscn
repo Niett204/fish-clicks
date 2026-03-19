@@ -2,10 +2,13 @@
 
 [ext_resource type="Script" uid="uid://cwch21wtqf7c8" path="res://scenes/inventario.gd" id="1_hswsb"]
 [ext_resource type="Texture2D" uid="uid://dvx288vp803dp" path="res://assets/ui/inventario/pared.png" id="1_q836x"]
+[ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="3_clfm4"]
 [ext_resource type="Texture2D" uid="uid://cr5yogl8hvnw3" path="res://assets/fondos/fondo1.png" id="3_mu20r"]
 [ext_resource type="Texture2D" uid="uid://bsbjtjtpcatjl" path="res://assets/ui/inventario/pecera_vacia.png" id="4_t2sse"]
 [ext_resource type="Texture2D" uid="uid://3c6rpr0tcha1" path="res://assets/ui/inventario/mesa_adaptable.png" id="5_t6213"]
 [ext_resource type="Texture2D" uid="uid://dyjr44d5xpwsj" path="res://assets/ui/inventario/estanteria_frame_superior.png" id="6_t6213"]
+[ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="7_6qtn5"]
+[ext_resource type="Texture2D" uid="uid://dx5okuooy0mwm" path="res://assets/ui/marco_big.png" id="9_6qtn5"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_t2sse"]
 
@@ -16,7 +19,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 1
+mouse_filter = 2
 script = ExtResource("1_hswsb")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=612237987]
@@ -26,6 +29,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_constants/margin_left = 170
 theme_override_constants/margin_top = 70
 theme_override_constants/margin_right = 170
@@ -33,25 +37,10 @@ theme_override_constants/margin_bottom = 70
 
 [node name="Fondo" type="TextureRect" parent="MarginContainer" unique_id=2014875374]
 layout_mode = 2
+mouse_filter = 2
 texture = ExtResource("1_q836x")
 expand_mode = 1
 stretch_mode = 6
-
-[node name="BtnClose" type="TextureButton" parent="MarginContainer/Fondo" unique_id=790234961]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -40.0
-offset_bottom = 40.0
-grow_horizontal = 0
-
-[node name="HabitatTabs" type="HBoxContainer" parent="MarginContainer/Fondo" unique_id=1662760368]
-custom_minimum_size = Vector2(0, 40)
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-grow_horizontal = 2
 
 [node name="Content" type="HBoxContainer" parent="MarginContainer/Fondo" unique_id=1956022627]
 layout_mode = 1
@@ -67,11 +56,21 @@ layout_mode = 2
 theme_override_constants/separation = -5
 alignment = 1
 
+[node name="Space" type="Control" parent="MarginContainer/Fondo/Content/LeftSide" unique_id=1120125859]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+mouse_filter = 2
+
 [node name="LabelTituloPecera" type="Label" parent="MarginContainer/Fondo/Content/LeftSide" unique_id=551753606]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.6666667, 0.4862745, 0.34901962, 1)
+theme_override_fonts/font = ExtResource("7_6qtn5")
+theme_override_font_sizes/font_size = 30
+text = "Pecera de Acuario"
+horizontal_alignment = 1
 
-[node name="Space" type="Control" parent="MarginContainer/Fondo/Content/LeftSide" unique_id=1120125859]
-custom_minimum_size = Vector2(0, 120)
+[node name="Space2" type="Control" parent="MarginContainer/Fondo/Content/LeftSide" unique_id=1603056669]
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 mouse_filter = 2
 
@@ -136,12 +135,17 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Control" type="Control" parent="MarginContainer/Fondo/Content/RightSide" unique_id=2124253965]
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 mouse_filter = 1
 
 [node name="LabelInventario" type="Label" parent="MarginContainer/Fondo/Content/RightSide" unique_id=187853854]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.6651851, 0.48452926, 0.3491902, 1)
+theme_override_fonts/font = ExtResource("7_6qtn5")
+theme_override_font_sizes/font_size = 30
+text = "Inventario"
+horizontal_alignment = 1
 
 [node name="ShelfPanel" type="Control" parent="MarginContainer/Fondo/Content/RightSide" unique_id=1297972861]
 z_index = 10
@@ -150,6 +154,7 @@ size_flags_vertical = 3
 mouse_filter = 1
 
 [node name="ShelfDropZone" type="ColorRect" parent="MarginContainer/Fondo/Content/RightSide/ShelfPanel" unique_id=255309245]
+visible = false
 z_index = 15
 layout_mode = 1
 anchors_preset = 15
@@ -193,3 +198,35 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer" unique_id=884545765]
+z_index = 20
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("9_6qtn5")
+expand_mode = 1
+
+[node name="HabitatTabs" type="HBoxContainer" parent="." unique_id=1662760368]
+z_index = 20
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 237.0
+offset_top = 98.0
+offset_right = -243.0
+offset_bottom = 138.0
+grow_horizontal = 2
+mouse_filter = 0
+theme_override_constants/separation = 0
+
+[node name="BtnClose" type="TextureButton" parent="." unique_id=1073762389]
+z_index = 50
+layout_mode = 0
+offset_left = 948.0
+offset_top = 72.0
+offset_right = 979.0
+offset_bottom = 100.0
+texture_normal = ExtResource("3_clfm4")
+ignore_texture_size = true
+stretch_mode = 0
