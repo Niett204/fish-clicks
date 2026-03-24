@@ -205,6 +205,7 @@ func rebuild_habitat_tabs() -> void:
 			set_current_habitat(habitat_id)
 		)
 
+		@warning_ignore("shadowed_global_identifier")
 		var wrap := MarginContainer.new()
 		wrap.add_theme_constant_override("margin_right", -8)
 		wrap.add_child(btn)

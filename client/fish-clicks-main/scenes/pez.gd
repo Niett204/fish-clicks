@@ -334,6 +334,7 @@ func play_spawn_arc(target_pos: Vector2) -> void:
 		var dir: Vector2 = (next_pos - pos).normalized()
 
 		if dir.length() > 0.001:
+			@warning_ignore("confusable_capture_reassignment")
 			last_dir = dir
 			spr.flip_h = dir.x > 0
 			var target_rot: float = clamp(dir.y * 0.32, -0.32, 0.32)
@@ -349,6 +350,7 @@ func play_spawn_arc(target_pos: Vector2) -> void:
 				_play_water_splash_at(splash_pos, last_dir)
 				spawn_splash_played = true
 
+		@warning_ignore("confusable_capture_reassignment")
 		previous_pos = pos
 
 		if spawn_bubbles:

@@ -147,8 +147,6 @@ func _on_request_completed(
 	_headers: PackedStringArray,
 	body: PackedByteArray
 ) -> void:
-	print("Código:", response_code)
-	print("Respuesta:", body.get_string_from_utf8())
 	request_en_curso = false
 
 	if response_code != 200:
