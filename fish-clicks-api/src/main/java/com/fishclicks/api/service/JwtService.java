@@ -1,13 +1,16 @@
 package com.fishclicks.api.service;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -18,8 +21,23 @@ public class JwtService {
     @Value("${jwt.expiration:86400000}")
     private long jwtExpiration;
 
-    public String generateToken(Long userId, String email) {
-        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    private SecretKey getSigningKey() {
+        byte[] secretBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
+
+        // JJWT exige minimo 256 bits para HMAC; si el secreto es corto, derivamos una clave estable.
+        if (secretBytes.length < 32) {
+            try {
+                secretBytes = MessageDigest.getInstance("SHA-512").digest(secretBytes);
+            } catch (NoSuchAlgorithmException e) {
+                throw new IllegalStateException("No se pudo inicializar SHA-512 para JWT", e);
+            }
+        }
+
+        return Keys.hmacShaKeyFor(secretBytes);
+    }
+
+    public String generateToken(UUID userId, String email) {
+        SecretKey key = getSigningKey();
         
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpiration);
@@ -29,14 +47,14 @@ public class JwtService {
                 .claim("email", email)
                 .issuedAt(now)
                 .expiration(expiryDate)
-                .signWith(key, SignatureAlgorithm.HS512)
+                .signWith(key)
                 .compact();
     }
 
-    public Long getUserIdFromToken(String token) {
-        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-        
-        return Long.parseLong(
+    public UUID getUserIdFromToken(String token) {
+        SecretKey key = getSigningKey();
+
+        return UUID.fromString(
                 Jwts.parser()
                         .verifyWith(key)
                         .build()
@@ -47,7 +65,7 @@ public class JwtService {
     }
 
     public String getEmailFromToken(String token) {
-        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+        SecretKey key = getSigningKey();
         
         return Jwts.parser()
                 .verifyWith(key)
@@ -59,7 +77,7 @@ public class JwtService {
 
     public boolean validateToken(String token) {
         try {
-            SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+            SecretKey key = getSigningKey();
             Jwts.parser()
                     .verifyWith(key)
                     .build()

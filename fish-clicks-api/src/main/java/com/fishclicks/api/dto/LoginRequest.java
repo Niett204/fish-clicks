@@ -7,7 +7,8 @@ import lombok.Setter;
 @Setter
 public class LoginRequest {
 
-    private String email;
+    private String nickname;  // Campo principal para login
+    private String email;     // Mantenido por compatibilidad
     private String password;
 
 }
