@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c2clym82mmddi" path="res://scenes/inventory_fish_item.gd" id="1_effqg"]
 [ext_resource type="Texture2D" uid="uid://x51b5gavkcn0" path="res://assets/ui/inventario/bolsa_vacia.png" id="1_p0k5m"]
-[ext_resource type="Texture2D" uid="uid://caccnasaooopc" path="res://assets/peces/doblon.png" id="2_effqg"]
+[ext_resource type="Texture2D" uid="uid://cwkva44xfvtk5" path="res://assets/peces/tiza_shiny.png" id="2_m0g4q"]
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="4_g3fwe"]
 [ext_resource type="Texture2D" uid="uid://cj331k70flp0l" path="res://assets/misc/brillito.png" id="5_m0g4q"]
 
@@ -20,10 +20,10 @@ anchor_right = 0.5
 offset_left = -22.0
 offset_top = 57.0
 offset_right = 22.0
-offset_bottom = 101.0
+offset_bottom = 95.0
 grow_horizontal = 2
 mouse_filter = 2
-texture = ExtResource("2_effqg")
+texture = ExtResource("2_m0g4q")
 expand_mode = 1
 stretch_mode = 5
 
@@ -42,6 +42,7 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="AmountLabel" type="Label" parent="." unique_id=1287682808]
+z_index = 9
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -57,12 +58,13 @@ text = "x 1"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="NameArea" type="CenterContainer" parent="." unique_id=1311026477]
-layout_mode = 0
-offset_left = 15.0
+[node name="NameArea" type="CenterContainer" parent="." unique_id=1689467995]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
 offset_top = 98.0
-offset_right = 98.0
 offset_bottom = 120.0
+grow_horizontal = 2
 
 [node name="NameRow" type="HBoxContainer" parent="NameArea" unique_id=1773245915]
 layout_mode = 2
