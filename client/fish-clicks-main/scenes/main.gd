@@ -47,7 +47,7 @@ const ITEMS := {
 		"tab": "Peces",
 		"title": "Doblon",
 		"icon": "res://assets/peces/doblon.png",
-		"unlock_price": 0,
+		"unlock_price": 10,
 		"kind": "passive",
 		"base_price": 40.0,
 		"price_growth": 1.28,

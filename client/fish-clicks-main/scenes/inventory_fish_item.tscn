@@ -6,6 +6,7 @@
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="4_g3fwe"]
 [ext_resource type="Texture2D" uid="uid://cj331k70flp0l" path="res://assets/misc/brillito.png" id="5_m0g4q"]
 
+
 [node name="InventoryFishItem" type="Control" unique_id=1880313092]
 custom_minimum_size = Vector2(98, 122)
 layout_mode = 3

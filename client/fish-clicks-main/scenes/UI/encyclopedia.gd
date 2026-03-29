@@ -29,6 +29,9 @@ extends Control
 @onready var btn_siguiente: TextureButton = $BtnSiguiente
 @onready var btn_salir: TextureButton = $BtnSalir
 
+@onready var pagina_izq_contenido: VBoxContainer = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq
+@onready var pagina_der_contenido: VBoxContainer = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer
+
 const BUTTON_MODULATE_NORMAL := Color(1.0, 1.0, 1.0, 1.0)
 const BUTTON_MODULATE_HOVER := Color(0.85, 0.85, 0.85, 1.0)
 const BUTTON_MODULATE_PRESSED := Color(0.65, 0.65, 0.65, 1.0)
@@ -63,6 +66,13 @@ func _ready() -> void:
 
 	btn_salir.pressed.connect(_on_btn_salir_pressed)
 	_configurar_boton_salir(btn_salir)
+
+	limpiar_pagina(true)
+	limpiar_pagina(false)
+	_set_pagina_visible(true, false)
+	_set_pagina_visible(false, false)
+	btn_anterior.visible = false
+	btn_siguiente.visible = false
 	
 func _on_btn_salir_pressed() -> void:
 	close()
@@ -223,6 +233,9 @@ func crear_botones_rareza() -> void:
 	for child in rareza_container.get_children():
 		child.queue_free()
 
+	if rarezas_disponibles.is_empty():
+		return
+
 	_anadir_tab_todos()
 
 	for r in rarezas_disponibles:
@@ -330,20 +343,33 @@ func cambiar_rareza(nueva_rareza: String) -> void:
 
 
 func update_book() -> void:
+	var max_page := maxi(0, int(ceil(fishes.size() / 2.0)) - 1)
+	current_page = clamp(current_page, 0, max_page)
+
 	var left_index := current_page * 2
 	var right_index := left_index + 1
 
 	_fill_page(left_index, true)
 	_fill_page(right_index, false)
 
-	btn_anterior.disabled = current_page == 0
-	btn_siguiente.disabled = right_index >= fishes.size() - 1
+	var has_fishes := fishes.size() > 0
+	var can_go_previous := has_fishes and current_page > 0
+	var can_go_next := has_fishes and ((current_page + 1) * 2 < fishes.size())
+
+	btn_anterior.visible = can_go_previous
+	btn_siguiente.visible = can_go_next
+
+	btn_anterior.disabled = not can_go_previous
+	btn_siguiente.disabled = not can_go_next
 
 
 func _fill_page(index: int, is_left: bool) -> void:
 	if index >= fishes.size():
 		limpiar_pagina(is_left)
+		_set_pagina_visible(is_left, false)
 		return
+
+	_set_pagina_visible(is_left, true)
 
 	var fish: Dictionary = fishes[index]
 
@@ -385,7 +411,12 @@ func _fill_page(index: int, is_left: bool) -> void:
 		tag_bg_der3.texture = get_tag_info_texture()
 		habitat_der.text = habitat
 
-
+func _set_pagina_visible(is_left: bool, value: bool) -> void:
+	if is_left:
+		pagina_izq_contenido.visible = value
+	else:
+		pagina_der_contenido.visible = value
+		
 func limpiar_pagina(is_left: bool) -> void:
 	if is_left:
 		tag_rareza_izq.text = ""
@@ -449,6 +480,10 @@ func get_fish_texture(fish_id: int) -> Texture2D:
 			return load("res://assets/peces/doblon.png")
 		2:
 			return load("res://assets/peces/sobrasada.png")
+		3:
+			return load("res://assets/peces/tiza.png")
+		4:
+			return load("res://assets/peces/rufinus.png")
 		_:
 			return null
 func get_rareza_texture(rareza: String) -> Texture2D:
@@ -458,6 +493,15 @@ func get_rareza_texture(rareza: String) -> Texture2D:
 			return tex
 		"raro":
 			var tex = load("res://assets/ui/rarezas/tag_rareza_raro.png")
+			return tex
+		"epico":
+			var tex = load("res://assets/ui/rarezas/tag_rareza_epico.png")
+			return tex
+		"mitico":
+			var tex = load("res://assets/ui/rarezas/tag_rareza_mitico.png")
+			return tex
+		"ancestral":
+			var tex = load("res://assets/ui/rarezas/tag_rareza_ancestral.png")
 			return tex
 		_:
 			return null
