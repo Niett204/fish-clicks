@@ -1,9 +1,11 @@
 [gd_scene format=3 uid="uid://cfhhda8qg0bq0"]
 
 [ext_resource type="Script" uid="uid://bk086nx0y3smj" path="res://scenes/shop_item_card.gd" id="1_87dkc"]
-[ext_resource type="Texture2D" uid="uid://caccnasaooopc" path="res://assets/peces/doblon.png" id="2_mluul"]
 [ext_resource type="Texture2D" uid="uid://bva22m6ipd063" path="res://assets/ui/tabla.png" id="2_njvbf"]
 [ext_resource type="Texture2D" uid="uid://bx28me4bvwn16" path="res://assets/ui/tabla_bloqueada (1).png" id="3_jykwe"]
+[ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="5_niagg"]
+[ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="6_dkuh8"]
+[ext_resource type="Texture2D" uid="uid://cf7g5pe7ahpss" path="res://assets/estructuras/anubia/anubia_mini.png" id="6_niagg"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jykwe"]
 
@@ -60,11 +62,24 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 7.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="LockedLabel" type="Label" parent="LockedView/CenterContainer" unique_id=510866101]
+[node name="HBoxContainer" type="HBoxContainer" parent="LockedView/CenterContainer" unique_id=1083544043]
 layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="LockedView/CenterContainer/HBoxContainer" unique_id=243186745]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture = ExtResource("6_dkuh8")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LockedLabel" type="Label" parent="LockedView/CenterContainer/HBoxContainer" unique_id=510866101]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("5_niagg")
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -91,9 +106,8 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 1.0
-offset_top = -6.0
-offset_bottom = 4.0
+offset_top = -7.0
+offset_bottom = 5.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -102,14 +116,15 @@ theme_override_constants/margin_top = 19
 theme_override_constants/margin_right = 30
 theme_override_constants/margin_bottom = 10
 
-[node name="Content" type="HBoxContainer" parent="NormalView/Padding" unique_id=1118350031]
+[node name="Content" type="HBoxContainer" parent="NormalView/Padding" unique_id=1722047685]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 mouse_filter = 2
 theme_override_constants/separation = 10
-alignment = 1
 
 [node name="IconBox" type="PanelContainer" parent="NormalView/Padding/Content" unique_id=162583001]
-custom_minimum_size = Vector2(54, 54)
+custom_minimum_size = Vector2(50, 42)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
@@ -118,29 +133,45 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_njvbf")
 
 [node name="Icon" type="TextureRect" parent="NormalView/Padding/Content/IconBox" unique_id=89659702]
 layout_mode = 2
-texture = ExtResource("2_mluul")
-expand_mode = 2
+texture = ExtResource("6_niagg")
+expand_mode = 1
 stretch_mode = 5
 
-[node name="TextCol" type="VBoxContainer" parent="NormalView/Padding/Content" unique_id=1466391575]
+[node name="TextCol" type="VBoxContainer" parent="NormalView/Padding/Content" unique_id=1387964972]
+custom_minimum_size = Vector2(75, 0)
 layout_mode = 2
-size_flags_horizontal = 3
 mouse_filter = 2
 theme_override_constants/separation = 2
 
 [node name="Title" type="Label" parent="NormalView/Padding/Content/TextCol" unique_id=2120161620]
 layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("5_niagg")
 theme_override_font_sizes/font_size = 18
-text = "Doblon"
+text = "Vallisneria"
 
-[node name="StatLeft" type="Label" parent="NormalView/Padding/Content/TextCol" unique_id=436047321]
+[node name="HBoxContainer" type="HBoxContainer" parent="NormalView/Padding/Content/TextCol" unique_id=1937628953]
 layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="NormalView/Padding/Content/TextCol/HBoxContainer" unique_id=609327745]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture = ExtResource("6_dkuh8")
+expand_mode = 1
+
+[node name="StatLeft" type="Label" parent="NormalView/Padding/Content/TextCol/HBoxContainer" unique_id=436047321]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("5_niagg")
 theme_override_font_sizes/font_size = 13
-text = "25 Doblones"
+text = "25 "
 
 [node name="Level" type="Label" parent="NormalView/Padding/Content" unique_id=1721037276]
+z_index = 1
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
-text = "1"
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("5_niagg")
+text = "1000"
 horizontal_alignment = 2
 vertical_alignment = 1

@@ -27,13 +27,24 @@ extends Control
 
 @onready var btn_anterior: TextureButton = $BtnAnterior
 @onready var btn_siguiente: TextureButton = $BtnSiguiente
+@onready var btn_salir: TextureButton = $BtnSalir
+
+@onready var pagina_izq_contenido: VBoxContainer = $FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq
+@onready var pagina_der_contenido: VBoxContainer = $FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer
+
+const BUTTON_MODULATE_NORMAL := Color(1.0, 1.0, 1.0, 1.0)
+const BUTTON_MODULATE_HOVER := Color(0.85, 0.85, 0.85, 1.0)
+const BUTTON_MODULATE_PRESSED := Color(0.65, 0.65, 0.65, 1.0)
+
+const NAV_HOVER_OFFSET := 6.0
+const NAV_PRESSED_OFFSET := 2.0
 
 var fishes: Array = []
 var current_page: int = 0
 var rareza_actual: String = ""
 var rarezas_disponibles: Array = []
 
-var pez_ids_desbloqueados: Array[int] = [1,2]
+var pez_ids_desbloqueados: Array[int] = []
 
 enum RequestMode {
 	LOAD_ALL_FOR_RAREZAS,
@@ -41,7 +52,7 @@ enum RequestMode {
 }
 
 var request_mode: int = RequestMode.LOAD_ALL_FOR_RAREZAS
-
+var request_en_curso: bool = false
 
 func _ready() -> void:
 	visible = false
@@ -50,8 +61,50 @@ func _ready() -> void:
 	btn_anterior.pressed.connect(_on_btn_anterior_pressed)
 	btn_siguiente.pressed.connect(_on_btn_siguiente_pressed)
 
-	cargar_rarezas_iniciales()
+	_configurar_boton_navegacion(btn_anterior, -1)
+	_configurar_boton_navegacion(btn_siguiente, 1)
 
+	btn_salir.pressed.connect(_on_btn_salir_pressed)
+	_configurar_boton_salir(btn_salir)
+
+	limpiar_pagina(true)
+	limpiar_pagina(false)
+	_set_pagina_visible(true, false)
+	_set_pagina_visible(false, false)
+	btn_anterior.visible = false
+	btn_siguiente.visible = false
+	
+func _on_btn_salir_pressed() -> void:
+	close()
+	
+func _configurar_boton_salir(btn: TextureButton) -> void:
+	var pos_original: Vector2 = btn.position
+
+	btn.modulate = BUTTON_MODULATE_NORMAL
+
+	btn.mouse_entered.connect(func():
+		btn.modulate = BUTTON_MODULATE_HOVER
+		btn.position = pos_original + Vector2(0, -3)
+	)
+
+	btn.mouse_exited.connect(func():
+		btn.modulate = BUTTON_MODULATE_NORMAL
+		btn.position = pos_original
+	)
+
+	btn.button_down.connect(func():
+		btn.modulate = BUTTON_MODULATE_PRESSED
+		btn.position = pos_original + Vector2(0, -1)
+	)
+
+	btn.button_up.connect(func():
+		if btn.get_rect().has_point(btn.get_local_mouse_position()):
+			btn.modulate = BUTTON_MODULATE_HOVER
+			btn.position = pos_original + Vector2(0, -3)
+		else:
+			btn.modulate = BUTTON_MODULATE_NORMAL
+			btn.position = pos_original
+	)
 
 func cargar_rarezas_iniciales() -> void:
 	request_mode = RequestMode.LOAD_ALL_FOR_RAREZAS
@@ -64,6 +117,9 @@ func load_fishes(rareza: String = "") -> void:
 
 
 func hacer_request_peces(rareza: String = "") -> void:
+	if request_en_curso:
+		return
+	
 	var url := "https://fish-clicks.onrender.com/enciclopedia/peces"
 
 	var query_params: Array[String] = []
@@ -81,6 +137,8 @@ func hacer_request_peces(rareza: String = "") -> void:
 	var body_json := JSON.stringify(body_dict)
 	var headers := ["Content-Type: application/json"]
 
+	request_en_curso = true
+
 	var err := http_request.request(
 		url,
 		headers,
@@ -89,6 +147,7 @@ func hacer_request_peces(rareza: String = "") -> void:
 	)
 
 	if err != OK:
+		request_en_curso = false
 		push_error("No se pudo lanzar la request de peces")
 
 
@@ -98,8 +157,7 @@ func _on_request_completed(
 	_headers: PackedStringArray,
 	body: PackedByteArray
 ) -> void:
-	print("Código:", response_code)
-	print("Respuesta:", body.get_string_from_utf8())
+	request_en_curso = false
 
 	if response_code != 200:
 		push_error("Error cargando peces: %s" % response_code)
@@ -131,6 +189,35 @@ func _on_request_completed(
 			fishes = data
 			current_page = 0
 			update_book()
+			
+func _configurar_boton_navegacion(btn: TextureButton, direccion: int) -> void:
+	var pos_original: Vector2 = btn.position
+
+	btn.modulate = BUTTON_MODULATE_NORMAL
+
+	btn.mouse_entered.connect(func():
+		btn.modulate = BUTTON_MODULATE_HOVER
+		btn.position = pos_original + Vector2(NAV_HOVER_OFFSET * direccion, 0)
+	)
+
+	btn.mouse_exited.connect(func():
+		btn.modulate = BUTTON_MODULATE_NORMAL
+		btn.position = pos_original
+	)
+
+	btn.button_down.connect(func():
+		btn.modulate = BUTTON_MODULATE_PRESSED
+		btn.position = pos_original + Vector2(NAV_PRESSED_OFFSET * direccion, 0)
+	)
+
+	btn.button_up.connect(func():
+		if btn.get_rect().has_point(btn.get_local_mouse_position()):
+			btn.modulate = BUTTON_MODULATE_HOVER
+			btn.position = pos_original + Vector2(NAV_HOVER_OFFSET * direccion, 0)
+		else:
+			btn.modulate = BUTTON_MODULATE_NORMAL
+			btn.position = pos_original
+	)
 
 
 func guardar_rarezas_disponibles(data: Array) -> void:
@@ -145,6 +232,9 @@ func guardar_rarezas_disponibles(data: Array) -> void:
 func crear_botones_rareza() -> void:
 	for child in rareza_container.get_children():
 		child.queue_free()
+
+	if rarezas_disponibles.is_empty():
+		return
 
 	_anadir_tab_todos()
 
@@ -163,18 +253,43 @@ func _anadir_tab_rareza(rareza: String) -> void:
 	btn.texture_hover = textura
 	btn.texture_pressed = textura
 
-	# Estas dos cosas son las que tú necesitas
 	btn.ignore_texture_size = true
 	btn.stretch_mode = TextureButton.STRETCH_SCALE
 	btn.custom_minimum_size = Vector2(40, 30)
 
-	# Evita que el VBox lo estire
 	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
 	btn.pressed.connect(func(): cambiar_rareza(rareza))
 
+	_configurar_estados_boton(btn)
+
 	rareza_container.add_child(btn)
+	
+func _configurar_estados_boton(btn: TextureButton) -> void:
+	btn.modulate = BUTTON_MODULATE_NORMAL
+
+	btn.mouse_entered.connect(func():
+		if btn.button_pressed:
+			btn.modulate = BUTTON_MODULATE_PRESSED
+		else:
+			btn.modulate = BUTTON_MODULATE_HOVER
+	)
+
+	btn.mouse_exited.connect(func():
+		btn.modulate = BUTTON_MODULATE_NORMAL
+	)
+
+	btn.button_down.connect(func():
+		btn.modulate = BUTTON_MODULATE_PRESSED
+	)
+
+	btn.button_up.connect(func():
+		if btn.get_rect().has_point(btn.get_local_mouse_position()):
+			btn.modulate = BUTTON_MODULATE_HOVER
+		else:
+			btn.modulate = BUTTON_MODULATE_NORMAL
+	)
 	
 func get_boton_rareza_texture(rareza: String) -> Texture2D:
 	match rareza.to_lower():
@@ -211,9 +326,14 @@ func _anadir_tab_todos() -> void:
 
 	btn.pressed.connect(func(): cambiar_rareza(""))
 
+	_configurar_estados_boton(btn)
+
 	rareza_container.add_child(btn)
 
 func cambiar_rareza(nueva_rareza: String) -> void:
+	if request_en_curso:
+		return
+
 	if rareza_actual == nueva_rareza:
 		return
 
@@ -223,20 +343,33 @@ func cambiar_rareza(nueva_rareza: String) -> void:
 
 
 func update_book() -> void:
+	var max_page := maxi(0, int(ceil(fishes.size() / 2.0)) - 1)
+	current_page = clamp(current_page, 0, max_page)
+
 	var left_index := current_page * 2
 	var right_index := left_index + 1
 
 	_fill_page(left_index, true)
 	_fill_page(right_index, false)
 
-	btn_anterior.disabled = current_page == 0
-	btn_siguiente.disabled = right_index >= fishes.size() - 1
+	var has_fishes := fishes.size() > 0
+	var can_go_previous := has_fishes and current_page > 0
+	var can_go_next := has_fishes and ((current_page + 1) * 2 < fishes.size())
+
+	btn_anterior.visible = can_go_previous
+	btn_siguiente.visible = can_go_next
+
+	btn_anterior.disabled = not can_go_previous
+	btn_siguiente.disabled = not can_go_next
 
 
 func _fill_page(index: int, is_left: bool) -> void:
 	if index >= fishes.size():
 		limpiar_pagina(is_left)
+		_set_pagina_visible(is_left, false)
 		return
+
+	_set_pagina_visible(is_left, true)
 
 	var fish: Dictionary = fishes[index]
 
@@ -278,7 +411,12 @@ func _fill_page(index: int, is_left: bool) -> void:
 		tag_bg_der3.texture = get_tag_info_texture()
 		habitat_der.text = habitat
 
-
+func _set_pagina_visible(is_left: bool, value: bool) -> void:
+	if is_left:
+		pagina_izq_contenido.visible = value
+	else:
+		pagina_der_contenido.visible = value
+		
 func limpiar_pagina(is_left: bool) -> void:
 	if is_left:
 		tag_rareza_izq.text = ""
@@ -342,6 +480,10 @@ func get_fish_texture(fish_id: int) -> Texture2D:
 			return load("res://assets/peces/doblon.png")
 		2:
 			return load("res://assets/peces/sobrasada.png")
+		3:
+			return load("res://assets/peces/tiza.png")
+		4:
+			return load("res://assets/peces/rufinus.png")
 		_:
 			return null
 func get_rareza_texture(rareza: String) -> Texture2D:
@@ -351,6 +493,15 @@ func get_rareza_texture(rareza: String) -> Texture2D:
 			return tex
 		"raro":
 			var tex = load("res://assets/ui/rarezas/tag_rareza_raro.png")
+			return tex
+		"epico":
+			var tex = load("res://assets/ui/rarezas/tag_rareza_epico.png")
+			return tex
+		"mitico":
+			var tex = load("res://assets/ui/rarezas/tag_rareza_mitico.png")
+			return tex
+		"ancestral":
+			var tex = load("res://assets/ui/rarezas/tag_rareza_ancestral.png")
 			return tex
 		_:
 			return null

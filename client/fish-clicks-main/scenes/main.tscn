@@ -6,23 +6,31 @@
 [ext_resource type="PackedScene" uid="uid://dinpoywkt4vsq" path="res://scenes/FloatingText.tscn" id="2_tefeu"]
 [ext_resource type="Script" uid="uid://cw3knghd0miub" path="res://scenes/cofre.gd" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://cfhhda8qg0bq0" path="res://scenes/ShopItemCard.tscn" id="4_o6xl0"]
-[ext_resource type="Texture2D" uid="uid://bumfn7ywlc7r5" path="res://assets/estructuras/cofre_abierto_lleno.png" id="7_a8y0u"]
+[ext_resource type="Texture2D" uid="uid://bir4t2kdhw4h" path="res://assets/estructuras/cofre_abierto_lleno_arena.png" id="7_og1vs"]
 [ext_resource type="Texture2D" uid="uid://di0p043eru4vj" path="res://assets/ui/iconos/icono_perfil.png" id="8_eb6dy"]
 [ext_resource type="Script" uid="uid://dl0sgr2smpium" path="res://scenes/info_extra_panel.gd" id="8_tipki"]
+[ext_resource type="Texture2D" uid="uid://b3uv5xy6xfk8r" path="res://assets/estructuras/vallisneria/vallisneria_large.png" id="8_y6deb"]
+[ext_resource type="Texture2D" uid="uid://ccemaw6j4o3sr" path="res://assets/estructuras/tronco/tronco_medium.png" id="9_2f3dj"]
 [ext_resource type="Texture2D" uid="uid://bapfvmfpgbe7p" path="res://assets/ui/iconos/icono_opciones.png" id="9_trceg"]
-[ext_resource type="Script" uid="uid://gmyjxeo8kray" path="res://scenes/btn_profile.gd" id="9_y6deb"]
 [ext_resource type="Texture2D" uid="uid://casqwt2ogwyax" path="res://assets/ui/iconos/icono_stats.png" id="10_a8y0u"]
+[ext_resource type="Texture2D" uid="uid://d2n7cjqtpenpj" path="res://assets/estructuras/tronco/tronco_small.png" id="10_yq6so"]
 [ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
+[ext_resource type="Texture2D" uid="uid://bpvte078h1smo" path="res://assets/estructuras/tronco/tronco_mini.png" id="11_fv21b"]
 [ext_resource type="Texture2D" uid="uid://rljxhda6odwj" path="res://assets/ui/iconos/icono_enciclopedia.png" id="11_yc10j"]
 [ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://b33wxaxja8jx0" path="res://assets/ui/red.png" id="13_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://c5ht6q767emx5" path="res://assets/ui/botella_mensaje.png" id="13_muem4"]
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
+[ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="18_og1vs"]
 [ext_resource type="Texture2D" uid="uid://tyjvk13keej5" path="res://assets/ui/alga.png" id="18_yc10j"]
 [ext_resource type="Texture2D" uid="uid://bf4pt3ldg3d0c" path="res://assets/ui/bandera.png" id="19_0ld40"]
-[ext_resource type="PackedScene" uid="uid://crojbj03flfr6" path="res://scenes/UI/encyclopedia_panel.tscn" id="20_yc10j"]
 [ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
-[ext_resource type="PackedScene" path="res://scenes/ProfilePanel.tscn" id="22_pm3ni"]
+[ext_resource type="PackedScene" uid="uid://d4kjqemcayt4t" path="res://scenes/inventario.tscn" id="21_pm3ni"]
+[ext_resource type="PackedScene" uid="uid://crojbj03flfr6" path="res://scenes/UI/encyclopedia_panel.tscn" id="23_ency"]
+[ext_resource type="PackedScene" uid="uid://csohusujfqgej" path="res://scenes/stats_panel.tscn" id="23_y6deb"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y6deb"]
+load_path = "res://.godot/imported/anubia_large.png-9dd54c4d539590f8396e886059658b60.ctex"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
@@ -43,19 +51,12 @@ modulate_color = Color(0.48178947, 0.48178947, 0.48178947, 1)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_yc10j"]
 texture = ExtResource("18_yc10j")
-texture_margin_left = 5.0
-texture_margin_right = 5.0
 modulate_color = Color(0.83033526, 0.83033514, 0.83033514, 1)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jbj1t"]
 texture = ExtResource("18_yc10j")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_muem4"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dp3eg"]
-
-[sub_resource type="SystemFont" id="SystemFont_gqmmt"]
-font_italic = true
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a8y0u"]
 size = Vector2(1022, 516)
@@ -80,13 +81,42 @@ texture = ExtResource("1_o5qli")
 expand_mode = 1
 stretch_mode = 6
 
+[node name="EstructurasLayer" type="Node2D" parent="." unique_id=248633790]
+
+[node name="Vallisneria" type="Sprite2D" parent="EstructurasLayer" unique_id=806922773]
+position = Vector2(949.00006, 341.00003)
+scale = Vector2(0.32166666, 0.32166663)
+texture = ExtResource("8_y6deb")
+
+[node name="Tronco" type="Sprite2D" parent="EstructurasLayer" unique_id=1275085002]
+position = Vector2(605.3334, 345.37497)
+scale = Vector2(0.57476854, 0.5747685)
+texture = ExtResource("9_2f3dj")
+
+[node name="Tronco2" type="Sprite2D" parent="EstructurasLayer" unique_id=1350221170]
+visible = false
+position = Vector2(531, 446.00003)
+scale = Vector2(0.34769955, 0.34769946)
+texture = ExtResource("10_yq6so")
+
+[node name="Tronco3" type="Sprite2D" parent="EstructurasLayer" unique_id=973246666]
+visible = false
+position = Vector2(658, 485)
+scale = Vector2(0.2580597, 0.25805962)
+texture = ExtResource("11_fv21b")
+
+[node name="Anubia" type="Sprite2D" parent="EstructurasLayer" unique_id=279494440]
+position = Vector2(497, 541)
+scale = Vector2(0.11820317, 0.11820316)
+texture = SubResource("CompressedTexture2D_y6deb")
+
 [node name="Cofre" type="Area2D" parent="." unique_id=379332226]
 script = ExtResource("3_jyhfs")
 
 [node name="Sprite2D" type="Sprite2D" parent="Cofre" unique_id=1706070275]
 position = Vector2(193, 514.00006)
 scale = Vector2(0.29398158, 0.2740741)
-texture = ExtResource("7_a8y0u")
+texture = ExtResource("7_og1vs")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Cofre" unique_id=1343405143]
 visible = false
@@ -139,7 +169,6 @@ layout_mode = 2
 texture_normal = ExtResource("8_eb6dy")
 ignore_texture_size = true
 stretch_mode = 5
-script = ExtResource("9_y6deb")
 
 [node name="BtnOptions" type="TextureButton" parent="UI/Root/HUD/TopBar/LeftGroup" unique_id=544079481]
 custom_minimum_size = Vector2(48, 48)
@@ -302,6 +331,13 @@ offset_top = 5.0
 offset_bottom = 5.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/side_margin = 4
+theme_override_constants/tab_separation = 5
+theme_override_constants/icon_separation = 4
+theme_override_constants/icon_max_width = 0
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 20
 theme_override_styles/panel = SubResource("StyleBoxEmpty_jkv2x")
 theme_override_styles/tab_unselected = SubResource("StyleBoxTexture_0ld40")
 theme_override_styles/tab_hovered = SubResource("StyleBoxTexture_yc10j")
@@ -330,25 +366,48 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="Peces" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=438741302]
+[node name="Peces" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1632976240]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces" unique_id=458589617]
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces" unique_id=1377723967]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 25.0
 offset_top = 47.0
-offset_right = 230.0
-offset_bottom = 410.0
+offset_right = -20.0
+offset_bottom = -59.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_dp3eg")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_muem4")
 
-[node name="ListPeces" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer" unique_id=279585929]
+[node name="ListPeces" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer" unique_id=1158215447]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Únicos" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1568699925]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Únicos" unique_id=249956829]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = 47.0
+offset_right = -20.0
+offset_bottom = -59.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_muem4")
+
+[node name="ListUnicos" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Únicos/ScrollContainer" unique_id=1463964786]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
@@ -403,36 +462,42 @@ layout_mode = 2
 [node name="Title" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Header" unique_id=1406141069]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 14
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 16
 text = "Titulo
 "
 
 [node name="Owned" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Header" unique_id=1125482062]
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 14
 horizontal_alignment = 2
 
 [node name="Desc" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox" unique_id=346078448]
 layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_gqmmt")
-theme_override_font_sizes/font_size = 10
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 12
 
 [node name="Bullets" type="VBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox" unique_id=1943120877]
 layout_mode = 2
 
 [node name="B1" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=721015527]
 layout_mode = 2
-theme_override_font_sizes/font_size = 8
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 10
 
 [node name="B2" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=1311210386]
 layout_mode = 2
-theme_override_font_sizes/font_size = 8
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 10
 
 [node name="B3" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=404563973]
 layout_mode = 2
-theme_override_font_sizes/font_size = 8
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 10
 
-[node name="EncyclopediaPanel" parent="UI/Root/HUD" unique_id=1091957969 instance=ExtResource("20_yc10j")]
+[node name="EncyclopediaPanel" parent="UI/Root/HUD" unique_id=1091957969 instance=ExtResource("23_ency")]
+visible = false
 layout_mode = 1
 offset_left = 33.0
 offset_top = 18.0
@@ -440,8 +505,13 @@ offset_right = -22.35254
 offset_bottom = -29.48291
 scale = Vector2(0.99211466, 1.0108906)
 
-[node name="ProfilePanel" parent="UI/Root/HUD" unique_id=198778649 instance=ExtResource("22_pm3ni")]
-anchors_preset = 0
+[node name="Inventario" parent="UI/Root/HUD" unique_id=1603617761 instance=ExtResource("21_pm3ni")]
+visible = false
+layout_mode = 1
+
+[node name="StatsPanel" parent="UI/Root/HUD" unique_id=493873659 instance=ExtResource("23_y6deb")]
+visible = false
+layout_mode = 1
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]
 custom_minimum_size = Vector2(32, 32)
