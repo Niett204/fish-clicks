@@ -8,10 +8,10 @@ extends Button
 @onready var content: HBoxContainer = $NormalView/Padding/Content
 @onready var normal_view: Control = $NormalView
 @onready var locked_view: Control = $LockedView
-@onready var locked_price_lbl: Label = $LockedView/CenterContainer/LockedLabel
+@onready var locked_price_lbl: Label = $LockedView/CenterContainer/HBoxContainer/LockedLabel
 @onready var icon_lbl: TextureRect = $NormalView/Padding/Content/IconBox/Icon
 @onready var title_lbl: Label = $NormalView/Padding/Content/TextCol/Title
-@onready var stat_left: Label = $NormalView/Padding/Content/TextCol/StatLeft
+@onready var stat_left: Label = $NormalView/Padding/Content/TextCol/HBoxContainer/StatLeft
 @onready var level_lbl: Label = $NormalView/Padding/Content/Level
 
 @onready var plank_normal_bg = $NormalView/PlankBG        # ajusta nombre/path
@@ -94,6 +94,9 @@ func _ready() -> void:
 	mouse_exited.connect(_on_exit_info)
 
 func _on_enter_info() -> void:
+	if not is_unlocked:
+		return
+
 	var main = get_tree().get_first_node_in_group("main")
 	if main and main._block_info_hover:
 		return
@@ -104,7 +107,7 @@ func _on_enter_info() -> void:
 
 	var owned := 0
 	if level_lbl:
-		owned = int(level_lbl.text) # en tu UI el level es el "owned"
+		owned = int(level_lbl.text)
 
 	info_panel.show_for_card(
 		self,
@@ -180,24 +183,21 @@ func set_unlocked(v: bool) -> void:
 	is_unlocked = v
 	_apply_view()
 
+	if not is_unlocked and info_panel:
+		info_panel.schedule_hide(0.0)
+
 func update_state(coins: float) -> void:
 	var needed := price if is_unlocked else unlock_price
 	_can_afford = coins >= needed
 	_apply_plank_tint()
 
 func _apply_locked_visual() -> void:
-	disabled = false  # para que puedas clicar y emitir unlock_pressed
+	disabled = false
 
-	if plank_locked:
-		plank_bg.texture = plank_locked
+	if plank_locked_bg and plank_locked:
+		plank_locked_bg.texture = plank_locked
 
-	# Solo texto de desbloqueo
-	icon_lbl.visible = false
-	stat_left.visible = false
-	level_lbl.visible = false
-
-	title_lbl.text = "Desbloquea con " + str(int(unlock_price)) + " doblones"
-	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	locked_price_lbl.text = "%d" % unlock_price
 
 func _apply_unlocked_visual() -> void:
 	# Ojo: aquí NO decidimos si se puede comprar (eso lo hace update_state)
@@ -237,7 +237,6 @@ func _apply_view() -> void:
 		_apply_unlocked_visual()
 	else:
 		_apply_locked_visual()
-		locked_price_lbl.text = "Desbloquear: %d" % unlock_price
 
 	_apply_plank_tint()
 
@@ -262,6 +261,11 @@ func _reset_rotation_smooth() -> void:
 	_animate_rotation(0.0, 0.15)
 
 func refresh_info_panel_if_hovered() -> void:
+	if not is_unlocked:
+		if info_panel:
+			info_panel.schedule_hide(0.0)
+		return
+
 	if not _hovered:
 		return
 	if info_panel == null:

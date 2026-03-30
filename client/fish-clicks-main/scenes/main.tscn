@@ -6,24 +6,55 @@
 [ext_resource type="PackedScene" uid="uid://dinpoywkt4vsq" path="res://scenes/FloatingText.tscn" id="2_tefeu"]
 [ext_resource type="Script" uid="uid://cw3knghd0miub" path="res://scenes/cofre.gd" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://cfhhda8qg0bq0" path="res://scenes/ShopItemCard.tscn" id="4_o6xl0"]
-[ext_resource type="Texture2D" uid="uid://bumfn7ywlc7r5" path="res://assets/estructuras/cofre_abierto_lleno.png" id="7_a8y0u"]
+[ext_resource type="Texture2D" uid="uid://bir4t2kdhw4h" path="res://assets/estructuras/cofre_abierto_lleno_arena.png" id="7_og1vs"]
 [ext_resource type="Texture2D" uid="uid://di0p043eru4vj" path="res://assets/ui/iconos/icono_perfil.png" id="8_eb6dy"]
+[ext_resource type="Script" uid="uid://dl0sgr2smpium" path="res://scenes/info_extra_panel.gd" id="8_tipki"]
+[ext_resource type="Texture2D" uid="uid://b3uv5xy6xfk8r" path="res://assets/estructuras/vallisneria/vallisneria_large.png" id="8_y6deb"]
 [ext_resource type="Texture2D" uid="uid://bapfvmfpgbe7p" path="res://assets/ui/iconos/icono_opciones.png" id="9_trceg"]
 [ext_resource type="Texture2D" uid="uid://casqwt2ogwyax" path="res://assets/ui/iconos/icono_stats.png" id="10_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://rljxhda6odwj" path="res://assets/ui/iconos/icono_enciclopedia.png" id="11_yc10j"]
 [ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
+[ext_resource type="Texture2D" uid="uid://b33wxaxja8jx0" path="res://assets/ui/red.png" id="13_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://c5ht6q767emx5" path="res://assets/ui/botella_mensaje.png" id="13_muem4"]
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
-[ext_resource type="PackedScene" uid="uid://dxlxsrqe6elta" path="res://scenes/tienda_panel.tscn" id="16_0ld40"]
-[ext_resource type="PackedScene" uid="uid://syr14kxtcpdh" path="res://scenes/info_extra_panel.tscn" id="17_dp3eg"]
+[ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="18_og1vs"]
+[ext_resource type="Texture2D" uid="uid://tyjvk13keej5" path="res://assets/ui/alga.png" id="18_yc10j"]
+[ext_resource type="Texture2D" uid="uid://bf4pt3ldg3d0c" path="res://assets/ui/bandera.png" id="19_0ld40"]
 [ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
+[ext_resource type="PackedScene" uid="uid://d4kjqemcayt4t" path="res://scenes/inventario.tscn" id="21_pm3ni"]
+[ext_resource type="PackedScene" uid="uid://crojbj03flfr6" path="res://scenes/UI/encyclopedia_panel.tscn" id="23_ency"]
+[ext_resource type="PackedScene" uid="uid://csohusujfqgej" path="res://scenes/stats_panel.tscn" id="23_y6deb"]
+[ext_resource type="PackedScene" uid="uid://buvdg6kk8oju2" path="res://scenes/ProfilePanel.tscn" id="25_2wyq8"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y6deb"]
+load_path = "res://.godot/imported/anubia_large.png-9dd54c4d539590f8396e886059658b60.ctex"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dp3eg"]
 texture = ExtResource("13_muem4")
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jbj1t"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gqmmt"]
+texture = ExtResource("13_jkv2x")
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jkv2x"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_0ld40"]
+texture = ExtResource("18_yc10j")
+modulate_color = Color(0.48178947, 0.48178947, 0.48178947, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_yc10j"]
+texture = ExtResource("18_yc10j")
+modulate_color = Color(0.83033526, 0.83033514, 0.83033514, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jbj1t"]
+texture = ExtResource("18_yc10j")
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_muem4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a8y0u"]
 size = Vector2(1022, 516)
@@ -48,13 +79,39 @@ texture = ExtResource("1_o5qli")
 expand_mode = 1
 stretch_mode = 6
 
+[node name="EstructurasLayer" type="Node2D" parent="." unique_id=248633790]
+
+[node name="Vallisneria" type="Sprite2D" parent="EstructurasLayer" unique_id=806922773]
+position = Vector2(949.00006, 341.00003)
+scale = Vector2(0.32166666, 0.32166663)
+texture = ExtResource("8_y6deb")
+
+[node name="Tronco" type="Sprite2D" parent="EstructurasLayer" unique_id=1275085002]
+position = Vector2(605.3334, 345.37497)
+scale = Vector2(0.57476854, 0.5747685)
+
+[node name="Tronco2" type="Sprite2D" parent="EstructurasLayer" unique_id=1350221170]
+visible = false
+position = Vector2(531, 446.00003)
+scale = Vector2(0.34769955, 0.34769946)
+
+[node name="Tronco3" type="Sprite2D" parent="EstructurasLayer" unique_id=973246666]
+visible = false
+position = Vector2(658, 485)
+scale = Vector2(0.2580597, 0.25805962)
+
+[node name="Anubia" type="Sprite2D" parent="EstructurasLayer" unique_id=279494440]
+position = Vector2(497, 541)
+scale = Vector2(0.11820317, 0.11820316)
+texture = SubResource("CompressedTexture2D_y6deb")
+
 [node name="Cofre" type="Area2D" parent="." unique_id=379332226]
 script = ExtResource("3_jyhfs")
 
 [node name="Sprite2D" type="Sprite2D" parent="Cofre" unique_id=1706070275]
 position = Vector2(193, 514.00006)
 scale = Vector2(0.29398158, 0.2740741)
-texture = ExtResource("7_a8y0u")
+texture = ExtResource("7_og1vs")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Cofre" unique_id=1343405143]
 visible = false
@@ -84,6 +141,7 @@ grow_vertical = 2
 mouse_filter = 1
 
 [node name="TopBar" type="Control" parent="UI/Root/HUD" unique_id=323055221]
+top_level = true
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -234,22 +292,223 @@ theme_override_font_sizes/font_size = 9
 text = "por segundo: 0.0"
 horizontal_alignment = 1
 
-[node name="TiendaPanel" parent="UI/Root/HUD" unique_id=1777192360 instance=ExtResource("16_0ld40")]
+[node name="TiendaPanel" type="Panel" parent="UI/Root/HUD" unique_id=1545511951]
 visible = false
-layout_mode = 0
-anchors_preset = 0
-anchor_left = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 250.0
-offset_bottom = 0.0
-grow_horizontal = 1
-grow_vertical = 1
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -250.0
+offset_top = 70.0
+offset_bottom = -78.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_jbj1t")
 
-[node name="InfoExtraPanel" parent="UI/Root/HUD" unique_id=740572350 instance=ExtResource("17_dp3eg")]
+[node name="NetFrame" type="Panel" parent="UI/Root/HUD/TiendaPanel" unique_id=1330065260]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_gqmmt")
+
+[node name="TabContainer" type="TabContainer" parent="UI/Root/HUD/TiendaPanel" unique_id=1785782234]
+z_index = 5
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 5.0
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/side_margin = 4
+theme_override_constants/tab_separation = 5
+theme_override_constants/icon_separation = 4
+theme_override_constants/icon_max_width = 0
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/panel = SubResource("StyleBoxEmpty_jkv2x")
+theme_override_styles/tab_unselected = SubResource("StyleBoxTexture_0ld40")
+theme_override_styles/tab_hovered = SubResource("StyleBoxTexture_yc10j")
+theme_override_styles/tab_selected = SubResource("StyleBoxTexture_jbj1t")
+current_tab = 0
+
+[node name="Estructuras" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1013639139]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Estructuras" unique_id=1450220889]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = 47.0
+offset_right = -20.0
+offset_bottom = -59.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_muem4")
+
+[node name="ListEstructuras" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Estructuras/ScrollContainer" unique_id=669970207]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Peces" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1632976240]
 visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces" unique_id=1377723967]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = 47.0
+offset_right = -20.0
+offset_bottom = -59.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_muem4")
+
+[node name="ListPeces" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer" unique_id=1158215447]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Únicos" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1568699925]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Únicos" unique_id=249956829]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = 47.0
+offset_right = -20.0
+offset_bottom = -59.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_muem4")
+
+[node name="ListUnicos" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Únicos/ScrollContainer" unique_id=1463964786]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="InfoExtraPanel" type="Control" parent="UI/Root/HUD" unique_id=1578223614]
+visible = false
+top_level = true
+z_index = 5
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("8_tipki")
+
+[node name="Banner" type="TextureRect" parent="UI/Root/HUD/InfoExtraPanel" unique_id=433949685]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 18.0
+offset_right = 1136.0
+offset_bottom = 630.0
+mouse_filter = 2
+texture = ExtResource("19_0ld40")
+expand_mode = 1
+
+[node name="CardBox" type="MarginContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner" unique_id=1981931913]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 168.0
+offset_top = 132.0
+offset_right = -275.0
+offset_bottom = -160.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 80
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 22
+
+[node name="VBox" type="VBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox" unique_id=2030723900]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Header" type="HBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox" unique_id=1573833251]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Header" unique_id=1406141069]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 16
+text = "Titulo
+"
+
+[node name="Owned" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Header" unique_id=1125482062]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 2
+
+[node name="Desc" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox" unique_id=346078448]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 12
+
+[node name="Bullets" type="VBoxContainer" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox" unique_id=1943120877]
+layout_mode = 2
+
+[node name="B1" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=721015527]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 10
+
+[node name="B2" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=1311210386]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 10
+
+[node name="B3" type="Label" parent="UI/Root/HUD/InfoExtraPanel/Banner/CardBox/VBox/Bullets" unique_id=404563973]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("18_og1vs")
+theme_override_font_sizes/font_size = 10
+
+[node name="EncyclopediaPanel" parent="UI/Root/HUD" unique_id=1091957969 instance=ExtResource("23_ency")]
+visible = false
+layout_mode = 1
+offset_left = 33.0
+offset_top = 18.0
+offset_right = -22.35254
+offset_bottom = -29.48291
+scale = Vector2(0.99211466, 1.0108906)
+
+[node name="Inventario" parent="UI/Root/HUD" unique_id=1603617761 instance=ExtResource("21_pm3ni")]
+visible = false
+layout_mode = 1
+
+[node name="StatsPanel" parent="UI/Root/HUD" unique_id=493873659 instance=ExtResource("23_y6deb")]
+visible = false
+layout_mode = 1
+
+[node name="ProfilePanel" parent="UI/Root/HUD" unique_id=1077186223 instance=ExtResource("25_2wyq8")]
 layout_mode = 1
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]

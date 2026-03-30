@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://f0xl8ngaksns"]
+
+[node name="ProfilePanel" type="Control" unique_id=1726193375]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Backdrop" type="ColorRect" parent="." unique_id=1104120851]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+color = Color(0, 0, 0, 0.5)
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1472333428]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -250.0
+offset_right = 200.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=503034302]
+layout_mode = 2
+
+[node name="TabContainer" type="TabContainer" parent="PanelContainer/VBoxContainer" unique_id=1992330473]
+layout_mode = 2
+size_flags_vertical = 3
+current_tab = 0
+
+[node name="Login" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1110488895]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="NickField" type="LineEdit" parent="PanelContainer/VBoxContainer/TabContainer/Login" unique_id=498710634]
+layout_mode = 2
+placeholder_text = "Nickname"
+
+[node name="PassField" type="LineEdit" parent="PanelContainer/VBoxContainer/TabContainer/Login" unique_id=2072752047]
+layout_mode = 2
+placeholder_text = "Contraseña"
+secret = true
+
+[node name="BtnLogin" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Login" unique_id=506530287]
+layout_mode = 2
+text = "Entrar"
+
+[node name="ErrorLabel" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Login" unique_id=1204228178]
+visible = false
+modulate = Color(1, 0.3, 0.3, 1)
+layout_mode = 2
+
+[node name="Registro" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=99333857]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="RegNick" type="LineEdit" parent="PanelContainer/VBoxContainer/TabContainer/Registro" unique_id=1549673668]
+layout_mode = 2
+placeholder_text = "Nickname"
+
+[node name="RegEmail" type="LineEdit" parent="PanelContainer/VBoxContainer/TabContainer/Registro" unique_id=1350809419]
+layout_mode = 2
+placeholder_text = "Email"
+
+[node name="RegPass" type="LineEdit" parent="PanelContainer/VBoxContainer/TabContainer/Registro" unique_id=506993535]
+layout_mode = 2
+placeholder_text = "Contraseña"
+secret = true
+
+[node name="RegConfirm" type="LineEdit" parent="PanelContainer/VBoxContainer/TabContainer/Registro" unique_id=1461433822]
+layout_mode = 2
+placeholder_text = "Repite contraseña"
+secret = true
+
+[node name="BtnRegister" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Registro" unique_id=1007387353]
+layout_mode = 2
+text = "Crear cuenta"
+
+[node name="ErrorLabel" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Registro" unique_id=840618249]
+visible = false
+modulate = Color(1, 0.3, 0.3, 1)
+layout_mode = 2
+
+[node name="OkLabel" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Registro" unique_id=1108481921]
+visible = false
+modulate = Color(0.3, 1, 0.3, 1)
+layout_mode = 2

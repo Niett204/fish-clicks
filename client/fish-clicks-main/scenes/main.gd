@@ -1,13 +1,26 @@
 extends Node2D
 
+const ENCYCLOPEDIA_FISH_IDS := {
+	"doblon": 1,
+	"sobrasada": 2,
+	"rufinus": 3,
+	"tiza": 4,
+}
+
 @export var floating_text_scene: PackedScene
 @export var fish_scene: PackedScene
 @export var dps_per_fish: float = 1.0
 @export var shop_item_card_scene: PackedScene
 
-@onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var shop_panel: Control = $UI/Root/HUD/TiendaPanel
 @onready var btn_shop_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnShop
+@onready var encyclopedia_panel: Control = $UI/Root/HUD/EncyclopediaPanel
+@onready var btn_encyclopedia_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnEncyclopedia
+@onready var inventory_panel: Control = $UI/Root/HUD/Inventario
+@onready var btn_inventory_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnInventory
+@onready var btn_stats_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnStats
+@onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
+@onready var left_info_panel: Control = $UI/Root/HUD/LeftInfoPanel
 @onready var chest: Area2D = $Cofre
 @onready var chest_sprite: Sprite2D = $Cofre/Sprite2D
 @onready var fish_layer = $PecesLayer
@@ -17,116 +30,360 @@ extends Node2D
 @onready var list_peces: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer/ListPeces
 @onready var list_estructuras: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Estructuras/ScrollContainer/ListEstructuras
 @onready var info_panel: Control = $UI/Root/HUD/InfoExtraPanel
+@onready var profile_panel: Control = $UI/Root/HUD/ProfilePanel
+@onready var btn_profile_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnProfile
 @onready var hud: Control = $UI/Root/HUD
 @onready var btn_hide: TextureButton = $UI/Root/BtnHideHUD
 @onready var http_request: HTTPRequest = $HTTPRequest
+@onready var vallisneria: Sprite2D = $EstructurasLayer/Vallisneria
+@onready var stats_panel: Control = $UI/Root/HUD/StatsPanel
+@onready var anubia: Sprite2D = $EstructurasLayer/Anubia
+@onready var tronco_1: Sprite2D = $EstructurasLayer/Tronco
+@onready var tronco_2: Sprite2D = $EstructurasLayer/Tronco2
+@onready var tronco_3: Sprite2D = $EstructurasLayer/Tronco3
+
+############################################################################
 
 const ITEMS := {
-	"fish_basic": {
+	"doblon": {
 		"tab": "Peces",
 		"title": "Doblon",
 		"icon": "res://assets/peces/doblon.png",
 		"unlock_price": 10,
 		"kind": "passive",
-		"base_price": 25.0,
-		"price_growth": 1.15,
+		"base_price": 40.0,
+		"price_growth": 1.28,
 		"base_value": 1.0,
 		"value_label": "DPS"
 	},
+	"sobrasada": {
+		"tab": "Peces",
+		"title": "Sobrasada",
+		"icon": "res://assets/peces/sobrasada.png",
+		"unlock_price": 250,
+		"kind": "passive",
+		"base_price": 220.0,
+		"price_growth": 1.30,
+		"base_value": 4.0,
+		"value_label": "DPS"
+	},
+	"tiza": {
+		"tab": "Peces",
+		"title": "Tiza",
+		"icon": "res://assets/peces/tiza.png",
+		"unlock_price": 1200,
+		"kind": "passive",
+		"base_price": 900.0,
+		"price_growth": 1.32,
+		"base_value": 12.0,
+		"value_label": "DPS"
+	},
+	"rufinus": {
+		"tab": "Peces",
+		"title": "Rufinus",
+		"icon": "res://assets/peces/rufinus.png",
+		"unlock_price": 5000,
+		"kind": "passive",
+		"base_price": 3500.0,
+		"price_growth": 1.35,
+		"base_value": 35.0,
+		"value_label": "DPS"
+	},
+
 	"cofre": {
 		"tab": "Estructuras",
 		"title": "Cofre",
 		"icon": "res://assets/estructuras/cofre_cerrado.png",
 		"unlock_price": 0,
 		"kind": "click",
-		"base_price": 10.0,
-		"price_growth": 1.05,
-		"base_value": 1.3,
+		"base_price": 20.0,
+		"price_growth": 1.10,
+		"base_value": 0.75,
 		"value_label": "clicks"
 	},
-	"boat": {
+	"vallisneria": {
 		"tab": "Estructuras",
-		"title": "Barco",
-		"icon": "res://assets/estructuras/cofre_cerrado.png",
-		"unlock_price": 300,
+		"title": "Vallisneria",
+		"icon": "res://assets/estructuras/vallisneria/vallisneria_mini.png",
+		"unlock_price": 500,
 		"kind": "passive",
-		"base_price": 200.0,
-		"price_growth": 1.20,
-		"base_value": 5.0,
+		"base_price": 180.0,
+		"price_growth": 1.14,
+		"base_value": 6.0,
 		"value_label": "DPS"
+	},
+	"tronco": {
+		"tab": "Estructuras",
+		"title": "Tronco",
+		"icon": "res://assets/estructuras/tronco/tronco_mini.png",
+		"unlock_price": 800,
+		"kind": "passive",
+		"base_price": 250.0,
+		"price_growth": 1.15,
+		"base_value": 8.0,
+		"value_label": "DPS"
+	},
+	"anubia": {
+		"tab": "Estructuras",
+		"title": "Anubia",
+		"icon": "res://assets/estructuras/anubia/anubia_mini.png",
+		"unlock_price": 1200,
+		"kind": "passive",
+		"base_price": 400.0,
+		"price_growth": 1.16,
+		"base_value": 12.0,
+		"value_label": "DPS"
+	},
+}
+
+############################################################################
+
+@warning_ignore("shadowed_global_identifier")
+const AchievementDefs = preload("res://scripts/data/achievement_defs.gd")
+const ACHIEVEMENT_DEFS = AchievementDefs.ACHIEVEMENT_DEFS
+const ACHIEVEMENT_POPUP_SCENE := preload("res://scenes/achievement_popup.tscn")
+var achievement_popup_queue: Array = []
+var achievement_popup_active: Control = null
+
+############################################################################
+const HABITATS := {
+	"habitat_1": {
+		"name": "Acuario",
+		"background": preload("res://assets/fondos/fondo1.png")
+	},
+	"habitat_2": {
+		"name": "Vacío",
+		"background": preload("res://assets/fondos/fondo2.png")
 	}
 }
 
-var lifetime_generated: Dictionary = {
-	"fish_basic": 0.0,
-	"cofre": 0.0,
-	"boat": 0.0
+var unlocked_habitats: Array[String] = ["habitat_1", "habitat_2"]
+var current_habitat: String = "habitat_1"
+var inventory_habitat: String = "habitat_1"
+var achievements_unlocked: Dictionary = {}
+var total_shinies_ever: int = 0
+var _achievement_check_accum: float = 0.0
+var total_structures_spent: float = 0.0
+var alien_clicked_count: int = 0
+var random_tick_unlocked: bool = false
+var profile_clicks_count: int = 0
+var volume_slider_spam_unlocked: bool = false
+var annoyed_fish_count: int = 0
+
+var aquarium_data := {
+	"habitat_1": [null, null, null, null, null, null, null, null, null, null],
+	"habitat_2": [null, null, null, null, null, null, null, null, null, null]
 }
 
-const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado.png")
-const TEX_CHEST_EMPTY  := preload("res://assets/estructuras/cofre_abierto_vacio.png")
-const TEX_CHEST_MID    := preload("res://assets/estructuras/cofre_abierto_medio.png")
-const TEX_CHEST_FULL   := preload("res://assets/estructuras/cofre_abierto_lleno.png")
+var fish_inventory := {}
+
+var fish_defs := {
+	"doblon": {
+		"name": "Doblon",
+		"icon": preload("res://assets/peces/doblon.png")
+	},
+	"doblon_shiny": {
+		"name": "Doblon",
+		"icon": preload("res://assets/peces/doblon_shiny.png")
+	},
+
+	"sobrasada": {
+		"name": "Sobrasada",
+		"icon": preload("res://assets/peces/sobrasada.png")
+	},
+	"sobrasada_shiny": {
+		"name": "Sobrasada",
+		"icon": preload("res://assets/peces/sobrasada_shiny.png")
+	},
+
+	"tiza": {
+		"name": "Tiza",
+		"icon": preload("res://assets/peces/tiza.png")
+	},
+	"tiza_shiny": {
+		"name": "Tiza",
+		"icon": preload("res://assets/peces/tiza_shiny.png")
+	},
+	
+	"rufinus": {
+		"name": "Rufinus",
+		"icon": preload("res://assets/peces/rufinus.png")
+	},
+	"rufinus_shiny": {
+		"name": "Rufinus",
+		"icon": preload("res://assets/peces/rufinus_shiny.png")
+	},
+}
+
+############################################################################
+
+var lifetime_generated: Dictionary = {
+	"doblon": 0.0,
+	"sobrasada": 0.0,
+	"tiza": 0.0,
+	"rufinus": 0.0,
+	"cofre": 0.0,
+	"vallisneria": 0.0
+}
+
+const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado_arena.png")
+const TEX_CHEST_EMPTY  := preload("res://assets/estructuras/cofre_abierto_vacio_arena.png")
+const TEX_CHEST_MID    := preload("res://assets/estructuras/cofre_abierto_medio_arena.png")
+const TEX_CHEST_FULL   := preload("res://assets/estructuras/cofre_abierto_lleno_arena.png")
+const TEX_ALGAS_0 := preload("res://assets/estructuras/vallisneria/vallisneria_mini.png")
+const TEX_ALGAS_1 := preload("res://assets/estructuras/vallisneria/vallisneria_small.png")
+const TEX_ALGAS_2 := preload("res://assets/estructuras/vallisneria/vallisneria_medium.png")
+const TEX_ALGAS_3 := preload("res://assets/estructuras/vallisneria/vallisneria_large.png")
+const TEX_ANUBIA_0 := preload("res://assets/estructuras/anubia/anubia_mini.png")
+const TEX_ANUBIA_1 := preload("res://assets/estructuras/anubia/anubia_small.png")
+const TEX_ANUBIA_2 := preload("res://assets/estructuras/anubia/anubia_medium.png")
+const TEX_ANUBIA_3 := preload("res://assets/estructuras/anubia/anubia_large.png")
+
 const ICON_HIDE = preload("res://assets/ui/iconos/icono_hud_abierto.png")
 const ICON_SHOW = preload("res://assets/ui/iconos/icono_hud_cerrado.png")
 
 var unlocked: Dictionary = {}  # id -> bool
 var levels: Dictionary = {}
+var total_clicks: int = 0
+var session_time_seconds: float = 0.0
+var game_start_date_string: String = ""
 
 var dps: float = 0.0
-var coins: float = 0.0 
+var coins: float = 100000.0
+var total_coins_earned: float = 0.0
 var click_power: int = 1
 var chest_base_scale: Vector2
 var shop_open := false
 var shop_tween: Tween
 var shop_x_open: float
 var shop_x_closed: float
+
 var _block_info_hover := false
 var hud_visible := true
 
+var vallisneria_ground_y: float = 0.0
+var anubia_ground_y: float = 0.0
+var vallisneria_base_scale: Vector2
+var anubia_base_scale: Vector2
+
+
 func _ready() -> void:
 	http_request.request_completed.connect(_on_request_completed)
-	
+
 	var url := "https://fish-clicks.onrender.com/api/test"
 	http_request.request(url)
-	
+
 	for k in ITEMS.keys():
 		var id := String(k)
 		levels[id] = 0
 		unlocked[id] = int(ITEMS[id].get("unlock_price", 0)) == 0
 		lifetime_generated[id] = 0.0
+
 	shop_panel.visible = false
+	encyclopedia_panel.visible = false
+	profile_panel.visible = false
 	chest_base_scale = chest_sprite.scale
+	
+	shop_panel.z_index = 1
+	encyclopedia_panel.z_index = 20
+	inventory_panel.z_index = 20
+	stats_panel.z_index = 20
 
 	btn_hide.pressed.connect(func():
-		play_squish(btn_shop_icon)
+		play_squish(btn_hide)
 		_toggle_hud()
 	)
-	
+
 	btn_shop_icon.pressed.connect(func():
 		play_squish(btn_shop_icon)
 		toggle_shop()
+	)
+
+	btn_encyclopedia_icon.pressed.connect(func():
+		play_squish(btn_encyclopedia_icon)
+		toggle_encyclopedia()
+	)
+	
+	btn_profile_icon.pressed.connect(func():
+		play_squish(btn_profile_icon)
+		profile_panel.toggle()
+	)
+
+	btn_inventory_icon.pressed.connect(func():
+		play_squish(btn_inventory_icon)
+		toggle_inventario()
+	)
+	
+	btn_stats_icon.pressed.connect(func():
+		play_squish(btn_stats_icon)
+		toggle_stats_panel()
 	)
 
 	tab_container.tab_changed.connect(_on_tab_changed)
 	_update_chest_sprite_by_level()
 	chest.clicked.connect(_on_chest_clicked)
 
+	vallisneria_base_scale = vallisneria.scale
+	anubia_base_scale = anubia.scale
+
+	if vallisneria.texture:
+		vallisneria_ground_y = vallisneria.position.y + (vallisneria.texture.get_height() * abs(vallisneria.scale.y) * 0.5)
+
+	if anubia.texture:
+		anubia_ground_y = anubia.position.y + (anubia.texture.get_height() * abs(anubia.scale.y) * 0.5)
+
 	_update_cps()
 	_update_ui()
+	_actualizar_peces_desbloqueados_en_enciclopedia()
+	_update_algas_sprite_by_level()
+	_update_anubia_sprite_by_level()
+	_update_tronco_visibility_by_level()
+
+	inventory_panel.move_fish_to_inventory.connect(_on_move_fish_to_inventory)
+	inventory_panel.move_fish_to_aquarium.connect(_on_move_fish_to_aquarium)
+	inventory_panel.move_fish_within_aquarium.connect(_on_move_fish_within_aquarium)
+	inventory_panel.habitat_changed.connect(_on_inventory_habitat_changed)
+	inventory_panel.close_requested.connect(func():
+		inventory_panel.visible = false
+	)
 	
+	if game_start_date_string == "":
+		var dt := Time.get_datetime_dict_from_system()
+		game_start_date_string = "%02d/%02d/%04d" % [dt.day, dt.month, dt.year]
+	
+	stats_panel.close_requested.connect(func():
+		stats_panel.visible = false
+	)
+
+	for achievement_id in ACHIEVEMENT_DEFS.keys():
+		achievements_unlocked[achievement_id] = false
+
 	await get_tree().process_frame  # asegura tamaños correctos
-	
+
 	shop_x_open = shop_panel.position.x
-	shop_x_closed = shop_x_open + shop_panel.size.x + 20  # 20px extra fuera
-	
+	shop_x_closed = shop_x_open + shop_panel.size.x + 20
+
 	shop_panel.position.x = shop_x_closed
-	shop_panel.visible = true  # importante: visible para que pueda animarse
+	shop_panel.visible = true
 	shop_open = false
 
+func _close_overlay_panels(except_panel: Control = null) -> void:
+	if encyclopedia_panel != except_panel:
+		encyclopedia_panel.visible = false
+
+	if inventory_panel != except_panel:
+		inventory_panel.visible = false
+		
+	if profile_panel != except_panel:
+		profile_panel.visible = false
+
+	if stats_panel != except_panel:
+		stats_panel.visible = false
+
+@warning_ignore("unused_parameter")
 func _on_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-	print("Código:", response_code)
-	print("Respuesta:", body.get_string_from_utf8())
+	@warning_ignore("unused_variable")
+	var i: int;
 
 func _toggle_hud():
 	hud_visible = !hud_visible
@@ -152,6 +409,77 @@ func toggle_shop() -> void:
 
 	if shop_open:
 		_on_tab_changed(tab_container.current_tab)
+
+func toggle_encyclopedia() -> void:
+	var will_open := not encyclopedia_panel.visible
+
+	if will_open:
+		_close_overlay_panels(encyclopedia_panel)
+		encyclopedia_panel.visible = true
+		_actualizar_peces_desbloqueados_en_enciclopedia()
+
+		if info_panel:
+			info_panel.request_hide()
+	else:
+		encyclopedia_panel.visible = false
+
+func toggle_inventario() -> void:
+	var will_open := not inventory_panel.visible
+
+	if will_open:
+		_close_overlay_panels(inventory_panel)
+		inventory_panel.visible = true
+
+		if info_panel:
+			info_panel.request_hide()
+
+		inventory_panel.set_inventory_data(
+			HABITATS,
+			unlocked_habitats,
+			inventory_habitat,
+			aquarium_data,
+			fish_defs,
+			fish_inventory
+		)
+	else:
+		inventory_panel.visible = false
+
+func toggle_stats_panel() -> void:
+	var will_open := not stats_panel.visible
+
+	if will_open:
+		_close_overlay_panels(stats_panel)
+		stats_panel.visible = true
+
+		if info_panel:
+			info_panel.request_hide()
+
+		_refresh_stats_panel_full()
+	else:
+		stats_panel.visible = false
+
+func _refresh_stats_panel() -> void:
+	if stats_panel.has_method("set_stats_data"):
+		stats_panel.set_stats_data({
+			"total_clicks": total_clicks,
+			"total_fish": get_total_fish_count(),
+			"total_structures": get_total_unlocked_structures_count(),
+			"total_doblones": get_compact_doblones_text(total_coins_earned),
+			"total_special_fish": get_total_shiny_fish_count(),
+			"play_time": format_play_time(int(session_time_seconds)),
+			"start_date": game_start_date_string,
+			"dps": get_compact_doblones_text(dps) + " d/s",
+			"dpc": get_compact_doblones_text(click_power) + " d/c"
+		})
+
+	if stats_panel.has_method("set_achievements_progress"):
+		stats_panel.set_achievements_progress(
+			get_unlocked_achievements_count(),
+			get_total_achievements_count()
+		)
+
+	if stats_panel.has_method("set_achievements_data"):
+		stats_panel.set_achievements_data(get_achievements_ui_data())
 
 func _on_tab_changed(tab: int) -> void:
 	_block_info_hover = true
@@ -195,7 +523,7 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 	card.setup(
 		id,
 		String(def.get("title", id)),
-		"Precio: %d" % get_price(id),
+		"%d" % get_price(id),
 		get_item_effect_text(id),
 		str(get_level(id)),
 		icon_texture,
@@ -215,13 +543,20 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 	card.unlock_pressed.connect(_on_unlock_pressed)
 
 func _on_chest_clicked() -> void:
+	total_clicks += 1
 	coins += click_power
+	total_coins_earned += click_power
 	lifetime_generated["cofre"] += click_power
 
 	_update_ui()
 	_play_click_animation()
 	_spawn_floating_text()
 	_mostrar_monedas_y_burbujas()
+
+	check_achievements()
+
+	if stats_panel.visible:
+		_refresh_stats_values_only()
 
 func _spawn_floating_text() -> void:
 	var t: Label = floating_text_scene.instantiate()
@@ -263,13 +598,31 @@ func _update_dps_ui() -> void:
 	dps_label.text = "+" + parts.value + " " + parts.unit.replace(" de doblones", "").replace(" doblones", "") + "/s"
 	
 func _process(delta: float) -> void:
+	session_time_seconds += delta
+
 	var total_generated: float = get_total_passive_dps() * delta
 	coins += total_generated
+	total_coins_earned += total_generated
 
-	lifetime_generated["fish_basic"] += float(get_level("fish_basic")) * dps_per_fish * delta
-	lifetime_generated["boat"] += float(get_level("boat")) * 5.0 * delta
+	for id in ITEMS.keys():
+		var item_id := String(id)
+		var def: Dictionary = ITEMS[item_id]
+
+		if String(def.get("kind", "")) == "passive":
+			lifetime_generated[item_id] += get_item_current_value(item_id) * delta
 
 	_update_currency_ui()
+
+	_achievement_check_accum += delta
+	if _achievement_check_accum >= 0.5:
+		_achievement_check_accum = 0.0
+		if not random_tick_unlocked and randf() < 0.0001:
+			random_tick_unlocked = true
+
+		check_achievements()
+
+	if stats_panel.visible:
+		_refresh_stats_values_only()
 
 func _update_currency_ui() -> void:
 	var parts := format_doblones_parts(coins)
@@ -294,17 +647,20 @@ func apply_purchase(id: String) -> void:
 	levels[id] = get_level(id) + 1
 
 	match id:
-		"fish_basic":
-			_spawn_fish()
 		"cofre":
 			click_power = int(round(get_item_current_value("cofre")))
 			_update_chest_sprite_by_level()
-
+		"vallisneria":
+			_update_algas_sprite_by_level()
+		"tronco":
+			_update_tronco_visibility_by_level()
+		"anubia":
+			_update_anubia_sprite_by_level()
+			
 	_update_cps()
 
-func _spawn_fish() -> void:
+func _spawn_fish(fish_id: String, habitat_id: String, slot_index: int) -> void:
 	var fish = fish_scene.instantiate()
-	print("Fish instance:", fish)
 
 	if "swim_area" in fish:
 		fish.swim_area = $SwimArea
@@ -312,7 +668,25 @@ func _spawn_fish() -> void:
 		push_error("El pez no tiene propiedad swim_area")
 
 	fish_layer.add_child(fish)
-	fish.position = Vector2(randi_range(200, 1000), randi_range(300, 600))
+
+	if fish.has_method("setup_fish_instance"):
+		fish.setup_fish_instance(fish_id, habitat_id, slot_index)
+
+	fish.visible = habitat_id == current_habitat
+
+	if fish_defs.has(fish_id) and fish.has_method("set_fish_texture"):
+		var tex: Texture2D = fish_defs[fish_id]["icon"]
+		fish.set_fish_texture(tex)
+
+	var target_pos := Vector2(
+		randi_range(120, 920),
+		randi_range(120, 520)
+	)
+
+	if fish.has_method("play_spawn_arc"):
+		fish.play_spawn_arc(target_pos)
+	else:
+		fish.position = target_pos
 
 func get_list_for_category(category: String) -> VBoxContainer:
 	match category:
@@ -329,8 +703,30 @@ func _on_buy_pressed(id: String) -> void:
 		return
 
 	coins -= price
+	if String(ITEMS[id].get("tab", "")) == "Estructuras":
+		total_structures_spent += price
 	apply_purchase(id)
+
+	if fish_defs.has(id):
+		var spawned_fish_id := id
+
+		if randf() < 0.01 and fish_defs.has(id + "_shiny"):
+			spawned_fish_id = id + "_shiny"
+			total_shinies_ever += 1
+
+		var slot_index := try_add_fish_to_aquarium(current_habitat, spawned_fish_id)
+
+		if slot_index != -1:
+			_spawn_fish(spawned_fish_id, current_habitat, slot_index)
+		else:
+			fish_inventory[spawned_fish_id] = int(fish_inventory.get(spawned_fish_id, 0)) + 1
+
+	refresh_inventory_panel_data()
 	_update_ui()
+	check_achievements()
+
+	if stats_panel.visible:
+		_refresh_stats_values_only()
 
 func _on_unlock_pressed(id: String) -> void:
 	if bool(unlocked.get(id, false)):
@@ -341,8 +737,22 @@ func _on_unlock_pressed(id: String) -> void:
 		return
 
 	coins -= unlock_price
+	if String(ITEMS[id].get("tab", "")) == "Estructuras" and id != "cofre":
+		total_structures_spent += unlock_price
 	unlocked[id] = true
-	_update_ui()  # esto refresca cards
+
+	match id:
+		"vallisneria":
+			_update_algas_sprite_by_level()
+		"tronco":
+			_update_tronco_visibility_by_level()
+
+	_update_ui()
+	_actualizar_peces_desbloqueados_en_enciclopedia()
+	check_achievements()
+
+	if stats_panel.visible:
+		_refresh_stats_values_only()
 
 func update_shop_cards() -> void:
 	for card in list_peces.get_children():
@@ -357,7 +767,7 @@ func _refresh_card(card) -> void:
 	card.set_unlocked(bool(unlocked.get(id, true)))
 	card.set_dynamic(
 		p,
-		"Precio: %d" % p,
+		"%d" % p,
 		get_item_effect_text(id),
 		str(get_level(id))
 	)
@@ -437,6 +847,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			if fish.has_method("scare_from"):
 				if fish.global_position.distance_to(click_pos) < 120:
 					fish.scare_from(click_pos)
+					annoyed_fish_count += 1
 
 func format_doblones_parts(n: float) -> Dictionary:
 	var abs_n: float = abs(n)
@@ -581,7 +992,7 @@ func get_item_current_value(id: String) -> float:
 		"click":
 			if level <= 0:
 				return 1.0
-			return pow(base_value, level)
+			return 1.0 + level * base_value
 		_:
 			return 0.0
 
@@ -599,3 +1010,589 @@ func get_current_dps_contribution(id: String) -> float:
 func get_lifetime_generated_text(id: String) -> String:
 	var amount := float(lifetime_generated.get(id, 0.0))
 	return "%s doblones" % format_with_separator(int(amount))
+
+# ENCICLOPEDIA
+func _actualizar_peces_desbloqueados_en_enciclopedia() -> void:
+	var ids_desbloqueados: Array[int] = []
+
+	for item_id in ENCYCLOPEDIA_FISH_IDS.keys():
+		if bool(unlocked.get(item_id, false)):
+			ids_desbloqueados.append(int(ENCYCLOPEDIA_FISH_IDS[item_id]))
+
+	if encyclopedia_panel.has_method("set_pez_ids_desbloqueados"):
+		encyclopedia_panel.set_pez_ids_desbloqueados(ids_desbloqueados)
+
+func try_add_fish_to_aquarium(habitat_id: String, fish_id: String) -> int:
+	if not aquarium_data.has(habitat_id):
+		return -1
+
+	var slots: Array = aquarium_data[habitat_id]
+
+	for i in range(slots.size()):
+		if slots[i] == null:
+			slots[i] = fish_id
+			aquarium_data[habitat_id] = slots
+			return i
+
+	return -1
+
+func _on_move_fish_to_inventory(fish_id: String, slot_index: int, habitat_id: String) -> void:
+	if not aquarium_data.has(habitat_id):
+		return
+
+	var slots: Array = aquarium_data[habitat_id]
+
+	if slot_index < 0 or slot_index >= slots.size():
+		return
+
+	if slots[slot_index] != fish_id:
+		return
+
+	slots[slot_index] = null
+	aquarium_data[habitat_id] = slots
+
+	_remove_spawned_fish_from_aquarium(habitat_id, slot_index)
+
+	fish_inventory[fish_id] = int(fish_inventory.get(fish_id, 0)) + 1
+
+	refresh_inventory_panel_data()
+
+func _on_move_fish_to_aquarium(fish_id: String, habitat_id: String, slot_index: int) -> void:
+	if int(fish_inventory.get(fish_id, 0)) <= 0:
+		return
+
+	if not aquarium_data.has(habitat_id):
+		return
+
+	var slots: Array = aquarium_data[habitat_id]
+
+	if slot_index < 0 or slot_index >= slots.size():
+		return
+
+	var replaced_fish_id = slots[slot_index]
+
+	# Si había un pez en ese slot, vuelve al inventario
+	if replaced_fish_id != null:
+		fish_inventory[replaced_fish_id] = int(fish_inventory.get(replaced_fish_id, 0)) + 1
+		_remove_spawned_fish_from_aquarium(habitat_id, slot_index)
+
+	# Colocar el nuevo pez en el slot elegido
+	slots[slot_index] = fish_id
+	aquarium_data[habitat_id] = slots
+
+	fish_inventory[fish_id] = int(fish_inventory.get(fish_id, 0)) - 1
+	if int(fish_inventory[fish_id]) <= 0:
+		fish_inventory.erase(fish_id)
+
+	_spawn_fish(fish_id, habitat_id, slot_index)
+	_refresh_visible_fish_by_habitat()
+	refresh_inventory_panel_data()
+
+func _on_move_fish_within_aquarium(from_slot_index: int, to_slot_index: int, habitat_id: String) -> void:
+	if not aquarium_data.has(habitat_id):
+		return
+
+	var slots: Array = aquarium_data[habitat_id]
+
+	if from_slot_index < 0 or from_slot_index >= slots.size():
+		return
+	if to_slot_index < 0 or to_slot_index >= slots.size():
+		return
+	if from_slot_index == to_slot_index:
+		return
+	if slots[from_slot_index] == null:
+		return
+
+	var from_fish_id = slots[from_slot_index]
+	var to_fish_id = slots[to_slot_index]
+
+	# Intercambio lógico
+	slots[from_slot_index] = to_fish_id
+	slots[to_slot_index] = from_fish_id
+	aquarium_data[habitat_id] = slots
+
+	_swap_spawned_fish_slots(habitat_id, from_slot_index, to_slot_index)
+
+	refresh_inventory_panel_data()
+
+func _refresh_visible_fish_by_habitat() -> void:
+	for child in fish_layer.get_children():
+		child.visible = child.get("habitat_id") == current_habitat
+
+func _on_inventory_habitat_changed(habitat_id: String) -> void:
+	inventory_habitat = habitat_id
+
+func _swap_spawned_fish_slots(habitat_id: String, from_slot_index: int, to_slot_index: int) -> void:
+	var fish_from = null
+	var fish_to = null
+
+	for child in fish_layer.get_children():
+		if child.get("habitat_id") != habitat_id:
+			continue
+
+		if child.get("slot_index") == from_slot_index:
+			fish_from = child
+		elif child.get("slot_index") == to_slot_index:
+			fish_to = child
+
+	if fish_from != null:
+		fish_from.slot_index = to_slot_index
+	if fish_to != null:
+		fish_to.slot_index = from_slot_index
+
+func _move_spawned_fish_to_aquarium_slot(habitat_id: String, from_slot_index: int, to_slot_index: int) -> void:
+	for child in fish_layer.get_children():
+		if child.get("habitat_id") == habitat_id and child.get("slot_index") == from_slot_index:
+			child.slot_index = to_slot_index
+			return
+
+func refresh_inventory_panel_data() -> void:
+	if inventory_panel.visible:
+		inventory_panel.set_inventory_data(
+			HABITATS,
+			unlocked_habitats,
+			inventory_habitat,
+			aquarium_data,
+			fish_defs,
+			fish_inventory
+		)
+
+func _remove_spawned_fish_from_aquarium(habitat_id: String, slot_index: int) -> void:
+	for child in fish_layer.get_children():
+		if child.get("habitat_id") == habitat_id and child.get("slot_index") == slot_index:
+			child.queue_free()
+			return
+
+func _update_algas_sprite_by_level() -> void:
+	var algas_level: int = get_level("vallisneria")
+	var algas_unlocked: bool = bool(unlocked.get("vallisneria", false))
+
+	if not algas_unlocked or algas_level <= 0:
+		vallisneria.visible = false
+		return
+
+	vallisneria.visible = true
+
+	if algas_level <= 5:
+		_set_vallisneria_texture(TEX_ALGAS_0)
+	elif algas_level <= 10:
+		_set_vallisneria_texture(TEX_ALGAS_1)
+	elif algas_level <= 15:
+		_set_vallisneria_texture(TEX_ALGAS_2)
+	else:
+		_set_vallisneria_texture(TEX_ALGAS_3)
+
+func _update_anubia_sprite_by_level() -> void:
+	var level: int = get_level("anubia")
+
+	if not bool(unlocked.get("anubia", false)) or level <= 0:
+		anubia.visible = false
+		return
+
+	anubia.visible = true
+
+	if level <= 5:
+		_set_anubia_texture(TEX_ANUBIA_0, 2.0, 0.75)
+	elif level <= 10:
+		_set_anubia_texture(TEX_ANUBIA_1, 6.0, 0.45)
+	elif level <= 15:
+		_set_anubia_texture(TEX_ANUBIA_2, 2.0, 0.80)
+	else:
+		_set_anubia_texture(TEX_ANUBIA_3, 0.0, 1.00)
+
+func _set_anubia_texture(tex: Texture2D, extra_y: float = 0.0, scale_mult: float = 1.0) -> void:
+	if tex == null:
+		return
+
+	anubia.texture = tex
+	anubia.scale = anubia_base_scale * scale_mult
+
+	var tex_height: float = tex.get_height() * abs(anubia.scale.y)
+
+	if anubia.centered:
+		anubia.position.y = anubia_ground_y - tex_height * 0.5 + extra_y
+	else:
+		anubia.position.y = anubia_ground_y - tex_height + extra_y
+
+func _set_vallisneria_texture(tex: Texture2D) -> void:
+	if tex == null:
+		return
+
+	vallisneria.texture = tex
+	vallisneria.scale = vallisneria_base_scale
+
+	var tex_height: float = tex.get_height() * abs(vallisneria.scale.y)
+
+	if vallisneria.centered:
+		vallisneria.position.y = vallisneria_ground_y - tex_height * 0.5
+	else:
+		vallisneria.position.y = vallisneria_ground_y - tex_height
+
+func get_total_fish_count() -> int:
+	var total := 0
+
+	for habitat_id in aquarium_data.keys():
+		for fish_id in aquarium_data[habitat_id]:
+			if fish_id != null:
+				total += 1
+
+	for fish_id in fish_inventory.keys():
+		total += int(fish_inventory[fish_id])
+
+	return total
+
+func get_total_structures_count() -> int:
+	var total := 0
+
+	for id in ITEMS.keys():
+		var item_id := String(id)
+
+		if String(ITEMS[item_id].get("tab", "")) != "Estructuras":
+			continue
+
+		if item_id == "cofre":
+			continue
+
+		total += get_level(item_id)
+
+	return total
+
+func get_total_special_fish_count() -> int:
+	var total := 0
+
+	for habitat_id in aquarium_data.keys():
+		for fish_id in aquarium_data[habitat_id]:
+			if fish_id != null and String(fish_id).ends_with("_shiny"):
+				total += 1
+
+	for fish_id in fish_inventory.keys():
+		if String(fish_id).ends_with("_shiny"):
+			total += int(fish_inventory[fish_id])
+
+	return total
+
+func get_compact_doblones_text(value: float) -> String:
+	var parts: Dictionary = format_doblones_parts(value)
+	var unit := String(parts.unit)
+
+	unit = unit.replace(" de doblones", "")
+	unit = unit.replace(" doblones", "")
+
+	return parts.value if unit == "" else parts.value + " " + unit
+
+func format_play_time(total_seconds: int) -> String:
+	@warning_ignore("integer_division")
+	var hours := total_seconds / 3600
+	@warning_ignore("integer_division")
+	var minutes := (total_seconds % 3600) / 60
+	var seconds := total_seconds % 60
+	return "%02d:%02d:%02d" % [hours, minutes, seconds]
+
+func get_total_unlocked_structures_count() -> int:
+	var total := 0
+
+	for id in ITEMS.keys():
+		var item_id := String(id)
+		var def: Dictionary = ITEMS[item_id]
+
+		if String(def.get("tab", "")) != "Estructuras":
+			continue
+
+		if item_id == "cofre":
+			continue
+
+		if bool(unlocked.get(item_id, false)):
+			total += 1
+
+	return total
+
+func get_total_shiny_fish_count() -> int:
+	var total := 0
+
+	for habitat_id in aquarium_data.keys():
+		var slots = aquarium_data[habitat_id]
+		for fish_id in slots:
+			if fish_id != null and String(fish_id).ends_with("_shiny"):
+				total += 1
+
+	for fish_id in fish_inventory.keys():
+		if String(fish_id).ends_with("_shiny"):
+			total += int(fish_inventory[fish_id])
+
+	return total
+	
+func _get_achievement_current_value(kind: String) -> float:
+	match kind:
+		"clicks":
+			return float(total_clicks)
+		"coins":
+			return total_coins_earned
+		"fish":
+			return float(get_total_fish_count())
+		"structures":
+			return float(get_total_unlocked_structures_count())
+		"structures_spent":
+			return total_structures_spent
+		"shiny_current":
+			return float(get_total_shiny_fish_count())
+		"shiny_ever":
+			return float(total_shinies_ever)
+		"play_time":
+			return session_time_seconds
+		"dps":
+			return dps
+		"dpc":
+			return float(click_power)
+		"all_aquarium_shiny":
+			return 1.0 if _is_all_current_aquarium_shiny() else 0.0
+		"all_species_in_aquarium":
+			return 1.0 if _has_all_species_in_current_aquarium() else 0.0
+		"alien_clicked":
+			return float(alien_clicked_count)
+		"random_tick":
+			return 1.0 if random_tick_unlocked else 0.0
+		"encyclopedia_complete":
+			return 1.0 if _is_encyclopedia_complete() else 0.0
+		"profile_clicks":
+			return float(profile_clicks_count)
+		"volume_slider_spam":
+			return 1.0 if volume_slider_spam_unlocked else 0.0
+		"same_species_full_aquarium":
+			return 1.0 if _is_same_species_full_aquarium() else 0.0
+		"annoy_fish":
+			return float(annoyed_fish_count)
+		"achievements_unlocked":
+			return float(get_unlocked_achievements_count())
+		_:
+			return 0.0
+
+func check_achievements() -> void:
+	var changed := false
+
+	for achievement_id in ACHIEVEMENT_DEFS.keys():
+		if bool(achievements_unlocked.get(achievement_id, false)):
+			continue
+
+		var def: Dictionary = ACHIEVEMENT_DEFS[achievement_id]
+		var kind := String(def.get("kind", ""))
+		var target := float(def.get("target", 0.0))
+		var current := _get_achievement_current_value(kind)
+
+		if current >= target:
+			achievements_unlocked[achievement_id] = true
+			changed = true
+
+			var title := String(def.get("title", achievement_id))
+			var condition := String(def.get("condition", ""))
+			var icon_data = def.get("icon", null)
+			var icon_tex: Texture2D = null
+
+			if icon_data is Texture2D:
+				icon_tex = icon_data
+			elif icon_data is String and icon_data != "":
+				icon_tex = load(icon_data)
+
+			_show_achievement_popup(title, condition, icon_tex)
+
+	if changed and stats_panel.visible:
+		_refresh_stats_panel_full()
+
+func get_achievements_ui_data() -> Array:
+	var result: Array = []
+
+	for achievement_id in ACHIEVEMENT_DEFS.keys():
+		var def: Dictionary = ACHIEVEMENT_DEFS[achievement_id]
+		result.append({
+			"id": achievement_id,
+			"title": String(def.get("title", "")),
+			"condition": _get_achievement_condition_text(def),
+			"desc": String(def.get("desc", "")),
+			"icon": def.get("icon", null),
+			"unlocked": bool(achievements_unlocked.get(achievement_id, false)),
+			"hidden": bool(def.get("hidden", false))
+		})
+
+	return result
+
+func get_unlocked_achievements_count() -> int:
+	var total := 0
+	for achievement_id in achievements_unlocked.keys():
+		if bool(achievements_unlocked[achievement_id]):
+			total += 1
+	return total
+
+func get_total_achievements_count() -> int:
+	return ACHIEVEMENT_DEFS.size()
+
+func _refresh_stats_values_only() -> void:
+	if stats_panel.has_method("set_stats_data"):
+		stats_panel.set_stats_data({
+			"total_clicks": total_clicks,
+			"total_fish": get_total_fish_count(),
+			"total_structures": get_total_unlocked_structures_count(),
+			"total_doblones": get_compact_doblones_text(total_coins_earned),
+			"total_special_fish": get_total_shiny_fish_count(),
+			"play_time": format_play_time(int(session_time_seconds)),
+			"start_date": game_start_date_string,
+			"dps": get_compact_doblones_text(dps) + " d/s",
+			"dpc": get_compact_doblones_text(click_power) + " d/c"
+		})
+
+func _refresh_stats_panel_full() -> void:
+	_refresh_stats_values_only()
+
+	if stats_panel.has_method("set_achievements_progress"):
+		stats_panel.set_achievements_progress(
+			get_unlocked_achievements_count(),
+			get_total_achievements_count()
+		)
+
+	if stats_panel.has_method("set_achievements_data"):
+		stats_panel.set_achievements_data(get_achievements_ui_data())
+
+func _get_achievement_condition_text(def: Dictionary) -> String:
+	return "Desbloqueo: %s" % String(def.get("condition", "Desbloqueo especial"))
+
+func _show_achievement_popup(title: String, condition: String, icon_tex: Texture2D = null) -> void:
+	achievement_popup_queue.append({
+		"title": title,
+		"condition": condition,
+		"icon": icon_tex
+	})
+
+	_try_show_next_achievement_popup()
+
+func _try_show_next_achievement_popup() -> void:
+	if achievement_popup_active != null:
+		return
+
+	if achievement_popup_queue.is_empty():
+		return
+
+	var data: Dictionary = achievement_popup_queue.pop_front()
+
+	var popup = ACHIEVEMENT_POPUP_SCENE.instantiate()
+	$UI/Root.add_child(popup)
+	achievement_popup_active = popup
+
+	if popup.has_method("setup_popup"):
+		popup.setup_popup(
+			String(data.get("title", "")),
+			String(data.get("condition", "")),
+			data.get("icon", null)
+		)
+
+	await get_tree().process_frame
+
+	var screen_size: Vector2 = get_viewport_rect().size
+	popup.position = Vector2(
+		screen_size.x - popup.size.x - 675,
+		10
+	)
+
+	if popup.has_signal("popup_finished"):
+		popup.popup_finished.connect(_on_achievement_popup_finished)
+
+	if popup.has_method("show_popup"):
+		popup.show_popup()
+
+func _on_achievement_popup_finished() -> void:
+	achievement_popup_active = null
+	_try_show_next_achievement_popup()
+
+func _get_base_fish_id(fish_id: String) -> String:
+	return fish_id.replace("_shiny", "")
+
+func _get_current_aquarium_fish_ids() -> Array[String]:
+	var result: Array[String] = []
+
+	if not aquarium_data.has(current_habitat):
+		return result
+
+	for fish_id in aquarium_data[current_habitat]:
+		if fish_id != null:
+			result.append(String(fish_id))
+
+	return result
+
+func _is_current_aquarium_full() -> bool:
+	if not aquarium_data.has(current_habitat):
+		return false
+
+	for fish_id in aquarium_data[current_habitat]:
+		if fish_id == null:
+			return false
+
+	return true
+
+func _is_all_current_aquarium_shiny() -> bool:
+	var fish_ids := _get_current_aquarium_fish_ids()
+
+	if fish_ids.is_empty():
+		return false
+
+	if not _is_current_aquarium_full():
+		return false
+
+	for fish_id in fish_ids:
+		if not fish_id.ends_with("_shiny"):
+			return false
+
+	return true
+
+func _has_all_species_in_current_aquarium() -> bool:
+	var required_species := {}
+	for fish_id in ENCYCLOPEDIA_FISH_IDS.keys():
+		required_species[String(fish_id)] = true
+
+	var present_species := {}
+
+	for fish_id in _get_current_aquarium_fish_ids():
+		present_species[_get_base_fish_id(fish_id)] = true
+
+	for species_id in required_species.keys():
+		if not present_species.has(species_id):
+			return false
+
+	return true
+
+func _is_same_species_full_aquarium() -> bool:
+	var fish_ids := _get_current_aquarium_fish_ids()
+
+	if fish_ids.is_empty():
+		return false
+
+	if not _is_current_aquarium_full():
+		return false
+
+	var first_species := _get_base_fish_id(fish_ids[0])
+
+	for fish_id in fish_ids:
+		if _get_base_fish_id(fish_id) != first_species:
+			return false
+
+	return true
+
+func _is_encyclopedia_complete() -> bool:
+	for fish_id in ENCYCLOPEDIA_FISH_IDS.keys():
+		if not bool(unlocked.get(fish_id, false)):
+			return false
+	return true
+
+func _update_tronco_visibility_by_level() -> void:
+	var level: int = get_level("tronco")
+	var is_unlocked: bool = bool(unlocked.get("tronco", false))
+
+	tronco_1.visible = false
+	tronco_2.visible = false
+	tronco_3.visible = false
+
+	if not is_unlocked or level <= 0:
+		return
+
+	if level <= 5:
+		tronco_3.visible = true
+	elif level <= 10:
+		tronco_2.visible = true
+	else:
+		tronco_1.visible = true

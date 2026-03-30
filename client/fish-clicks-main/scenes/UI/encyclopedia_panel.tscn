@@ -1,0 +1,404 @@
+[gd_scene format=3 uid="uid://crojbj03flfr6"]
+
+[ext_resource type="Script" uid="uid://dshk18d2tj4io" path="res://scenes/UI/encyclopedia.gd" id="1_4h8ff"]
+[ext_resource type="Texture2D" uid="uid://casgo8fwtfcga" path="res://assets/ui/libro_abierto.png" id="1_g574a"]
+[ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="3_k3767"]
+[ext_resource type="Texture2D" uid="uid://dm1qa7qppmo7k" path="res://assets/ui/marco_peces.png" id="4_xskg5"]
+[ext_resource type="Texture2D" uid="uid://cgjbjq3ublcr2" path="res://assets/ui/rarezas/tag_rareza_default.png" id="5_xskg5"]
+[ext_resource type="Texture2D" uid="uid://cknbwrkydgsv" path="res://assets/ui/flecha.png" id="6_xskg5"]
+[ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="7_k887v"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_4h8ff"]
+font = ExtResource("3_k3767")
+font_size = 22
+
+[sub_resource type="LabelSettings" id="LabelSettings_k3767"]
+paragraph_spacing = 1.0
+font = ExtResource("3_k3767")
+font_size = 27
+font_color = Color(0.2269584, 0.10857486, 0.008638387, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_06p6h"]
+font = ExtResource("3_k3767")
+font_color = Color(0.2956358, 0.14956713, 0.013127518, 1)
+
+[node name="EncyclopediaPanel" type="Control" unique_id=1091957969]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_4h8ff")
+
+[node name="FondoLibro" type="TextureRect" parent="." unique_id=897703042]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("1_g574a")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="ContenedorLibro" type="HBoxContainer" parent="FondoLibro" unique_id=1023908088]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 192.00002
+offset_top = 59.000004
+offset_right = -106.0
+offset_bottom = -29.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.8799994, 0.96000063)
+
+[node name="PaginaIzq" type="Control" parent="FondoLibro/ContenedorLibro" unique_id=132562500]
+custom_minimum_size = Vector2(435, 0)
+layout_mode = 2
+
+[node name="MarginIzq" type="MarginContainer" parent="FondoLibro/ContenedorLibro/PaginaIzq" unique_id=1104367832]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 52.272743
+offset_top = 2.0833278
+offset_right = 17.272736
+offset_bottom = 2.083313
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxIzq" type="VBoxContainer" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq" unique_id=1687276047]
+layout_mode = 2
+
+[node name="tag_bg_izq" type="TextureRect" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq" unique_id=1536489537]
+custom_minimum_size = Vector2(80, 70)
+layout_mode = 2
+size_flags_horizontal = 0
+expand_mode = 2
+stretch_mode = 5
+
+[node name="TagRarezaIzq" type="Label" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/tag_bg_izq" unique_id=622684088]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -96.0
+offset_top = -16.0
+offset_right = 96.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+label_settings = SubResource("LabelSettings_4h8ff")
+horizontal_alignment = 1
+vertical_alignment = 1
+max_lines_visible = 1
+language = "es"
+
+[node name="marco_pez_izq" type="TextureRect" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq" unique_id=672969919]
+custom_minimum_size = Vector2(200, 170)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("4_xskg5")
+expand_mode = 3
+
+[node name="PezIzq" type="TextureRect" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/marco_pez_izq" unique_id=806195330]
+custom_minimum_size = Vector2(170, 170)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 4
+stretch_mode = 5
+
+[node name="NombrePezIzq" type="Label" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq" unique_id=244178706]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+label_settings = SubResource("LabelSettings_k3767")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="DescripcionIzq" type="RichTextLabel" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq" unique_id=1518738575]
+layout_mode = 2
+theme_override_colors/default_color = Color(0.43137255, 0.29411766, 0.11764706, 1)
+theme_override_fonts/normal_font = ExtResource("3_k3767")
+theme_override_fonts/bold_font = ExtResource("3_k3767")
+theme_override_font_sizes/normal_font_size = 20
+fit_content = true
+tab_size = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+text_direction = 1
+language = "es_ES"
+
+[node name="HBoxIzq" type="HBoxContainer" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq" unique_id=140332219]
+layout_mode = 2
+alignment = 1
+
+[node name="tag_bg_izq2" type="TextureRect" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/HBoxIzq" unique_id=1668187753]
+custom_minimum_size = Vector2(120, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("5_xskg5")
+expand_mode = 3
+stretch_mode = 6
+
+[node name="StatIzq" type="Label" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/HBoxIzq/tag_bg_izq2" unique_id=351458265]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+label_settings = SubResource("LabelSettings_06p6h")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+max_lines_visible = 1
+text_direction = 1
+language = "es"
+
+[node name="tag_bg_izq3" type="TextureRect" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/HBoxIzq" unique_id=1756714384]
+custom_minimum_size = Vector2(120, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("5_xskg5")
+expand_mode = 3
+stretch_mode = 6
+
+[node name="HabitatIzq" type="Label" parent="FondoLibro/ContenedorLibro/PaginaIzq/MarginIzq/VBoxIzq/HBoxIzq/tag_bg_izq3" unique_id=544119496]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+label_settings = SubResource("LabelSettings_06p6h")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+max_lines_visible = 1
+text_direction = 1
+language = "es"
+
+[node name="PaginaDer" type="Control" parent="FondoLibro/ContenedorLibro" unique_id=814593104]
+custom_minimum_size = Vector2(435, 0)
+layout_mode = 2
+
+[node name="MarginDer" type="MarginContainer" parent="FondoLibro/ContenedorLibro/PaginaDer" unique_id=348124737]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 2.083
+offset_right = -30.0
+offset_bottom = 2.0830078
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxDer" type="VBoxContainer" parent="FondoLibro/ContenedorLibro/PaginaDer/MarginDer" unique_id=51283527]
+layout_mode = 2
+
+[node name="tag_bg_der" type="TextureRect" parent="FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer" unique_id=923994571]
+custom_minimum_size = Vector2(80, 70)
+layout_mode = 2
+size_flags_horizontal = 8
+expand_mode = 2
+stretch_mode = 5
+
+[node name="TagRarezaDer" type="Label" parent="FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/tag_bg_der" unique_id=509838448]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -96.0
+offset_top = -16.0
+offset_right = 96.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+label_settings = SubResource("LabelSettings_4h8ff")
+horizontal_alignment = 1
+vertical_alignment = 1
+max_lines_visible = 1
+language = "es"
+
+[node name="marco_pez_der" type="TextureRect" parent="FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer" unique_id=1588846060]
+custom_minimum_size = Vector2(200, 170)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("4_xskg5")
+expand_mode = 3
+
+[node name="PezDer" type="TextureRect" parent="FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/marco_pez_der" unique_id=1108907830]
+custom_minimum_size = Vector2(170, 170)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 4
+stretch_mode = 5
+
+[node name="NombrePezDer" type="Label" parent="FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer" unique_id=1291047116]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+label_settings = SubResource("LabelSettings_k3767")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="DescripcionDer" type="RichTextLabel" parent="FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer" unique_id=1520218602]
+layout_mode = 2
+theme_override_colors/default_color = Color(0.43137255, 0.29411766, 0.11764706, 1)
+theme_override_fonts/normal_font = ExtResource("3_k3767")
+theme_override_fonts/bold_font = ExtResource("3_k3767")
+theme_override_font_sizes/normal_font_size = 20
+fit_content = true
+tab_size = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+text_direction = 1
+language = "es_ES"
+
+[node name="HBoxDer" type="HBoxContainer" parent="FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer" unique_id=1669234173]
+layout_mode = 2
+alignment = 1
+
+[node name="tag_bg_der2" type="TextureRect" parent="FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/HBoxDer" unique_id=852551901]
+custom_minimum_size = Vector2(120, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("5_xskg5")
+expand_mode = 3
+stretch_mode = 6
+
+[node name="StatDer" type="Label" parent="FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/HBoxDer/tag_bg_der2" unique_id=531244472]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+label_settings = SubResource("LabelSettings_06p6h")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+max_lines_visible = 1
+text_direction = 1
+language = "es"
+
+[node name="tag_bg_der3" type="TextureRect" parent="FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/HBoxDer" unique_id=1535374106]
+custom_minimum_size = Vector2(120, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("5_xskg5")
+expand_mode = 3
+stretch_mode = 6
+
+[node name="HabitatDer" type="Label" parent="FondoLibro/ContenedorLibro/PaginaDer/MarginDer/VBoxDer/HBoxDer/tag_bg_der3" unique_id=453375836]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+label_settings = SubResource("LabelSettings_06p6h")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+max_lines_visible = 1
+text_direction = 1
+language = "es"
+
+[node name="RarezaPanel" type="Control" parent="FondoLibro" unique_id=1887276510]
+custom_minimum_size = Vector2(30, 220)
+anchors_preset = 0
+offset_left = 956.0
+offset_top = 84.0
+offset_right = 1006.0
+offset_bottom = 304.0
+scale = Vector2(0.67999756, 2.1999996)
+
+[node name="RarezaContainer" type="VBoxContainer" parent="FondoLibro/RarezaPanel" unique_id=1042103093]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -90.0
+offset_right = -90.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BtnSiguiente" type="TextureButton" parent="." unique_id=1044860946]
+layout_mode = 0
+offset_left = 846.0
+offset_top = 497.0
+offset_right = 886.0
+offset_bottom = 537.0
+scale = Vector2(1.1094733, 1.3200048)
+texture_normal = ExtResource("6_xskg5")
+ignore_texture_size = true
+stretch_mode = 5
+flip_h = true
+
+[node name="BtnAnterior" type="TextureButton" parent="." unique_id=1169156686]
+layout_mode = 0
+offset_left = 205.0
+offset_top = 497.0
+offset_right = 245.0
+offset_bottom = 537.0
+scale = Vector2(1.1094733, 1.3200048)
+texture_normal = ExtResource("6_xskg5")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="BtnSalir" type="TextureButton" parent="." unique_id=1057268610]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 0
+offset_left = 915.0
+offset_top = 55.0
+offset_right = 955.0
+offset_bottom = 95.0
+scale = Vector2(0.6483418, 0.64000595)
+texture_normal = ExtResource("7_k887v")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1998485821]
