@@ -10,12 +10,9 @@
 [ext_resource type="Texture2D" uid="uid://di0p043eru4vj" path="res://assets/ui/iconos/icono_perfil.png" id="8_eb6dy"]
 [ext_resource type="Script" uid="uid://dl0sgr2smpium" path="res://scenes/info_extra_panel.gd" id="8_tipki"]
 [ext_resource type="Texture2D" uid="uid://b3uv5xy6xfk8r" path="res://assets/estructuras/vallisneria/vallisneria_large.png" id="8_y6deb"]
-[ext_resource type="Texture2D" uid="uid://ccemaw6j4o3sr" path="res://assets/estructuras/tronco/tronco_medium.png" id="9_2f3dj"]
 [ext_resource type="Texture2D" uid="uid://bapfvmfpgbe7p" path="res://assets/ui/iconos/icono_opciones.png" id="9_trceg"]
 [ext_resource type="Texture2D" uid="uid://casqwt2ogwyax" path="res://assets/ui/iconos/icono_stats.png" id="10_a8y0u"]
-[ext_resource type="Texture2D" uid="uid://d2n7cjqtpenpj" path="res://assets/estructuras/tronco/tronco_small.png" id="10_yq6so"]
 [ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
-[ext_resource type="Texture2D" uid="uid://bpvte078h1smo" path="res://assets/estructuras/tronco/tronco_mini.png" id="11_fv21b"]
 [ext_resource type="Texture2D" uid="uid://rljxhda6odwj" path="res://assets/ui/iconos/icono_enciclopedia.png" id="11_yc10j"]
 [ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://b33wxaxja8jx0" path="res://assets/ui/red.png" id="13_jkv2x"]
@@ -28,6 +25,7 @@
 [ext_resource type="PackedScene" uid="uid://d4kjqemcayt4t" path="res://scenes/inventario.tscn" id="21_pm3ni"]
 [ext_resource type="PackedScene" uid="uid://crojbj03flfr6" path="res://scenes/UI/encyclopedia_panel.tscn" id="23_ency"]
 [ext_resource type="PackedScene" uid="uid://csohusujfqgej" path="res://scenes/stats_panel.tscn" id="23_y6deb"]
+[ext_resource type="PackedScene" uid="uid://buvdg6kk8oju2" path="res://scenes/ProfilePanel.tscn" id="25_2wyq8"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y6deb"]
 load_path = "res://.godot/imported/anubia_large.png-9dd54c4d539590f8396e886059658b60.ctex"
@@ -91,19 +89,16 @@ texture = ExtResource("8_y6deb")
 [node name="Tronco" type="Sprite2D" parent="EstructurasLayer" unique_id=1275085002]
 position = Vector2(605.3334, 345.37497)
 scale = Vector2(0.57476854, 0.5747685)
-texture = ExtResource("9_2f3dj")
 
 [node name="Tronco2" type="Sprite2D" parent="EstructurasLayer" unique_id=1350221170]
 visible = false
 position = Vector2(531, 446.00003)
 scale = Vector2(0.34769955, 0.34769946)
-texture = ExtResource("10_yq6so")
 
 [node name="Tronco3" type="Sprite2D" parent="EstructurasLayer" unique_id=973246666]
 visible = false
 position = Vector2(658, 485)
 scale = Vector2(0.2580597, 0.25805962)
-texture = ExtResource("11_fv21b")
 
 [node name="Anubia" type="Sprite2D" parent="EstructurasLayer" unique_id=279494440]
 position = Vector2(497, 541)
@@ -511,6 +506,9 @@ layout_mode = 1
 
 [node name="StatsPanel" parent="UI/Root/HUD" unique_id=493873659 instance=ExtResource("23_y6deb")]
 visible = false
+layout_mode = 1
+
+[node name="ProfilePanel" parent="UI/Root/HUD" unique_id=1077186223 instance=ExtResource("25_2wyq8")]
 layout_mode = 1
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]

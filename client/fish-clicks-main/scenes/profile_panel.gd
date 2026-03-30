@@ -1,5 +1,4 @@
 extends Control
-# res://scenes/profile_panel.gd
 
 # ── Vista perfil (logueado) ────────────────────────────────────────────────
 @onready var profile_view: VBoxContainer = $PanelContainer/VBox/ProfileView

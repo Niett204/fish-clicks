@@ -30,6 +30,8 @@ const ENCYCLOPEDIA_FISH_IDS := {
 @onready var list_peces: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer/ListPeces
 @onready var list_estructuras: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Estructuras/ScrollContainer/ListEstructuras
 @onready var info_panel: Control = $UI/Root/HUD/InfoExtraPanel
+@onready var profile_panel: Control = $UI/Root/HUD/ProfilePanel
+@onready var btn_profile_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnProfile
 @onready var hud: Control = $UI/Root/HUD
 @onready var btn_hide: TextureButton = $UI/Root/BtnHideHUD
 @onready var http_request: HTTPRequest = $HTTPRequest
@@ -279,6 +281,7 @@ func _ready() -> void:
 
 	shop_panel.visible = false
 	encyclopedia_panel.visible = false
+	profile_panel.visible = false
 	chest_base_scale = chest_sprite.scale
 	
 	shop_panel.z_index = 1
@@ -299,6 +302,11 @@ func _ready() -> void:
 	btn_encyclopedia_icon.pressed.connect(func():
 		play_squish(btn_encyclopedia_icon)
 		toggle_encyclopedia()
+	)
+	
+	btn_profile_icon.pressed.connect(func():
+		play_squish(btn_profile_icon)
+		profile_panel.toggle()
 	)
 
 	btn_inventory_icon.pressed.connect(func():
@@ -365,6 +373,9 @@ func _close_overlay_panels(except_panel: Control = null) -> void:
 
 	if inventory_panel != except_panel:
 		inventory_panel.visible = false
+		
+	if profile_panel != except_panel:
+		profile_panel.visible = false
 
 	if stats_panel != except_panel:
 		stats_panel.visible = false
