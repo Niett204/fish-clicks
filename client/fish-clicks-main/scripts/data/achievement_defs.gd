@@ -59,7 +59,7 @@ const ACHIEVEMENT_DEFS := {
 	# =========================
 	"coins_100": {
 		"title": "Marinero",
-		"desc": "TODO",
+		"desc": "Un par de doblones en el bolsillo y más hambre que rumbo. Todo empieza aquí… aunque aún no lo sepas.",
 		"kind": "coins",
 		"target": 100.0,
 		"condition": "Consigue 100 doblones",
@@ -67,7 +67,7 @@ const ACHIEVEMENT_DEFS := {
 	},
 	"coins_1000": {
 		"title": "Contramaestre",
-		"desc": "TODO",
+		"desc": "Ya no limpias la cubierta, ahora das órdenes. Empiezas a notar algo peligroso… te gusta que te escuchen.",
 		"kind": "coins",
 		"target": 1000.0,
 		"condition": "Consigue 1000 doblones",
@@ -75,7 +75,7 @@ const ACHIEVEMENT_DEFS := {
 	},
 	"coins_10000": {
 		"title": "Navegante",
-		"desc": "TODO",
+		"desc": "El mar se abre ante ti y tu nombre empieza a sonar. Dicen que tienes talento… tú empiezas a creértelo.",
 		"kind": "coins",
 		"target": 10000.0,
 		"condition": "Consigue 10000 doblones",
@@ -83,7 +83,7 @@ const ACHIEVEMENT_DEFS := {
 	},
 	"coins_100000": {
 		"title": "Intendente",
-		"desc": "TODO",
+		"desc": "El oro fluye y las decisiones pesan. Ya no dudas, solo decides. Quizá demasiado rápido.",
 		"kind": "coins",
 		"target": 100000.0,
 		"condition": "Consigue 100000 doblones",
@@ -91,7 +91,7 @@ const ACHIEVEMENT_DEFS := {
 	},
 	"coins_1000000": {
 		"title": "Capitán",
-		"desc": "TODO",
+		"desc": "Un millón de doblones. El barco es tuyo. La tripulación también. Y en algún punto… olvidaste quién eras antes de mandar.",
 		"kind": "coins",
 		"target": 1000000.0,
 		"condition": "Consigue 1000000 doblones",
@@ -102,12 +102,12 @@ const ACHIEVEMENT_DEFS := {
 	# NÚMERO DE PECES
 	# =========================
 	"fish_30": {
-		"title": "TODO",
+		"title": "Totalmente bajo control",
 		"desc": "No, no es abuso animal, les gusta estar en las bolsas del inventario. Te lo juro. No lo pienses más. Sigue comprando más peces.",
 		"kind": "fish",
 		"target": 30,
 		"condition": "Consigue 30 peces",
-		"icon": preload("res://assets/peces/doblon.png")
+		"icon": preload("res://assets/logros/fish_30.png")
 	},
 
 	# =========================
@@ -115,11 +115,11 @@ const ACHIEVEMENT_DEFS := {
 	# =========================
 	"structures_1": {
 		"title": "acuario.jpg",
-		"desc": "TODO",
+		"desc": "Solo voy a poner una cosita rápida… y listo.",
 		"kind": "structures",
 		"target": 1,
 		"condition": "Desbloquea 1 estructura",
-		"icon": preload("res://assets/estructuras/vallisneria/vallisneria_mini.png")
+		"icon": preload("res://assets/logros/acuario_jpg.png")
 	},
 	"structures_2": {
 		"title": "acuario_final.jpg",
@@ -127,7 +127,7 @@ const ACHIEVEMENT_DEFS := {
 		"kind": "structures",
 		"target": 2,
 		"condition": "Desbloquea 2 estructuras",
-		"icon": preload("res://assets/estructuras/vallisneria/vallisneria_small.png")
+		"icon": preload("res://assets/logros/acuario_final_jpg.png")
 	},
 	"structures_3": {
 		"title": "acuario_final_FINAL.jpg",
@@ -135,7 +135,7 @@ const ACHIEVEMENT_DEFS := {
 		"kind": "structures",
 		"target": 3,
 		"condition": "Desbloquea 3 estructuras",
-		"icon": preload("res://assets/estructuras/anubia/anubia_small.png")
+		"icon": preload("res://assets/logros/acuario_final_FINAL_jpg.png")
 	},
 	"structures_4": {
 		"title": "acuario_final_FINAL(1).jpg",
@@ -143,7 +143,7 @@ const ACHIEVEMENT_DEFS := {
 		"kind": "structures",
 		"target": 4,
 		"condition": "Desbloquea 4 estructuras",
-		"icon": preload("res://assets/estructuras/anubia/anubia_medium.png")
+		"icon": preload("res://assets/logros/acuario_final_FINAL(1)_jpg.png")
 	},
 	"structures_5": {
 		"title": "acuario_final_FINAL(1)_de_verdad.jpg",
@@ -151,7 +151,7 @@ const ACHIEVEMENT_DEFS := {
 		"kind": "structures",
 		"target": 5,
 		"condition": "Desbloquea 5 estructuras",
-		"icon": preload("res://assets/estructuras/anubia/anubia_large.png")
+		"icon": preload("res://assets/logros/acuario_final_FINAL(1)_de_verdad_jpg.png")
 	},
 
 	# =========================
@@ -159,7 +159,7 @@ const ACHIEVEMENT_DEFS := {
 	# =========================
 	"structures_spent_x": {
 		"title": "Comprador compulsivo",
-		"desc": "TODO",
+		"desc": "No necesitas otra planta. Ni otra roca. Ni otra decoración. Pero eso nunca te ha detenido antes.",
 		"kind": "structures_spent",
 		"target": 10000.0,
 		"condition": "Invierte X doblones en estructuras",
@@ -175,7 +175,7 @@ const ACHIEVEMENT_DEFS := {
 		"kind": "achievements_unlocked",
 		"target": 1,
 		"condition": "Obtén un logro",
-		"icon": preload("res://assets/peces/doblon_shiny.png"),
+		"icon": preload("res://assets/logros/logro.png"),
 		"hidden": true
 	},
 	"shiny_first": {
@@ -184,7 +184,7 @@ const ACHIEVEMENT_DEFS := {
 		"kind": "shiny_ever",
 		"target": 1,
 		"condition": "Consigue el primer pez especial",
-		"icon": preload("res://assets/peces/doblon_shiny.png"),
+		"icon": preload("res://assets/logros/shiny_1.png"),
 		"hidden": true
 	},
 	"all_aquarium_shiny": {
@@ -193,21 +193,21 @@ const ACHIEVEMENT_DEFS := {
 		"kind": "all_aquarium_shiny",
 		"target": 1,
 		"condition": "Llena el acuario solo con peces especiales",
-		"icon": preload("res://assets/peces/tiza_shiny.png"),
+		"icon": preload("res://assets/logros/peZes.png"),
 		"hidden": true
 	},
 	"all_species_in_aquarium": {
 		"title": "Fiesta en la pecera",
-		"desc": "TODO",
+		"desc": "Que caiga la perca (Drop the bass).",
 		"kind": "all_species_in_aquarium",
 		"target": 1,
 		"condition": "Pon un pez de cada tipo en el acuario",
-		"icon": preload("res://assets/peces/rufinus.png"),
+		"icon": preload("res://assets/logros/fiesta.png"),
 		"hidden": true
 	},
 	"alien_jump": {
 		"title": "¡¡¡SALTA!!!",
-		"desc": "TODO",
+		"desc": "Auspicio salta de alegría al ver tantos peces. Nunca había sido tan feliz. «¡Fblthp lpwrdwp!», exclamó.",
 		"kind": "alien_clicked",
 		"target": 1,
 		"condition": "Pulsa el alien cuando aparezca, y saltará",
@@ -216,11 +216,11 @@ const ACHIEVEMENT_DEFS := {
 	},
 	"better_luck_next_time": {
 		"title": "Better luck next time!",
-		"desc": "TODO",
+		"desc": "Ahora toca. No… ¡ahora! Venga, ahora seguro que sí…",
 		"kind": "random_tick",
 		"target": 1,
 		"condition": "Obtenido con una probabilidad del 0,01% en cada tick del juego",
-		"icon": preload("res://assets/ui/iconos/icono_hud_abierto.png"),
+		"icon": preload("res://assets/logros/luck.png"),
 		"hidden": true
 	},
 	"encyclopedia_complete": {
@@ -229,25 +229,25 @@ const ACHIEVEMENT_DEFS := {
 		"kind": "encyclopedia_complete",
 		"target": 1,
 		"condition": "Completa la enciclopedia de peces",
-		"icon": preload("res://assets/ui/iconos/icono_hud_abierto.png"),
+		"icon": preload("res://assets/logros/pezologia_101.png"),
 		"hidden": true
 	},
 	"profile_clicked_100": {
 		"title": "YO.",
-		"desc": "TODO",
+		"desc": "Eres tú… ¿Pero… quién eres realmente?",
 		"kind": "profile_clicks",
 		"target": 100,
 		"condition": "Pulsa 100 veces en la foto de perfil",
-		"icon": preload("res://assets/ui/iconos/icono_hud_abierto.png"),
+		"icon": preload("res://assets/logros/yo.png"),
 		"hidden": true
 	},
 	"volume_slider_spam": {
 		"title": "¿Me oyes? ¿Me escuchas?...¿Me sientes?",
-		"desc": "TODO",
+		"desc": "Sube, baja, sube, baja… ¿buscas el volumen perfecto o una señal divina?",
 		"kind": "volume_slider_spam",
 		"target": 1,
-		"condition": "Cambia el nivel del sonido general muy rápidamente varias veces",
-		"icon": preload("res://assets/ui/iconos/icono_hud_abierto.png"),
+		"condition": "Cambia el volumen general rápidamente",
+		"icon": preload("res://assets/logros/escuchas_oyes_sientes.png"),
 		"hidden": true
 	},
 	"same_species_full_aquarium": {
@@ -256,7 +256,7 @@ const ACHIEVEMENT_DEFS := {
 		"kind": "same_species_full_aquarium",
 		"target": 1,
 		"condition": "Llena el acuario de peces de la misma especie",
-		"icon": preload("res://assets/peces/doblon.png"),
+		"icon": preload("res://assets/logros/piscifactoria.png"),
 		"hidden": true
 	},
 	"annoy_fish_repeatedly": {
@@ -265,7 +265,7 @@ const ACHIEVEMENT_DEFS := {
 		"kind": "annoy_fish",
 		"target": 50,
 		"condition": "Molesta a los peces repetidamente en el acuario",
-		"icon": preload("res://assets/peces/sobrasada.png"),
+		"icon": preload("res://assets/logros/huevas.png"),
 		"hidden": true
 	},
 }

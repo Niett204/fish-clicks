@@ -145,7 +145,7 @@ func set_achievements_data(items: Array) -> void:
 		style.border_width_bottom = 2
 
 		if is_hidden and is_unlocked:
-			style.border_color = Color("#9e2f2f")
+			style.border_color = Color("#9c63e0")
 			style.bg_color = Color(0.35, 0.08, 0.08, 0.16)
 		else:
 			style.border_color = Color("#7b4a24")

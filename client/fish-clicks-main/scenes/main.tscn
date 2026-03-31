@@ -7,7 +7,9 @@
 [ext_resource type="Script" uid="uid://cw3knghd0miub" path="res://scenes/cofre.gd" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://cfhhda8qg0bq0" path="res://scenes/ShopItemCard.tscn" id="4_o6xl0"]
 [ext_resource type="Texture2D" uid="uid://bir4t2kdhw4h" path="res://assets/estructuras/cofre_abierto_lleno_arena.png" id="7_og1vs"]
+[ext_resource type="Texture2D" uid="uid://ccemaw6j4o3sr" path="res://assets/estructuras/tronco/tronco_medium.png" id="7_tel4y"]
 [ext_resource type="Texture2D" uid="uid://di0p043eru4vj" path="res://assets/ui/iconos/icono_perfil.png" id="8_eb6dy"]
+[ext_resource type="Texture2D" uid="uid://d2n7cjqtpenpj" path="res://assets/estructuras/tronco/tronco_small.png" id="8_qkpxi"]
 [ext_resource type="Script" uid="uid://dl0sgr2smpium" path="res://scenes/info_extra_panel.gd" id="8_tipki"]
 [ext_resource type="Texture2D" uid="uid://b3uv5xy6xfk8r" path="res://assets/estructuras/vallisneria/vallisneria_large.png" id="8_y6deb"]
 [ext_resource type="Texture2D" uid="uid://bapfvmfpgbe7p" path="res://assets/ui/iconos/icono_opciones.png" id="9_trceg"]
@@ -91,11 +93,13 @@ texture = ExtResource("8_y6deb")
 [node name="Tronco" type="Sprite2D" parent="EstructurasLayer" unique_id=1275085002]
 position = Vector2(605.3334, 345.37497)
 scale = Vector2(0.57476854, 0.5747685)
+texture = ExtResource("7_tel4y")
 
 [node name="Tronco2" type="Sprite2D" parent="EstructurasLayer" unique_id=1350221170]
 visible = false
 position = Vector2(531, 446.00003)
 scale = Vector2(0.34769955, 0.34769946)
+texture = ExtResource("8_qkpxi")
 
 [node name="Tronco3" type="Sprite2D" parent="EstructurasLayer" unique_id=973246666]
 visible = false
@@ -550,6 +554,7 @@ shape = SubResource("RectangleShape2D_a8y0u")
 bus = &"Efectos"
 
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="." unique_id=1247790232]
+bus = &"Musica"
 
 [node name="GeneralPlayer" type="AudioStreamPlayer" parent="." unique_id=439498732]
 

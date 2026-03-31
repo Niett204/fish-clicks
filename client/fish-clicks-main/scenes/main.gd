@@ -4,7 +4,7 @@ const ENCYCLOPEDIA_FISH_IDS := {
 	"doblon": 1,
 	"sobrasada": 2,
 	"rufinus": 3,
-	"tiza": 4,
+	"espuma": 4,
 }
 
 @export var floating_text_scene: PackedScene
@@ -80,10 +80,10 @@ const ITEMS := {
 		"base_value": 4.0,
 		"value_label": "DPS"
 	},
-	"tiza": {
+	"espuma": {
 		"tab": "Peces",
-		"title": "Tiza",
-		"icon": "res://assets/peces/tiza.png",
+		"title": "Espuma",
+		"icon": "res://assets/peces/espuma.png",
 		"unlock_price": 1200,
 		"kind": "passive",
 		"base_price": 900.0,
@@ -209,13 +209,13 @@ var fish_defs := {
 		"icon": preload("res://assets/peces/sobrasada_shiny.png")
 	},
 
-	"tiza": {
-		"name": "Tiza",
-		"icon": preload("res://assets/peces/tiza.png")
+	"espuma": {
+		"name": "Espuma",
+		"icon": preload("res://assets/peces/espuma.png")
 	},
-	"tiza_shiny": {
-		"name": "Tiza",
-		"icon": preload("res://assets/peces/tiza_shiny.png")
+	"espuma_shiny": {
+		"name": "Espuma",
+		"icon": preload("res://assets/peces/espuma_shiny.png")
 	},
 	
 	"rufinus": {
@@ -233,7 +233,7 @@ var fish_defs := {
 var lifetime_generated: Dictionary = {
 	"doblon": 0.0,
 	"sobrasada": 0.0,
-	"tiza": 0.0,
+	"espuma": 0.0,
 	"rufinus": 0.0,
 	"cofre": 0.0,
 	"vallisneria": 0.0
@@ -262,7 +262,7 @@ var session_time_seconds: float = 0.0
 var game_start_date_string: String = ""
 
 var dps: float = 0.0
-var coins: float = 100000.0
+var coins: float = 10000000.0
 var total_coins_earned: float = 0.0
 var click_power: int = 1
 var chest_base_scale: Vector2
@@ -287,7 +287,8 @@ func _ready() -> void:
 	http_request.request(url)
 
 	# Cargar sonidos música y efectos
-	# music_player.stream = preload("res://assets/audio/music/tema.mp3")
+	music_player.stream = preload("res://assets/audio/fondo/fondo1.ogg")
+	music_player.play()
 
 	for k in ITEMS.keys():
 		var id := String(k)
@@ -321,6 +322,8 @@ func _ready() -> void:
 	)
 	
 	btn_profile_icon.pressed.connect(func():
+		profile_clicks_count += 1
+		check_achievements()
 		play_squish(btn_profile_icon)
 		toggle_profile()
 	)
@@ -364,6 +367,13 @@ func _ready() -> void:
 	inventory_panel.move_fish_to_aquarium.connect(_on_move_fish_to_aquarium)
 	inventory_panel.move_fish_within_aquarium.connect(_on_move_fish_within_aquarium)
 	inventory_panel.habitat_changed.connect(_on_inventory_habitat_changed)
+	
+	options_panel.volume_slider_spam_detected.connect(func():
+		if not volume_slider_spam_unlocked:
+			volume_slider_spam_unlocked = true
+			check_achievements()
+	)
+	
 	inventory_panel.close_requested.connect(func():
 		play_ui_sfx(SFX_ICON_CLOSE)
 		inventory_panel.visible = false

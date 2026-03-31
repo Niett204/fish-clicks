@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://csqjf34ly2qtx"
-path="res://.godot/imported/tiza.png-49b6b4a2e88b3e1d48a0adfb0d9a0618.ctex"
+uid="uid://fkjwdtspm4oj"
+path="res://.godot/imported/yo.png-b2f27df01dda1104a47662bfcc8c2285.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/peces/tiza.png"
-dest_files=["res://.godot/imported/tiza.png-49b6b4a2e88b3e1d48a0adfb0d9a0618.ctex"]
+source_file="res://assets/logros/yo.png"
+dest_files=["res://.godot/imported/yo.png-b2f27df01dda1104a47662bfcc8c2285.ctex"]
 
 [params]
 
