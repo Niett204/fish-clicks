@@ -18,6 +18,8 @@ const ENCYCLOPEDIA_FISH_IDS := {
 @onready var btn_encyclopedia_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnEncyclopedia
 @onready var inventory_panel: Control = $UI/Root/HUD/Inventario
 @onready var btn_inventory_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnInventory
+@onready var options_panel: Control = $UI/Root/HUD/OptionsPannel
+@onready var btn_options_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnOptions
 @onready var btn_stats_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnStats
 @onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var left_info_panel: Control = $UI/Root/HUD/LeftInfoPanel
@@ -41,6 +43,16 @@ const ENCYCLOPEDIA_FISH_IDS := {
 @onready var tronco_1: Sprite2D = $EstructurasLayer/Tronco
 @onready var tronco_2: Sprite2D = $EstructurasLayer/Tronco2
 @onready var tronco_3: Sprite2D = $EstructurasLayer/Tronco3
+
+#@onready var music_player: AudioStreamPlayer = $MusicPlayer
+#@onready var ui_sfx_player: AudioStreamPlayer = $UiSfxPlayer
+
+const SFX_ICON_OPEN := preload("res://assets/audio/UI/abrir_icono.wav")
+const SFX_ICON_CLOSE := preload("res://assets/audio/UI/cerrar_icono.wav")
+const SFX_COFRE_CLICK:= preload("res://assets/audio/UI/pulsar_cofre.wav")
+const SFX_BUY_ITEM:= preload("res://assets/audio/UI/comprar.wav")
+const SFX_SHINY:= preload("res://assets/audio/UI/shiny.wav")
+const SFX_CAMBIAR_TAB:= preload("res://assets/audio/UI/cambiar_tab.wav")
 
 ############################################################################
 
@@ -273,6 +285,9 @@ func _ready() -> void:
 	var url := "https://fish-clicks.onrender.com/api/test"
 	http_request.request(url)
 
+	# Cargar sonidos música y efectos
+	# music_player.stream = preload("res://assets/audio/music/tema.mp3")
+
 	for k in ITEMS.keys():
 		var id := String(k)
 		levels[id] = 0
@@ -313,6 +328,11 @@ func _ready() -> void:
 		play_squish(btn_inventory_icon)
 		toggle_inventario()
 	)
+
+	btn_options_icon.pressed.connect(func():
+		play_squish(btn_options_icon)
+		toggle_options()
+	)
 	
 	btn_stats_icon.pressed.connect(func():
 		play_squish(btn_stats_icon)
@@ -345,6 +365,10 @@ func _ready() -> void:
 	inventory_panel.habitat_changed.connect(_on_inventory_habitat_changed)
 	inventory_panel.close_requested.connect(func():
 		inventory_panel.visible = false
+	)
+
+	options_panel.close_requested.connect(func():
+		options_panel.visible = false
 	)
 	
 	if game_start_date_string == "":
@@ -443,6 +467,17 @@ func toggle_inventario() -> void:
 		)
 	else:
 		inventory_panel.visible = false
+
+func toggle_options() -> void:
+	options_panel.visible = !options_panel.visible
+
+	if options_panel.visible:
+		shop_open = false
+		if info_panel:
+			info_panel.request_hide()
+		if shop_tween:
+			shop_tween.kill()
+		shop_panel.position.x = shop_x_closed
 
 func toggle_stats_panel() -> void:
 	var will_open := not stats_panel.visible
