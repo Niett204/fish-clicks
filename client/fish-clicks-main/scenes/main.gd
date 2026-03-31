@@ -44,8 +44,8 @@ const ENCYCLOPEDIA_FISH_IDS := {
 @onready var tronco_2: Sprite2D = $EstructurasLayer/Tronco2
 @onready var tronco_3: Sprite2D = $EstructurasLayer/Tronco3
 
-#@onready var music_player: AudioStreamPlayer = $MusicPlayer
-#@onready var ui_sfx_player: AudioStreamPlayer = $UiSfxPlayer
+@onready var music_player: AudioStreamPlayer = $MusicPlayer
+@onready var ui_sfx_player: AudioStreamPlayer = $UiSfxPlayer
 
 # Audios 
 const SFX_ICON_OPEN := preload("res://assets/audio/UI/abrir_icono.wav")
@@ -322,7 +322,7 @@ func _ready() -> void:
 	
 	btn_profile_icon.pressed.connect(func():
 		play_squish(btn_profile_icon)
-		profile_panel.toggle()
+		toggle_profile()
 	)
 
 	btn_inventory_icon.pressed.connect(func():
@@ -365,22 +365,33 @@ func _ready() -> void:
 	inventory_panel.move_fish_within_aquarium.connect(_on_move_fish_within_aquarium)
 	inventory_panel.habitat_changed.connect(_on_inventory_habitat_changed)
 	inventory_panel.close_requested.connect(func():
-		#play_ui_sfx(SFX_ICON_CLOSE)
+		play_ui_sfx(SFX_ICON_CLOSE)
 		inventory_panel.visible = false
+	)
+	
+	encyclopedia_panel.close_requested.connect(func():
+		play_ui_sfx(SFX_ICON_CLOSE)
+		encyclopedia_panel.visible = false
+	)
+	
+	stats_panel.close_requested.connect(func():
+		play_ui_sfx(SFX_ICON_CLOSE)
+		stats_panel.visible = false
 	)
 
 	options_panel.close_requested.connect(func():
-		#play_ui_sfx(SFX_ICON_CLOSE)
+		play_ui_sfx(SFX_ICON_CLOSE)
 		options_panel.visible = false
+	)
+	
+	profile_panel.close_requested.connect(func():
+		play_ui_sfx(SFX_ICON_CLOSE)
+		profile_panel._close()
 	)
 	
 	if game_start_date_string == "":
 		var dt := Time.get_datetime_dict_from_system()
 		game_start_date_string = "%02d/%02d/%04d" % [dt.day, dt.month, dt.year]
-	
-	stats_panel.close_requested.connect(func():
-		stats_panel.visible = false
-	)
 
 	for achievement_id in ACHIEVEMENT_DEFS.keys():
 		achievements_unlocked[achievement_id] = false
@@ -395,13 +406,13 @@ func _ready() -> void:
 	shop_open = false
 
 # Función para reproducir el sonido
-#func play_ui_sfx(stream: AudioStream) -> void:
-	#if stream == null:
-		#return
-#
-	#ui_sfx_player.stream = stream
-	#ui_sfx_player.stop()
-	#ui_sfx_player.play()
+func play_ui_sfx(stream: AudioStream) -> void:
+	if stream == null:
+		return
+
+	ui_sfx_player.stream = stream
+	ui_sfx_player.stop()
+	ui_sfx_player.play()
 	
 func _close_overlay_panels(except_panel: Control = null) -> void:
 	if encyclopedia_panel != except_panel:
@@ -444,17 +455,17 @@ func toggle_shop() -> void:
 	shop_tween.tween_property(shop_panel, "position:x", target_x, 0.25)
 
 	if shop_open:
-		#play_ui_sfx(SFX_ICON_OPEN)
-		_on_tab_changed(tab_container.current_tab)
-	#else:
-		#play_ui_sfx(SFX_ICON_CLOSE)
+		play_ui_sfx(SFX_ICON_OPEN)
+		_refresh_current_shop_tab(tab_container.current_tab)
+	else:
+		play_ui_sfx(SFX_ICON_CLOSE)
 
 func toggle_encyclopedia() -> void:
 	var will_open := not encyclopedia_panel.visible
 
 	if will_open:
 		_close_overlay_panels(encyclopedia_panel)
-		#play_ui_sfx(SFX_ICON_OPEN)
+		play_ui_sfx(SFX_ICON_OPEN)
 		encyclopedia_panel.visible = true
 		_actualizar_peces_desbloqueados_en_enciclopedia()
 
@@ -462,14 +473,14 @@ func toggle_encyclopedia() -> void:
 			info_panel.request_hide()
 	else:
 		encyclopedia_panel.visible = false
-		#play_ui_sfx(SFX_ICON_CLOSE)
+		play_ui_sfx(SFX_ICON_CLOSE)
 
 func toggle_inventario() -> void:
 	var will_open := not inventory_panel.visible
 
 	if will_open:
 		_close_overlay_panels(inventory_panel)
-		#play_ui_sfx(SFX_ICON_OPEN)
+		play_ui_sfx(SFX_ICON_OPEN)
 		inventory_panel.visible = true
 
 		if info_panel:
@@ -485,28 +496,28 @@ func toggle_inventario() -> void:
 		)
 	else:
 		inventory_panel.visible = false
-		#play_ui_sfx(SFX_ICON_CLOSE)	
+		play_ui_sfx(SFX_ICON_CLOSE)	
 
 func toggle_options() -> void:
 	options_panel.visible = !options_panel.visible
 
 	if options_panel.visible:
-		#play_ui_sfx(SFX_ICON_OPEN)
+		play_ui_sfx(SFX_ICON_OPEN)
 		shop_open = false
 		if info_panel:
 			info_panel.request_hide()
 		if shop_tween:
 			shop_tween.kill()
 		shop_panel.position.x = shop_x_closed
-	#else:
-		#play_ui_sfx(SFX_ICON_CLOSE)
+	else:
+		play_ui_sfx(SFX_ICON_CLOSE)
 
 func toggle_stats_panel() -> void:
 	var will_open := not stats_panel.visible
 
 	if will_open:
 		_close_overlay_panels(stats_panel)
-		#play_ui_sfx(SFX_ICON_OPEN)
+		play_ui_sfx(SFX_ICON_OPEN)
 		stats_panel.visible = true
 
 		if info_panel:
@@ -515,8 +526,22 @@ func toggle_stats_panel() -> void:
 		_refresh_stats_panel_full()
 	else:
 		stats_panel.visible = false
-		#play_ui_sfx(SFX_ICON_CLOSE)
+		play_ui_sfx(SFX_ICON_CLOSE)
 
+func toggle_profile() -> void:
+	var will_open := not profile_panel.visible
+
+	if will_open:
+		_close_overlay_panels(profile_panel)
+		play_ui_sfx(SFX_ICON_OPEN)
+		profile_panel._open()
+
+		if info_panel:
+			info_panel.request_hide()
+	else:
+		play_ui_sfx(SFX_ICON_CLOSE)
+		profile_panel._close()
+		
 func _refresh_stats_panel() -> void:
 	if stats_panel.has_method("set_stats_data"):
 		stats_panel.set_stats_data({
@@ -540,11 +565,12 @@ func _refresh_stats_panel() -> void:
 	if stats_panel.has_method("set_achievements_data"):
 		stats_panel.set_achievements_data(get_achievements_ui_data())
 
-func _on_tab_changed(tab: int) -> void:
+func _refresh_current_shop_tab(tab: int) -> void:
 	_block_info_hover = true
+
 	if info_panel:
 		info_panel.visible = false
-	
+
 	var tab_name := tab_container.get_tab_title(tab)
 
 	if tab_name == "Peces":
@@ -553,9 +579,13 @@ func _on_tab_changed(tab: int) -> void:
 		_rebuild_tab("Estructuras", list_estructuras)
 
 	update_shop_cards()
-	
+
 	await get_tree().process_frame
 	_block_info_hover = false
+
+func _on_tab_changed(tab: int) -> void:
+	play_ui_sfx(SFX_CAMBIAR_TAB)
+	_refresh_current_shop_tab(tab)
 
 func _rebuild_tab(tab_name: String, list: VBoxContainer) -> void:
 	for c in list.get_children():
@@ -603,7 +633,7 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 
 func _on_chest_clicked() -> void:
 	total_clicks += 1
-	#play_ui_sfx(SFX_COFRE_CLICK)
+	play_ui_sfx(SFX_COFRE_CLICK)
 	coins += click_power
 	total_coins_earned += click_power
 	lifetime_generated["cofre"] += click_power
@@ -761,7 +791,9 @@ func _on_buy_pressed(id: String) -> void:
 	var price := get_price(id)
 	if coins < price:
 		return
-
+		
+	play_ui_sfx(SFX_BUY_ITEM)
+	
 	coins -= price
 	if String(ITEMS[id].get("tab", "")) == "Estructuras":
 		total_structures_spent += price
@@ -773,6 +805,7 @@ func _on_buy_pressed(id: String) -> void:
 		if randf() < 0.01 and fish_defs.has(id + "_shiny"):
 			spawned_fish_id = id + "_shiny"
 			total_shinies_ever += 1
+			play_ui_sfx(SFX_SHINY)
 
 		var slot_index := try_add_fish_to_aquarium(current_habitat, spawned_fish_id)
 

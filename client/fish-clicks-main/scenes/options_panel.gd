@@ -22,14 +22,14 @@ signal close_requested
 @onready var FondoEfectos: ColorRect = $CenterContainer/PanelRoot/PanelSonido/MarginContainer/Content/RowEfectos/SliderWrapEfectos/FondoBarraEfectos
 @onready var FillEfectos: ColorRect = $CenterContainer/PanelRoot/PanelSonido/MarginContainer/Content/RowEfectos/SliderWrapEfectos/FillBarraEfectos
 @onready var LabelEfectos: Label = $CenterContainer/PanelRoot/PanelSonido/MarginContainer/Content/RowEfectos/SliderWrapEfectos/PorcentajeEfectos
-#@onready var fish_preview_player: AudioStreamPlayer = $FishPreviewPlayer
+@onready var fish_preview_player: AudioStreamPlayer = $FishPreviewPlayer
 
 var slider_items: Array[Dictionary] = []
 
 func _ready() -> void:
 	visible = false
 
-	#fish_preview_player.stream = preload("res://assets/audio/peces/bubble.WAV")
+	fish_preview_player.stream = preload("res://assets/audio/peces/bubble.WAV")
 	_configure_slider(SliderGeneral)
 	_configure_slider(SliderMusica)
 	_configure_slider(SliderEfectos)
@@ -195,18 +195,18 @@ func _on_slider_button_up(item: Dictionary) -> void:
 	
 	var slider: HSlider = item["slider"]
 	
-	#if slider == SliderEfectos:
-		#_play_fish_volume_preview()
+	if slider == SliderEfectos:
+		_play_fish_volume_preview()
 
 # Reproducir sonido de preview de la Slider	
-#func _play_fish_volume_preview() -> void:
-	#if fish_preview_player.stream == null:
-		#return
+func _play_fish_volume_preview() -> void:
+	if fish_preview_player.stream == null:
+		return
 
-	#if fish_preview_player.playing:
-		#fish_preview_player.seek(0)
-	#else:
-		#fish_preview_player.play()
+	if fish_preview_player.playing:
+		fish_preview_player.seek(0)
+	else:
+		fish_preview_player.play()
 		
 # Funciones Botón X Close
 func _on_btn_close_pressed() -> void:

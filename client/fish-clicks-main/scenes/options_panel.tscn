@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://bkva8pb62ymh5" path="res://assets/ui/pergamino.png" id="2_54ti7"]
 [ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="3_8fxpn"]
 [ext_resource type="Texture2D" uid="uid://6rnifsb2i5ph" path="res://assets/ui/marco_small.png" id="3_54ti7"]
+[ext_resource type="AudioStream" uid="uid://dppop12h3li5s" path="res://assets/audio/peces/bubble.WAV" id="4_hblyp"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8hq2b"]
 content_margin_left = 15.0
@@ -430,3 +431,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/slider = SubResource("StyleBoxEmpty_5nai8")
+
+[node name="FishPreviewPlayer" type="AudioStreamPlayer" parent="." unique_id=2134295761]
+stream = ExtResource("4_hblyp")
+bus = &"Efectos"

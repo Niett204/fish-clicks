@@ -546,6 +546,15 @@ shape = SubResource("RectangleShape2D_a8y0u")
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=121986834]
 
+[node name="UiSfxPlayer" type="AudioStreamPlayer" parent="." unique_id=637946565]
+bus = &"Efectos"
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="." unique_id=1247790232]
+
+[node name="GeneralPlayer" type="AudioStreamPlayer" parent="." unique_id=439498732]
+
+[node name="EfectosPlayer" type="AudioStreamPlayer" parent="." unique_id=1761682386]
+
 [connection signal="input_event" from="Cofre" to="Cofre" method="_on_input_event"]
 [connection signal="pressed" from="UI/Root/HUD/TopBar/RightGroup/BtnShop" to="." method="_on_btn_shop_pressed"]
 [connection signal="pressed" from="UI/Root/BtnHideHUD" to="." method="_on_btn_hide_hud_pressed"]
