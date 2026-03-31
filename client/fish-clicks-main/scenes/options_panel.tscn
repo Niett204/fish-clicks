@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cbbihh5ocgssr"]
 
-[ext_resource type="Texture2D" uid="uid://di3gy1vgskce8" path="res://assets/ui/pergamino.png" id="2_54ti7"]
+[ext_resource type="Texture2D" uid="uid://bkva8pb62ymh5" path="res://assets/ui/pergamino.png" id="2_54ti7"]
 [ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="3_8fxpn"]
 [ext_resource type="Texture2D" uid="uid://6rnifsb2i5ph" path="res://assets/ui/marco_small.png" id="3_54ti7"]
 
@@ -430,6 +430,3 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/slider = SubResource("StyleBoxEmpty_5nai8")
-
-[node name="FishPreviewPlayer" type="AudioStreamPlayer" parent="." unique_id=1876199696]
-bus = &"Efectos"
