@@ -23,8 +23,10 @@
 [ext_resource type="Texture2D" uid="uid://bf4pt3ldg3d0c" path="res://assets/ui/bandera.png" id="19_0ld40"]
 [ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
 [ext_resource type="PackedScene" uid="uid://d4kjqemcayt4t" path="res://scenes/inventario.tscn" id="21_pm3ni"]
+[ext_resource type="PackedScene" uid="uid://cbbihh5ocgssr" path="res://scenes/options_panel.tscn" id="22_pm3ni"]
 [ext_resource type="PackedScene" uid="uid://crojbj03flfr6" path="res://scenes/UI/encyclopedia_panel.tscn" id="23_ency"]
 [ext_resource type="PackedScene" uid="uid://csohusujfqgej" path="res://scenes/stats_panel.tscn" id="23_y6deb"]
+[ext_resource type="Script" uid="uid://dq5rdt0gb7n50" path="res://scenes/options_panel.gd" id="25_2f3dj"]
 [ext_resource type="PackedScene" uid="uid://buvdg6kk8oju2" path="res://scenes/ProfilePanel.tscn" id="25_2wyq8"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y6deb"]
@@ -504,11 +506,17 @@ scale = Vector2(0.99211466, 1.0108906)
 visible = false
 layout_mode = 1
 
+[node name="OptionsPannel" parent="UI/Root/HUD" unique_id=1316162174 instance=ExtResource("22_pm3ni")]
+visible = false
+layout_mode = 1
+script = ExtResource("25_2f3dj")
+
 [node name="StatsPanel" parent="UI/Root/HUD" unique_id=493873659 instance=ExtResource("23_y6deb")]
 visible = false
 layout_mode = 1
 
 [node name="ProfilePanel" parent="UI/Root/HUD" unique_id=1077186223 instance=ExtResource("25_2wyq8")]
+visible = false
 layout_mode = 1
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]
@@ -537,6 +545,15 @@ position = Vector2(577, 322)
 shape = SubResource("RectangleShape2D_a8y0u")
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=121986834]
+
+[node name="UiSfxPlayer" type="AudioStreamPlayer" parent="." unique_id=637946565]
+bus = &"Efectos"
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="." unique_id=1247790232]
+
+[node name="GeneralPlayer" type="AudioStreamPlayer" parent="." unique_id=439498732]
+
+[node name="EfectosPlayer" type="AudioStreamPlayer" parent="." unique_id=1761682386]
 
 [connection signal="input_event" from="Cofre" to="Cofre" method="_on_input_event"]
 [connection signal="pressed" from="UI/Root/HUD/TopBar/RightGroup/BtnShop" to="." method="_on_btn_shop_pressed"]

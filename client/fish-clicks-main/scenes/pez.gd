@@ -6,6 +6,8 @@ var state: FishState = FishState.WANDER
 @onready var spawn_bubbles: CPUParticles2D = $SpawnBubbles
 @onready var splash_particles: CPUParticles2D = $SplashParticles
 @onready var shiny_particles: CPUParticles2D = $ShinyParticles
+@onready var bubble_player: AudioStreamPlayer2D = $BubblePlayer
+@onready var splash_player: AudioStreamPlayer2D = $SplashPlayer
 
 @export var speed := 70.0
 @export var steer := 4.5
@@ -129,6 +131,10 @@ func scare_from(point: Vector2) -> void:
 	vel = dir * speed * 3.0
 	state = FishState.SCARED
 	state_timer = 0.7
+
+	if bubble_player:
+		bubble_player.stop()
+		bubble_player.play()
 
 func _scared_step(delta: float) -> void:
 	state_timer -= delta
@@ -421,6 +427,13 @@ func _cubic_bezier(p0: Vector2, p1: Vector2, p2: Vector2, p3: Vector2, t: float)
 	)
 
 func _play_water_splash_at(impact_pos: Vector2, impact_dir: Vector2) -> void:
+
+	# Sonido entrada 
+	if splash_player:
+		splash_player.global_position = impact_pos
+		splash_player.stop()
+		splash_player.play()
+		
 	if splash_particles == null:
 		return
 

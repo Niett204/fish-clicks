@@ -4,6 +4,8 @@
 [ext_resource type="Texture2D" uid="uid://caccnasaooopc" path="res://assets/peces/doblon.png" id="2_omyef"]
 [ext_resource type="Texture2D" uid="uid://beb5anfo063oc" path="res://assets/misc/burbuja.png" id="3_omyef"]
 [ext_resource type="Texture2D" uid="uid://cj331k70flp0l" path="res://assets/misc/brillito.png" id="4_knbi8"]
+[ext_resource type="AudioStream" uid="uid://dppop12h3li5s" path="res://assets/audio/peces/bubble.WAV" id="5_hs7kf"]
+[ext_resource type="AudioStream" uid="uid://ckbwndrth6d4d" path="res://assets/audio/peces/splash.WAV" id="6_1esfl"]
 
 [node name="Pez" type="Node2D" unique_id=1429265579]
 script = ExtResource("1_v4xfs")
@@ -55,3 +57,11 @@ lifetime = 0.9
 randomness = 0.6
 scale_amount_min = 0.01
 scale_amount_max = 0.03
+
+[node name="BubblePlayer" type="AudioStreamPlayer2D" parent="." unique_id=994247264]
+stream = ExtResource("5_hs7kf")
+bus = &"Efectos"
+
+[node name="SplashPlayer" type="AudioStreamPlayer2D" parent="." unique_id=1724150771]
+stream = ExtResource("6_1esfl")
+bus = &"Efectos"

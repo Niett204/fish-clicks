@@ -30,6 +30,10 @@ const HABITAT_TAB_FONT := preload("res://assets/fuentes/PirataOne-Regular.ttf")
 @onready var aquarium_drop_zone: ColorRect = $MarginContainer/Fondo/Content/LeftSide/VBoxContainer/PeceraPanel/GlassArea/AquariumDropZone
 @onready var shelf_drop_zone: Control = $MarginContainer/Fondo/Content/RightSide/ShelfPanel/ShelfDropZone
 
+@onready var sfx_player: AudioStreamPlayer = $SfxPlayer
+
+const SFX_COGER_PEZ: AudioStream = preload("res://assets/audio/UI/coger_pez_inventario.wav")
+
 var habitats: Dictionary = {}
 var unlocked_habitats: Array[String] = []
 var current_habitat: String = ""
@@ -360,6 +364,8 @@ func begin_pending_drag(fish_id: String, source: String, slot_index: int) -> voi
 func start_drag(fish_id: String, source: String, slot_index: int) -> void:
 	if not fish_defs.has(fish_id):
 		return
+	
+	play_sfx(SFX_COGER_PEZ)
 		
 	drag_fish_id = fish_id
 	drag_source = source
@@ -392,6 +398,15 @@ func start_drag(fish_id: String, source: String, slot_index: int) -> void:
 
 	var mouse_pos = get_viewport().get_mouse_position()
 	drag_preview.global_position = mouse_pos - drag_preview.custom_minimum_size / 2.0
+
+func play_sfx(stream: AudioStream) -> void:
+	if stream == null:
+		return
+
+	sfx_player.stream = stream
+	sfx_player.pitch_scale = randf_range(0.95, 1.1)
+	sfx_player.stop()
+	sfx_player.play()
 	
 func _get_aquarium_slot_under_mouse(mouse_pos: Vector2):
 	for slot in aquarium_slots:

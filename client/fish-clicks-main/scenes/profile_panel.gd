@@ -1,5 +1,7 @@
 extends Control
 
+signal close_requested
+
 # ── Vista perfil (logueado) ────────────────────────────────────────────────
 @onready var profile_view: VBoxContainer = $PanelContainer/VBox/ProfileView
 @onready var nick_label:   Label         = $PanelContainer/VBox/ProfileView/MarginProfile/Fields/NickLabel
@@ -33,7 +35,10 @@ func _ready() -> void:
 	GlobalData.register_success.connect(_on_register_ok)
 	GlobalData.register_failed.connect(_on_register_err)
 
-	btn_close.pressed.connect(_close)
+	btn_close.pressed.connect(func():
+		close_requested.emit()
+	)
+	
 	btn_login.pressed.connect(_do_login)
 	btn_register.pressed.connect(_do_register)
 	btn_logout.pressed.connect(_do_logout)

@@ -1,4 +1,5 @@
 extends Control
+signal close_requested
 
 @onready var http_request: HTTPRequest = $HTTPRequest
 @onready var rareza_container: VBoxContainer = $FondoLibro/RarezaPanel/RarezaContainer
@@ -75,7 +76,7 @@ func _ready() -> void:
 	btn_siguiente.visible = false
 	
 func _on_btn_salir_pressed() -> void:
-	close()
+	close_requested.emit()
 	
 func _configurar_boton_salir(btn: TextureButton) -> void:
 	var pos_original: Vector2 = btn.position
