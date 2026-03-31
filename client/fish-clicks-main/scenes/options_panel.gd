@@ -1,6 +1,7 @@
 extends Control
 
 signal close_requested
+signal volume_slider_spam_detected
 
 @onready var btn_close: TextureButton = $CenterContainer/PanelRoot/BtnCerrar
 @onready var btn_salir: Button = $CenterContainer/PanelRoot/ButtonsRowBottom/BtnSalir
@@ -25,6 +26,18 @@ signal close_requested
 @onready var fish_preview_player: AudioStreamPlayer = $FishPreviewPlayer
 
 var slider_items: Array[Dictionary] = []
+var _general_last_value: float = -1.0
+var _general_last_direction: int = 0
+var _general_direction_changes: int = 0
+var _general_total_distance: float = 0.0
+var _general_activity_start_time: float = -1.0
+var _general_last_change_time: float = -1.0
+
+const VOLUME_SPAM_REQUIRED_DURATION: float = 5.0
+const VOLUME_SPAM_REQUIRED_DISTANCE: float = 250.0
+const VOLUME_SPAM_REQUIRED_DIRECTION_CHANGES: int = 6
+const VOLUME_SPAM_IDLE_RESET_TIME: float = 0.8
+const VOLUME_SPAM_MIN_DELTA: float = 3.0
 
 func _ready() -> void:
 	visible = false
@@ -99,6 +112,10 @@ func _ready() -> void:
 func _on_slider_value_changed(_value: float, item: Dictionary) -> void:
 	_update_slider_visuals(item)
 	_apply_slider_audio(item)
+
+	var slider: HSlider = item["slider"]
+	if slider == SliderGeneral:
+		_register_general_slider_change(slider.value)
 
 func _on_slider_gui_input(event: InputEvent, item: Dictionary) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -178,7 +195,7 @@ func _apply_slider_audio(item: Dictionary) -> void:
 	if slider == SliderGeneral:
 		_set_bus_volume_linear("Master", linear_value)
 	elif slider == SliderMusica:
-		_set_bus_volume_linear("Music", linear_value)
+		_set_bus_volume_linear("Musica", linear_value)
 	elif slider == SliderEfectos:
 		_set_bus_volume_linear("Efectos", linear_value)
 		
@@ -243,3 +260,51 @@ func _on_btn_close_button_up() -> void:
 # Al clicar en el botón salir se cierra el juego
 func _on_btn_salir_pressed() -> void:
 	get_tree().quit()
+
+func _reset_general_slider_spam_tracking() -> void:
+	_general_last_value = -1.0
+	_general_last_direction = 0
+	_general_direction_changes = 0
+	_general_total_distance = 0.0
+	_general_activity_start_time = -1.0
+	_general_last_change_time = -1.0
+
+func _register_general_slider_change(current_value: float) -> void:
+	var now: float = Time.get_ticks_msec() / 1000.0
+
+	if _general_last_change_time >= 0.0 and now - _general_last_change_time > VOLUME_SPAM_IDLE_RESET_TIME:
+		_reset_general_slider_spam_tracking()
+
+	if _general_activity_start_time < 0.0:
+		_general_activity_start_time = now
+
+	if _general_last_value < 0.0:
+		_general_last_value = current_value
+		_general_last_change_time = now
+		return
+
+	var delta: float = current_value - _general_last_value
+	var abs_delta: float = abs(delta)
+
+	if abs_delta < VOLUME_SPAM_MIN_DELTA:
+		return
+
+	var direction: int = 1 if delta > 0.0 else -1
+
+	if _general_last_direction != 0 and direction != _general_last_direction:
+		_general_direction_changes += 1
+
+	_general_last_direction = direction
+	_general_total_distance += abs_delta
+	_general_last_value = current_value
+	_general_last_change_time = now
+
+	var active_duration: float = now - _general_activity_start_time
+
+	if (
+		active_duration >= VOLUME_SPAM_REQUIRED_DURATION
+		and _general_total_distance >= VOLUME_SPAM_REQUIRED_DISTANCE
+		and _general_direction_changes >= VOLUME_SPAM_REQUIRED_DIRECTION_CHANGES
+	):
+		_reset_general_slider_spam_tracking()
+		volume_slider_spam_detected.emit()

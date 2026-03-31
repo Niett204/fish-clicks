@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://br4p0t0uhr6ds"
-path="res://.godot/imported/libro_abierto.png-e13b4660ec4404f22e151c971969f970.ctex"
+uid="uid://drp1a7tkqfxua"
+path="res://.godot/imported/acuario_final_FINAL(1)_jpg.png-b51241f037d963c468f5c2cce123da86.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://scenes/libro_abierto.png"
-dest_files=["res://.godot/imported/libro_abierto.png-e13b4660ec4404f22e151c971969f970.ctex"]
+source_file="res://assets/logros/acuario_final_FINAL(1)_jpg.png"
+dest_files=["res://.godot/imported/acuario_final_FINAL(1)_jpg.png-b51241f037d963c468f5c2cce123da86.ctex"]
 
 [params]
 

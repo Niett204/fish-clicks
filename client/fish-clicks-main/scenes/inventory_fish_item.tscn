@@ -2,9 +2,10 @@
 
 [ext_resource type="Script" uid="uid://c2clym82mmddi" path="res://scenes/inventory_fish_item.gd" id="1_effqg"]
 [ext_resource type="Texture2D" uid="uid://x51b5gavkcn0" path="res://assets/ui/inventario/bolsa_vacia.png" id="1_p0k5m"]
-[ext_resource type="Texture2D" uid="uid://cwkva44xfvtk5" path="res://assets/peces/tiza_shiny.png" id="2_m0g4q"]
+[ext_resource type="Texture2D" uid="uid://cwkva44xfvtk5" path="res://assets/peces/espuma_shiny.png" id="2_m0g4q"]
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="4_g3fwe"]
 [ext_resource type="Texture2D" uid="uid://cj331k70flp0l" path="res://assets/misc/brillito.png" id="5_m0g4q"]
+
 
 
 [node name="InventoryFishItem" type="Control" unique_id=1880313092]
