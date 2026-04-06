@@ -25,6 +25,9 @@ signal volume_slider_spam_detected
 @onready var LabelEfectos: Label = $CenterContainer/PanelRoot/PanelSonido/MarginContainer/Content/RowEfectos/SliderWrapEfectos/PorcentajeEfectos
 @onready var fish_preview_player: AudioStreamPlayer = $FishPreviewPlayer
 
+@onready var btn_guardar: Button = $CenterContainer/PanelRoot/ButtonsRowBottom/BtnGuardar
+@onready var lbl_save_status: Label = $CenterContainer/PanelRoot/ButtonsRowBottom/LblSaveStatus 
+
 var slider_items: Array[Dictionary] = []
 var _general_last_value: float = -1.0
 var _general_last_direction: int = 0
@@ -108,6 +111,11 @@ func _ready() -> void:
 
 	# Botón salir
 	btn_salir.pressed.connect(_on_btn_salir_pressed)
+	
+	# Botón guardado
+	btn_guardar.pressed.connect(_on_btn_guardar_pressed)
+	GlobalData.save_success.connect(_on_save_ok)
+	GlobalData.save_failed.connect(_on_save_err)
 
 func _on_slider_value_changed(_value: float, item: Dictionary) -> void:
 	_update_slider_visuals(item)
@@ -308,3 +316,41 @@ func _register_general_slider_change(current_value: float) -> void:
 	):
 		_reset_general_slider_spam_tracking()
 		volume_slider_spam_detected.emit()
+
+
+# Funciones de guardado
+func _on_btn_guardar_pressed() -> void:
+	if not GlobalData.is_logged_in:
+		# Muestra feedback de que necesita sesión
+		_show_save_status("Inicia sesión para guardar")
+		return
+
+	btn_guardar.disabled = true
+	btn_guardar.text = "Guardando..."
+
+	# Recoge el estado del juego desde main
+	var main = get_tree().get_first_node_in_group("main")
+	if main and main.has_method("get_save_state"):
+		GlobalData.save_game(main.get_save_state())
+	else:
+		push_error("No se encontró main con get_save_state()")
+		btn_guardar.disabled = false
+
+
+func _on_save_ok() -> void:
+	btn_guardar.disabled = false
+	btn_guardar.text = "Guardar"
+	_show_save_status("Partida guardada!")
+
+
+func _on_save_err(error: String) -> void:
+	btn_guardar.disabled = false
+	btn_guardar.text = "Guardar"
+	_show_save_status("Error: " + error)
+
+
+func _show_save_status(msg: String) -> void:
+	# Si tienes un Label de feedback en el panel, úsalo
+	# Si no, simplemente imprime por ahora
+	print(msg)
+	# lbl_save_status.text = msg  # descomenta si añades el Label

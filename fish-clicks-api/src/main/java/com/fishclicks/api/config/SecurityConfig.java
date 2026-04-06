@@ -30,6 +30,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/auth/**", "/api/auth/**").permitAll()
                         .requestMatchers("/test/**", "/api/test", "/error").permitAll()
+                        .requestMatchers("/enciclopedia/**").permitAll()
+                        .requestMatchers("/partida/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

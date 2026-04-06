@@ -169,3 +169,87 @@ func _load_session() -> void:
 				user_email    = d.get("email",     "")
 				user_nickname = d.get("nickname",  "")
 				is_logged_in  = true
+
+
+# ── GUARDADO DE PARTIDA ─────────────────────────────────────────────────────
+# POST /partida/guardar  (requiere JWT)
+# Body: { "state": { ...json del juego... } }
+
+signal save_success
+signal save_failed(error: String)
+signal load_success(state: Dictionary)
+signal load_failed(error: String)
+
+
+func save_game(state: Dictionary) -> void:
+	print("Token JWT:", user_token)
+	if not is_logged_in:
+		save_failed.emit("Debes iniciar sesión para guardar")
+		return
+
+	var http := HTTPRequest.new()
+	# Necesitamos un nodo en el árbol — usamos el autoload mismo
+	add_child(http)
+	http.request_completed.connect(_on_save_done.bind(http))
+
+	var body := JSON.stringify(state)
+	var headers := [
+		"Content-Type: application/json",
+		"Authorization: " + get_auth_header()
+	]
+	http.request(BASE_URL + "/partida/guardar", headers, HTTPClient.METHOD_POST, body)
+
+
+func _on_save_done(_result, code: int, _headers, body: PackedByteArray, http: HTTPRequest) -> void:
+	http.queue_free()
+	if code in [200, 201]:
+		save_success.emit()
+	else:
+		print("HTTP Error Code: ", code)
+		print("Response body: ", body.get_string_from_utf8())
+		var data = JSON.parse_string(body.get_string_from_utf8())
+		var msg := "Error al guardar"
+		if data is Dictionary:
+			msg = data.get("message", msg)
+		save_failed.emit(msg)
+
+
+func load_game() -> void:
+	if not is_logged_in:
+		load_failed.emit("Debes iniciar sesión para cargar")
+		return
+
+	var http := HTTPRequest.new()
+	add_child(http)
+	http.request_completed.connect(_on_load_done.bind(http))
+
+	var headers := [
+		"Content-Type: application/json",
+		"Authorization: " + get_auth_header()
+	]
+	http.request(BASE_URL + "/partida/cargar", headers, HTTPClient.METHOD_GET)
+
+
+func _on_load_done(_result, code: int, _headers, body: PackedByteArray, http: HTTPRequest) -> void:
+	http.queue_free()
+	if code == 200:
+		var data = JSON.parse_string(body.get_string_from_utf8())
+		if data is Dictionary and data.has("state"):
+			# IMPORTANTE: El state llega como String desde el backend, 
+			# debemos convertirlo a Diccionario antes de enviarlo al juego.
+			var raw_state = data["state"]
+			var parsed_state = raw_state
+			
+			if raw_state is String:
+				parsed_state = JSON.parse_string(raw_state)
+			
+			if parsed_state is Dictionary:
+				load_success.emit(parsed_state)
+			else:
+				load_failed.emit("Error: El estado de la partida no es un JSON válido")
+		else:
+			load_failed.emit("Respuesta inesperada del servidor")
+	elif code == 404:
+		load_failed.emit("No hay partida guardada")
+	else:
+		load_failed.emit("Error al cargar la partida")
