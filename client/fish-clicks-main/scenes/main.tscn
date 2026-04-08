@@ -541,6 +541,17 @@ texture_normal = ExtResource("21_jscy8")
 ignore_texture_size = true
 stretch_mode = 5
 
+[node name="PeceraBlocker" type="ColorRect" parent="UI/Root" unique_id=1344579101]
+visible = false
+z_index = 1000
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
 [node name="SwimArea" type="Node2D" parent="." unique_id=1141987209]
 visible = false
 

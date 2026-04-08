@@ -2,8 +2,10 @@ extends Control
 
 signal close_requested
 signal volume_slider_spam_detected
+signal modo_pecera_requested
 
 @onready var btn_close: TextureButton = $CenterContainer/PanelRoot/BtnCerrar
+@onready var btn_modo_pecera: Button = $CenterContainer/PanelRoot/BtnModoPecera
 @onready var btn_salir: Button = $CenterContainer/PanelRoot/ButtonsRowBottom/BtnSalir
 
 # Barra Sonido General
@@ -106,6 +108,9 @@ func _ready() -> void:
 	btn_close.button_down.connect(_on_btn_close_button_down)
 	btn_close.button_up.connect(_on_btn_close_button_up)
 
+	# Botón modo pecera
+	btn_modo_pecera.pressed.connect(_on_btn_modo_pecera_pressed)
+	
 	# Botón salir
 	btn_salir.pressed.connect(_on_btn_salir_pressed)
 
@@ -257,6 +262,9 @@ func _on_btn_close_button_up() -> void:
 	tween.tween_property(btn_close, "scale", target_scale, 0.06)
 	tween.parallel().tween_property(btn_close, "modulate", target_modulate, 0.06)
 
+func _on_btn_modo_pecera_pressed() -> void:
+	modo_pecera_requested.emit()
+	
 # Al clicar en el botón salir se cierra el juego
 func _on_btn_salir_pressed() -> void:
 	get_tree().quit()

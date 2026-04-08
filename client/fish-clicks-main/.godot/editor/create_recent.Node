@@ -1,6 +1,7 @@
+ColorRect
+Control
 AudioStreamPlayer
 Node
-Control
 HBoxContainer
 TextureRect
 VBoxContainer
