@@ -11,11 +11,9 @@ import java.util.UUID;
 @Service
 public class JwtService {
 
-    // Cambia esto por una cadena de al menos 32 caracteres
     private String jwtSecret = "esta_es_una_clave_secreta_muy_larga_y_segura_para_el_juego_fish_clicks_2026";
 
     private SecretKey getSigningKey() {
-        // Ahora sí tendrá los bits necesarios para cumplir con el estándar
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
