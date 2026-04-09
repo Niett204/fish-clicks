@@ -1,4 +1,5 @@
 extends Control
+signal close_requested
 
 @onready var http_request: HTTPRequest = $HTTPRequest
 @onready var rareza_container: VBoxContainer = $FondoLibro/RarezaPanel/RarezaContainer
@@ -75,7 +76,7 @@ func _ready() -> void:
 	btn_siguiente.visible = false
 	
 func _on_btn_salir_pressed() -> void:
-	close()
+	close_requested.emit()
 	
 func _configurar_boton_salir(btn: TextureButton) -> void:
 	var pos_original: Vector2 = btn.position
@@ -120,7 +121,8 @@ func hacer_request_peces(rareza: String = "") -> void:
 	if request_en_curso:
 		return
 	
-	var url := "https://fish-clicks.onrender.com/enciclopedia/peces"
+	#var url := "https://fish-clicks.onrender.com/enciclopedia/peces"
+	var url := "http://127.0.0.1:8080/enciclopedia/peces"
 
 	var query_params: Array[String] = []
 
@@ -136,6 +138,9 @@ func hacer_request_peces(rareza: String = "") -> void:
 
 	var body_json := JSON.stringify(body_dict)
 	var headers := ["Content-Type: application/json"]
+	
+	if GlobalData.is_logged_in:
+		headers.append("Authorization: " + GlobalData.get_auth_header())
 
 	request_en_curso = true
 

@@ -4,7 +4,7 @@ const ENCYCLOPEDIA_FISH_IDS := {
 	"doblon": 1,
 	"sobrasada": 2,
 	"rufinus": 3,
-	"tiza": 4,
+	"espuma": 4,
 }
 
 @export var floating_text_scene: PackedScene
@@ -12,12 +12,16 @@ const ENCYCLOPEDIA_FISH_IDS := {
 @export var dps_per_fish: float = 1.0
 @export var shop_item_card_scene: PackedScene
 
+@onready var top_bar: Control = $UI/Root/HUD/TopBar
 @onready var shop_panel: Control = $UI/Root/HUD/TiendaPanel
 @onready var btn_shop_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnShop
 @onready var encyclopedia_panel: Control = $UI/Root/HUD/EncyclopediaPanel
 @onready var btn_encyclopedia_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnEncyclopedia
 @onready var inventory_panel: Control = $UI/Root/HUD/Inventario
 @onready var btn_inventory_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnInventory
+@onready var options_panel: Control = $UI/Root/HUD/OptionsPannel
+@onready var btn_options_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnOptions
+@onready var pecera_blocker: Control = $UI/Root/PeceraBlocker
 @onready var btn_stats_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnStats
 @onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var left_info_panel: Control = $UI/Root/HUD/LeftInfoPanel
@@ -32,6 +36,7 @@ const ENCYCLOPEDIA_FISH_IDS := {
 @onready var info_panel: Control = $UI/Root/HUD/InfoExtraPanel
 @onready var profile_panel: Control = $UI/Root/HUD/ProfilePanel
 @onready var btn_profile_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnProfile
+@onready var ui_root: Control = $UI/Root
 @onready var hud: Control = $UI/Root/HUD
 @onready var btn_hide: TextureButton = $UI/Root/BtnHideHUD
 @onready var http_request: HTTPRequest = $HTTPRequest
@@ -41,6 +46,17 @@ const ENCYCLOPEDIA_FISH_IDS := {
 @onready var tronco_1: Sprite2D = $EstructurasLayer/Tronco
 @onready var tronco_2: Sprite2D = $EstructurasLayer/Tronco2
 @onready var tronco_3: Sprite2D = $EstructurasLayer/Tronco3
+
+@onready var music_player: AudioStreamPlayer = $MusicPlayer
+@onready var ui_sfx_player: AudioStreamPlayer = $UiSfxPlayer
+
+# Audios 
+const SFX_ICON_OPEN := preload("res://assets/audio/UI/abrir_icono.wav")
+const SFX_ICON_CLOSE := preload("res://assets/audio/UI/cerrar_icono.wav")
+const SFX_COFRE_CLICK:= preload("res://assets/audio/UI/pulsar_cofre.wav")
+const SFX_BUY_ITEM:= preload("res://assets/audio/UI/comprar.wav")
+const SFX_SHINY:= preload("res://assets/audio/UI/shiny.wav")
+const SFX_CAMBIAR_TAB:= preload("res://assets/audio/UI/cambiar_tab.wav")
 
 ############################################################################
 
@@ -67,10 +83,10 @@ const ITEMS := {
 		"base_value": 4.0,
 		"value_label": "DPS"
 	},
-	"tiza": {
+	"espuma": {
 		"tab": "Peces",
-		"title": "Tiza",
-		"icon": "res://assets/peces/tiza.png",
+		"title": "Espuma",
+		"icon": "res://assets/peces/espuma.png",
 		"unlock_price": 1200,
 		"kind": "passive",
 		"base_price": 900.0,
@@ -196,13 +212,13 @@ var fish_defs := {
 		"icon": preload("res://assets/peces/sobrasada_shiny.png")
 	},
 
-	"tiza": {
-		"name": "Tiza",
-		"icon": preload("res://assets/peces/tiza.png")
+	"espuma": {
+		"name": "Espuma",
+		"icon": preload("res://assets/peces/espuma.png")
 	},
-	"tiza_shiny": {
-		"name": "Tiza",
-		"icon": preload("res://assets/peces/tiza_shiny.png")
+	"espuma_shiny": {
+		"name": "Espuma",
+		"icon": preload("res://assets/peces/espuma_shiny.png")
 	},
 	
 	"rufinus": {
@@ -220,7 +236,7 @@ var fish_defs := {
 var lifetime_generated: Dictionary = {
 	"doblon": 0.0,
 	"sobrasada": 0.0,
-	"tiza": 0.0,
+	"espuma": 0.0,
 	"rufinus": 0.0,
 	"cofre": 0.0,
 	"vallisneria": 0.0
@@ -249,7 +265,7 @@ var session_time_seconds: float = 0.0
 var game_start_date_string: String = ""
 
 var dps: float = 0.0
-var coins: float = 100000.0
+var coins: float = 10000000.0
 var total_coins_earned: float = 0.0
 var click_power: int = 1
 var chest_base_scale: Vector2
@@ -268,10 +284,20 @@ var anubia_base_scale: Vector2
 
 
 func _ready() -> void:
+	
+	var w := get_window()
+	print("window id:", w.get_window_id())
+	print("window size property:", w.size)
+	print("displayserver size:", DisplayServer.window_get_size(w.get_window_id()))
+
 	http_request.request_completed.connect(_on_request_completed)
 
 	var url := "https://fish-clicks.onrender.com/api/test"
 	http_request.request(url)
+
+	# Cargar sonidos música y efectos
+	music_player.stream = preload("res://assets/audio/fondo/fondo1.ogg")
+	music_player.play()
 
 	for k in ITEMS.keys():
 		var id := String(k)
@@ -305,14 +331,23 @@ func _ready() -> void:
 	)
 	
 	btn_profile_icon.pressed.connect(func():
+		profile_clicks_count += 1
+		check_achievements()
 		play_squish(btn_profile_icon)
-		profile_panel.toggle()
+		toggle_profile()
 	)
 
 	btn_inventory_icon.pressed.connect(func():
 		play_squish(btn_inventory_icon)
 		toggle_inventario()
 	)
+
+	btn_options_icon.pressed.connect(func():
+		play_squish(btn_options_icon)
+		toggle_options()
+	)
+	
+	options_panel.modo_pecera_requested.connect(_on_modo_pecera_requested)
 	
 	btn_stats_icon.pressed.connect(func():
 		play_squish(btn_stats_icon)
@@ -343,17 +378,41 @@ func _ready() -> void:
 	inventory_panel.move_fish_to_aquarium.connect(_on_move_fish_to_aquarium)
 	inventory_panel.move_fish_within_aquarium.connect(_on_move_fish_within_aquarium)
 	inventory_panel.habitat_changed.connect(_on_inventory_habitat_changed)
+	
+	options_panel.volume_slider_spam_detected.connect(func():
+		if not volume_slider_spam_unlocked:
+			volume_slider_spam_unlocked = true
+			check_achievements()
+	)
+	
 	inventory_panel.close_requested.connect(func():
+		play_ui_sfx(SFX_ICON_CLOSE)
 		inventory_panel.visible = false
+	)
+	
+	encyclopedia_panel.close_requested.connect(func():
+		play_ui_sfx(SFX_ICON_CLOSE)
+		encyclopedia_panel.visible = false
+	)
+	
+	stats_panel.close_requested.connect(func():
+		play_ui_sfx(SFX_ICON_CLOSE)
+		stats_panel.visible = false
+	)
+
+	options_panel.close_requested.connect(func():
+		play_ui_sfx(SFX_ICON_CLOSE)
+		options_panel.visible = false
+	)
+	
+	profile_panel.close_requested.connect(func():
+		play_ui_sfx(SFX_ICON_CLOSE)
+		profile_panel._close()
 	)
 	
 	if game_start_date_string == "":
 		var dt := Time.get_datetime_dict_from_system()
 		game_start_date_string = "%02d/%02d/%04d" % [dt.day, dt.month, dt.year]
-	
-	stats_panel.close_requested.connect(func():
-		stats_panel.visible = false
-	)
 
 	for achievement_id in ACHIEVEMENT_DEFS.keys():
 		achievements_unlocked[achievement_id] = false
@@ -366,7 +425,26 @@ func _ready() -> void:
 	shop_panel.position.x = shop_x_closed
 	shop_panel.visible = true
 	shop_open = false
+	
+	# Guardado
+	# Guardado: Solo conectamos el éxito de carga
+	GlobalData.load_success.connect(apply_save_state)
+	
+	# Intentamos cargar la partida inicial
+	GlobalData.load_game() 
+	
+	# Añadimos al grupo al final
+	add_to_group("main")
 
+# Función para reproducir el sonido
+func play_ui_sfx(stream: AudioStream) -> void:
+	if stream == null:
+		return
+
+	ui_sfx_player.stream = stream
+	ui_sfx_player.stop()
+	ui_sfx_player.play()
+	
 func _close_overlay_panels(except_panel: Control = null) -> void:
 	if encyclopedia_panel != except_panel:
 		encyclopedia_panel.visible = false
@@ -408,13 +486,17 @@ func toggle_shop() -> void:
 	shop_tween.tween_property(shop_panel, "position:x", target_x, 0.25)
 
 	if shop_open:
-		_on_tab_changed(tab_container.current_tab)
+		play_ui_sfx(SFX_ICON_OPEN)
+		_refresh_current_shop_tab(tab_container.current_tab)
+	else:
+		play_ui_sfx(SFX_ICON_CLOSE)
 
 func toggle_encyclopedia() -> void:
 	var will_open := not encyclopedia_panel.visible
 
 	if will_open:
 		_close_overlay_panels(encyclopedia_panel)
+		play_ui_sfx(SFX_ICON_OPEN)
 		encyclopedia_panel.visible = true
 		_actualizar_peces_desbloqueados_en_enciclopedia()
 
@@ -422,12 +504,14 @@ func toggle_encyclopedia() -> void:
 			info_panel.request_hide()
 	else:
 		encyclopedia_panel.visible = false
+		play_ui_sfx(SFX_ICON_CLOSE)
 
 func toggle_inventario() -> void:
 	var will_open := not inventory_panel.visible
 
 	if will_open:
 		_close_overlay_panels(inventory_panel)
+		play_ui_sfx(SFX_ICON_OPEN)
 		inventory_panel.visible = true
 
 		if info_panel:
@@ -443,12 +527,96 @@ func toggle_inventario() -> void:
 		)
 	else:
 		inventory_panel.visible = false
+		play_ui_sfx(SFX_ICON_CLOSE)	
+
+func toggle_options() -> void:
+	options_panel.visible = !options_panel.visible
+
+	if options_panel.visible:
+		play_ui_sfx(SFX_ICON_OPEN)
+		shop_open = false
+		if info_panel:
+			info_panel.request_hide()
+		if shop_tween:
+			shop_tween.kill()
+		shop_panel.position.x = shop_x_closed
+	else:
+		play_ui_sfx(SFX_ICON_CLOSE)
+
+var modo_pecera := false
+func _on_modo_pecera_requested() -> void:
+	var w := get_window()
+	var id := w.get_window_id()
+
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED, id)
+
+	var size_grande := Vector2i(1152, 648)
+	var size_pequeno := Vector2i(384, 216)
+
+	if modo_pecera:
+		hud.visible = true	
+		btn_hide.visible = true
+		pecera_blocker.visible = false
+		w.borderless = false
+		w.always_on_top = false
+		DisplayServer.window_set_size(size_grande, id)
+		var screen := DisplayServer.screen_get_usable_rect()
+		var pos := (screen.size - size_grande) / 2
+		DisplayServer.window_set_position(pos, id)
+	else:
+		if options_panel.visible:
+			options_panel.hide()
+		
+		w.borderless = true
+		w.always_on_top = true
+		DisplayServer.window_set_size(size_pequeno, id)
+
+		var screen := DisplayServer.screen_get_usable_rect()
+		var pos := Vector2i(
+			0,
+			screen.size.y - size_pequeno.y
+		)
+
+		DisplayServer.window_set_position(pos, id)
+		
+		hud.visible = false
+		btn_hide.visible = false
+		pecera_blocker.visible = true
+
+	modo_pecera = !modo_pecera
+
+var arrastrando_pecera := false
+var drag_offset := Vector2i.ZERO
+func _input(event: InputEvent) -> void:
+	if not modo_pecera:
+		return
+
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			if event.double_click:
+				arrastrando_pecera = false
+				_on_modo_pecera_requested()
+				get_viewport().set_input_as_handled()
+				return
+
+			arrastrando_pecera = true
+			var mouse_pos := DisplayServer.mouse_get_position()
+			var window_pos := DisplayServer.window_get_position()
+			drag_offset = mouse_pos - window_pos
+		else:
+			arrastrando_pecera = false
+
+	elif event is InputEventMouseMotion and arrastrando_pecera:
+		var mouse_pos := DisplayServer.mouse_get_position()
+		var new_pos := mouse_pos - drag_offset
+		DisplayServer.window_set_position(new_pos)
 
 func toggle_stats_panel() -> void:
 	var will_open := not stats_panel.visible
 
 	if will_open:
 		_close_overlay_panels(stats_panel)
+		play_ui_sfx(SFX_ICON_OPEN)
 		stats_panel.visible = true
 
 		if info_panel:
@@ -457,7 +625,22 @@ func toggle_stats_panel() -> void:
 		_refresh_stats_panel_full()
 	else:
 		stats_panel.visible = false
+		play_ui_sfx(SFX_ICON_CLOSE)
 
+func toggle_profile() -> void:
+	var will_open := not profile_panel.visible
+
+	if will_open:
+		_close_overlay_panels(profile_panel)
+		play_ui_sfx(SFX_ICON_OPEN)
+		profile_panel._open()
+
+		if info_panel:
+			info_panel.request_hide()
+	else:
+		play_ui_sfx(SFX_ICON_CLOSE)
+		profile_panel._close()
+		
 func _refresh_stats_panel() -> void:
 	if stats_panel.has_method("set_stats_data"):
 		stats_panel.set_stats_data({
@@ -481,11 +664,12 @@ func _refresh_stats_panel() -> void:
 	if stats_panel.has_method("set_achievements_data"):
 		stats_panel.set_achievements_data(get_achievements_ui_data())
 
-func _on_tab_changed(tab: int) -> void:
+func _refresh_current_shop_tab(tab: int) -> void:
 	_block_info_hover = true
+
 	if info_panel:
 		info_panel.visible = false
-	
+
 	var tab_name := tab_container.get_tab_title(tab)
 
 	if tab_name == "Peces":
@@ -494,9 +678,13 @@ func _on_tab_changed(tab: int) -> void:
 		_rebuild_tab("Estructuras", list_estructuras)
 
 	update_shop_cards()
-	
+
 	await get_tree().process_frame
 	_block_info_hover = false
+
+func _on_tab_changed(tab: int) -> void:
+	play_ui_sfx(SFX_CAMBIAR_TAB)
+	_refresh_current_shop_tab(tab)
 
 func _rebuild_tab(tab_name: String, list: VBoxContainer) -> void:
 	for c in list.get_children():
@@ -544,6 +732,7 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 
 func _on_chest_clicked() -> void:
 	total_clicks += 1
+	play_ui_sfx(SFX_COFRE_CLICK)
 	coins += click_power
 	total_coins_earned += click_power
 	lifetime_generated["cofre"] += click_power
@@ -701,7 +890,9 @@ func _on_buy_pressed(id: String) -> void:
 	var price := get_price(id)
 	if coins < price:
 		return
-
+		
+	play_ui_sfx(SFX_BUY_ITEM)
+	
 	coins -= price
 	if String(ITEMS[id].get("tab", "")) == "Estructuras":
 		total_structures_spent += price
@@ -713,6 +904,7 @@ func _on_buy_pressed(id: String) -> void:
 		if randf() < 0.01 and fish_defs.has(id + "_shiny"):
 			spawned_fish_id = id + "_shiny"
 			total_shinies_ever += 1
+			play_ui_sfx(SFX_SHINY)
 
 		var slot_index := try_add_fish_to_aquarium(current_habitat, spawned_fish_id)
 
@@ -1596,3 +1788,134 @@ func _update_tronco_visibility_by_level() -> void:
 		tronco_2.visible = true
 	else:
 		tronco_1.visible = true
+
+
+# ── GUARDADO DE PARTIDA ─────────────────────────────────────────────────────
+func get_save_state() -> Dictionary:
+	# Serializa aquarium_data (los arrays tienen null o strings)
+	var aquarium_serialized := {}
+	for habitat_id in aquarium_data.keys():
+		var slots := []
+		for slot in aquarium_data[habitat_id]:
+			slots.append(slot if slot != null else "")
+		aquarium_serialized[habitat_id] = slots
+
+	return {
+		"coins": coins,
+		"levels": levels,
+		"unlocked": unlocked,
+		"lifetime_generated": lifetime_generated,
+		"achievements_unlocked": achievements_unlocked,
+		"random_tick_unlocked": random_tick_unlocked,
+		"volume_slider_spam_unlocked": volume_slider_spam_unlocked,
+		"aquarium_data": aquarium_serialized,
+		"current_habitat": current_habitat,
+		"unlocked_habitats": unlocked_habitats,
+		"sound_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")), # Volumen
+		"total_clicks": total_clicks, # Stats
+		"total_coins_earned": total_coins_earned,
+		"total_shinies_ever": total_shinies_ever,
+		"session_time_seconds": session_time_seconds,
+		"fish_inventory": fish_inventory, # Inventario completo
+		"game_start_date": game_start_date_string # Fecha inicio
+	}
+
+func reset_local_state() -> void:
+	# 1. Resetear variables numéricas
+	coins = 0.0
+	total_coins_earned = 0.0
+	total_clicks = 0
+	total_shinies_ever = 0
+	session_time_seconds = 0.0
+	dps = 0.0
+	click_power = 1
+
+	# 2. Vaciar diccionarios de progreso
+	levels.clear()
+	unlocked.clear()
+	achievements_unlocked.clear()
+	fish_inventory.clear()
+	
+	# 3. Reiniciar aquarium_data a null
+	for habitat_id in aquarium_data.keys():
+		var empty_slots = []
+		empty_slots.resize(10) # o el tamaño que uses
+		empty_slots.fill(null)
+		aquarium_data[habitat_id] = empty_slots
+
+	# 4. Eliminar físicamente los peces del acuario
+	for child in fish_layer.get_children():
+		child.queue_free()
+
+func apply_save_state(state: Dictionary) -> void:
+	coins = float(state.get("coins", 0.0))
+
+	var saved_levels: Dictionary = state.get("levels", {})
+	for k in saved_levels:
+		levels[k] = int(saved_levels[k])
+
+	var saved_unlocked: Dictionary = state.get("unlocked", {})
+	for k in saved_unlocked:
+		unlocked[k] = bool(saved_unlocked[k])
+
+	var saved_lifetime: Dictionary = state.get("lifetime_generated", {})
+	for k in saved_lifetime:
+		lifetime_generated[k] = float(saved_lifetime[k])
+
+	var saved_achievements: Dictionary = state.get("achievements_unlocked", {})
+	for k in saved_achievements:
+		achievements_unlocked[k] = bool(saved_achievements[k])
+
+	random_tick_unlocked = bool(state.get("random_tick_unlocked", false))
+	volume_slider_spam_unlocked = bool(state.get("volume_slider_spam_unlocked", false))
+	current_habitat = state.get("current_habitat", "habitat_1")
+
+	var saved_habitats = state.get("unlocked_habitats", ["habitat_1"])
+	unlocked_habitats.clear()
+	for h in saved_habitats:
+		unlocked_habitats.append(str(h))
+
+	# Restaurar aquarium_data y spawnear peces
+	var saved_aquarium: Dictionary = state.get("aquarium_data", {})
+	# Limpiar peces actuales en pantalla
+	for child in fish_layer.get_children():
+		child.queue_free()
+	# Resetear slots
+	for habitat_id in aquarium_data.keys():
+		var empty_slots = []
+		empty_slots.resize(aquarium_data[habitat_id].size())
+		empty_slots.fill(null)
+		aquarium_data[habitat_id] = empty_slots
+
+	# Restaurar slots y spawnear
+	for habitat_id in saved_aquarium.keys():
+		if not aquarium_data.has(habitat_id):
+			continue
+		var slots: Array = saved_aquarium[habitat_id]
+		for slot_index in slots.size():
+			var fish_id = slots[slot_index]
+			if fish_id == null or fish_id == "":
+				continue
+			aquarium_data[habitat_id][slot_index] = fish_id
+			_spawn_fish(fish_id, habitat_id, slot_index)
+	# Restaurar volumen del juego
+	if state.has("sound_volume"):
+		AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), state["sound_volume"])
+	
+	total_clicks = int(state.get("total_clicks", 0))
+	total_coins_earned = float(state.get("total_coins_earned", 0.0))
+	total_shinies_ever = int(state.get("total_shinies_ever", 0))
+	session_time_seconds = float(state.get("session_time_seconds", 0.0))
+	game_start_date_string = state.get("game_start_date", game_start_date_string)
+	
+	# Inventario e Inventario de Enciclopedia (vienen de 'unlocked')
+	fish_inventory = state.get("fish_inventory", {})
+
+	_update_cps()
+	_update_ui()
+	_actualizar_peces_desbloqueados_en_enciclopedia()
+	
+	_update_algas_sprite_by_level()
+	_update_anubia_sprite_by_level()
+	_update_tronco_visibility_by_level()
+	_update_chest_sprite_by_level()

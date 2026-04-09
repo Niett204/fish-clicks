@@ -52,7 +52,13 @@ public class AuthService {
         // Generar JWT token
         String token = jwtService.generateToken(user.getUid(), user.getEmail());
 
-        return new LoginResponse(token, user.getUid());
+        return new LoginResponse(
+                token,
+                user.getUid(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getFoto()
+        );
     }
 
     @Transactional
@@ -93,6 +99,12 @@ public class AuthService {
         passwordRepository.save(newPassword);
 
         String token = jwtService.generateToken(createdUser.getUid(), createdUser.getEmail());
-        return new LoginResponse(token, createdUser.getUid());
+        return new LoginResponse(
+                token,
+                createdUser.getUid(),
+                createdUser.getEmail(),
+                createdUser.getNickname(),
+                createdUser.getFoto()
+        );
     }
 }

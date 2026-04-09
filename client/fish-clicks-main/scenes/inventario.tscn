@@ -230,3 +230,5 @@ offset_bottom = 100.0
 texture_normal = ExtResource("3_clfm4")
 ignore_texture_size = true
 stretch_mode = 0
+
+[node name="SfxPlayer" type="AudioStreamPlayer" parent="." unique_id=749216168]
