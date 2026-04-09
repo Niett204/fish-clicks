@@ -17,4 +17,3 @@ func _on_pressed():
 		get_parent().get_parent().get_parent().add_child(login_panel)
 	else:
 		push_error("LoginPanel scene no está asignado en el inspector")
-
