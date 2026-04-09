@@ -547,6 +547,7 @@ func _on_modo_pecera_requested() -> void:
 		hud.visible = true	
 		btn_hide.visible = true
 		pecera_blocker.visible = false
+		w.borderless = false
 		w.always_on_top = false
 		DisplayServer.window_set_size(size_grande, id)
 		var screen := DisplayServer.screen_get_usable_rect()
@@ -555,7 +556,8 @@ func _on_modo_pecera_requested() -> void:
 	else:
 		if options_panel.visible:
 			options_panel.hide()
-
+		
+		w.borderless = true
 		w.always_on_top = true
 		DisplayServer.window_set_size(size_pequeno, id)
 
