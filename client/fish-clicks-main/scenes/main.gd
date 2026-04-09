@@ -12,6 +12,7 @@ const ENCYCLOPEDIA_FISH_IDS := {
 @export var dps_per_fish: float = 1.0
 @export var shop_item_card_scene: PackedScene
 
+@onready var top_bar: Control = $UI/Root/HUD/TopBar
 @onready var shop_panel: Control = $UI/Root/HUD/TiendaPanel
 @onready var btn_shop_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnShop
 @onready var encyclopedia_panel: Control = $UI/Root/HUD/EncyclopediaPanel
@@ -20,6 +21,7 @@ const ENCYCLOPEDIA_FISH_IDS := {
 @onready var btn_inventory_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnInventory
 @onready var options_panel: Control = $UI/Root/HUD/OptionsPannel
 @onready var btn_options_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnOptions
+@onready var pecera_blocker: Control = $UI/Root/PeceraBlocker
 @onready var btn_stats_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnStats
 @onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var left_info_panel: Control = $UI/Root/HUD/LeftInfoPanel
@@ -34,6 +36,7 @@ const ENCYCLOPEDIA_FISH_IDS := {
 @onready var info_panel: Control = $UI/Root/HUD/InfoExtraPanel
 @onready var profile_panel: Control = $UI/Root/HUD/ProfilePanel
 @onready var btn_profile_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnProfile
+@onready var ui_root: Control = $UI/Root
 @onready var hud: Control = $UI/Root/HUD
 @onready var btn_hide: TextureButton = $UI/Root/BtnHideHUD
 @onready var http_request: HTTPRequest = $HTTPRequest
@@ -281,6 +284,12 @@ var anubia_base_scale: Vector2
 
 
 func _ready() -> void:
+	
+	var w := get_window()
+	print("window id:", w.get_window_id())
+	print("window size property:", w.size)
+	print("displayserver size:", DisplayServer.window_get_size(w.get_window_id()))
+
 	http_request.request_completed.connect(_on_request_completed)
 
 	var url := "https://fish-clicks.onrender.com/api/test"
@@ -337,6 +346,8 @@ func _ready() -> void:
 		play_squish(btn_options_icon)
 		toggle_options()
 	)
+	
+	options_panel.modo_pecera_requested.connect(_on_modo_pecera_requested)
 	
 	btn_stats_icon.pressed.connect(func():
 		play_squish(btn_stats_icon)
@@ -414,7 +425,7 @@ func _ready() -> void:
 	shop_panel.position.x = shop_x_closed
 	shop_panel.visible = true
 	shop_open = false
-
+		
 # Función para reproducir el sonido
 func play_ui_sfx(stream: AudioStream) -> void:
 	if stream == null:
@@ -521,6 +532,74 @@ func toggle_options() -> void:
 		shop_panel.position.x = shop_x_closed
 	else:
 		play_ui_sfx(SFX_ICON_CLOSE)
+
+var modo_pecera := false
+func _on_modo_pecera_requested() -> void:
+	var w := get_window()
+	var id := w.get_window_id()
+
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED, id)
+
+	var size_grande := Vector2i(1152, 648)
+	var size_pequeno := Vector2i(384, 216)
+
+	if modo_pecera:
+		hud.visible = true	
+		btn_hide.visible = true
+		pecera_blocker.visible = false
+		w.borderless = false
+		w.always_on_top = false
+		DisplayServer.window_set_size(size_grande, id)
+		var screen := DisplayServer.screen_get_usable_rect()
+		var pos := (screen.size - size_grande) / 2
+		DisplayServer.window_set_position(pos, id)
+	else:
+		if options_panel.visible:
+			options_panel.hide()
+		
+		w.borderless = true
+		w.always_on_top = true
+		DisplayServer.window_set_size(size_pequeno, id)
+
+		var screen := DisplayServer.screen_get_usable_rect()
+		var pos := Vector2i(
+			0,
+			screen.size.y - size_pequeno.y
+		)
+
+		DisplayServer.window_set_position(pos, id)
+		
+		hud.visible = false
+		btn_hide.visible = false
+		pecera_blocker.visible = true
+
+	modo_pecera = !modo_pecera
+
+var arrastrando_pecera := false
+var drag_offset := Vector2i.ZERO
+func _input(event: InputEvent) -> void:
+	if not modo_pecera:
+		return
+
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			if event.double_click:
+				arrastrando_pecera = false
+				_on_modo_pecera_requested()
+				get_viewport().set_input_as_handled()
+				return
+
+			arrastrando_pecera = true
+			var mouse_pos := DisplayServer.mouse_get_position()
+			var window_pos := DisplayServer.window_get_position()
+			drag_offset = mouse_pos - window_pos
+		else:
+			arrastrando_pecera = false
+
+	elif event is InputEventMouseMotion and arrastrando_pecera:
+		var mouse_pos := DisplayServer.mouse_get_position()
+		var new_pos := mouse_pos - drag_offset
+		DisplayServer.window_set_position(new_pos)
 
 func toggle_stats_panel() -> void:
 	var will_open := not stats_panel.visible
