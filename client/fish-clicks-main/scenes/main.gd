@@ -282,8 +282,14 @@ var anubia_ground_y: float = 0.0
 var vallisneria_base_scale: Vector2
 var anubia_base_scale: Vector2
 
+const UiManagerScript = preload("res://scripts/main/ui_manager.gd")
+var ui_manager: UiManager
 
 func _ready() -> void:
+	
+	ui_manager = UiManagerScript.new()
+	add_child(ui_manager)
+	ui_manager.setup(self)
 	
 	var w := get_window()
 	print("window id:", w.get_window_id())
@@ -316,45 +322,45 @@ func _ready() -> void:
 	stats_panel.z_index = 20
 
 	btn_hide.pressed.connect(func():
-		play_squish(btn_hide)
-		_toggle_hud()
+		ui_manager.play_squish(btn_hide)
+		ui_manager._toggle_hud()
 	)
 
 	btn_shop_icon.pressed.connect(func():
-		play_squish(btn_shop_icon)
-		toggle_shop()
+		ui_manager.play_squish(btn_shop_icon)
+		ui_manager.toggle_shop()
 	)
 
 	btn_encyclopedia_icon.pressed.connect(func():
-		play_squish(btn_encyclopedia_icon)
-		toggle_encyclopedia()
+		ui_manager.play_squish(btn_encyclopedia_icon)
+		ui_manager.toggle_encyclopedia()
 	)
 	
 	btn_profile_icon.pressed.connect(func():
 		profile_clicks_count += 1
 		check_achievements()
-		play_squish(btn_profile_icon)
-		toggle_profile()
+		ui_manager.play_squish(btn_profile_icon)
+		ui_manager.toggle_profile()
 	)
 
 	btn_inventory_icon.pressed.connect(func():
-		play_squish(btn_inventory_icon)
-		toggle_inventario()
+		ui_manager.play_squish(btn_inventory_icon)
+		ui_manager.toggle_inventario()
 	)
 
 	btn_options_icon.pressed.connect(func():
-		play_squish(btn_options_icon)
-		toggle_options()
+		ui_manager.play_squish(btn_options_icon)
+		ui_manager.toggle_options()
 	)
 	
 	options_panel.modo_pecera_requested.connect(_on_modo_pecera_requested)
 	
 	btn_stats_icon.pressed.connect(func():
-		play_squish(btn_stats_icon)
-		toggle_stats_panel()
+		ui_manager.play_squish(btn_stats_icon)
+		ui_manager.toggle_stats_panel()
 	)
 
-	tab_container.tab_changed.connect(_on_tab_changed)
+	tab_container.tab_changed.connect(ui_manager._on_tab_changed)
 	_update_chest_sprite_by_level()
 	chest.clicked.connect(_on_chest_clicked)
 
@@ -368,7 +374,7 @@ func _ready() -> void:
 		anubia_ground_y = anubia.position.y + (anubia.texture.get_height() * abs(anubia.scale.y) * 0.5)
 
 	_update_cps()
-	_update_ui()
+	ui_manager._update_ui()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
 	_update_algas_sprite_by_level()
 	_update_anubia_sprite_by_level()
@@ -386,27 +392,27 @@ func _ready() -> void:
 	)
 	
 	inventory_panel.close_requested.connect(func():
-		play_ui_sfx(SFX_ICON_CLOSE)
+		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
 		inventory_panel.visible = false
 	)
 	
 	encyclopedia_panel.close_requested.connect(func():
-		play_ui_sfx(SFX_ICON_CLOSE)
+		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
 		encyclopedia_panel.visible = false
 	)
 	
 	stats_panel.close_requested.connect(func():
-		play_ui_sfx(SFX_ICON_CLOSE)
+		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
 		stats_panel.visible = false
 	)
 
 	options_panel.close_requested.connect(func():
-		play_ui_sfx(SFX_ICON_CLOSE)
+		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
 		options_panel.visible = false
 	)
 	
 	profile_panel.close_requested.connect(func():
-		play_ui_sfx(SFX_ICON_CLOSE)
+		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
 		profile_panel._close()
 	)
 	
@@ -436,112 +442,10 @@ func _ready() -> void:
 	# Añadimos al grupo al final
 	add_to_group("main")
 
-# Función para reproducir el sonido
-func play_ui_sfx(stream: AudioStream) -> void:
-	if stream == null:
-		return
-
-	ui_sfx_player.stream = stream
-	ui_sfx_player.stop()
-	ui_sfx_player.play()
-	
-func _close_overlay_panels(except_panel: Control = null) -> void:
-	if encyclopedia_panel != except_panel:
-		encyclopedia_panel.visible = false
-
-	if inventory_panel != except_panel:
-		inventory_panel.visible = false
-		
-	if profile_panel != except_panel:
-		profile_panel.visible = false
-
-	if stats_panel != except_panel:
-		stats_panel.visible = false
-
 @warning_ignore("unused_parameter")
 func _on_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
 	@warning_ignore("unused_variable")
 	var i: int;
-
-func _toggle_hud():
-	hud_visible = !hud_visible
-	hud.visible = hud_visible
-	
-	if hud.visible:
-		btn_hide.texture_normal = ICON_HIDE
-	else:
-		btn_hide.texture_normal = ICON_SHOW
-
-func toggle_shop() -> void:
-	shop_open = !shop_open
-
-	if not shop_open and info_panel:
-		info_panel.request_hide()
-
-	shop_tween = create_tween()
-	shop_tween.set_trans(Tween.TRANS_QUAD)
-	shop_tween.set_ease(Tween.EASE_OUT)
-
-	var target_x := shop_x_open if shop_open else shop_x_closed
-	shop_tween.tween_property(shop_panel, "position:x", target_x, 0.25)
-
-	if shop_open:
-		play_ui_sfx(SFX_ICON_OPEN)
-		_refresh_current_shop_tab(tab_container.current_tab)
-	else:
-		play_ui_sfx(SFX_ICON_CLOSE)
-
-func toggle_encyclopedia() -> void:
-	var will_open := not encyclopedia_panel.visible
-
-	if will_open:
-		_close_overlay_panels(encyclopedia_panel)
-		play_ui_sfx(SFX_ICON_OPEN)
-		encyclopedia_panel.visible = true
-		_actualizar_peces_desbloqueados_en_enciclopedia()
-
-		if info_panel:
-			info_panel.request_hide()
-	else:
-		encyclopedia_panel.visible = false
-		play_ui_sfx(SFX_ICON_CLOSE)
-
-func toggle_inventario() -> void:
-	var will_open := not inventory_panel.visible
-
-	if will_open:
-		_close_overlay_panels(inventory_panel)
-		play_ui_sfx(SFX_ICON_OPEN)
-		inventory_panel.visible = true
-
-		if info_panel:
-			info_panel.request_hide()
-
-		inventory_panel.set_inventory_data(
-			HABITATS,
-			unlocked_habitats,
-			inventory_habitat,
-			aquarium_data,
-			fish_defs,
-			fish_inventory
-		)
-	else:
-		inventory_panel.visible = false
-		play_ui_sfx(SFX_ICON_CLOSE)	
-
-func toggle_options() -> void:
-	options_panel.visible = !options_panel.visible
-
-	if options_panel.visible:
-		play_ui_sfx(SFX_ICON_OPEN)
-		shop_open = false
-		if info_panel:
-			info_panel.request_hide()
-		if shop_tween:
-			shop_tween.kill()
-		shop_panel.position.x = shop_x_closed
-	else:
-		play_ui_sfx(SFX_ICON_CLOSE)
 
 var modo_pecera := false
 func _on_modo_pecera_requested() -> void:
@@ -610,36 +514,6 @@ func _input(event: InputEvent) -> void:
 		var mouse_pos := DisplayServer.mouse_get_position()
 		var new_pos := mouse_pos - drag_offset
 		DisplayServer.window_set_position(new_pos)
-
-func toggle_stats_panel() -> void:
-	var will_open := not stats_panel.visible
-
-	if will_open:
-		_close_overlay_panels(stats_panel)
-		play_ui_sfx(SFX_ICON_OPEN)
-		stats_panel.visible = true
-
-		if info_panel:
-			info_panel.request_hide()
-
-		_refresh_stats_panel_full()
-	else:
-		stats_panel.visible = false
-		play_ui_sfx(SFX_ICON_CLOSE)
-
-func toggle_profile() -> void:
-	var will_open := not profile_panel.visible
-
-	if will_open:
-		_close_overlay_panels(profile_panel)
-		play_ui_sfx(SFX_ICON_OPEN)
-		profile_panel._open()
-
-		if info_panel:
-			info_panel.request_hide()
-	else:
-		play_ui_sfx(SFX_ICON_CLOSE)
-		profile_panel._close()
 		
 func _refresh_stats_panel() -> void:
 	if stats_panel.has_method("set_stats_data"):
@@ -663,40 +537,6 @@ func _refresh_stats_panel() -> void:
 
 	if stats_panel.has_method("set_achievements_data"):
 		stats_panel.set_achievements_data(get_achievements_ui_data())
-
-func _refresh_current_shop_tab(tab: int) -> void:
-	_block_info_hover = true
-
-	if info_panel:
-		info_panel.visible = false
-
-	var tab_name := tab_container.get_tab_title(tab)
-
-	if tab_name == "Peces":
-		_rebuild_tab("Peces", list_peces)
-	elif tab_name == "Estructuras":
-		_rebuild_tab("Estructuras", list_estructuras)
-
-	update_shop_cards()
-
-	await get_tree().process_frame
-	_block_info_hover = false
-
-func _on_tab_changed(tab: int) -> void:
-	play_ui_sfx(SFX_CAMBIAR_TAB)
-	_refresh_current_shop_tab(tab)
-
-func _rebuild_tab(tab_name: String, list: VBoxContainer) -> void:
-	for c in list.get_children():
-		c.queue_free()
-	await get_tree().process_frame
-	_populate_tab(tab_name, list)
-
-func _populate_tab(tab_name: String, list: VBoxContainer) -> void:
-	for k in ITEMS.keys():
-		var id: String = String(k)
-		if String(ITEMS[id]["tab"]) == tab_name:
-			add_item_card_to_list(id, list)
 
 func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 	var def: Dictionary = ITEMS[id]
@@ -732,12 +572,12 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 
 func _on_chest_clicked() -> void:
 	total_clicks += 1
-	play_ui_sfx(SFX_COFRE_CLICK)
+	ui_manager.play_ui_sfx(SFX_COFRE_CLICK)
 	coins += click_power
 	total_coins_earned += click_power
 	lifetime_generated["cofre"] += click_power
 
-	_update_ui()
+	ui_manager._update_ui()
 	_play_click_animation()
 	_spawn_floating_text()
 	_mostrar_monedas_y_burbujas()
@@ -756,20 +596,10 @@ func _spawn_floating_text() -> void:
 	var mouse_pos = get_viewport().get_mouse_position()
 	t.position = mouse_pos + Vector2(-5, -20)
 	t.z_index = 1000
-
-func _update_ui() -> void:
-	_update_currency_ui()
-	_update_dps_ui()
-
-	if shop_open:
-		update_shop_cards()
-	
-func _on_toggle_tienda_button_pressed() -> void:
-	toggle_shop()
 		
 func _update_cps() -> void:
 	dps = get_total_passive_dps()
-	_update_dps_ui()
+	ui_manager._update_dps_ui()
 
 func get_total_passive_dps() -> float:
 	var total: float = 0.0
@@ -782,10 +612,6 @@ func get_total_passive_dps() -> float:
 
 	return total
 
-func _update_dps_ui() -> void:
-	var parts: Dictionary = format_doblones_parts(dps)
-	dps_label.text = "+" + parts.value + " " + parts.unit.replace(" de doblones", "").replace(" doblones", "") + "/s"
-	
 func _process(delta: float) -> void:
 	session_time_seconds += delta
 
@@ -800,7 +626,7 @@ func _process(delta: float) -> void:
 		if String(def.get("kind", "")) == "passive":
 			lifetime_generated[item_id] += get_item_current_value(item_id) * delta
 
-	_update_currency_ui()
+	ui_manager._update_currency_ui()
 
 	_achievement_check_accum += delta
 	if _achievement_check_accum >= 0.5:
@@ -812,11 +638,6 @@ func _process(delta: float) -> void:
 
 	if stats_panel.visible:
 		_refresh_stats_values_only()
-
-func _update_currency_ui() -> void:
-	var parts := format_doblones_parts(coins)
-	coins_label.text = parts.value
-	unidades_label.text = parts.unit
 
 func _play_click_animation() -> void:
 	var tween = create_tween()
@@ -891,7 +712,7 @@ func _on_buy_pressed(id: String) -> void:
 	if coins < price:
 		return
 		
-	play_ui_sfx(SFX_BUY_ITEM)
+	ui_manager.play_ui_sfx(SFX_BUY_ITEM)
 	
 	coins -= price
 	if String(ITEMS[id].get("tab", "")) == "Estructuras":
@@ -904,7 +725,7 @@ func _on_buy_pressed(id: String) -> void:
 		if randf() < 0.01 and fish_defs.has(id + "_shiny"):
 			spawned_fish_id = id + "_shiny"
 			total_shinies_ever += 1
-			play_ui_sfx(SFX_SHINY)
+			ui_manager.play_ui_sfx(SFX_SHINY)
 
 		var slot_index := try_add_fish_to_aquarium(current_habitat, spawned_fish_id)
 
@@ -914,7 +735,7 @@ func _on_buy_pressed(id: String) -> void:
 			fish_inventory[spawned_fish_id] = int(fish_inventory.get(spawned_fish_id, 0)) + 1
 
 	refresh_inventory_panel_data()
-	_update_ui()
+	ui_manager._update_ui()
 	check_achievements()
 
 	if stats_panel.visible:
@@ -939,38 +760,12 @@ func _on_unlock_pressed(id: String) -> void:
 		"tronco":
 			_update_tronco_visibility_by_level()
 
-	_update_ui()
+	ui_manager._update_ui()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
 	check_achievements()
 
 	if stats_panel.visible:
 		_refresh_stats_values_only()
-
-func update_shop_cards() -> void:
-	for card in list_peces.get_children():
-		_refresh_card(card)
-	for card in list_estructuras.get_children():
-		_refresh_card(card)
-
-func _refresh_card(card) -> void:
-	var id: String = String(card.item_id)
-	var p: int = get_price(id)
-
-	card.set_unlocked(bool(unlocked.get(id, true)))
-	card.set_dynamic(
-		p,
-		"%d" % p,
-		get_item_effect_text(id),
-		str(get_level(id))
-	)
-	card.update_state(coins)
-
-	card.extra_b1 = get_tooltip_line_1(id)
-	card.extra_b2 = get_tooltip_line_2(id)
-	card.extra_b3 = get_tooltip_line_3(id)
-
-	if card.has_method("refresh_info_panel_if_hovered"):
-		card.refresh_info_panel_if_hovered()
 
 func get_item_effect_text(id: String) -> String:
 	var def: Dictionary = ITEMS[id]
@@ -998,14 +793,6 @@ func get_tooltip_line_2(id: String) -> String:
 
 func get_tooltip_line_3(id: String) -> String:
 	return "Generado total: %s" % get_lifetime_generated_text(id)
-
-func play_squish(node: Control) -> void:
-	var t := create_tween()
-	t.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	node.scale = Vector2(1, 1)
-	t.tween_property(node, "scale", Vector2(0.92, 0.88), 0.06)
-	t.tween_property(node, "scale", Vector2(1.02, 1.02), 0.08)
-	t.tween_property(node, "scale", Vector2(1, 1), 0.08)
 
 func _on_btn_shop_pressed() -> void:
 	pass # Replace with function body.
@@ -1912,7 +1699,7 @@ func apply_save_state(state: Dictionary) -> void:
 	fish_inventory = state.get("fish_inventory", {})
 
 	_update_cps()
-	_update_ui()
+	ui_manager._update_ui()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
 	
 	_update_algas_sprite_by_level()
