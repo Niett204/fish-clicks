@@ -425,7 +425,16 @@ func _ready() -> void:
 	shop_panel.position.x = shop_x_closed
 	shop_panel.visible = true
 	shop_open = false
+<<<<<<< HEAD
 		
+=======
+	
+	# Guardado
+	GlobalData.load_success.connect(apply_save_state)
+	GlobalData.load_game()  # intenta cargar al arrancar si hay sesión
+	add_to_group("main")
+
+>>>>>>> feature/fotoPerfil
 # Función para reproducir el sonido
 func play_ui_sfx(stream: AudioStream) -> void:
 	if stream == null:
@@ -1778,3 +1787,103 @@ func _update_tronco_visibility_by_level() -> void:
 		tronco_2.visible = true
 	else:
 		tronco_1.visible = true
+
+
+# ── GUARDADO DE PARTIDA ─────────────────────────────────────────────────────
+func get_save_state() -> Dictionary:
+	# Serializa aquarium_data (los arrays tienen null o strings)
+	var aquarium_serialized := {}
+	for habitat_id in aquarium_data.keys():
+		var slots := []
+		for slot in aquarium_data[habitat_id]:
+			slots.append(slot if slot != null else "")
+		aquarium_serialized[habitat_id] = slots
+
+	return {
+		"coins": coins,
+		"levels": levels,
+		"unlocked": unlocked,
+		"lifetime_generated": lifetime_generated,
+		"achievements_unlocked": achievements_unlocked,
+		"random_tick_unlocked": random_tick_unlocked,
+		"volume_slider_spam_unlocked": volume_slider_spam_unlocked,
+		"aquarium_data": aquarium_serialized,
+		"current_habitat": current_habitat,
+		"unlocked_habitats": unlocked_habitats,
+		"sound_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")), # Volumen
+		"total_clicks": total_clicks, # Stats
+		"total_coins_earned": total_coins_earned,
+		"total_shinies_ever": total_shinies_ever,
+		"session_time_seconds": session_time_seconds,
+		"fish_inventory": fish_inventory, # Inventario completo
+		"game_start_date": game_start_date_string # Fecha inicio
+	}
+
+
+func apply_save_state(state: Dictionary) -> void:
+	coins = float(state.get("coins", 0.0))
+
+	var saved_levels: Dictionary = state.get("levels", {})
+	for k in saved_levels:
+		levels[k] = int(saved_levels[k])
+
+	var saved_unlocked: Dictionary = state.get("unlocked", {})
+	for k in saved_unlocked:
+		unlocked[k] = bool(saved_unlocked[k])
+
+	var saved_lifetime: Dictionary = state.get("lifetime_generated", {})
+	for k in saved_lifetime:
+		lifetime_generated[k] = float(saved_lifetime[k])
+
+	var saved_achievements: Dictionary = state.get("achievements_unlocked", {})
+	for k in saved_achievements:
+		achievements_unlocked[k] = bool(saved_achievements[k])
+
+	random_tick_unlocked = bool(state.get("random_tick_unlocked", false))
+	volume_slider_spam_unlocked = bool(state.get("volume_slider_spam_unlocked", false))
+	current_habitat = state.get("current_habitat", "habitat_1")
+
+	var saved_habitats = state.get("unlocked_habitats", ["habitat_1"])
+	unlocked_habitats.clear()
+	for h in saved_habitats:
+		unlocked_habitats.append(str(h))
+
+	# Restaurar aquarium_data y spawnear peces
+	var saved_aquarium: Dictionary = state.get("aquarium_data", {})
+	# Limpiar peces actuales en pantalla
+	for child in fish_layer.get_children():
+		child.queue_free()
+	# Resetear slots
+	for habitat_id in aquarium_data.keys():
+		var empty_slots = []
+		empty_slots.resize(aquarium_data[habitat_id].size())
+		empty_slots.fill(null)
+		aquarium_data[habitat_id] = empty_slots
+
+	# Restaurar slots y spawnear
+	for habitat_id in saved_aquarium.keys():
+		if not aquarium_data.has(habitat_id):
+			continue
+		var slots: Array = saved_aquarium[habitat_id]
+		for slot_index in slots.size():
+			var fish_id = slots[slot_index]
+			if fish_id == null or fish_id == "":
+				continue
+			aquarium_data[habitat_id][slot_index] = fish_id
+			_spawn_fish(fish_id, habitat_id, slot_index)
+	# Restaurar volumen del juego
+	if state.has("sound_volume"):
+		AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), state["sound_volume"])
+	
+	total_clicks = int(state.get("total_clicks", 0))
+	total_coins_earned = float(state.get("total_coins_earned", 0.0))
+	total_shinies_ever = int(state.get("total_shinies_ever", 0))
+	session_time_seconds = float(state.get("session_time_seconds", 0.0))
+	game_start_date_string = state.get("game_start_date", game_start_date_string)
+	
+	# Inventario e Inventario de Enciclopedia (vienen de 'unlocked')
+	fish_inventory = state.get("fish_inventory", {})
+
+	_update_cps()
+	_update_ui()
+	_actualizar_peces_desbloqueados_en_enciclopedia()
