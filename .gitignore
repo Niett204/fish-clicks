@@ -8,6 +8,9 @@
 # Import metadata
 .import/
 
+# Archivos generados
+*.import
+
 # Export config generada
 .export/
 export.cfg
