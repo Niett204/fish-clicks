@@ -575,13 +575,31 @@ func _on_modo_pecera_requested() -> void:
 
 	modo_pecera = !modo_pecera
 
+var arrastrando_pecera := false
+var drag_offset := Vector2i.ZERO
 func _input(event: InputEvent) -> void:
 	if not modo_pecera:
 		return
 
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed and event.double_click:
-			_on_modo_pecera_requested()
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			if event.double_click:
+				arrastrando_pecera = false
+				_on_modo_pecera_requested()
+				get_viewport().set_input_as_handled()
+				return
+
+			arrastrando_pecera = true
+			var mouse_pos := DisplayServer.mouse_get_position()
+			var window_pos := DisplayServer.window_get_position()
+			drag_offset = mouse_pos - window_pos
+		else:
+			arrastrando_pecera = false
+
+	elif event is InputEventMouseMotion and arrastrando_pecera:
+		var mouse_pos := DisplayServer.mouse_get_position()
+		var new_pos := mouse_pos - drag_offset
+		DisplayServer.window_set_position(new_pos)
 
 func toggle_stats_panel() -> void:
 	var will_open := not stats_panel.visible
