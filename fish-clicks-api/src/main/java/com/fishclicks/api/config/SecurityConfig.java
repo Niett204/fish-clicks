@@ -29,15 +29,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/auth/**", "/api/auth/**").permitAll()
-                        .requestMatchers("/test/**", "/api/test", "/error").permitAll()
-                        .requestMatchers("/enciclopedia/**").permitAll()
-                        .requestMatchers("/partida/**").permitAll()
+                        .requestMatchers("/enciclopedia/**").permitAll() // Enciclopedia pública
+                        .requestMatchers("/partida/**").authenticated() // SOLO partidas protegidas
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .formLogin(form -> form.disable())
-                .logout(logout -> logout.disable())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
