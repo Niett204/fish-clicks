@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://buvdg6kk8oju2"]
 
 [ext_resource type="Script" uid="uid://buyotjgv07gsh" path="res://scenes/profile_panel.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://bkva8pb62ymh5" path="res://assets/ui/pergamino.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://cq0j1orhhg43v" path="res://assets/ui/iconos/default_avatar.png" id="4"]
 
 [node name="ProfilePanel" type="Control" unique_id=1077186223]
 layout_mode = 3
@@ -12,31 +15,55 @@ grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("1")
 
+[node name="Backdrop" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5)
+mouse_filter = 0
+
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=1324192053]
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -220.0
-offset_top = -260.0
-offset_right = 220.0
-offset_bottom = 260.0
+offset_left = -230.0
+offset_top = -290.0
+offset_right = 230.0
+offset_bottom = 290.0
+
+[node name="BgPergamino" type="TextureRect" parent="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2")
+stretch_mode = 1
+mouse_filter = 2
 
 [node name="VBox" type="VBoxContainer" parent="PanelContainer" unique_id=718556616]
 layout_mode = 2
 
 [node name="TopBar" type="HBoxContainer" parent="PanelContainer/VBox" unique_id=279023752]
 layout_mode = 2
+theme_override_constants/separation = 0
 
 [node name="TitleLabel" type="Label" parent="PanelContainer/VBox/TopBar" unique_id=1857662755]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Fish Clicks"
+theme_override_font_sizes/font_size = 16
+text = "Mi Cuenta"
 
-[node name="BtnClose" type="Button" parent="PanelContainer/VBox/TopBar" unique_id=652982793]
+[node name="BtnClose" type="TextureButton" parent="PanelContainer/VBox/TopBar" unique_id=652982793]
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-text = "X"
+texture_normal = ExtResource("3")
+stretch_mode = 1
+ignore_texture_size = true
 
 [node name="HSeparator" type="HSeparator" parent="PanelContainer/VBox" unique_id=2108327115]
 layout_mode = 2
@@ -48,23 +75,36 @@ size_flags_vertical = 3
 
 [node name="MarginProfile" type="MarginContainer" parent="PanelContainer/VBox/ProfileView" unique_id=1131453356]
 layout_mode = 2
-theme_override_constants/margin_left = 16
+theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
+theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 16
 
 [node name="Fields" type="VBoxContainer" parent="PanelContainer/VBox/ProfileView/MarginProfile" unique_id=144979287]
 layout_mode = 2
 theme_override_constants/separation = 14
 
+[node name="PhotoFrame" type="CenterContainer" parent="PanelContainer/VBox/ProfileView/MarginProfile/Fields"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 80)
+
+[node name="UserPhoto" type="TextureRect" parent="PanelContainer/VBox/ProfileView/MarginProfile/Fields/PhotoFrame"]
+custom_minimum_size = Vector2(72, 72)
+layout_mode = 2
+texture = ExtResource("4")
+stretch_mode = 1
+expand_mode = 1
+
 [node name="NickLabel" type="Label" parent="PanelContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=30087857]
 layout_mode = 2
+horizontal_alignment = 1
 theme_override_font_sizes/font_size = 20
 text = "Hola, Capitan"
 
 [node name="EmailLabel" type="Label" parent="PanelContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=1823295719]
-modulate = Color(0.75, 0.75, 0.75, 1)
+modulate = Color(0.55, 0.35, 0.15, 1)
 layout_mode = 2
+horizontal_alignment = 1
 
 [node name="HSep2" type="HSeparator" parent="PanelContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=239562316]
 layout_mode = 2
@@ -120,7 +160,7 @@ secret = true
 [node name="BtnLogin" type="Button" parent="PanelContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=1207601606]
 custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
-text = "Entrar"
+text = "Iniciar sesion"
 
 [node name="ErrorLabel" type="Label" parent="PanelContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=1576834292]
 visible = false

@@ -1727,6 +1727,13 @@ func get_save_state() -> Dictionary:
 		"aquarium_data": aquarium_serialized,
 		"current_habitat": current_habitat,
 		"unlocked_habitats": unlocked_habitats,
+		"sound_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")), # Volumen
+		"total_clicks": total_clicks, # Stats
+		"total_coins_earned": total_coins_earned,
+		"total_shinies_ever": total_shinies_ever,
+		"session_time_seconds": session_time_seconds,
+		"fish_inventory": fish_inventory, # Inventario completo
+		"game_start_date": game_start_date_string # Fecha inicio
 	}
 
 
@@ -1781,6 +1788,19 @@ func apply_save_state(state: Dictionary) -> void:
 				continue
 			aquarium_data[habitat_id][slot_index] = fish_id
 			_spawn_fish(fish_id, habitat_id, slot_index)
+	# Restaurar volumen del juego
+	if state.has("sound_volume"):
+		AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), state["sound_volume"])
+	
+	total_clicks = int(state.get("total_clicks", 0))
+	total_coins_earned = float(state.get("total_coins_earned", 0.0))
+	total_shinies_ever = int(state.get("total_shinies_ever", 0))
+	session_time_seconds = float(state.get("session_time_seconds", 0.0))
+	game_start_date_string = state.get("game_start_date", game_start_date_string)
+	
+	# Inventario e Inventario de Enciclopedia (vienen de 'unlocked')
+	fish_inventory = state.get("fish_inventory", {})
 
 	_update_cps()
 	_update_ui()
+	_actualizar_peces_desbloqueados_en_enciclopedia()

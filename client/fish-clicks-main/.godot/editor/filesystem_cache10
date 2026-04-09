@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1775489421
+::res://::1775742832
 default_bus_layout.tres::AudioBusLayout::5175141858252273467::1775053673::0::1::::<><><>0<>0<><>::
 icon.svg::CompressedTexture2D::4334459046159358899::1773663169::1774460548::1::::<><><>0<>0<>3b53763b61da07aac68bd440df64e7d9<>res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex::
 QUICK_REFERENCE.md::TextFile::-1::1774886822::0::1::::<><><>0<>0<><>::
@@ -97,7 +97,7 @@ rufinus.png::CompressedTexture2D::8095354887782596479::1774886822::1774886822::1
 rufinus_shiny.png::CompressedTexture2D::3972747690184964904::1774886822::1774886822::1::::<><><>0<>0<>e233a0559b8f5cdcc0afe9cde09d91af<>res://.godot/imported/rufinus_shiny.png-0034b944e523e982b26a3e95631fda6c.ctex::
 sobrasada.png::CompressedTexture2D::563310522696041991::1774886822::1774886822::1::::<><><>0<>0<>2553fb071d520ea967d646e6c255724e<>res://.godot/imported/sobrasada.png-3cbb1dc7447b871d5cdf878b531ff819.ctex::
 sobrasada_shiny.png::CompressedTexture2D::2527976917688782032::1774886822::1774886822::1::::<><><>0<>0<>039775603eb75ebf4c7aa3c79b1281b8<>res://.godot/imported/sobrasada_shiny.png-07ef1c3806155326c7bd29d061b65e07.ctex::
-::res://assets/ui/::1774886822
+::res://assets/ui/::1775663196
 alga.png::CompressedTexture2D::1383717616511084576::1773663169::1773841725::1::::<><><>0<>0<>10cee48cd076f68b61b0844be8e177ae<>res://.godot/imported/alga.png-eb6cc19c7ea62864e5e50bb78d2840cc.ctex::
 bandera.png::CompressedTexture2D::2798178029518768192::1773663169::1773841725::1::::<><><>0<>0<>26c6f9e93117b0700fe8365f0a803087<>res://.godot/imported/bandera.png-ea02409f15eafcdd9dd594071fc4c5e0.ctex::
 botella_mensaje.png::CompressedTexture2D::6894167194537983068::1773663169::1773841725::1::::<><><>0<>0<>35dffd27d2df6d89e7295ed9f14cd60e<>res://.godot/imported/botella_mensaje.png-344e7e0f3e35de9f17d0eedede9349d1.ctex::
@@ -115,7 +115,8 @@ pergamino_v2.png::CompressedTexture2D::9000364744315472723::1774886822::17748868
 red.png::CompressedTexture2D::4410887765713084979::1773663169::1773841725::1::::<><><>0<>0<>6dbfa4b01945e1c77b83bdfca4ac552b<>res://.godot/imported/red.png-db11fd47679b5cefc40e003fef9b2219.ctex::
 tabla.png::CompressedTexture2D::3862074653884722790::1773663169::1773663169::1::::<><><>0<>0<>16ff62ac977c9979e2b68e6b179eeafc<>res://.godot/imported/tabla.png-78cca5d4246994159b9b449a6553aa3b.ctex::
 tabla_bloqueada (1).png::CompressedTexture2D::4058527631982719655::1773663169::1773663169::1::::<><><>0<>0<>8ed08a863de8b0cc6f5d665a2eb3bdca<>res://.godot/imported/tabla_bloqueada (1).png-70bfb31e33787c559a67627f079ab52a.ctex::
-::res://assets/ui/iconos/::1773841725
+::res://assets/ui/iconos/::1775664536
+default_avatar.png::::-1::1775663796::1775663196::0::::<><><>0<>0<>01f643e0215c36c8f1aaf555033f3e3d<>::
 icono_enciclopedia.png::CompressedTexture2D::1216506395675764001::1773663169::1773841724::1::::<><><>0<>0<>a7831b05687fd1a4c1a3bebe3f156d34<>res://.godot/imported/icono_enciclopedia.png-3b1fff781f61bede24fdbf9c7d09d662.ctex::
 icono_hud_abierto.png::CompressedTexture2D::6395950326738954924::1773663169::1773841724::1::::<><><>0<>0<>7b34578cbe597950184a9d3ced8167bb<>res://.godot/imported/icono_hud_abierto.png-e47e5b639540a5c49f09d1e5066817cc.ctex::
 icono_hud_cerrado.png::CompressedTexture2D::6279198314746490826::1773663169::1773841724::1::::<><><>0<>0<>08129f9967682077dcb57561e49b1b2f<>res://.godot/imported/icono_hud_cerrado.png-b7f7121b0acac225deda20671e53cd92.ctex::
@@ -146,10 +147,10 @@ tag_epico_vertical_OK.png::CompressedTexture2D::9196478362115957342::1774886822:
 tag_mitico_vertical_OK.png::CompressedTexture2D::1766558134134913451::1774886822::1774886822::1::::<><><>0<>0<>9ce940a388f92d91ffda7aec71c2e172<>res://.godot/imported/tag_mitico_vertical_OK.png-5068cafad421777f11f175d5aaae6b3d.ctex::
 tag_raro_vertical_OK.png::CompressedTexture2D::8835035921072980153::1774886822::1774886822::1::::<><><>0<>0<>325fd5af7f3db90e777fcb58d94d56c6<>res://.godot/imported/tag_raro_vertical_OK.png-c502f9b95c50cda24c8bea8155200c9e.ctex::
 tag_todos_vertical_OK.png::CompressedTexture2D::3809816956132476608::1774886822::1774886822::1::::<><><>0<>0<>c9f958a58f6012bc03e8637e1f254e51<>res://.godot/imported/tag_todos_vertical_OK.png-7d1e0fa18cea0b7c6c8546952ebe7e81.ctex::
-::res://autoload/::1775057841
-GlobalData.gd::GDScript::6014399345062669051::1775057841::0::1::::<>Node<><>0<>0<><>::
+::res://autoload/::1775662244
+GlobalData.gd::GDScript::6014399345062669051::1775662244::0::1::::<>Node<><>0<>0<><>::
 ProfilePanel.tscn::PackedScene::6217682312736833513::1774886822::0::1::::<><><>0<>0<><>::uid://buyotjgv07gsh::::res://scenes/profile_panel.gd
-::res://scenes/::1775057841
+::res://scenes/::1775663887
 achievement_popup.tscn::PackedScene::1163178130066562492::1774886822::0::1::::<><><>0<>0<><>::uid://mbi28w7xndb2::::res://scripts/achievement_popup.gd<>uid://cqv7wtdqhxnet::::res://assets/misc/estrella.png<>uid://blwqct8vf4mt8::::res://assets/fuentes/PirataOne-Regular.ttf<>uid://gsstlwiuecw6::::res://assets/ui/cruz.png<>uid://21q76o4ppybq::::res://assets/ui/iconos/icono_tienda.png
 aquarium_slot.gd::GDScript::1495602519401413876::1774886822::0::1::::<>Control<><>0<>0<><>::
 aquarium_slot.tscn::PackedScene::6757229998626384876::1774886822::0::1::::<><><>0<>0<><>::uid://vkqmcmkjhdvw::::res://scenes/aquarium_slot.gd<>uid://b1p22nyhnqr8j::::res://assets/ui/marco_mini.png<>uid://caccnasaooopc::::res://assets/peces/doblon.png
@@ -165,16 +166,16 @@ inventory_fish_item.gd::GDScript::6672780329597359802::1774886822::0::1::::<>Con
 inventory_fish_item.tscn::PackedScene::744361204773541187::1775053673::0::1::::<><><>0<>0<><>::uid://c2clym82mmddi::::res://scenes/inventory_fish_item.gd<>uid://x51b5gavkcn0::::res://assets/ui/inventario/bolsa_vacia.png<>uid://cwkva44xfvtk5::::res://assets/peces/espuma_shiny.png<>uid://blwqct8vf4mt8::::res://assets/fuentes/PirataOne-Regular.ttf<>uid://cj331k70flp0l::::res://assets/misc/brillito.png
 inventory_shelf_row.gd::GDScript::7187637619322368364::1774886822::0::1::::<>Control<><>0<>0<><>::
 inventory_shelf_row.tscn::PackedScene::1778592953547804166::1774886822::0::1::::<><><>0<>0<><>::uid://di3gqgp5im78d::::res://assets/ui/inventario/estanteria_estante_individual.png<>uid://dan0luy4veobc::::res://scenes/inventory_shelf_row.gd
-main.gd::GDScript::6350592959997628172::1775055014::0::1::::<>Node2D<><>0<>0<><>::
+main.gd::GDScript::6350592959997628172::1775661850::0::1::::<>Node2D<><>0<>0<><>::
 main.tscn::PackedScene::4006248464096596907::1775053673::0::1::::<><><>0<>0<><>::uid://cwqjlq8k1q0ls::::res://scenes/main.gd<>uid://cr5yogl8hvnw3::::res://assets/fondos/fondo1.png<>uid://ubk2btwo8ltc::::res://scenes/pez.tscn<>uid://dinpoywkt4vsq::::res://scenes/FloatingText.tscn<>uid://cw3knghd0miub::::res://scenes/cofre.gd<>uid://cfhhda8qg0bq0::::res://scenes/ShopItemCard.tscn<>uid://bir4t2kdhw4h::::res://assets/estructuras/cofre_abierto_lleno_arena.png<>uid://ccemaw6j4o3sr::::res://assets/estructuras/tronco/tronco_medium.png<>uid://di0p043eru4vj::::res://assets/ui/iconos/icono_perfil.png<>uid://d2n7cjqtpenpj::::res://assets/estructuras/tronco/tronco_small.png<>uid://dl0sgr2smpium::::res://scenes/info_extra_panel.gd<>uid://b3uv5xy6xfk8r::::res://assets/estructuras/vallisneria/vallisneria_large.png<>uid://bapfvmfpgbe7p::::res://assets/ui/iconos/icono_opciones.png<>uid://casqwt2ogwyax::::res://assets/ui/iconos/icono_stats.png<>uid://bdp4yakc85yet::::res://assets/ui/iconos/icono_inventario.png<>uid://rljxhda6odwj::::res://assets/ui/iconos/icono_enciclopedia.png<>uid://21q76o4ppybq::::res://assets/ui/iconos/icono_tienda.png<>uid://b33wxaxja8jx0::::res://assets/ui/red.png<>uid://c5ht6q767emx5::::res://assets/ui/botella_mensaje.png<>uid://cn5n3a2h1n5m3::::res://assets/misc/doblon_frontal.png<>uid://blwqct8vf4mt8::::res://assets/fuentes/PirataOne-Regular.ttf<>uid://tyjvk13keej5::::res://assets/ui/alga.png<>uid://bf4pt3ldg3d0c::::res://assets/ui/bandera.png<>uid://cxeimq0em71f1::::res://assets/ui/iconos/icono_hud_abierto.png<>uid://d4kjqemcayt4t::::res://scenes/inventario.tscn<>uid://cbbihh5ocgssr::::res://scenes/options_panel.tscn<>uid://crojbj03flfr6::::res://scenes/UI/encyclopedia_panel.tscn<>uid://csohusujfqgej::::res://scenes/stats_panel.tscn<>uid://dq5rdt0gb7n50::::res://scenes/options_panel.gd<>uid://buvdg6kk8oju2::::res://scenes/ProfilePanel.tscn
 options_panel.gd::GDScript::8345253465007344985::1775054847::0::1::::<>Control<><>0<>0<><>::
-options_panel.tscn::PackedScene::4845593239924369613::1775057841::0::1::::<><><>0<>0<><>::uid://bkva8pb62ymh5::::res://assets/ui/pergamino.png<>uid://gsstlwiuecw6::::res://assets/ui/cruz.png<>uid://6rnifsb2i5ph::::res://assets/ui/marco_small.png<>uid://dppop12h3li5s::::res://assets/audio/peces/bubble.WAV
+options_panel.tscn::PackedScene::4845593239924369613::1775663371::0::1::::<><><>0<>0<><>::uid://bkva8pb62ymh5::::res://assets/ui/pergamino.png<>uid://gsstlwiuecw6::::res://assets/ui/cruz.png<>uid://6rnifsb2i5ph::::res://assets/ui/marco_small.png<>uid://dppop12h3li5s::::res://assets/audio/peces/bubble.WAV
 pez.gd::GDScript::8061017105763768285::1775053673::0::1::::<>Node2D<><>0<>0<><>::
 pez.tscn::PackedScene::1406496719772036764::1775053673::0::1::::<><><>0<>0<><>::uid://dm321k0nr5kgj::::res://scenes/pez.gd<>uid://caccnasaooopc::::res://assets/peces/doblon.png<>uid://beb5anfo063oc::::res://assets/misc/burbuja.png<>uid://cj331k70flp0l::::res://assets/misc/brillito.png<>uid://dppop12h3li5s::::res://assets/audio/peces/bubble.WAV<>uid://ckbwndrth6d4d::::res://assets/audio/peces/splash.WAV
 ProfilePanel1.tscn::PackedScene::5406928947455804773::1774887589::0::1::::<><><>0<>0<><>::uid://buyotjgv07gsh::::res://scenes/profile_panel.gd
-ProfilePanel.tscn::PackedScene::3833743999201646119::1774888780::0::1::::<><><>0<>0<><>::uid://buyotjgv07gsh::::res://scenes/profile_panel.gd
+ProfilePanel.tscn::PackedScene::3833743999201646119::1775663887::0::1::::<><><>0<>0<><>::uid://buyotjgv07gsh::::res://scenes/profile_panel.gd<>uid://bkva8pb62ymh5::::res://assets/ui/pergamino.png<>uid://gsstlwiuecw6::::res://assets/ui/cruz.png<>uid://cq0j1orhhg43v::::res://assets/ui/iconos/default_avatar.png
 profile_button.gd::GDScript::8903592763597250388::1774886822::0::1::::<>TextureButton<><>0<>0<><>::
-profile_panel.gd::GDScript::3840627073501902259::1775053673::0::1::::<>Control<><>0<>0<><>::
+profile_panel.gd::GDScript::3840627073501902259::1775663371::0::1::::<>Control<><>0<>0<><>::
 profile_panel.tscn::PackedScene::403971550234277860::1774887589::0::1::::<><><>0<>0<><>::
 ShopItemCard.tscn::PackedScene::5138666657900377253::1774886822::0::1::::<><><>0<>0<><>::uid://bk086nx0y3smj::::res://scenes/shop_item_card.gd<>uid://bva22m6ipd063::::res://assets/ui/tabla.png<>uid://bx28me4bvwn16::::res://assets/ui/tabla_bloqueada (1).png<>uid://blwqct8vf4mt8::::res://assets/fuentes/PirataOne-Regular.ttf<>uid://cn5n3a2h1n5m3::::res://assets/misc/doblon_frontal.png<>uid://cf7g5pe7ahpss::::res://assets/estructuras/anubia/anubia_mini.png
 shop_item_card.gd::GDScript::3141978303800397225::1774886822::0::1::::<>Button<><>0<>0<><>::

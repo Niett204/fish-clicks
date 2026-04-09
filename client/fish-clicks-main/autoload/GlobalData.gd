@@ -96,7 +96,13 @@ func _on_login_done(result, code: int, _headers, body: PackedByteArray, http: HT
 	var data = JSON.parse_string(body.get_string_from_utf8())
 
 	if result == HTTPRequest.RESULT_SUCCESS and code == 200 and data is Dictionary:
-		set_user_session(data.get("token", ""), data.get("userId", ""), nickname)
+		set_user_session(
+			data.get("token", ""), 
+			data.get("userId", ""), 
+			data.get("nickname", nickname),
+			data.get("email", ""),
+			data.get("foto", "")
+		)
 		login_success.emit(data)
 	else:
 		var msg := _build_error_message(result, code, body, "No se pudo iniciar sesion")
@@ -129,10 +135,14 @@ func _on_register_done(result, code: int, _headers, body: PackedByteArray, http:
 
 
 # ── Sesión ──────────────────────────────────────────
-func set_user_session(token: String, uid: String, nickname: String) -> void:
+var user_photo_url: String = ""
+
+func set_user_session(token: String, uid: String, nickname: String, email: String, photo: String) -> void:
 	user_token    = token
 	user_id       = uid
 	user_nickname = nickname
+	user_email    = email
+	user_photo_url = photo # Asegúrate de tener esta variable declarada arriba
 	is_logged_in  = true
 	_save_session()
 
@@ -155,7 +165,8 @@ func _save_session() -> void:
 			"token":    user_token,
 			"user_id":  user_id,
 			"email":    user_email,
-			"nickname": user_nickname
+			"nickname": user_nickname,
+			"photo":    user_photo_url # Guardamos la foto en el disco
 		})
 
 func _load_session() -> void:
@@ -166,8 +177,9 @@ func _load_session() -> void:
 			if d and d.has("token") and not d["token"].is_empty():
 				user_token    = d.get("token",    "")
 				user_id       = d.get("user_id",  "")
-				user_email    = d.get("email",     "")
-				user_nickname = d.get("nickname",  "")
+				user_email    = d.get("email",    "")
+				user_nickname = d.get("nickname", "")
+				user_photo_url = d.get("photo",    "") # Cargamos la foto guardada
 				is_logged_in  = true
 
 
