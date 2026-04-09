@@ -8,8 +8,8 @@ var user_nickname: String = ""
 var is_logged_in: bool = false
 
 const SESSION_FILE = "user://fish_clicks_session.save"
-#const BASE_URL = "http://127.0.0.1:8080"
-const BASE_URL = "https://fish-clicks.onrender.com"
+const BASE_URL = "http://127.0.0.1:8080"
+#const BASE_URL = "https://fish-clicks.onrender.com"
 
 signal login_success(data: Dictionary)
 signal login_failed(error: String)
@@ -97,6 +97,9 @@ func _on_login_done(result, code: int, _headers, body: PackedByteArray, http: HT
 	var data = JSON.parse_string(body.get_string_from_utf8())
 
 	if result == HTTPRequest.RESULT_SUCCESS and code == 200 and data is Dictionary:
+		if get_tree().has_group("main"):
+			get_tree().call_group("main", "reset_local_state")
+		
 		set_user_session(
 			data.get("token", ""), 
 			data.get("userId", ""), 
@@ -105,6 +108,7 @@ func _on_login_done(result, code: int, _headers, body: PackedByteArray, http: HT
 			data.get("foto", "")
 		)
 		login_success.emit(data)
+		load_game()
 	else:
 		var msg := _build_error_message(result, code, body, "No se pudo iniciar sesion")
 		login_failed.emit(msg)

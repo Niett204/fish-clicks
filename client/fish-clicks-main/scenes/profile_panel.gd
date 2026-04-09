@@ -169,6 +169,8 @@ func _on_register_err(err: String) -> void:
 func _do_logout() -> void:
 	GlobalData.clear_session()
 	_refresh_view()
+	if get_tree().has_group("main"):
+		get_tree().call_group("main", "reset_local_state")
 
 # ── Utilidades ─────────────────────────────────────────────────────────────
 func _show_err(lbl: Label, msg: String) -> void:
