@@ -425,16 +425,12 @@ func _ready() -> void:
 	shop_panel.position.x = shop_x_closed
 	shop_panel.visible = true
 	shop_open = false
-<<<<<<< HEAD
-		
-=======
 	
 	# Guardado
 	GlobalData.load_success.connect(apply_save_state)
 	GlobalData.load_game()  # intenta cargar al arrancar si hay sesión
 	add_to_group("main")
 
->>>>>>> feature/fotoPerfil
 # Función para reproducir el sonido
 func play_ui_sfx(stream: AudioStream) -> void:
 	if stream == null:
@@ -1800,6 +1796,7 @@ func get_save_state() -> Dictionary:
 		aquarium_serialized[habitat_id] = slots
 
 	return {
+		"user_photo": GlobalData.user_photo_url,
 		"coins": coins,
 		"levels": levels,
 		"unlocked": unlocked,
@@ -1874,6 +1871,10 @@ func apply_save_state(state: Dictionary) -> void:
 	# Restaurar volumen del juego
 	if state.has("sound_volume"):
 		AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), state["sound_volume"])
+		
+	#Restaurar foto de perfil
+	if state.has("user_photo"):
+		GlobalData.user_photo_url = state["user_photo"]
 	
 	total_clicks = int(state.get("total_clicks", 0))
 	total_coins_earned = float(state.get("total_coins_earned", 0.0))

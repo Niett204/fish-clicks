@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://buvdg6kk8oju2"]
 
 [ext_resource type="Script" uid="uid://buyotjgv07gsh" path="res://scenes/profile_panel.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://bkva8pb62ymh5" path="res://assets/ui/pergamino.png" id="2"]
-[ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://c5o7gnhwf4utp" path="res://assets/ui/pergamino.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://4js67mc3pou0" path="res://assets/ui/cruz.png" id="3"]
 [ext_resource type="Texture2D" uid="uid://cq0j1orhhg43v" path="res://assets/ui/iconos/default_avatar.png" id="4"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ok5j1"]
@@ -86,6 +86,7 @@ layout_mode = 2
 [node name="UserPhoto" type="TextureRect" parent="PanelContainer/VBox/ProfileView/MarginProfile/Fields/PhotoFrame" unique_id=1558652004]
 custom_minimum_size = Vector2(72, 72)
 layout_mode = 2
+mouse_filter = 0
 texture = ExtResource("4")
 expand_mode = 1
 stretch_mode = 5
@@ -233,3 +234,8 @@ visible = false
 modulate = Color(0.35, 1, 0.35, 1)
 layout_mode = 2
 autowrap_mode = 3
+
+[node name="AvatarDialog" type="FileDialog" parent="." unique_id=2107093434]
+title = "Open a File"
+file_mode = 0
+access = 2

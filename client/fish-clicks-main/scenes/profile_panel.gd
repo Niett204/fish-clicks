@@ -30,6 +30,9 @@ signal close_requested
 # Común (Botón cerrar - ahora con cruz.jpg)
 @onready var btn_close: TextureButton = $PanelContainer/VBox/TopBar/BtnClose
 
+# Cambio de foto de perfil
+@onready var avatar_dialog: FileDialog = $AvatarDialog
+
 var default_avatar = load("res://assets/ui/iconos/default_avatar.png")
 func _ready() -> void:
 	GlobalData.login_success.connect(_on_login_ok)
@@ -53,6 +56,12 @@ func _ready() -> void:
 	pass_field.text_submitted.connect(func(_t): _do_login())
 	reg_confirm.text_submitted.connect(func(_t): _do_register())
 	hide()
+	
+	user_photo.mouse_entered.connect(_on_photo_hover.bind(true))
+	user_photo.mouse_exited.connect(_on_photo_hover.bind(false))
+	user_photo.gui_input.connect(_on_photo_gui_input)
+	
+	avatar_dialog.file_selected.connect(_on_avatar_file_selected)
 
 # ── Abrir / cerrar ─────────────────────────────────────────────────────────
 func toggle() -> void:
@@ -88,7 +97,14 @@ func _load_user_photo(photo_url: String) -> void:
 		user_photo.texture = default_avatar
 		return
 	
-	if photo_url.begins_with("res://"):
+	# Si la foto es un string de Base64 (empieza por "data:image")
+	if photo_url.begins_with("data:image"):
+		var base64_part = photo_url.split(",")[1]
+		var buffer = Marshalls.base64_to_raw(base64_part)
+		var img = Image.new()
+		img.load_png_from_buffer(buffer)
+		user_photo.texture = ImageTexture.create_from_image(img)
+	elif photo_url.begins_with("res://"):
 		user_photo.texture = load(photo_url)
 	elif photo_url.begins_with("http"):
 		_download_external_image(photo_url)
@@ -178,3 +194,37 @@ func _show_err(lbl: Label, msg: String) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if visible and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		_close()
+
+# Cambia el tono de la foto a gris al pasar el ratón
+func _on_photo_hover(is_hover: bool) -> void:
+	if is_hover and GlobalData.is_logged_in:
+		user_photo.modulate = Color(0.7, 0.7, 0.7) # Filtro gris
+	else:
+		user_photo.modulate = Color(1, 1, 1) # Normal
+
+# Detecta el clic en la foto
+func _on_photo_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if GlobalData.is_logged_in:
+			avatar_dialog.popup_centered_ratio(0.5) # Abre la ventana
+
+# Procesa la imagen elegida
+func _on_avatar_file_selected(path: String) -> void:
+	var img = Image.load_from_file(path)
+	if img:
+		# IMPORTANTE: Ajustar tamaño para que quepa en la base de datos
+		img.resize(256, 256, Image.INTERPOLATE_LANCZOS)
+		
+		# Convertir a Base64 (Texto) para mandarlo al servidor
+		var buffer = img.save_png_to_buffer()
+		var base64_str = Marshalls.raw_to_base64(buffer)
+		var final_data = "data:image/png;base64," + base64_str
+		
+		# Actualizar visualmente
+		user_photo.texture = ImageTexture.create_from_image(img)
+		
+		# Guardar en la base de datos a través de GlobalData
+		GlobalData.user_photo_url = final_data
+		
+		# Opcional: Si tienes una función para guardar la partida, llámala aquí
+		# get_tree().call_group("main", "save_game_state")
