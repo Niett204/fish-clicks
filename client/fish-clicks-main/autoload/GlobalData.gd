@@ -156,6 +156,7 @@ func clear_session() -> void:
 	user_id       = ""
 	user_email    = ""
 	user_nickname = ""
+	user_photo_url = ""
 	is_logged_in  = false
 	if FileAccess.file_exists(SESSION_FILE):
 		DirAccess.remove_absolute(SESSION_FILE)

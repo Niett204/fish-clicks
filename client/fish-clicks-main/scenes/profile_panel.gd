@@ -198,6 +198,7 @@ func _on_register_err(err: String) -> void:
 func _do_logout() -> void:
 	GlobalData.clear_session()
 	_refresh_view()
+	get_tree().call_group("main_hud_buttons", "update_avatar")
 	if get_tree().has_group("main"):
 		get_tree().call_group("main", "reset_local_state")
 

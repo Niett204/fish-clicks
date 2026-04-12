@@ -1,6 +1,7 @@
 package com.fishclicks.api.config;
 
 import com.fishclicks.api.filter.JwtFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,10 +28,20 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
+                // --- NUEVO: Manejo de excepciones de entrada ---
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            // Solo enviamos error si el controlador no ha enviado ya una respuesta
+                            if (!response.isCommitted()) {
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No autorizado");
+                            }
+                        })
+                )
+                // -----------------------------------------------
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/auth/**", "/api/auth/**").permitAll()
-                        .requestMatchers("/enciclopedia/**").permitAll() // Enciclopedia pública
-                        .requestMatchers("/partida/**").authenticated() // SOLO partidas protegidas
+                        .requestMatchers("/enciclopedia/**").permitAll()
+                        .requestMatchers("/partida/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -46,10 +57,9 @@ public class SecurityConfig {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(false);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }
-

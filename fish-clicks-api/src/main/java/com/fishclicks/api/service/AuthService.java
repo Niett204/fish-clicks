@@ -33,20 +33,16 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Identificador y password son obligatorios");
         }
 
-        // Permite iniciar sesión con nickname o email.
+        // Buscamos al usuario
         User user = userRepository.findByNicknameIgnoreCaseOrEmailIgnoreCase(normalizedIdentifier, normalizedIdentifier)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas"));
 
-        // Obtener la contraseña activa del usuario
         Password activePassword = user.getActivePassword();
-        
-        if (activePassword == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario sin contraseña activa");
-        }
 
-        // Validar contraseña (TODO: implementar BCrypt en el futuro)
-        if (!activePassword.getPasswordHash().equals(password)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Contraseña incorrecta");
+        // Validar contraseña
+        // Si no hay password activa o no coincide, lanzamos el MISMO error
+        if (activePassword == null || !activePassword.getPasswordHash().equals(password)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas");
         }
 
         // Generar JWT token
