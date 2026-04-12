@@ -1,17 +1,26 @@
 extends Node2D
+# ------------------- NODOS DE SERVICIO -------------------
+@onready var http_request: HTTPRequest = $HTTPRequest
 
-const ENCYCLOPEDIA_FISH_IDS := {
-	"doblon": 1,
-	"sobrasada": 2,
-	"espuma": 3,
-	"rufinus": 4,
-}
+# ------------------- DATA -------------------
+const ItemData = preload("res://scripts/data/item_data.gd")
+const FishData = preload("res://scripts/data/fish_data.gd")
+const HabitatData = preload("res://scripts/data/habitat_data.gd")
+const EncyclopediaData = preload("res://scripts/data/encyclopedia_data.gd")
 
+const ENCYCLOPEDIA_FISH_IDS = EncyclopediaData.ENCYCLOPEDIA_FISH_IDS
+const ITEMS = ItemData.ITEMS
+const HABITATS = HabitatData.HABITATS
+var fish_defs = FishData.FISH_DEFS.duplicate(true)
+
+# ------------------- EXPORTED -------------------
 @export var floating_text_scene: PackedScene
 @export var fish_scene: PackedScene
 @export var dps_per_fish: float = 1.0
 @export var shop_item_card_scene: PackedScene
 
+# ------------------- NODOS UI -------------------
+@onready var pecera_blocker: Control = $UI/Root/PeceraBlocker
 @onready var top_bar: Control = $UI/Root/HUD/TopBar
 @onready var shop_panel: Control = $UI/Root/HUD/TiendaPanel
 @onready var btn_shop_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnShop
@@ -21,149 +30,60 @@ const ENCYCLOPEDIA_FISH_IDS := {
 @onready var btn_inventory_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnInventory
 @onready var options_panel: Control = $UI/Root/HUD/OptionsPannel
 @onready var btn_options_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnOptions
-@onready var pecera_blocker: Control = $UI/Root/PeceraBlocker
 @onready var btn_stats_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnStats
-@onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
+@onready var btn_profile_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnProfile
+@onready var btn_hide: TextureButton = $UI/Root/BtnHideHUD
+@onready var hud: Control = $UI/Root/HUD
+@onready var ui_root: Control = $UI/Root
+@onready var info_panel: Control = $UI/Root/HUD/InfoExtraPanel
 @onready var left_info_panel: Control = $UI/Root/HUD/LeftInfoPanel
-@onready var chest: Area2D = $Cofre
-@onready var chest_sprite: Sprite2D = $Cofre/Sprite2D
-@onready var fish_layer = $PecesLayer
-@onready var dps_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer2/DpsLabel
-@onready var unidades_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/UnidadesLabel
+@onready var profile_panel: Control = $UI/Root/HUD/ProfilePanel
+@onready var stats_panel: Control = $UI/Root/HUD/StatsPanel
 @onready var tab_container: TabContainer = $UI/Root/HUD/TiendaPanel/TabContainer
 @onready var list_peces: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer/ListPeces
 @onready var list_estructuras: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Estructuras/ScrollContainer/ListEstructuras
-@onready var info_panel: Control = $UI/Root/HUD/InfoExtraPanel
-@onready var profile_panel: Control = $UI/Root/HUD/ProfilePanel
-@onready var btn_profile_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnProfile
-@onready var ui_root: Control = $UI/Root
-@onready var hud: Control = $UI/Root/HUD
-@onready var btn_hide: TextureButton = $UI/Root/BtnHideHUD
-@onready var http_request: HTTPRequest = $HTTPRequest
+@onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
+@onready var dps_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer2/DpsLabel
+@onready var unidades_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/UnidadesLabel
+
+# ------------------- NODOS DE MUNDO -------------------
+@onready var chest: Area2D = $Cofre
+@onready var chest_sprite: Sprite2D = $Cofre/Sprite2D
+@onready var fish_layer = $PecesLayer
 @onready var vallisneria: Sprite2D = $EstructurasLayer/Vallisneria
-@onready var stats_panel: Control = $UI/Root/HUD/StatsPanel
 @onready var anubia: Sprite2D = $EstructurasLayer/Anubia
 @onready var tronco_1: Sprite2D = $EstructurasLayer/Tronco
 @onready var tronco_2: Sprite2D = $EstructurasLayer/Tronco2
 @onready var tronco_3: Sprite2D = $EstructurasLayer/Tronco3
 
+# ------------------- AUDIO -------------------
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
 @onready var ui_sfx_player: AudioStreamPlayer = $UiSfxPlayer
 
-# Audios 
 const SFX_ICON_OPEN := preload("res://assets/audio/UI/abrir_icono.wav")
 const SFX_ICON_CLOSE := preload("res://assets/audio/UI/cerrar_icono.wav")
-const SFX_COFRE_CLICK:= preload("res://assets/audio/UI/pulsar_cofre.wav")
-const SFX_BUY_ITEM:= preload("res://assets/audio/UI/comprar.wav")
-const SFX_SHINY:= preload("res://assets/audio/UI/shiny.wav")
-const SFX_CAMBIAR_TAB:= preload("res://assets/audio/UI/cambiar_tab.wav")
+const SFX_COFRE_CLICK := preload("res://assets/audio/UI/pulsar_cofre.wav")
+const SFX_BUY_ITEM := preload("res://assets/audio/UI/comprar.wav")
+const SFX_SHINY := preload("res://assets/audio/UI/shiny.wav")
+const SFX_CAMBIAR_TAB := preload("res://assets/audio/UI/cambiar_tab.wav")
 
-############################################################################
+# ------------------- ASSETS VISUALES -------------------
+const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado_arena.png")
+const TEX_CHEST_EMPTY := preload("res://assets/estructuras/cofre_abierto_vacio_arena.png")
+const TEX_CHEST_MID := preload("res://assets/estructuras/cofre_abierto_medio_arena.png")
+const TEX_CHEST_FULL := preload("res://assets/estructuras/cofre_abierto_lleno_arena.png")
+const TEX_ALGAS_0 := preload("res://assets/estructuras/vallisneria/vallisneria_mini.png")
+const TEX_ALGAS_1 := preload("res://assets/estructuras/vallisneria/vallisneria_small.png")
+const TEX_ALGAS_2 := preload("res://assets/estructuras/vallisneria/vallisneria_medium.png")
+const TEX_ALGAS_3 := preload("res://assets/estructuras/vallisneria/vallisneria_large.png")
+const TEX_ANUBIA_0 := preload("res://assets/estructuras/anubia/anubia_mini.png")
+const TEX_ANUBIA_1 := preload("res://assets/estructuras/anubia/anubia_small.png")
+const TEX_ANUBIA_2 := preload("res://assets/estructuras/anubia/anubia_medium.png")
+const TEX_ANUBIA_3 := preload("res://assets/estructuras/anubia/anubia_large.png")
+const ICON_HIDE = preload("res://assets/ui/iconos/icono_hud_abierto.png")
+const ICON_SHOW = preload("res://assets/ui/iconos/icono_hud_cerrado.png")
 
-const ITEMS := {
-	"doblon": {
-		"tab": "Peces",
-		"title": "Doblon",
-		"icon": "res://assets/peces/doblon.png",
-		"unlock_price": 10,
-		"kind": "passive",
-		"base_price": 40.0,
-		"price_growth": 1.28,
-		"base_value": 1.0,
-		"value_label": "DPS"
-	},
-	"sobrasada": {
-		"tab": "Peces",
-		"title": "Sobrasada",
-		"icon": "res://assets/peces/sobrasada.png",
-		"unlock_price": 250,
-		"kind": "passive",
-		"base_price": 220.0,
-		"price_growth": 1.30,
-		"base_value": 4.0,
-		"value_label": "DPS"
-	},
-	"espuma": {
-		"tab": "Peces",
-		"title": "Espuma",
-		"icon": "res://assets/peces/espuma.png",
-		"unlock_price": 1200,
-		"kind": "passive",
-		"base_price": 900.0,
-		"price_growth": 1.32,
-		"base_value": 12.0,
-		"value_label": "DPS"
-	},
-	"rufinus": {
-		"tab": "Peces",
-		"title": "Rufinus",
-		"icon": "res://assets/peces/rufinus.png",
-		"unlock_price": 5000,
-		"kind": "passive",
-		"base_price": 3500.0,
-		"price_growth": 1.35,
-		"base_value": 35.0,
-		"value_label": "DPS"
-	},
-
-	"cofre": {
-		"tab": "Estructuras",
-		"title": "Cofre",
-		"icon": "res://assets/estructuras/cofre_cerrado.png",
-		"unlock_price": 0,
-		"kind": "click",
-		"base_price": 20.0,
-		"price_growth": 1.10,
-		"base_value": 0.75,
-		"value_label": "clicks"
-	},
-	"vallisneria": {
-		"tab": "Estructuras",
-		"title": "Vallisneria",
-		"icon": "res://assets/estructuras/vallisneria/vallisneria_mini.png",
-		"unlock_price": 500,
-		"kind": "passive",
-		"base_price": 180.0,
-		"price_growth": 1.14,
-		"base_value": 6.0,
-		"value_label": "DPS"
-	},
-	"tronco": {
-		"tab": "Estructuras",
-		"title": "Tronco",
-		"icon": "res://assets/estructuras/tronco/tronco_mini.png",
-		"unlock_price": 800,
-		"kind": "passive",
-		"base_price": 250.0,
-		"price_growth": 1.15,
-		"base_value": 8.0,
-		"value_label": "DPS"
-	},
-	"anubia": {
-		"tab": "Estructuras",
-		"title": "Anubia",
-		"icon": "res://assets/estructuras/anubia/anubia_mini.png",
-		"unlock_price": 1200,
-		"kind": "passive",
-		"base_price": 400.0,
-		"price_growth": 1.16,
-		"base_value": 12.0,
-		"value_label": "DPS"
-	},
-}
-
-############################################################################
-const HABITATS := {
-	"habitat_1": {
-		"name": "Acuario",
-		"background": preload("res://assets/fondos/fondo1.png")
-	},
-	"habitat_2": {
-		"name": "Vacío",
-		"background": preload("res://assets/fondos/fondo2.png")
-	}
-}
-
+# ------------------- ESTADO DEL JUEGO -------------------
 var unlocked_habitats: Array[String] = ["habitat_1", "habitat_2"]
 var current_habitat: String = "habitat_1"
 var inventory_habitat: String = "habitat_1"
@@ -172,49 +92,10 @@ var aquarium_data := {
 	"habitat_1": [null, null, null, null, null, null, null, null, null, null],
 	"habitat_2": [null, null, null, null, null, null, null, null, null, null]
 }
-
 var fish_inventory := {}
 
-var fish_defs := {
-	"doblon": {
-		"name": "Doblon",
-		"icon": preload("res://assets/peces/doblon.png")
-	},
-	"doblon_shiny": {
-		"name": "Doblon",
-		"icon": preload("res://assets/peces/doblon_shiny.png")
-	},
-
-	"sobrasada": {
-		"name": "Sobrasada",
-		"icon": preload("res://assets/peces/sobrasada.png")
-	},
-	"sobrasada_shiny": {
-		"name": "Sobrasada",
-		"icon": preload("res://assets/peces/sobrasada_shiny.png")
-	},
-
-	"espuma": {
-		"name": "Espuma",
-		"icon": preload("res://assets/peces/espuma.png")
-	},
-	"espuma_shiny": {
-		"name": "Espuma",
-		"icon": preload("res://assets/peces/espuma_shiny.png")
-	},
-	
-	"rufinus": {
-		"name": "Rufinus",
-		"icon": preload("res://assets/peces/rufinus.png")
-	},
-	"rufinus_shiny": {
-		"name": "Rufinus",
-		"icon": preload("res://assets/peces/rufinus_shiny.png")
-	},
-}
-
-############################################################################
-
+var unlocked: Dictionary = {}
+var levels: Dictionary = {}
 var lifetime_generated: Dictionary = {
 	"doblon": 0.0,
 	"sobrasada": 0.0,
@@ -224,45 +105,27 @@ var lifetime_generated: Dictionary = {
 	"vallisneria": 0.0
 }
 
-const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado_arena.png")
-const TEX_CHEST_EMPTY  := preload("res://assets/estructuras/cofre_abierto_vacio_arena.png")
-const TEX_CHEST_MID    := preload("res://assets/estructuras/cofre_abierto_medio_arena.png")
-const TEX_CHEST_FULL   := preload("res://assets/estructuras/cofre_abierto_lleno_arena.png")
-const TEX_ALGAS_0 := preload("res://assets/estructuras/vallisneria/vallisneria_mini.png")
-const TEX_ALGAS_1 := preload("res://assets/estructuras/vallisneria/vallisneria_small.png")
-const TEX_ALGAS_2 := preload("res://assets/estructuras/vallisneria/vallisneria_medium.png")
-const TEX_ALGAS_3 := preload("res://assets/estructuras/vallisneria/vallisneria_large.png")
-const TEX_ANUBIA_0 := preload("res://assets/estructuras/anubia/anubia_mini.png")
-const TEX_ANUBIA_1 := preload("res://assets/estructuras/anubia/anubia_small.png")
-const TEX_ANUBIA_2 := preload("res://assets/estructuras/anubia/anubia_medium.png")
-const TEX_ANUBIA_3 := preload("res://assets/estructuras/anubia/anubia_large.png")
-
-const ICON_HIDE = preload("res://assets/ui/iconos/icono_hud_abierto.png")
-const ICON_SHOW = preload("res://assets/ui/iconos/icono_hud_cerrado.png")
-
-var unlocked: Dictionary = {}  # id -> bool
-var levels: Dictionary = {}
 var total_clicks: int = 0
 var session_time_seconds: float = 0.0
 var game_start_date_string: String = ""
-
 var dps: float = 0.0
 var coins: float = 10000000.0
 var total_coins_earned: float = 0.0
 var click_power: int = 1
-var chest_base_scale: Vector2
+var hud_visible := true
 var shop_open := false
 var shop_tween: Tween
 var shop_x_open: float
 var shop_x_closed: float
 
-var hud_visible := true
-
+# ------------------- ESTADO VISUAL -------------------
+var chest_base_scale: Vector2
 var vallisneria_ground_y: float = 0.0
 var anubia_ground_y: float = 0.0
 var vallisneria_base_scale: Vector2
 var anubia_base_scale: Vector2
 
+# ------------------- MANAGERS -------------------
 const UiManagerScript = preload("res://scripts/main/ui_manager.gd")
 var ui_manager: UiManager
 
@@ -284,6 +147,9 @@ var aquarium_manager: AquariumManager
 const ShopManagerScript = preload("res://scripts/main/shop_manager.gd")
 var shop_manager: ShopManager
 
+# ------------------- FUNCIONES -------------------
+
+# --------- De Ciclo de Vida ---------
 func _ready() -> void:
 	
 	ui_manager = UiManagerScript.new()
@@ -454,44 +320,6 @@ func _ready() -> void:
 	# Añadimos al grupo al final
 	add_to_group("main")
 
-@warning_ignore("unused_parameter")
-func _on_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-	@warning_ignore("unused_variable")
-	var i: int;
-
-func _input(event: InputEvent) -> void:
-	fish_mode_manager.handle_input(event)
-		
-
-
-
-func _on_chest_clicked() -> void:
-	total_clicks += 1
-	ui_manager.play_ui_sfx(SFX_COFRE_CLICK)
-	coins += click_power
-	total_coins_earned += click_power
-	lifetime_generated["cofre"] += click_power
-
-	ui_manager._update_ui()
-	_play_click_animation()
-	_spawn_floating_text()
-	_mostrar_monedas_y_burbujas()
-
-	achievements_manager.check_achievements()
-
-	if stats_panel.visible:
-		stats_manager.refresh_stats_values_only()
-
-func _spawn_floating_text() -> void:
-	var t: Label = floating_text_scene.instantiate()
-	add_child(t)
-
-	t.text = "+" + str(click_power)
-
-	var mouse_pos = get_viewport().get_mouse_position()
-	t.position = mouse_pos + Vector2(-5, -20)
-	t.z_index = 1000
-
 func _process(delta: float) -> void:
 	session_time_seconds += delta
 
@@ -513,42 +341,8 @@ func _process(delta: float) -> void:
 	if stats_panel.visible:
 		stats_manager.refresh_stats_values_only()
 
-func _play_click_animation() -> void:
-	var tween = create_tween()
-	tween.tween_property(chest_sprite, "scale", chest_base_scale * 1.08, 0.06)
-	tween.tween_property(chest_sprite, "scale", chest_base_scale, 0.08)
-
-func get_list_for_category(category: String) -> VBoxContainer:
-	match category:
-		"Peces":
-			return list_peces
-		"Estructuras":
-			return list_estructuras
-		_:
-			return list_peces
-
-func _on_btn_shop_pressed() -> void:
-	pass # Replace with function body.
-
-func _on_btn_hide_hud_pressed() -> void:
-	pass # Replace with function body.
-
-func _update_chest_sprite_by_level() -> void:
-	var chest_level: int = shop_manager.get_level("cofre")
-
-	if chest_level <= 0:
-		chest_sprite.texture = TEX_CHEST_CLOSED
-	elif chest_level <= 3:
-		chest_sprite.texture = TEX_CHEST_EMPTY
-	elif chest_level <= 7:
-		chest_sprite.texture = TEX_CHEST_MID
-	else:
-		chest_sprite.texture = TEX_CHEST_FULL
-
-func _chest_level_up_fx() -> void:
-	var t := create_tween()
-	t.tween_property(chest_sprite, "scale", chest_base_scale * 1.12, 0.08)
-	t.tween_property(chest_sprite, "scale", chest_base_scale, 0.10)
+func _input(event: InputEvent) -> void:
+	fish_mode_manager.handle_input(event)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -561,57 +355,61 @@ func _unhandled_input(event: InputEvent) -> void:
 					fish.scare_from(click_pos)
 					achievements_manager.register_fish_annoyed()
 
-func format_doblones_parts(n: float) -> Dictionary:
-	var abs_n: float = abs(n)
-	var txt := ""
-	# 🔹 Menos de 1 millón → número completo sin prefijo
-	if abs_n < 1_000_000.0:
-		txt = format_with_separator(int(round(n)))
-		return {"value": txt, "unit": "doblones"}
-
-	var value: float
-	var unit: String
-
-	if abs_n < 1_000_000.0:
-		value = n / 1_000.0
-		unit = "mil doblones"
-	elif abs_n < 1_000_000_000.0:
-		value = n / 1_000_000.0
-		unit = "millón de doblones" if abs(value) < 2.0 else "millones de doblones"
-	elif abs_n < 1_000_000_000_000.0:
-		value = n / 1_000_000_000.0
-		unit = "mil millones de doblones"
-	elif abs_n < 1_000_000_000_000_000.0:
-		value = n / 1_000_000_000_000.0
-		unit = "billón de doblones" if abs(value) < 2.0 else "billones de doblones"
-	elif abs_n < 1_000_000_000_000_000_000.0:
-		value = n / 1_000_000_000_000_000.0
-		unit = "mil billones de doblones"
-	else:
-		value = n / 1_000_000_000_000_000_000.0
-		unit = "trillón de doblones" if abs(value) < 2.0 else "trillones de doblones"
-
-	var decimals: int
-
-	if abs(value) < 10.0:
-		decimals = 2
-	elif abs(value) < 100.0:
-		decimals = 2
-	else:
-		decimals = 2
-	txt = ("%0." + str(decimals) + "f") % value
-	txt = txt.replace(".", ",")
-
-	return {"value": txt, "unit": unit}
-
-func format_with_separator(n: int) -> String:
-	var s := str(n)
-	var result := ""
-	while s.length() > 3:
-		result = "." + s.substr(s.length() - 3, 3) + result
-		s = s.substr(0, s.length() - 3)
-	return s + result
+# --------- Callbacks/Requests ---------
+@warning_ignore("unused_parameter")
+func _on_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+	@warning_ignore("unused_variable")
+	var i: int;
 	
+func _on_chest_clicked() -> void:
+	total_clicks += 1
+	ui_manager.play_ui_sfx(SFX_COFRE_CLICK)
+	coins += click_power
+	total_coins_earned += click_power
+	lifetime_generated["cofre"] += click_power
+
+	ui_manager._update_ui()
+	_play_click_animation()
+	_spawn_floating_text()
+	_mostrar_monedas_y_burbujas()
+
+	achievements_manager.check_achievements()
+
+	if stats_panel.visible:
+		stats_manager.refresh_stats_values_only()
+
+func _on_btn_shop_pressed() -> void:
+	pass # Replace with function body.
+
+func _on_btn_hide_hud_pressed() -> void:
+	pass # Replace with function body.
+
+# --------- Helpers para UI ---------
+func get_list_for_category(category: String) -> VBoxContainer:
+	match category:
+		"Peces":
+			return list_peces
+		"Estructuras":
+			return list_estructuras
+		_:
+			return list_peces
+
+# --------- Animaciones ---------
+func _play_click_animation() -> void:
+	var tween = create_tween()
+	tween.tween_property(chest_sprite, "scale", chest_base_scale * 1.08, 0.06)
+	tween.tween_property(chest_sprite, "scale", chest_base_scale, 0.08)
+	
+func _spawn_floating_text() -> void:
+	var t: Label = floating_text_scene.instantiate()
+	add_child(t)
+
+	t.text = "+" + str(click_power)
+
+	var mouse_pos = get_viewport().get_mouse_position()
+	t.position = mouse_pos + Vector2(-5, -20)
+	t.z_index = 1000
+
 func _mostrar_monedas_y_burbujas() -> void:
 	# Carga imágenes
 	var coin_tex: Texture2D = load("res://assets/misc/doblon_tres_cuartos.png")
@@ -686,7 +484,12 @@ func _mostrar_monedas_y_burbujas() -> void:
 
 		tb.finished.connect(Callable(b, "queue_free"))
 
-# ENCICLOPEDIA
+func _chest_level_up_fx() -> void:
+	var t := create_tween()
+	t.tween_property(chest_sprite, "scale", chest_base_scale * 1.12, 0.08)
+	t.tween_property(chest_sprite, "scale", chest_base_scale, 0.10)
+
+# --------- Enciclopedia ---------
 func _actualizar_peces_desbloqueados_en_enciclopedia() -> void:
 	var ids_desbloqueados: Array[int] = []
 
@@ -696,6 +499,19 @@ func _actualizar_peces_desbloqueados_en_enciclopedia() -> void:
 
 	if encyclopedia_panel.has_method("set_pez_ids_desbloqueados"):
 		encyclopedia_panel.set_pez_ids_desbloqueados(ids_desbloqueados)
+
+# --------- Escenario ---------
+func _update_chest_sprite_by_level() -> void:
+	var chest_level: int = shop_manager.get_level("cofre")
+
+	if chest_level <= 0:
+		chest_sprite.texture = TEX_CHEST_CLOSED
+	elif chest_level <= 3:
+		chest_sprite.texture = TEX_CHEST_EMPTY
+	elif chest_level <= 7:
+		chest_sprite.texture = TEX_CHEST_MID
+	else:
+		chest_sprite.texture = TEX_CHEST_FULL
 
 func _update_algas_sprite_by_level() -> void:
 	var algas_level: int = shop_manager.get_level("vallisneria")
@@ -734,6 +550,24 @@ func _update_anubia_sprite_by_level() -> void:
 	else:
 		_set_anubia_texture(TEX_ANUBIA_3, 0.0, 1.00)
 
+func _update_tronco_visibility_by_level() -> void:
+	var level: int = shop_manager.get_level("tronco")
+	var is_unlocked: bool = bool(unlocked.get("tronco", false))
+
+	tronco_1.visible = false
+	tronco_2.visible = false
+	tronco_3.visible = false
+
+	if not is_unlocked or level <= 0:
+		return
+
+	if level <= 5:
+		tronco_3.visible = true
+	elif level <= 10:
+		tronco_2.visible = true
+	else:
+		tronco_1.visible = true
+
 func _set_anubia_texture(tex: Texture2D, extra_y: float = 0.0, scale_mult: float = 1.0) -> void:
 	if tex == null:
 		return
@@ -762,6 +596,59 @@ func _set_vallisneria_texture(tex: Texture2D) -> void:
 	else:
 		vallisneria.position.y = vallisneria_ground_y - tex_height
 
+# --------- Formateo/Utils ---------
+
+func format_doblones_parts(n: float) -> Dictionary:
+	var abs_n: float = abs(n)
+	var txt := ""
+	# 🔹 Menos de 1 millón → número completo sin prefijo
+	if abs_n < 1_000_000.0:
+		txt = format_with_separator(int(round(n)))
+		return {"value": txt, "unit": "doblones"}
+
+	var value: float
+	var unit: String
+
+	if abs_n < 1_000_000.0:
+		value = n / 1_000.0
+		unit = "mil doblones"
+	elif abs_n < 1_000_000_000.0:
+		value = n / 1_000_000.0
+		unit = "millón de doblones" if abs(value) < 2.0 else "millones de doblones"
+	elif abs_n < 1_000_000_000_000.0:
+		value = n / 1_000_000_000.0
+		unit = "mil millones de doblones"
+	elif abs_n < 1_000_000_000_000_000.0:
+		value = n / 1_000_000_000_000.0
+		unit = "billón de doblones" if abs(value) < 2.0 else "billones de doblones"
+	elif abs_n < 1_000_000_000_000_000_000.0:
+		value = n / 1_000_000_000_000_000.0
+		unit = "mil billones de doblones"
+	else:
+		value = n / 1_000_000_000_000_000_000.0
+		unit = "trillón de doblones" if abs(value) < 2.0 else "trillones de doblones"
+
+	var decimals: int
+
+	if abs(value) < 10.0:
+		decimals = 2
+	elif abs(value) < 100.0:
+		decimals = 2
+	else:
+		decimals = 2
+	txt = ("%0." + str(decimals) + "f") % value
+	txt = txt.replace(".", ",")
+
+	return {"value": txt, "unit": unit}
+
+func format_with_separator(n: int) -> String:
+	var s := str(n)
+	var result := ""
+	while s.length() > 3:
+		result = "." + s.substr(s.length() - 3, 3) + result
+		s = s.substr(0, s.length() - 3)
+	return s + result
+
 func get_compact_doblones_text(value: float) -> String:
 	var parts: Dictionary = format_doblones_parts(value)
 	var unit := String(parts.unit)
@@ -778,21 +665,3 @@ func format_play_time(total_seconds: int) -> String:
 	var minutes := (total_seconds % 3600) / 60
 	var seconds := total_seconds % 60
 	return "%02d:%02d:%02d" % [hours, minutes, seconds]
-
-func _update_tronco_visibility_by_level() -> void:
-	var level: int = shop_manager.get_level("tronco")
-	var is_unlocked: bool = bool(unlocked.get("tronco", false))
-
-	tronco_1.visible = false
-	tronco_2.visible = false
-	tronco_3.visible = false
-
-	if not is_unlocked or level <= 0:
-		return
-
-	if level <= 5:
-		tronco_3.visible = true
-	elif level <= 10:
-		tronco_2.visible = true
-	else:
-		tronco_1.visible = true
