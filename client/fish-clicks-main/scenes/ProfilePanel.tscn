@@ -1,235 +1,304 @@
 [gd_scene format=3 uid="uid://buvdg6kk8oju2"]
 
 [ext_resource type="Script" uid="uid://buyotjgv07gsh" path="res://scenes/profile_panel.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://bkva8pb62ymh5" path="res://assets/ui/pergamino.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://c5yprfiyit17s" path="res://pergamino_v2.png" id="3_ok5j1"]
 [ext_resource type="Texture2D" uid="uid://cq0j1orhhg43v" path="res://assets/ui/iconos/default_avatar.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://cgjbjq3ublcr2" path="res://assets/ui/rarezas/tag_rareza_default.png" id="5_p6fjv"]
+[ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="5_sthu2"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ok5j1"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_sthu2"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6td75"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p6fjv"]
+content_margin_left = 15.0
+content_margin_top = 8.0
+content_margin_right = 15.0
+content_margin_bottom = 8.0
+bg_color = Color(0.78431374, 0.27058825, 0.22745098, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6td75"]
+bg_color = Color(0.6509804, 0.22745098, 0.1764706, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_da4h1"]
+bg_color = Color(0.8784314, 0.36078432, 0.29411766, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_p6fjv"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6td75"]
+texture = ExtResource("5_p6fjv")
+expand_margin_left = 10.0
+expand_margin_top = 5.0
+expand_margin_right = 10.0
+expand_margin_bottom = 5.0
+modulate_color = Color(0.41056472, 0.15380794, 0.039694007, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_p6fjv"]
+texture = ExtResource("5_p6fjv")
+expand_margin_left = 10.0
+expand_margin_top = 5.0
+expand_margin_right = 10.0
+expand_margin_bottom = 5.0
+modulate_color = Color(0.78137785, 0.6433503, 0.60928947, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_da4h1"]
+texture = ExtResource("5_p6fjv")
+expand_margin_left = 10.0
+expand_margin_top = 5.0
+expand_margin_right = 10.0
+expand_margin_bottom = 5.0
+modulate_color = Color(0.7445431, 0.4058574, 0.31596375, 1)
 
 [node name="ProfilePanel" type="Control" unique_id=1077186223]
 layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -234.0
-offset_top = -193.0
-offset_right = -234.0
-offset_bottom = -193.0
-grow_horizontal = 2
-grow_vertical = 2
+anchors_preset = 0
 mouse_filter = 1
 script = ExtResource("1")
 
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=1324192053]
 layout_mode = 1
-offset_top = 40.0
+offset_top = 60.0
 offset_right = 480.0
-offset_bottom = 343.0
+offset_bottom = 363.0
 theme_override_styles/panel = SubResource("StyleBoxEmpty_ok5j1")
 
 [node name="BgPergamino" type="TextureRect" parent="PanelContainer" unique_id=1470463855]
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("2")
+texture = ExtResource("3_ok5j1")
 expand_mode = 1
 
-[node name="VBox" type="VBoxContainer" parent="PanelContainer" unique_id=718556616]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=1681100323]
+layout_mode = 2
+theme_override_constants/margin_left = 74
+theme_override_constants/margin_top = 61
+theme_override_constants/margin_right = 57
+theme_override_constants/margin_bottom = 57
+
+[node name="VBox" type="VBoxContainer" parent="PanelContainer/MarginContainer" unique_id=718556616]
 layout_mode = 2
 
-[node name="TopBar" type="HBoxContainer" parent="PanelContainer/VBox" unique_id=279023752]
-layout_mode = 2
-theme_override_constants/separation = 0
-
-[node name="TitleLabel" type="Label" parent="PanelContainer/VBox/TopBar" unique_id=1857662755]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 16
-text = "Mi Cuenta"
-
-[node name="BtnClose" type="TextureButton" parent="PanelContainer/VBox/TopBar" unique_id=652982793]
-custom_minimum_size = Vector2(32, 32)
-layout_mode = 2
-texture_normal = ExtResource("3")
-ignore_texture_size = true
-stretch_mode = 5
-
-[node name="HSeparator" type="HSeparator" parent="PanelContainer/VBox" unique_id=2108327115]
-layout_mode = 2
-theme_override_constants/separation = 4
-theme_override_styles/separator = SubResource("StyleBoxEmpty_sthu2")
-
-[node name="ProfileView" type="VBoxContainer" parent="PanelContainer/VBox" unique_id=184129412]
-visible = false
+[node name="ProfileView" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBox" unique_id=184129412]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="MarginProfile" type="MarginContainer" parent="PanelContainer/VBox/ProfileView" unique_id=1131453356]
+[node name="MarginProfile" type="MarginContainer" parent="PanelContainer/MarginContainer/VBox/ProfileView" unique_id=1131453356]
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 16
 
-[node name="Fields" type="VBoxContainer" parent="PanelContainer/VBox/ProfileView/MarginProfile" unique_id=144979287]
+[node name="Fields" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBox/ProfileView/MarginProfile" unique_id=144979287]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="PhotoFrame" type="CenterContainer" parent="PanelContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=1562432415]
+[node name="PhotoFrame" type="CenterContainer" parent="PanelContainer/MarginContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=1562432415]
 custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
 
-[node name="UserPhoto" type="TextureRect" parent="PanelContainer/VBox/ProfileView/MarginProfile/Fields/PhotoFrame" unique_id=1558652004]
+[node name="UserPhoto" type="TextureRect" parent="PanelContainer/MarginContainer/VBox/ProfileView/MarginProfile/Fields/PhotoFrame" unique_id=1558652004]
 custom_minimum_size = Vector2(72, 72)
 layout_mode = 2
 texture = ExtResource("4")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="NickLabel" type="Label" parent="PanelContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=30087857]
+[node name="NickLabel" type="Label" parent="PanelContainer/MarginContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=30087857]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "Hola, Capitan"
+theme_override_colors/font_color = Color(0.6666667, 0.28235295, 0.10980392, 1)
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 32
+text = "Hola, Capitán"
 horizontal_alignment = 1
 
-[node name="EmailLabel" type="Label" parent="PanelContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=1823295719]
+[node name="EmailLabel" type="Label" parent="PanelContainer/MarginContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=1823295719]
 modulate = Color(0.55, 0.35, 0.15, 1)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 
-[node name="HSep2" type="HSeparator" parent="PanelContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=239562316]
+[node name="HSep2" type="HSeparator" parent="PanelContainer/MarginContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=239562316]
 layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxEmpty_6td75")
 
-[node name="BtnLogout" type="Button" parent="PanelContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=1938544158]
-custom_minimum_size = Vector2(0, 38)
+[node name="BtnLogout" type="Button" parent="PanelContainer/MarginContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=1464320944]
+custom_minimum_size = Vector2(150, 40)
 layout_mode = 2
-text = "Cerrar sesion"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_p6fjv")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_6td75")
+theme_override_styles/hover = SubResource("StyleBoxFlat_da4h1")
+text = "Cerrar sesión"
 
-[node name="AuthView" type="VBoxContainer" parent="PanelContainer/VBox" unique_id=696995360]
+[node name="AuthView" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBox" unique_id=696995360]
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="TabContainer" type="TabContainer" parent="PanelContainer/VBox/AuthView" unique_id=1145464778]
+[node name="TabContainer" type="TabContainer" parent="PanelContainer/MarginContainer/VBox/AuthView" unique_id=1145464778]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/tab_separation = 20
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_p6fjv")
+theme_override_styles/tab_unselected = SubResource("StyleBoxTexture_6td75")
+theme_override_styles/tab_hovered = SubResource("StyleBoxTexture_p6fjv")
+theme_override_styles/tab_selected = SubResource("StyleBoxTexture_da4h1")
 current_tab = 0
 
-[node name="Login" type="VBoxContainer" parent="PanelContainer/VBox/AuthView/TabContainer" unique_id=1059425927]
+[node name="Login" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer" unique_id=1059425927]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="MarginLogin" type="MarginContainer" parent="PanelContainer/VBox/AuthView/TabContainer/Login" unique_id=1371252598]
+[node name="MarginLogin" type="MarginContainer" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Login" unique_id=1371252598]
 layout_mode = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="Fields" type="VBoxContainer" parent="PanelContainer/VBox/AuthView/TabContainer/Login/MarginLogin" unique_id=995073417]
+[node name="Fields" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Login/MarginLogin" unique_id=995073417]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="LabelNick" type="Label" parent="PanelContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=633388491]
+[node name="LabelNick" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=633388491]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 18
 text = "Nickname"
 
-[node name="NickField" type="LineEdit" parent="PanelContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=674907132]
+[node name="NickField" type="LineEdit" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=674907132]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_sthu2")
 placeholder_text = "Tu nickname"
 
-[node name="LabelPass" type="Label" parent="PanelContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=77923079]
+[node name="LabelPass" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=77923079]
 layout_mode = 2
-text = "Contrasena"
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 18
+text = "Contraseña"
 
-[node name="PassField" type="LineEdit" parent="PanelContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=657516006]
+[node name="PassField" type="LineEdit" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=657516006]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
-placeholder_text = "Tu contrasena"
+theme_override_fonts/font = ExtResource("5_sthu2")
+placeholder_text = "Tu contraseña"
 secret = true
 
-[node name="BtnLogin" type="Button" parent="PanelContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=1207601606]
+[node name="BtnLogin" type="Button" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=1207601606]
 custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
-text = "Iniciar sesion"
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 18
+text = "Iniciar sesión"
 
-[node name="ErrorLabel" type="Label" parent="PanelContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=1576834292]
+[node name="ErrorLabel" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields" unique_id=1576834292]
 visible = false
 modulate = Color(1, 0.35, 0.35, 1)
 layout_mode = 2
 autowrap_mode = 3
 
-[node name="Registro" type="VBoxContainer" parent="PanelContainer/VBox/AuthView/TabContainer" unique_id=1197755639]
+[node name="Registro" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer" unique_id=1197755639]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="MarginReg" type="MarginContainer" parent="PanelContainer/VBox/AuthView/TabContainer/Registro" unique_id=196706609]
+[node name="MarginReg" type="MarginContainer" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro" unique_id=196706609]
 layout_mode = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="Fields" type="VBoxContainer" parent="PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg" unique_id=1077559250]
+[node name="Fields" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg" unique_id=1077559250]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="LabelNick" type="Label" parent="PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1172821484]
+[node name="LabelNick" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1172821484]
 layout_mode = 2
 text = "Nickname"
 
-[node name="RegNick" type="LineEdit" parent="PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1633321476]
+[node name="RegNick" type="LineEdit" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1633321476]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 placeholder_text = "Elige un nickname"
 
-[node name="LabelEmail" type="Label" parent="PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1285604983]
+[node name="LabelEmail" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1285604983]
 layout_mode = 2
 text = "Email"
 
-[node name="RegEmail" type="LineEdit" parent="PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=448674724]
+[node name="RegEmail" type="LineEdit" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=448674724]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 placeholder_text = "tu@email.com"
 
-[node name="LabelPass" type="Label" parent="PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1553613686]
+[node name="LabelPass" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1553613686]
 layout_mode = 2
 text = "Contrasena"
 
-[node name="RegPass" type="LineEdit" parent="PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=718964495]
+[node name="RegPass" type="LineEdit" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=718964495]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 placeholder_text = "Contrasena"
 secret = true
 
-[node name="LabelConfirm" type="Label" parent="PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=221917329]
+[node name="LabelConfirm" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=221917329]
 layout_mode = 2
 text = "Repite contrasena"
 
-[node name="RegConfirm" type="LineEdit" parent="PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1369840241]
+[node name="RegConfirm" type="LineEdit" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1369840241]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 placeholder_text = "Repite la contrasena"
 secret = true
 
-[node name="BtnRegister" type="Button" parent="PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1608490359]
+[node name="BtnRegister" type="Button" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1608490359]
 custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 text = "Crear cuenta"
 
-[node name="ErrorLabel" type="Label" parent="PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=699419396]
+[node name="ErrorLabel" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=699419396]
 visible = false
 modulate = Color(1, 0.35, 0.35, 1)
 layout_mode = 2
 autowrap_mode = 3
 
-[node name="OkLabel" type="Label" parent="PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=499346475]
+[node name="OkLabel" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=499346475]
 visible = false
 modulate = Color(0.35, 1, 0.35, 1)
 layout_mode = 2
 autowrap_mode = 3
+
+[node name="MarginContainer2" type="MarginContainer" parent="PanelContainer" unique_id=97327227]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 41
+theme_override_constants/margin_right = 55
+theme_override_constants/margin_bottom = 2
+
+[node name="BtnClose" type="TextureButton" parent="PanelContainer/MarginContainer2" unique_id=652982793]
+z_index = 1
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+texture_normal = ExtResource("3")
+ignore_texture_size = true
+stretch_mode = 5

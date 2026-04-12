@@ -1,0 +1,246 @@
+extends Node
+class_name UiManager
+
+var main: Node = null
+var _block_info_hover: bool = false
+
+func setup(main_ref: Node) -> void:
+	main = main_ref
+
+func play_ui_sfx(stream: AudioStream) -> void:
+	if stream == null:
+		return
+
+	main.ui_sfx_player.stream = stream
+	main.ui_sfx_player.stop()
+	main.ui_sfx_player.play()
+
+
+func play_squish(node: Control) -> void:
+	var t := main.create_tween()
+	t.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	node.scale = Vector2(1, 1)
+	t.tween_property(node, "scale", Vector2(0.92, 0.88), 0.06)
+	t.tween_property(node, "scale", Vector2(1.02, 1.02), 0.08)
+	t.tween_property(node, "scale", Vector2(1, 1), 0.08)
+
+
+func _close_overlay_panels(except_panel: Control = null) -> void:
+	if main.encyclopedia_panel != except_panel:
+		main.encyclopedia_panel.visible = false
+
+	if main.inventory_panel != except_panel:
+		main.inventory_panel.visible = false
+
+	if main.profile_panel != except_panel:
+		main.profile_panel.visible = false
+
+	if main.stats_panel != except_panel:
+		main.stats_panel.visible = false
+
+
+func _toggle_hud() -> void:
+	main.hud_visible = !main.hud_visible
+	main.hud.visible = main.hud_visible
+
+	if main.hud.visible:
+		main.btn_hide.texture_normal = main.ICON_HIDE
+	else:
+		main.btn_hide.texture_normal = main.ICON_SHOW
+
+
+func toggle_shop() -> void:
+	main.shop_open = !main.shop_open
+
+	if not main.shop_open and main.info_panel:
+		main.info_panel.request_hide()
+
+	main.shop_tween = main.create_tween()
+	main.shop_tween.set_trans(Tween.TRANS_QUAD)
+	main.shop_tween.set_ease(Tween.EASE_OUT)
+
+	var target_x: float = main.shop_x_open if main.shop_open else main.shop_x_closed
+	main.shop_tween.tween_property(main.shop_panel, "position:x", target_x, 0.25)
+
+	if main.shop_open:
+		play_ui_sfx(main.SFX_ICON_OPEN)
+		await _refresh_current_shop_tab(main.tab_container.current_tab)
+	else:
+		play_ui_sfx(main.SFX_ICON_CLOSE)
+
+
+func toggle_encyclopedia() -> void:
+	var will_open: bool = not main.encyclopedia_panel.visible
+
+	if will_open:
+		_close_overlay_panels(main.encyclopedia_panel)
+		play_ui_sfx(main.SFX_ICON_OPEN)
+		main.encyclopedia_panel.visible = true
+		main._actualizar_peces_desbloqueados_en_enciclopedia()
+
+		if main.info_panel:
+			main.info_panel.request_hide()
+	else:
+		main.encyclopedia_panel.visible = false
+		play_ui_sfx(main.SFX_ICON_CLOSE)
+
+
+func toggle_inventario() -> void:
+	var will_open: bool = not main.inventory_panel.visible
+
+	if will_open:
+		_close_overlay_panels(main.inventory_panel)
+		play_ui_sfx(main.SFX_ICON_OPEN)
+		main.inventory_panel.visible = true
+
+		if main.info_panel:
+			main.info_panel.request_hide()
+
+		main.inventory_panel.set_inventory_data(
+			main.HABITATS,
+			main.unlocked_habitats,
+			main.inventory_habitat,
+			main.aquarium_data,
+			main.fish_defs,
+			main.fish_inventory
+		)
+	else:
+		main.inventory_panel.visible = false
+		play_ui_sfx(main.SFX_ICON_CLOSE)
+
+
+func toggle_options() -> void:
+	main.options_panel.visible = !main.options_panel.visible
+
+	if main.options_panel.visible:
+		play_ui_sfx(main.SFX_ICON_OPEN)
+		main.shop_open = false
+
+		if main.info_panel:
+			main.info_panel.request_hide()
+
+		if main.shop_tween:
+			main.shop_tween.kill()
+
+		main.shop_panel.position.x = main.shop_x_closed
+	else:
+		play_ui_sfx(main.SFX_ICON_CLOSE)
+
+
+func toggle_stats_panel() -> void:
+	var will_open: bool = not main.stats_panel.visible
+
+	if will_open:
+		_close_overlay_panels(main.stats_panel)
+		play_ui_sfx(main.SFX_ICON_OPEN)
+		main.stats_panel.visible = true
+
+		if main.info_panel:
+			main.info_panel.request_hide()
+
+		main.stats_manager.refresh_stats_panel_full()
+	else:
+		main.stats_panel.visible = false
+		play_ui_sfx(main.SFX_ICON_CLOSE)
+
+
+func toggle_profile() -> void:
+	var will_open: bool = not main.profile_panel.visible
+
+	if will_open:
+		_close_overlay_panels(main.profile_panel)
+		play_ui_sfx(main.SFX_ICON_OPEN)
+		main.profile_panel._open()
+
+		if main.info_panel:
+			main.info_panel.request_hide()
+	else:
+		play_ui_sfx(main.SFX_ICON_CLOSE)
+		main.profile_panel._close()
+
+
+func _update_ui() -> void:
+	_update_currency_ui()
+	_update_dps_ui()
+
+	if main.shop_open:
+		update_shop_cards()
+
+
+func _update_currency_ui() -> void:
+	var parts: Dictionary = main.format_doblones_parts(main.coins)
+	main.coins_label.text = parts.value
+	main.unidades_label.text = parts.unit
+
+
+func _update_dps_ui() -> void:
+	var parts: Dictionary = main.format_doblones_parts(main.dps)
+	main.dps_label.text = "+" + parts.value + " " + parts.unit.replace(" de doblones", "").replace(" doblones", "") + "/s"
+
+
+func _refresh_current_shop_tab(tab: int) -> void:
+	_block_info_hover = true
+
+	if main.info_panel:
+		main.info_panel.visible = false
+
+	var tab_name: String = main.tab_container.get_tab_title(tab)
+
+	if tab_name == "Peces":
+		await _rebuild_tab("Peces", main.list_peces)
+	elif tab_name == "Estructuras":
+		await _rebuild_tab("Estructuras", main.list_estructuras)
+
+	update_shop_cards()
+
+	await main.get_tree().process_frame
+	_block_info_hover = false
+
+
+func _rebuild_tab(tab_name: String, list: VBoxContainer) -> void:
+	for c in list.get_children():
+		c.queue_free()
+
+	await main.get_tree().process_frame
+	_populate_tab(tab_name, list)
+
+
+func _populate_tab(tab_name: String, list: VBoxContainer) -> void:
+	for k in main.ITEMS.keys():
+		var id: String = String(k)
+		if String(main.ITEMS[id]["tab"]) == tab_name:
+			main.shop_manager.add_item_card_to_list(id, list)
+
+
+func _on_tab_changed(tab: int) -> void:
+	play_ui_sfx(main.SFX_CAMBIAR_TAB)
+	await _refresh_current_shop_tab(tab)
+
+
+func update_shop_cards() -> void:
+	for card in main.list_peces.get_children():
+		_refresh_card(card)
+
+	for card in main.list_estructuras.get_children():
+		_refresh_card(card)
+
+
+func _refresh_card(card) -> void:
+	var id: String = String(card.item_id)
+	var p: int = main.shop_manager.get_price(id)
+
+	card.set_unlocked(bool(main.unlocked.get(id, true)))
+	card.set_dynamic(
+		p,
+		"%d" % p,
+		main.shop_manager.get_item_effect_text(id),
+		str(main.shop_manager.get_level(id))
+	)
+	card.update_state(main.coins)
+
+	card.extra_b1 = main.shop_manager.get_tooltip_line_1(id)
+	card.extra_b2 = main.shop_manager.get_tooltip_line_2(id)
+	card.extra_b3 = main.shop_manager.get_tooltip_line_3(id)
+
+	if card.has_method("refresh_info_panel_if_hovered"):
+		card.refresh_info_panel_if_hovered()
