@@ -74,13 +74,13 @@ func _get_achievement_current_value(kind: String) -> float:
 		"coins":
 			return main.total_coins_earned
 		"fish":
-			return float(main.get_total_fish_count())
+			return float(main.aquarium_manager.get_total_fish_count())
 		"structures":
 			return float(main.get_total_unlocked_structures_count())
 		"structures_spent":
 			return total_structures_spent
 		"shiny_current":
-			return float(main.get_total_shiny_fish_count())
+			return float(main.aquarium_manager.get_total_shiny_fish_count())
 		"shiny_ever":
 			return float(total_shinies_ever)
 		"play_time":
@@ -108,7 +108,7 @@ func _get_achievement_current_value(kind: String) -> float:
 		"annoy_fish":
 			return float(annoyed_fish_count)
 		"achievements_unlocked":
-			return float(main.stats_manager.get_unlocked_achievements_count())
+			return float(get_unlocked_achievements_count())
 		_:
 			return 0.0
 

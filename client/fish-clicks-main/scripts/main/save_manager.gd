@@ -34,7 +34,11 @@ func get_save_state() -> Dictionary:
 		"total_shinies_ever": main.achievements_manager.total_shinies_ever,
 		"session_time_seconds": main.session_time_seconds,
 		"fish_inventory": main.fish_inventory,
-		"game_start_date": main.game_start_date_string
+		"game_start_date": main.game_start_date_string,
+		"total_structures_spent": main.achievements_manager.total_structures_spent,
+		"alien_clicked_count": main.achievements_manager.alien_clicked_count,
+		"profile_clicks_count": main.achievements_manager.profile_clicks_count,
+		"annoyed_fish_count": main.achievements_manager.annoyed_fish_count,
 	}
 
 
@@ -123,7 +127,7 @@ func apply_save_state(state: Dictionary) -> void:
 				continue
 
 			main.aquarium_data[habitat_id][slot_index] = fish_id
-			main._spawn_fish(fish_id, habitat_id, slot_index)
+			main.aquarium_manager.spawn_fish(fish_id, habitat_id, slot_index)
 
 	if state.has("sound_volume"):
 		AudioServer.set_bus_volume_db(
@@ -136,6 +140,10 @@ func apply_save_state(state: Dictionary) -> void:
 	main.achievements_manager.total_shinies_ever = int(state.get("total_shinies_ever", 0))
 	main.session_time_seconds = float(state.get("session_time_seconds", 0.0))
 	main.game_start_date_string = state.get("game_start_date", main.game_start_date_string)
+	main.achievements_manager.total_structures_spent = float(state.get("total_structures_spent", 0.0))
+	main.achievements_manager.alien_clicked_count = int(state.get("alien_clicked_count", 0))
+	main.achievements_manager.profile_clicks_count = int(state.get("profile_clicks_count", 0))
+	main.achievements_manager.annoyed_fish_count = int(state.get("annoyed_fish_count", 0))
 
 	main.fish_inventory = state.get("fish_inventory", {})
 

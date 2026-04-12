@@ -278,6 +278,9 @@ var stats_manager: StatsManager
 const AchievementsManagerScript = preload("res://scripts/main/achievements_manager.gd")
 var achievements_manager: AchievementsManager
 
+const AquariumManagerScript = preload("res://scripts/main/aquarium_manager.gd")
+var aquarium_manager: AquariumManager
+
 func _ready() -> void:
 	
 	ui_manager = UiManagerScript.new()
@@ -299,7 +302,11 @@ func _ready() -> void:
 	achievements_manager = AchievementsManagerScript.new()
 	add_child(achievements_manager)
 	achievements_manager.setup(self)
-
+	
+	aquarium_manager = AquariumManagerScript.new()
+	add_child(aquarium_manager)
+	aquarium_manager.setup(self)
+	
 	http_request.request_completed.connect(_on_request_completed)
 
 	var url := "https://fish-clicks.onrender.com/api/test"
@@ -383,10 +390,10 @@ func _ready() -> void:
 	_update_anubia_sprite_by_level()
 	_update_tronco_visibility_by_level()
 
-	inventory_panel.move_fish_to_inventory.connect(_on_move_fish_to_inventory)
-	inventory_panel.move_fish_to_aquarium.connect(_on_move_fish_to_aquarium)
-	inventory_panel.move_fish_within_aquarium.connect(_on_move_fish_within_aquarium)
-	inventory_panel.habitat_changed.connect(_on_inventory_habitat_changed)
+	inventory_panel.move_fish_to_inventory.connect(aquarium_manager.on_move_fish_to_inventory)
+	inventory_panel.move_fish_to_aquarium.connect(aquarium_manager.on_move_fish_to_aquarium)
+	inventory_panel.move_fish_within_aquarium.connect(aquarium_manager.on_move_fish_within_aquarium)
+	inventory_panel.habitat_changed.connect(aquarium_manager.on_inventory_habitat_changed)
 	
 	options_panel.volume_slider_spam_detected.connect(func():
 		achievements_manager.register_volume_slider_spam()
@@ -574,35 +581,6 @@ func apply_purchase(id: String) -> void:
 			
 	_update_cps()
 
-func _spawn_fish(fish_id: String, habitat_id: String, slot_index: int) -> void:
-	var fish = fish_scene.instantiate()
-
-	if "swim_area" in fish:
-		fish.swim_area = $SwimArea
-	else:
-		push_error("El pez no tiene propiedad swim_area")
-
-	fish_layer.add_child(fish)
-
-	if fish.has_method("setup_fish_instance"):
-		fish.setup_fish_instance(fish_id, habitat_id, slot_index)
-
-	fish.visible = habitat_id == current_habitat
-
-	if fish_defs.has(fish_id) and fish.has_method("set_fish_texture"):
-		var tex: Texture2D = fish_defs[fish_id]["icon"]
-		fish.set_fish_texture(tex)
-
-	var target_pos := Vector2(
-		randi_range(120, 920),
-		randi_range(120, 520)
-	)
-
-	if fish.has_method("play_spawn_arc"):
-		fish.play_spawn_arc(target_pos)
-	else:
-		fish.position = target_pos
-
 func get_list_for_category(category: String) -> VBoxContainer:
 	match category:
 		"Peces":
@@ -632,14 +610,14 @@ func _on_buy_pressed(id: String) -> void:
 			achievements_manager.register_shiny_obtained()
 			ui_manager.play_ui_sfx(SFX_SHINY)
 
-		var slot_index := try_add_fish_to_aquarium(current_habitat, spawned_fish_id)
+		var slot_index := aquarium_manager.try_add_fish_to_aquarium(current_habitat, spawned_fish_id)
 
 		if slot_index != -1:
-			_spawn_fish(spawned_fish_id, current_habitat, slot_index)
+			aquarium_manager.spawn_fish(spawned_fish_id, current_habitat, slot_index)
 		else:
 			fish_inventory[spawned_fish_id] = int(fish_inventory.get(spawned_fish_id, 0)) + 1
 
-	refresh_inventory_panel_data()
+	aquarium_manager.refresh_inventory_panel_data()
 	ui_manager._update_ui()
 	achievements_manager.check_achievements()
 
@@ -906,147 +884,6 @@ func _actualizar_peces_desbloqueados_en_enciclopedia() -> void:
 	if encyclopedia_panel.has_method("set_pez_ids_desbloqueados"):
 		encyclopedia_panel.set_pez_ids_desbloqueados(ids_desbloqueados)
 
-func try_add_fish_to_aquarium(habitat_id: String, fish_id: String) -> int:
-	if not aquarium_data.has(habitat_id):
-		return -1
-
-	var slots: Array = aquarium_data[habitat_id]
-
-	for i in range(slots.size()):
-		if slots[i] == null:
-			slots[i] = fish_id
-			aquarium_data[habitat_id] = slots
-			return i
-
-	return -1
-
-func _on_move_fish_to_inventory(fish_id: String, slot_index: int, habitat_id: String) -> void:
-	if not aquarium_data.has(habitat_id):
-		return
-
-	var slots: Array = aquarium_data[habitat_id]
-
-	if slot_index < 0 or slot_index >= slots.size():
-		return
-
-	if slots[slot_index] != fish_id:
-		return
-
-	slots[slot_index] = null
-	aquarium_data[habitat_id] = slots
-
-	_remove_spawned_fish_from_aquarium(habitat_id, slot_index)
-
-	fish_inventory[fish_id] = int(fish_inventory.get(fish_id, 0)) + 1
-
-	refresh_inventory_panel_data()
-
-func _on_move_fish_to_aquarium(fish_id: String, habitat_id: String, slot_index: int) -> void:
-	if int(fish_inventory.get(fish_id, 0)) <= 0:
-		return
-
-	if not aquarium_data.has(habitat_id):
-		return
-
-	var slots: Array = aquarium_data[habitat_id]
-
-	if slot_index < 0 or slot_index >= slots.size():
-		return
-
-	var replaced_fish_id = slots[slot_index]
-
-	# Si había un pez en ese slot, vuelve al inventario
-	if replaced_fish_id != null:
-		fish_inventory[replaced_fish_id] = int(fish_inventory.get(replaced_fish_id, 0)) + 1
-		_remove_spawned_fish_from_aquarium(habitat_id, slot_index)
-
-	# Colocar el nuevo pez en el slot elegido
-	slots[slot_index] = fish_id
-	aquarium_data[habitat_id] = slots
-
-	fish_inventory[fish_id] = int(fish_inventory.get(fish_id, 0)) - 1
-	if int(fish_inventory[fish_id]) <= 0:
-		fish_inventory.erase(fish_id)
-
-	_spawn_fish(fish_id, habitat_id, slot_index)
-	_refresh_visible_fish_by_habitat()
-	refresh_inventory_panel_data()
-
-func _on_move_fish_within_aquarium(from_slot_index: int, to_slot_index: int, habitat_id: String) -> void:
-	if not aquarium_data.has(habitat_id):
-		return
-
-	var slots: Array = aquarium_data[habitat_id]
-
-	if from_slot_index < 0 or from_slot_index >= slots.size():
-		return
-	if to_slot_index < 0 or to_slot_index >= slots.size():
-		return
-	if from_slot_index == to_slot_index:
-		return
-	if slots[from_slot_index] == null:
-		return
-
-	var from_fish_id = slots[from_slot_index]
-	var to_fish_id = slots[to_slot_index]
-
-	# Intercambio lógico
-	slots[from_slot_index] = to_fish_id
-	slots[to_slot_index] = from_fish_id
-	aquarium_data[habitat_id] = slots
-
-	_swap_spawned_fish_slots(habitat_id, from_slot_index, to_slot_index)
-
-	refresh_inventory_panel_data()
-
-func _refresh_visible_fish_by_habitat() -> void:
-	for child in fish_layer.get_children():
-		child.visible = child.get("habitat_id") == current_habitat
-
-func _on_inventory_habitat_changed(habitat_id: String) -> void:
-	inventory_habitat = habitat_id
-
-func _swap_spawned_fish_slots(habitat_id: String, from_slot_index: int, to_slot_index: int) -> void:
-	var fish_from = null
-	var fish_to = null
-
-	for child in fish_layer.get_children():
-		if child.get("habitat_id") != habitat_id:
-			continue
-
-		if child.get("slot_index") == from_slot_index:
-			fish_from = child
-		elif child.get("slot_index") == to_slot_index:
-			fish_to = child
-
-	if fish_from != null:
-		fish_from.slot_index = to_slot_index
-	if fish_to != null:
-		fish_to.slot_index = from_slot_index
-
-func _move_spawned_fish_to_aquarium_slot(habitat_id: String, from_slot_index: int, to_slot_index: int) -> void:
-	for child in fish_layer.get_children():
-		if child.get("habitat_id") == habitat_id and child.get("slot_index") == from_slot_index:
-			child.slot_index = to_slot_index
-			return
-
-func refresh_inventory_panel_data() -> void:
-	if inventory_panel.visible:
-		inventory_panel.set_inventory_data(
-			HABITATS,
-			unlocked_habitats,
-			inventory_habitat,
-			aquarium_data,
-			fish_defs,
-			fish_inventory
-		)
-
-func _remove_spawned_fish_from_aquarium(habitat_id: String, slot_index: int) -> void:
-	for child in fish_layer.get_children():
-		if child.get("habitat_id") == habitat_id and child.get("slot_index") == slot_index:
-			child.queue_free()
-			return
-
 func _update_algas_sprite_by_level() -> void:
 	var algas_level: int = get_level("vallisneria")
 	var algas_unlocked: bool = bool(unlocked.get("vallisneria", false))
@@ -1112,19 +949,6 @@ func _set_vallisneria_texture(tex: Texture2D) -> void:
 	else:
 		vallisneria.position.y = vallisneria_ground_y - tex_height
 
-func get_total_fish_count() -> int:
-	var total := 0
-
-	for habitat_id in aquarium_data.keys():
-		for fish_id in aquarium_data[habitat_id]:
-			if fish_id != null:
-				total += 1
-
-	for fish_id in fish_inventory.keys():
-		total += int(fish_inventory[fish_id])
-
-	return total
-
 func get_total_structures_count() -> int:
 	var total := 0
 
@@ -1138,20 +962,6 @@ func get_total_structures_count() -> int:
 			continue
 
 		total += get_level(item_id)
-
-	return total
-
-func get_total_special_fish_count() -> int:
-	var total := 0
-
-	for habitat_id in aquarium_data.keys():
-		for fish_id in aquarium_data[habitat_id]:
-			if fish_id != null and String(fish_id).ends_with("_shiny"):
-				total += 1
-
-	for fish_id in fish_inventory.keys():
-		if String(fish_id).ends_with("_shiny"):
-			total += int(fish_inventory[fish_id])
 
 	return total
 
@@ -1187,21 +997,6 @@ func get_total_unlocked_structures_count() -> int:
 
 		if bool(unlocked.get(item_id, false)):
 			total += 1
-
-	return total
-
-func get_total_shiny_fish_count() -> int:
-	var total := 0
-
-	for habitat_id in aquarium_data.keys():
-		var slots = aquarium_data[habitat_id]
-		for fish_id in slots:
-			if fish_id != null and String(fish_id).ends_with("_shiny"):
-				total += 1
-
-	for fish_id in fish_inventory.keys():
-		if String(fish_id).ends_with("_shiny"):
-			total += int(fish_inventory[fish_id])
 
 	return total
 
