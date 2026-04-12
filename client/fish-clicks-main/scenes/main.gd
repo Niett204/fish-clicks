@@ -1848,6 +1848,19 @@ func reset_local_state() -> void:
 		child.queue_free()
 
 func apply_save_state(state: Dictionary) -> void:
+	# 1. Validación de seguridad: 
+	# Si el estado no tiene monedas o es una partida "vacía", no hacemos nada.
+	if state.is_empty() or state.get("total_coins_earned", 0.0) <= 0:
+		print("Aviso: El servidor mandó una partida vacía. Manteniendo progreso local.")
+		return
+	
+	# 2. Solo si hay datos reales, procedemos a limpiar y cargar
+	reset_local_state()
+
+	# 3. Aplicamos la foto de perfil (si la añadiste al guardado)
+	if state.has("user_photo"):
+		GlobalData.user_photo_url = state["user_photo"]
+	
 	coins = float(state.get("coins", 0.0))
 
 	var saved_levels: Dictionary = state.get("levels", {})

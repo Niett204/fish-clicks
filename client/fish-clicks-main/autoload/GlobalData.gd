@@ -97,8 +97,8 @@ func _on_login_done(result, code: int, _headers, body: PackedByteArray, http: HT
 	var data = JSON.parse_string(body.get_string_from_utf8())
 
 	if result == HTTPRequest.RESULT_SUCCESS and code == 200 and data is Dictionary:
-		if get_tree().has_group("main"):
-			get_tree().call_group("main", "reset_local_state")
+		#if get_tree().has_group("main"):
+			#get_tree().call_group("main", "reset_local_state")
 		
 		set_user_session(
 			data.get("token", ""), 
@@ -252,8 +252,6 @@ func _on_load_done(_result, code: int, _headers, body: PackedByteArray, http: HT
 	if code == 200:
 		var data = JSON.parse_string(body.get_string_from_utf8())
 		if data is Dictionary and data.has("state"):
-			# IMPORTANTE: El state llega como String desde el backend, 
-			# debemos convertirlo a Diccionario antes de enviarlo al juego.
 			var raw_state = data["state"]
 			var parsed_state = raw_state
 			
@@ -267,6 +265,6 @@ func _on_load_done(_result, code: int, _headers, body: PackedByteArray, http: HT
 		else:
 			load_failed.emit("Respuesta inesperada del servidor")
 	elif code == 404:
-		load_failed.emit("No hay partida guardada")
+		print("El usuario no tiene partida en la nube. Manteniendo partida local actual.")
 	else:
 		load_failed.emit("Error al cargar la partida")

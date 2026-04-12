@@ -76,7 +76,7 @@ func _refresh_view() -> void:
 	if GlobalData.is_logged_in:
 		nick_label.text  = "Hola, %s!" % GlobalData.user_nickname
 		email_label.text = GlobalData.user_email
-		_load_user_photo(GlobalData.user_photo_url) # Carga la foto desde la sesión
+		_load_user_photo(GlobalData.user_photo_url)
 		profile_view.show()
 		auth_view.hide()
 	else:
