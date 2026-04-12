@@ -1861,6 +1861,8 @@ func apply_save_state(state: Dictionary) -> void:
 	# 3. Aplicamos la foto de perfil (si la añadiste al guardado)
 	if state.has("user_photo"):
 		GlobalData.user_photo_url = state["user_photo"]
+		# Refrescamos el botón nada más cargar la partida
+		get_tree().call_group("main_hud_buttons", "update_avatar")
 	
 	coins = float(state.get("coins", 0.0))
 

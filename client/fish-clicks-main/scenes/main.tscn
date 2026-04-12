@@ -17,8 +17,10 @@
 [ext_resource type="Texture2D" uid="uid://dhhpssieru3a7" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://yfi2y0ggapqn" path="res://assets/ui/iconos/icono_enciclopedia.png" id="11_yc10j"]
 [ext_resource type="Texture2D" uid="uid://bipu2clbw1kd7" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
+[ext_resource type="Script" uid="uid://gmyjxeo8kray" path="res://scenes/btn_profile.gd" id="12_tel4y"]
 [ext_resource type="Texture2D" uid="uid://htntr0byh6ti" path="res://assets/ui/red.png" id="13_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://dwmvlmjaav1dg" path="res://assets/ui/botella_mensaje.png" id="13_muem4"]
+[ext_resource type="Texture2D" uid="uid://ck0f38dhsoedj" path="res://assets/misc/circuloBlanco.png" id="13_qkpxi"]
 [ext_resource type="Texture2D" uid="uid://c11vv84nkq6dj" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
 [ext_resource type="FontFile" uid="uid://dkkmqm6p1jj0p" path="res://assets/fuentes/PirataOne-Regular.ttf" id="18_og1vs"]
 [ext_resource type="Texture2D" uid="uid://0qoeov5gmr34" path="res://assets/ui/alga.png" id="18_yc10j"]
@@ -169,10 +171,39 @@ custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture_normal = ExtResource("8_eb6dy")
 ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("12_tel4y")
+
+[node name="AvatarIcon" type="TextureRect" parent="UI/Root/HUD/TopBar/LeftGroup/BtnProfile" unique_id=1287245302]
+clip_children = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 3.0
+offset_right = -4.0
+offset_bottom = -5.0
+mouse_filter = 2
+texture = ExtResource("13_qkpxi")
+expand_mode = 1
 stretch_mode = 5
 
+[node name="UserImage" type="TextureRect" parent="UI/Root/HUD/TopBar/LeftGroup/BtnProfile/AvatarIcon" unique_id=402604227]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1.0
+offset_top = -1.0
+offset_right = -1.0
+offset_bottom = -1.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
 [node name="BtnOptions" type="TextureButton" parent="UI/Root/HUD/TopBar/LeftGroup" unique_id=544079481]
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 texture_normal = ExtResource("9_trceg")
 ignore_texture_size = true

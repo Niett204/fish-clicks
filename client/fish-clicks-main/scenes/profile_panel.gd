@@ -93,19 +93,31 @@ func _refresh_view() -> void:
 		auth_view.show()
 
 func _load_user_photo(photo_url: String) -> void:
-	if photo_url == null or photo_url.is_empty():
+	# 1. Si no hay foto, poner la de por defecto
+	if photo_url == null or photo_url.strip_edges().is_empty():
 		user_photo.texture = default_avatar
 		return
 	
-	# Si la foto es un string de Base64 (empieza por "data:image")
+	# 2. Si es Base64
 	if photo_url.begins_with("data:image"):
-		var base64_part = photo_url.split(",")[1]
-		var buffer = Marshalls.base64_to_raw(base64_part)
-		var img = Image.new()
-		img.load_png_from_buffer(buffer)
-		user_photo.texture = ImageTexture.create_from_image(img)
+		var parts = photo_url.split(",")
+		if parts.size() >= 2:
+			var buffer = Marshalls.base64_to_raw(parts[1])
+			var img = Image.new()
+			var err = img.load_png_from_buffer(buffer)
+			if err != OK: err = img.load_jpg_from_buffer(buffer)
+			
+			if err == OK:
+				user_photo.texture = ImageTexture.create_from_image(img)
+			else:
+				user_photo.texture = default_avatar
+	
+	# 3. Si es un recurso local
 	elif photo_url.begins_with("res://"):
-		user_photo.texture = load(photo_url)
+		if ResourceLoader.exists(photo_url):
+			user_photo.texture = load(photo_url)
+			
+	# 4. Si es una URL de internet
 	elif photo_url.begins_with("http"):
 		_download_external_image(photo_url)
 
@@ -138,6 +150,7 @@ func _on_login_ok(_data: Dictionary) -> void:
 	btn_login.disabled = false
 	btn_login.text = "Entrar"
 	_refresh_view()
+	get_tree().call_group("main_hud_buttons", "update_avatar")
 
 func _on_login_err(err: String) -> void:
 	btn_login.disabled = false
@@ -230,3 +243,5 @@ func _on_avatar_file_selected(path: String) -> void:
 		
 		# Opcional: Si tienes una función para guardar la partida, llámala aquí
 		# get_tree().call_group("main", "save_game_state")
+		GlobalData.user_photo_url = final_data
+		get_tree().call_group("main_hud_buttons", "update_avatar")
