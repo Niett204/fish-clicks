@@ -147,7 +147,7 @@ func apply_save_state(state: Dictionary) -> void:
 
 	main.fish_inventory = state.get("fish_inventory", {})
 
-	main._update_cps()
+	main.shop_manager.update_cps()
 	main.ui_manager._update_ui()
 	main._actualizar_peces_desbloqueados_en_enciclopedia()
 

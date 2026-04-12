@@ -209,7 +209,7 @@ func _populate_tab(tab_name: String, list: VBoxContainer) -> void:
 	for k in main.ITEMS.keys():
 		var id: String = String(k)
 		if String(main.ITEMS[id]["tab"]) == tab_name:
-			main.add_item_card_to_list(id, list)
+			main.shop_manager.add_item_card_to_list(id, list)
 
 
 func _on_tab_changed(tab: int) -> void:
@@ -227,20 +227,20 @@ func update_shop_cards() -> void:
 
 func _refresh_card(card) -> void:
 	var id: String = String(card.item_id)
-	var p: int = main.get_price(id)
+	var p: int = main.shop_manager.get_price(id)
 
 	card.set_unlocked(bool(main.unlocked.get(id, true)))
 	card.set_dynamic(
 		p,
 		"%d" % p,
-		main.get_item_effect_text(id),
-		str(main.get_level(id))
+		main.shop_manager.get_item_effect_text(id),
+		str(main.shop_manager.get_level(id))
 	)
 	card.update_state(main.coins)
 
-	card.extra_b1 = main.get_tooltip_line_1(id)
-	card.extra_b2 = main.get_tooltip_line_2(id)
-	card.extra_b3 = main.get_tooltip_line_3(id)
+	card.extra_b1 = main.shop_manager.get_tooltip_line_1(id)
+	card.extra_b2 = main.shop_manager.get_tooltip_line_2(id)
+	card.extra_b3 = main.shop_manager.get_tooltip_line_3(id)
 
 	if card.has_method("refresh_info_panel_if_hovered"):
 		card.refresh_info_panel_if_hovered()

@@ -281,6 +281,9 @@ var achievements_manager: AchievementsManager
 const AquariumManagerScript = preload("res://scripts/main/aquarium_manager.gd")
 var aquarium_manager: AquariumManager
 
+const ShopManagerScript = preload("res://scripts/main/shop_manager.gd")
+var shop_manager: ShopManager
+
 func _ready() -> void:
 	
 	ui_manager = UiManagerScript.new()
@@ -306,6 +309,10 @@ func _ready() -> void:
 	aquarium_manager = AquariumManagerScript.new()
 	add_child(aquarium_manager)
 	aquarium_manager.setup(self)
+	
+	shop_manager = ShopManagerScript.new()
+	add_child(shop_manager)
+	shop_manager.setup(self)
 	
 	http_request.request_completed.connect(_on_request_completed)
 
@@ -383,7 +390,7 @@ func _ready() -> void:
 	if anubia.texture:
 		anubia_ground_y = anubia.position.y + (anubia.texture.get_height() * abs(anubia.scale.y) * 0.5)
 
-	_update_cps()
+	shop_manager.update_cps()
 	ui_manager._update_ui()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
 	_update_algas_sprite_by_level()
@@ -456,37 +463,7 @@ func _input(event: InputEvent) -> void:
 	fish_mode_manager.handle_input(event)
 		
 
-func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
-	var def: Dictionary = ITEMS[id]
 
-	var card = shop_item_card_scene.instantiate()
-	card.info_panel_path = info_panel.get_path()
-	list.add_child(card)
-
-	var unlock_price: int = int(def.get("unlock_price", 0))
-	var icon_texture: Texture2D = load(String(def.get("icon", "")))
-
-	card.setup(
-		id,
-		String(def.get("title", id)),
-		"%d" % get_price(id),
-		get_item_effect_text(id),
-		str(get_level(id)),
-		icon_texture,
-		get_price(id),
-		unlock_price
-	)
-
-	card.extra_title = String(def.get("title", id))
-	card.extra_desc = "\"Mejora tu producción.\""
-	card.extra_b1 = get_tooltip_line_1(id)
-	card.extra_b2 = get_tooltip_line_2(id)
-	card.extra_b3 = get_tooltip_line_3(id)
-
-	card.set_unlocked(bool(unlocked.get(id, unlock_price == 0)))
-	card.update_state(coins) # <- importante
-	card.buy_pressed.connect(_on_buy_pressed)
-	card.unlock_pressed.connect(_on_unlock_pressed)
 
 func _on_chest_clicked() -> void:
 	total_clicks += 1
@@ -514,26 +491,11 @@ func _spawn_floating_text() -> void:
 	var mouse_pos = get_viewport().get_mouse_position()
 	t.position = mouse_pos + Vector2(-5, -20)
 	t.z_index = 1000
-		
-func _update_cps() -> void:
-	dps = get_total_passive_dps()
-	ui_manager._update_dps_ui()
-
-func get_total_passive_dps() -> float:
-	var total: float = 0.0
-
-	for key in ITEMS.keys():
-		var id := String(key)
-		var def: Dictionary = ITEMS[id]
-		if String(def.get("kind", "")) == "passive":
-			total += get_item_current_value(id)
-
-	return total
 
 func _process(delta: float) -> void:
 	session_time_seconds += delta
 
-	var total_generated: float = get_total_passive_dps() * delta
+	var total_generated: float = shop_manager.get_total_passive_dps() * delta
 	coins += total_generated
 	total_coins_earned += total_generated
 
@@ -542,7 +504,7 @@ func _process(delta: float) -> void:
 		var def: Dictionary = ITEMS[item_id]
 
 		if String(def.get("kind", "")) == "passive":
-			lifetime_generated[item_id] += get_item_current_value(item_id) * delta
+			lifetime_generated[item_id] += shop_manager.get_item_current_value(item_id) * delta
 
 	ui_manager._update_currency_ui()
 
@@ -556,31 +518,6 @@ func _play_click_animation() -> void:
 	tween.tween_property(chest_sprite, "scale", chest_base_scale * 1.08, 0.06)
 	tween.tween_property(chest_sprite, "scale", chest_base_scale, 0.08)
 
-func get_level(id: String) -> int:
-	return int(levels.get(id, 0))
-
-func get_price(id: String) -> int:
-	var def: Dictionary = ITEMS[id]
-	var base_price: float = float(def.get("base_price", 10.0))
-	var growth: float = float(def.get("price_growth", 1.1))
-	return int(round(base_price * pow(growth, get_level(id))))
-
-func apply_purchase(id: String) -> void:
-	levels[id] = get_level(id) + 1
-
-	match id:
-		"cofre":
-			click_power = int(round(get_item_current_value("cofre")))
-			_update_chest_sprite_by_level()
-		"vallisneria":
-			_update_algas_sprite_by_level()
-		"tronco":
-			_update_tronco_visibility_by_level()
-		"anubia":
-			_update_anubia_sprite_by_level()
-			
-	_update_cps()
-
 func get_list_for_category(category: String) -> VBoxContainer:
 	match category:
 		"Peces":
@@ -590,93 +527,6 @@ func get_list_for_category(category: String) -> VBoxContainer:
 		_:
 			return list_peces
 
-func _on_buy_pressed(id: String) -> void:
-	var price := get_price(id)
-	if coins < price:
-		return
-		
-	ui_manager.play_ui_sfx(SFX_BUY_ITEM)
-	
-	coins -= price
-	if String(ITEMS[id].get("tab", "")) == "Estructuras":
-		achievements_manager.register_structure_spent(price)
-	apply_purchase(id)
-
-	if fish_defs.has(id):
-		var spawned_fish_id := id
-
-		if randf() < 0.01 and fish_defs.has(id + "_shiny"):
-			spawned_fish_id = id + "_shiny"
-			achievements_manager.register_shiny_obtained()
-			ui_manager.play_ui_sfx(SFX_SHINY)
-
-		var slot_index := aquarium_manager.try_add_fish_to_aquarium(current_habitat, spawned_fish_id)
-
-		if slot_index != -1:
-			aquarium_manager.spawn_fish(spawned_fish_id, current_habitat, slot_index)
-		else:
-			fish_inventory[spawned_fish_id] = int(fish_inventory.get(spawned_fish_id, 0)) + 1
-
-	aquarium_manager.refresh_inventory_panel_data()
-	ui_manager._update_ui()
-	achievements_manager.check_achievements()
-
-	if stats_panel.visible:
-		stats_manager.refresh_stats_values_only()
-
-func _on_unlock_pressed(id: String) -> void:
-	if bool(unlocked.get(id, false)):
-		return
-
-	var unlock_price: int = int(ITEMS[id].get("unlock_price", 0))
-	if coins < unlock_price:
-		return
-
-	coins -= unlock_price
-	if String(ITEMS[id].get("tab", "")) == "Estructuras" and id != "cofre":
-		achievements_manager.register_structure_spent(unlock_price)
-	unlocked[id] = true
-
-	match id:
-		"vallisneria":
-			_update_algas_sprite_by_level()
-		"tronco":
-			_update_tronco_visibility_by_level()
-
-	ui_manager._update_ui()
-	_actualizar_peces_desbloqueados_en_enciclopedia()
-	achievements_manager.check_achievements()
-
-	if stats_panel.visible:
-		stats_manager.refresh_stats_values_only()
-
-func get_item_effect_text(id: String) -> String:
-	var def: Dictionary = ITEMS[id]
-	var kind: String = String(def.get("kind", ""))
-	var base_value: float = float(def.get("base_value", 0.0))
-	var value_label: String = String(def.get("value_label", ""))
-
-	match kind:
-		"passive":
-			return "%s +%d" % [value_label, int(round(base_value))]
-		"click":
-			return "+%d %s" % [int(round(base_value)), value_label]
-		_:
-			return ""
-
-func get_tooltip_line_1(id: String) -> String:
-	if id == "cofre":
-		return "Potencia de clic: %d" % click_power
-	return "Produce ahora: %s" % get_current_production_text(id)
-
-func get_tooltip_line_2(id: String) -> String:
-	if id == "cofre":
-		return "Aporte pasivo: ninguno"
-	return "Aporta al DPS total: %.1f%%" % get_current_dps_contribution(id)
-
-func get_tooltip_line_3(id: String) -> String:
-	return "Generado total: %s" % get_lifetime_generated_text(id)
-
 func _on_btn_shop_pressed() -> void:
 	pass # Replace with function body.
 
@@ -684,7 +534,7 @@ func _on_btn_hide_hud_pressed() -> void:
 	pass # Replace with function body.
 
 func _update_chest_sprite_by_level() -> void:
-	var chest_level: int = get_level("cofre")
+	var chest_level: int = shop_manager.get_level("cofre")
 
 	if chest_level <= 0:
 		chest_sprite.texture = TEX_CHEST_CLOSED
@@ -836,43 +686,6 @@ func _mostrar_monedas_y_burbujas() -> void:
 
 		tb.finished.connect(Callable(b, "queue_free"))
 
-func get_current_production_text(id: String) -> String:
-	var def: Dictionary = ITEMS[id]
-	var value_label: String = String(def.get("value_label", ""))
-	var value: float = get_item_current_value(id)
-	return "%d %s" % [int(round(value)), value_label]
-
-func get_item_current_value(id: String) -> float:
-	var def: Dictionary = ITEMS[id]
-	var kind: String = String(def.get("kind", ""))
-	var base_value: float = float(def.get("base_value", 1.0))
-	var level: int = get_level(id)
-
-	match kind:
-		"passive":
-			return float(level) * base_value
-		"click":
-			if level <= 0:
-				return 1.0
-			return 1.0 + level * base_value
-		_:
-			return 0.0
-
-func get_current_dps_contribution(id: String) -> float:
-	var total_dps: float = get_total_passive_dps()
-	if total_dps <= 0.0:
-		return 0.0
-
-	var def: Dictionary = ITEMS[id]
-	if String(def.get("kind", "")) != "passive":
-		return 0.0
-
-	return (get_item_current_value(id) / total_dps) * 100.0
-
-func get_lifetime_generated_text(id: String) -> String:
-	var amount := float(lifetime_generated.get(id, 0.0))
-	return "%s doblones" % format_with_separator(int(amount))
-
 # ENCICLOPEDIA
 func _actualizar_peces_desbloqueados_en_enciclopedia() -> void:
 	var ids_desbloqueados: Array[int] = []
@@ -885,7 +698,7 @@ func _actualizar_peces_desbloqueados_en_enciclopedia() -> void:
 		encyclopedia_panel.set_pez_ids_desbloqueados(ids_desbloqueados)
 
 func _update_algas_sprite_by_level() -> void:
-	var algas_level: int = get_level("vallisneria")
+	var algas_level: int = shop_manager.get_level("vallisneria")
 	var algas_unlocked: bool = bool(unlocked.get("vallisneria", false))
 
 	if not algas_unlocked or algas_level <= 0:
@@ -904,7 +717,7 @@ func _update_algas_sprite_by_level() -> void:
 		_set_vallisneria_texture(TEX_ALGAS_3)
 
 func _update_anubia_sprite_by_level() -> void:
-	var level: int = get_level("anubia")
+	var level: int = shop_manager.get_level("anubia")
 
 	if not bool(unlocked.get("anubia", false)) or level <= 0:
 		anubia.visible = false
@@ -949,22 +762,6 @@ func _set_vallisneria_texture(tex: Texture2D) -> void:
 	else:
 		vallisneria.position.y = vallisneria_ground_y - tex_height
 
-func get_total_structures_count() -> int:
-	var total := 0
-
-	for id in ITEMS.keys():
-		var item_id := String(id)
-
-		if String(ITEMS[item_id].get("tab", "")) != "Estructuras":
-			continue
-
-		if item_id == "cofre":
-			continue
-
-		total += get_level(item_id)
-
-	return total
-
 func get_compact_doblones_text(value: float) -> String:
 	var parts: Dictionary = format_doblones_parts(value)
 	var unit := String(parts.unit)
@@ -982,26 +779,8 @@ func format_play_time(total_seconds: int) -> String:
 	var seconds := total_seconds % 60
 	return "%02d:%02d:%02d" % [hours, minutes, seconds]
 
-func get_total_unlocked_structures_count() -> int:
-	var total := 0
-
-	for id in ITEMS.keys():
-		var item_id := String(id)
-		var def: Dictionary = ITEMS[item_id]
-
-		if String(def.get("tab", "")) != "Estructuras":
-			continue
-
-		if item_id == "cofre":
-			continue
-
-		if bool(unlocked.get(item_id, false)):
-			total += 1
-
-	return total
-
 func _update_tronco_visibility_by_level() -> void:
-	var level: int = get_level("tronco")
+	var level: int = shop_manager.get_level("tronco")
 	var is_unlocked: bool = bool(unlocked.get("tronco", false))
 
 	tronco_1.visible = false

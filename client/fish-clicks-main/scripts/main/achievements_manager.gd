@@ -76,7 +76,7 @@ func _get_achievement_current_value(kind: String) -> float:
 		"fish":
 			return float(main.aquarium_manager.get_total_fish_count())
 		"structures":
-			return float(main.get_total_unlocked_structures_count())
+			return float(main.shop_manager.get_total_unlocked_structures_count())
 		"structures_spent":
 			return total_structures_spent
 		"shiny_current":

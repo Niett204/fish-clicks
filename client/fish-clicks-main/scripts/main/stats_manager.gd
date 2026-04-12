@@ -13,7 +13,7 @@ func refresh_stats_panel() -> void:
 		main.stats_panel.set_stats_data({
 			"total_clicks": main.total_clicks,
 			"total_fish": main.aquarium_manager.get_total_fish_count(),
-			"total_structures": main.get_total_unlocked_structures_count(),
+			"total_structures": main.shop_manager.get_total_unlocked_structures_count(),
 			"total_doblones": main.get_compact_doblones_text(main.total_coins_earned),
 			"total_special_fish": main.aquarium_manager.get_total_shiny_fish_count(),
 			"play_time": main.format_play_time(int(main.session_time_seconds)),
@@ -37,7 +37,7 @@ func refresh_stats_values_only() -> void:
 		main.stats_panel.set_stats_data({
 			"total_clicks": main.total_clicks,
 			"total_fish": main.aquarium_manager.get_total_fish_count(),
-			"total_structures": main.get_total_unlocked_structures_count(),
+			"total_structures": main.shop_manager.get_total_unlocked_structures_count(),
 			"total_doblones": main.get_compact_doblones_text(main.total_coins_earned),
 			"total_special_fish": main.aquarium_manager.get_total_shiny_fish_count(),
 			"play_time": main.format_play_time(int(main.session_time_seconds)),
