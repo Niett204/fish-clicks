@@ -153,15 +153,6 @@ const ITEMS := {
 }
 
 ############################################################################
-
-@warning_ignore("shadowed_global_identifier")
-const AchievementDefs = preload("res://scripts/data/achievement_defs.gd")
-const ACHIEVEMENT_DEFS = AchievementDefs.ACHIEVEMENT_DEFS
-const ACHIEVEMENT_POPUP_SCENE := preload("res://scenes/achievement_popup.tscn")
-var achievement_popup_queue: Array = []
-var achievement_popup_active: Control = null
-
-############################################################################
 const HABITATS := {
 	"habitat_1": {
 		"name": "Acuario",
@@ -176,15 +167,6 @@ const HABITATS := {
 var unlocked_habitats: Array[String] = ["habitat_1", "habitat_2"]
 var current_habitat: String = "habitat_1"
 var inventory_habitat: String = "habitat_1"
-var achievements_unlocked: Dictionary = {}
-var total_shinies_ever: int = 0
-var _achievement_check_accum: float = 0.0
-var total_structures_spent: float = 0.0
-var alien_clicked_count: int = 0
-var random_tick_unlocked: bool = false
-var profile_clicks_count: int = 0
-var volume_slider_spam_unlocked: bool = false
-var annoyed_fish_count: int = 0
 
 var aquarium_data := {
 	"habitat_1": [null, null, null, null, null, null, null, null, null, null],
@@ -293,6 +275,9 @@ var save_manager: SaveManager
 const StatsManagerScript = preload("res://scripts/main/stats_manager.gd")
 var stats_manager: StatsManager
 
+const AchievementsManagerScript = preload("res://scripts/main/achievements_manager.gd")
+var achievements_manager: AchievementsManager
+
 func _ready() -> void:
 	
 	ui_manager = UiManagerScript.new()
@@ -310,6 +295,10 @@ func _ready() -> void:
 	stats_manager = StatsManagerScript.new()
 	add_child(stats_manager)
 	stats_manager.setup(self)
+	
+	achievements_manager = AchievementsManagerScript.new()
+	add_child(achievements_manager)
+	achievements_manager.setup(self)
 
 	http_request.request_completed.connect(_on_request_completed)
 
@@ -352,8 +341,7 @@ func _ready() -> void:
 	)
 	
 	btn_profile_icon.pressed.connect(func():
-		profile_clicks_count += 1
-		check_achievements()
+		achievements_manager.register_profile_click()
 		ui_manager.play_squish(btn_profile_icon)
 		ui_manager.toggle_profile()
 	)
@@ -401,9 +389,7 @@ func _ready() -> void:
 	inventory_panel.habitat_changed.connect(_on_inventory_habitat_changed)
 	
 	options_panel.volume_slider_spam_detected.connect(func():
-		if not volume_slider_spam_unlocked:
-			volume_slider_spam_unlocked = true
-			check_achievements()
+		achievements_manager.register_volume_slider_spam()
 	)
 	
 	inventory_panel.close_requested.connect(func():
@@ -434,9 +420,6 @@ func _ready() -> void:
 	if game_start_date_string == "":
 		var dt := Time.get_datetime_dict_from_system()
 		game_start_date_string = "%02d/%02d/%04d" % [dt.day, dt.month, dt.year]
-
-	for achievement_id in ACHIEVEMENT_DEFS.keys():
-		achievements_unlocked[achievement_id] = false
 
 	await get_tree().process_frame  # asegura tamaños correctos
 
@@ -510,7 +493,7 @@ func _on_chest_clicked() -> void:
 	_spawn_floating_text()
 	_mostrar_monedas_y_burbujas()
 
-	check_achievements()
+	achievements_manager.check_achievements()
 
 	if stats_panel.visible:
 		stats_manager.refresh_stats_values_only()
@@ -556,13 +539,7 @@ func _process(delta: float) -> void:
 
 	ui_manager._update_currency_ui()
 
-	_achievement_check_accum += delta
-	if _achievement_check_accum >= 0.5:
-		_achievement_check_accum = 0.0
-		if not random_tick_unlocked and randf() < 0.0001:
-			random_tick_unlocked = true
-
-		check_achievements()
+	achievements_manager.process_achievement_timer(delta)
 
 	if stats_panel.visible:
 		stats_manager.refresh_stats_values_only()
@@ -644,7 +621,7 @@ func _on_buy_pressed(id: String) -> void:
 	
 	coins -= price
 	if String(ITEMS[id].get("tab", "")) == "Estructuras":
-		total_structures_spent += price
+		achievements_manager.register_structure_spent(price)
 	apply_purchase(id)
 
 	if fish_defs.has(id):
@@ -652,7 +629,7 @@ func _on_buy_pressed(id: String) -> void:
 
 		if randf() < 0.01 and fish_defs.has(id + "_shiny"):
 			spawned_fish_id = id + "_shiny"
-			total_shinies_ever += 1
+			achievements_manager.register_shiny_obtained()
 			ui_manager.play_ui_sfx(SFX_SHINY)
 
 		var slot_index := try_add_fish_to_aquarium(current_habitat, spawned_fish_id)
@@ -664,7 +641,7 @@ func _on_buy_pressed(id: String) -> void:
 
 	refresh_inventory_panel_data()
 	ui_manager._update_ui()
-	check_achievements()
+	achievements_manager.check_achievements()
 
 	if stats_panel.visible:
 		stats_manager.refresh_stats_values_only()
@@ -679,7 +656,7 @@ func _on_unlock_pressed(id: String) -> void:
 
 	coins -= unlock_price
 	if String(ITEMS[id].get("tab", "")) == "Estructuras" and id != "cofre":
-		total_structures_spent += unlock_price
+		achievements_manager.register_structure_spent(unlock_price)
 	unlocked[id] = true
 
 	match id:
@@ -690,7 +667,7 @@ func _on_unlock_pressed(id: String) -> void:
 
 	ui_manager._update_ui()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
-	check_achievements()
+	achievements_manager.check_achievements()
 
 	if stats_panel.visible:
 		stats_manager.refresh_stats_values_only()
@@ -754,7 +731,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			if fish.has_method("scare_from"):
 				if fish.global_position.distance_to(click_pos) < 120:
 					fish.scare_from(click_pos)
-					annoyed_fish_count += 1
+					achievements_manager.register_fish_annoyed()
 
 func format_doblones_parts(n: float) -> Dictionary:
 	var abs_n: float = abs(n)
@@ -1227,209 +1204,6 @@ func get_total_shiny_fish_count() -> int:
 			total += int(fish_inventory[fish_id])
 
 	return total
-	
-func _get_achievement_current_value(kind: String) -> float:
-	match kind:
-		"clicks":
-			return float(total_clicks)
-		"coins":
-			return total_coins_earned
-		"fish":
-			return float(get_total_fish_count())
-		"structures":
-			return float(get_total_unlocked_structures_count())
-		"structures_spent":
-			return total_structures_spent
-		"shiny_current":
-			return float(get_total_shiny_fish_count())
-		"shiny_ever":
-			return float(total_shinies_ever)
-		"play_time":
-			return session_time_seconds
-		"dps":
-			return dps
-		"dpc":
-			return float(click_power)
-		"all_aquarium_shiny":
-			return 1.0 if _is_all_current_aquarium_shiny() else 0.0
-		"all_species_in_aquarium":
-			return 1.0 if _has_all_species_in_current_aquarium() else 0.0
-		"alien_clicked":
-			return float(alien_clicked_count)
-		"random_tick":
-			return 1.0 if random_tick_unlocked else 0.0
-		"encyclopedia_complete":
-			return 1.0 if _is_encyclopedia_complete() else 0.0
-		"profile_clicks":
-			return float(profile_clicks_count)
-		"volume_slider_spam":
-			return 1.0 if volume_slider_spam_unlocked else 0.0
-		"same_species_full_aquarium":
-			return 1.0 if _is_same_species_full_aquarium() else 0.0
-		"annoy_fish":
-			return float(annoyed_fish_count)
-		"achievements_unlocked":
-			return float(stats_manager.get_unlocked_achievements_count())
-		_:
-			return 0.0
-
-func check_achievements() -> void:
-	var changed := false
-
-	for achievement_id in ACHIEVEMENT_DEFS.keys():
-		if bool(achievements_unlocked.get(achievement_id, false)):
-			continue
-
-		var def: Dictionary = ACHIEVEMENT_DEFS[achievement_id]
-		var kind := String(def.get("kind", ""))
-		var target := float(def.get("target", 0.0))
-		var current := _get_achievement_current_value(kind)
-
-		if current >= target:
-			achievements_unlocked[achievement_id] = true
-			changed = true
-
-			var title := String(def.get("title", achievement_id))
-			var condition := String(def.get("condition", ""))
-			var icon_data = def.get("icon", null)
-			var icon_tex: Texture2D = null
-
-			if icon_data is Texture2D:
-				icon_tex = icon_data
-			elif icon_data is String and icon_data != "":
-				icon_tex = load(icon_data)
-
-			_show_achievement_popup(title, condition, icon_tex)
-
-	if changed and stats_panel.visible:
-		stats_manager.refresh_stats_panel_full()
-
-
-func _show_achievement_popup(title: String, condition: String, icon_tex: Texture2D = null) -> void:
-	achievement_popup_queue.append({
-		"title": title,
-		"condition": condition,
-		"icon": icon_tex
-	})
-
-	_try_show_next_achievement_popup()
-
-func _try_show_next_achievement_popup() -> void:
-	if achievement_popup_active != null:
-		return
-
-	if achievement_popup_queue.is_empty():
-		return
-
-	var data: Dictionary = achievement_popup_queue.pop_front()
-
-	var popup = ACHIEVEMENT_POPUP_SCENE.instantiate()
-	$UI/Root.add_child(popup)
-	achievement_popup_active = popup
-
-	if popup.has_method("setup_popup"):
-		popup.setup_popup(
-			String(data.get("title", "")),
-			String(data.get("condition", "")),
-			data.get("icon", null)
-		)
-
-	await get_tree().process_frame
-
-	var screen_size: Vector2 = get_viewport_rect().size
-	popup.position = Vector2(
-		screen_size.x - popup.size.x - 675,
-		10
-	)
-
-	if popup.has_signal("popup_finished"):
-		popup.popup_finished.connect(_on_achievement_popup_finished)
-
-	if popup.has_method("show_popup"):
-		popup.show_popup()
-
-func _on_achievement_popup_finished() -> void:
-	achievement_popup_active = null
-	_try_show_next_achievement_popup()
-
-func _get_base_fish_id(fish_id: String) -> String:
-	return fish_id.replace("_shiny", "")
-
-func _get_current_aquarium_fish_ids() -> Array[String]:
-	var result: Array[String] = []
-
-	if not aquarium_data.has(current_habitat):
-		return result
-
-	for fish_id in aquarium_data[current_habitat]:
-		if fish_id != null:
-			result.append(String(fish_id))
-
-	return result
-
-func _is_current_aquarium_full() -> bool:
-	if not aquarium_data.has(current_habitat):
-		return false
-
-	for fish_id in aquarium_data[current_habitat]:
-		if fish_id == null:
-			return false
-
-	return true
-
-func _is_all_current_aquarium_shiny() -> bool:
-	var fish_ids := _get_current_aquarium_fish_ids()
-
-	if fish_ids.is_empty():
-		return false
-
-	if not _is_current_aquarium_full():
-		return false
-
-	for fish_id in fish_ids:
-		if not fish_id.ends_with("_shiny"):
-			return false
-
-	return true
-
-func _has_all_species_in_current_aquarium() -> bool:
-	var required_species := {}
-	for fish_id in ENCYCLOPEDIA_FISH_IDS.keys():
-		required_species[String(fish_id)] = true
-
-	var present_species := {}
-
-	for fish_id in _get_current_aquarium_fish_ids():
-		present_species[_get_base_fish_id(fish_id)] = true
-
-	for species_id in required_species.keys():
-		if not present_species.has(species_id):
-			return false
-
-	return true
-
-func _is_same_species_full_aquarium() -> bool:
-	var fish_ids := _get_current_aquarium_fish_ids()
-
-	if fish_ids.is_empty():
-		return false
-
-	if not _is_current_aquarium_full():
-		return false
-
-	var first_species := _get_base_fish_id(fish_ids[0])
-
-	for fish_id in fish_ids:
-		if _get_base_fish_id(fish_id) != first_species:
-			return false
-
-	return true
-
-func _is_encyclopedia_complete() -> bool:
-	for fish_id in ENCYCLOPEDIA_FISH_IDS.keys():
-		if not bool(unlocked.get(fish_id, false)):
-			return false
-	return true
 
 func _update_tronco_visibility_by_level() -> void:
 	var level: int = get_level("tronco")

@@ -22,16 +22,16 @@ func get_save_state() -> Dictionary:
 		"levels": main.levels,
 		"unlocked": main.unlocked,
 		"lifetime_generated": main.lifetime_generated,
-		"achievements_unlocked": main.achievements_unlocked,
-		"random_tick_unlocked": main.random_tick_unlocked,
-		"volume_slider_spam_unlocked": main.volume_slider_spam_unlocked,
+		"achievements_unlocked": main.achievements_manager.achievements_unlocked,
+		"random_tick_unlocked": main.achievements_manager.random_tick_unlocked,
+		"volume_slider_spam_unlocked": main.achievements_manager.volume_slider_spam_unlocked,
 		"aquarium_data": aquarium_serialized,
 		"current_habitat": main.current_habitat,
 		"unlocked_habitats": main.unlocked_habitats,
 		"sound_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")),
 		"total_clicks": main.total_clicks,
 		"total_coins_earned": main.total_coins_earned,
-		"total_shinies_ever": main.total_shinies_ever,
+		"total_shinies_ever": main.achievements_manager.total_shinies_ever,
 		"session_time_seconds": main.session_time_seconds,
 		"fish_inventory": main.fish_inventory,
 		"game_start_date": main.game_start_date_string
@@ -42,15 +42,26 @@ func reset_local_state() -> void:
 	main.coins = 0.0
 	main.total_coins_earned = 0.0
 	main.total_clicks = 0
-	main.total_shinies_ever = 0
 	main.session_time_seconds = 0.0
 	main.dps = 0.0
 	main.click_power = 1
 
 	main.levels.clear()
 	main.unlocked.clear()
-	main.achievements_unlocked.clear()
 	main.fish_inventory.clear()
+
+	main.achievements_manager.achievements_unlocked.clear()
+	for achievement_id in main.achievements_manager.ACHIEVEMENT_DEFS.keys():
+		main.achievements_manager.achievements_unlocked[achievement_id] = false
+
+	main.achievements_manager.random_tick_unlocked = false
+	main.achievements_manager.volume_slider_spam_unlocked = false
+	main.achievements_manager.total_shinies_ever = 0
+	main.achievements_manager.total_structures_spent = 0.0
+	main.achievements_manager.alien_clicked_count = 0
+	main.achievements_manager.profile_clicks_count = 0
+	main.achievements_manager.annoyed_fish_count = 0
+	main.achievements_manager.achievement_check_accum = 0.0
 
 	for habitat_id in main.aquarium_data.keys():
 		var empty_slots := []
@@ -79,10 +90,10 @@ func apply_save_state(state: Dictionary) -> void:
 
 	var saved_achievements: Dictionary = state.get("achievements_unlocked", {})
 	for k in saved_achievements:
-		main.achievements_unlocked[k] = bool(saved_achievements[k])
+		main.achievements_manager.achievements_unlocked[k] = bool(saved_achievements[k])
 
-	main.random_tick_unlocked = bool(state.get("random_tick_unlocked", false))
-	main.volume_slider_spam_unlocked = bool(state.get("volume_slider_spam_unlocked", false))
+	main.achievements_manager.random_tick_unlocked = bool(state.get("random_tick_unlocked", false))
+	main.achievements_manager.volume_slider_spam_unlocked = bool(state.get("volume_slider_spam_unlocked", false))
 	main.current_habitat = state.get("current_habitat", "habitat_1")
 
 	var saved_habitats = state.get("unlocked_habitats", ["habitat_1"])
@@ -122,7 +133,7 @@ func apply_save_state(state: Dictionary) -> void:
 
 	main.total_clicks = int(state.get("total_clicks", 0))
 	main.total_coins_earned = float(state.get("total_coins_earned", 0.0))
-	main.total_shinies_ever = int(state.get("total_shinies_ever", 0))
+	main.achievements_manager.total_shinies_ever = int(state.get("total_shinies_ever", 0))
 	main.session_time_seconds = float(state.get("session_time_seconds", 0.0))
 	main.game_start_date_string = state.get("game_start_date", main.game_start_date_string)
 

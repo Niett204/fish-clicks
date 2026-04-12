@@ -2,10 +2,10 @@ extends Node
 class_name UiManager
 
 var main: Node = null
+var _block_info_hover: bool = false
 
 func setup(main_ref: Node) -> void:
 	main = main_ref
-
 
 func play_ui_sfx(stream: AudioStream) -> void:
 	if stream == null:
@@ -179,7 +179,7 @@ func _update_dps_ui() -> void:
 
 
 func _refresh_current_shop_tab(tab: int) -> void:
-	main._block_info_hover = true
+	_block_info_hover = true
 
 	if main.info_panel:
 		main.info_panel.visible = false
@@ -194,7 +194,7 @@ func _refresh_current_shop_tab(tab: int) -> void:
 	update_shop_cards()
 
 	await main.get_tree().process_frame
-	main._block_info_hover = false
+	_block_info_hover = false
 
 
 func _rebuild_tab(tab_name: String, list: VBoxContainer) -> void:

@@ -63,15 +63,15 @@ func refresh_stats_panel_full() -> void:
 func get_achievements_ui_data() -> Array:
 	var result: Array = []
 
-	for achievement_id in main.ACHIEVEMENT_DEFS.keys():
-		var def: Dictionary = main.ACHIEVEMENT_DEFS[achievement_id]
+	for achievement_id in main.achievements_manager.ACHIEVEMENT_DEFS.keys():
+		var def: Dictionary = main.achievements_manager.ACHIEVEMENT_DEFS[achievement_id]
 		result.append({
 			"id": achievement_id,
 			"title": String(def.get("title", "")),
 			"condition": get_achievement_condition_text(def),
 			"desc": String(def.get("desc", "")),
 			"icon": def.get("icon", null),
-			"unlocked": bool(main.achievements_unlocked.get(achievement_id, false)),
+			"unlocked": bool(main.achievements_manager.achievements_unlocked.get(achievement_id, false)),
 			"hidden": bool(def.get("hidden", false))
 		})
 
@@ -80,14 +80,14 @@ func get_achievements_ui_data() -> Array:
 
 func get_unlocked_achievements_count() -> int:
 	var total := 0
-	for achievement_id in main.achievements_unlocked.keys():
-		if bool(main.achievements_unlocked[achievement_id]):
+	for achievement_id in main.achievements_manager.achievements_unlocked.keys():
+		if main.achievements_manager.achievements_unlocked[achievement_id]:
 			total += 1
 	return total
 
 
 func get_total_achievements_count() -> int:
-	return main.ACHIEVEMENT_DEFS.size()
+	return main.achievements_manager.ACHIEVEMENT_DEFS.size()
 
 
 func get_achievement_condition_text(def: Dictionary) -> String:
