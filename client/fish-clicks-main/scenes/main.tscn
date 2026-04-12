@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://d2n7cjqtpenpj" path="res://assets/estructuras/tronco/tronco_small.png" id="8_qkpxi"]
 [ext_resource type="Script" uid="uid://dl0sgr2smpium" path="res://scenes/info_extra_panel.gd" id="8_tipki"]
 [ext_resource type="Texture2D" uid="uid://b3uv5xy6xfk8r" path="res://assets/estructuras/vallisneria/vallisneria_large.png" id="8_y6deb"]
+[ext_resource type="Texture2D" uid="uid://bpvte078h1smo" path="res://assets/estructuras/tronco/tronco_mini.png" id="9_tel4y"]
 [ext_resource type="Texture2D" uid="uid://bapfvmfpgbe7p" path="res://assets/ui/iconos/icono_opciones.png" id="9_trceg"]
 [ext_resource type="Texture2D" uid="uid://casqwt2ogwyax" path="res://assets/ui/iconos/icono_stats.png" id="10_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
@@ -105,6 +106,7 @@ texture = ExtResource("8_qkpxi")
 visible = false
 position = Vector2(658, 485)
 scale = Vector2(0.2580597, 0.25805962)
+texture = ExtResource("9_tel4y")
 
 [node name="Anubia" type="Sprite2D" parent="EstructurasLayer" unique_id=279494440]
 position = Vector2(497, 541)
@@ -520,6 +522,7 @@ visible = false
 layout_mode = 1
 
 [node name="ProfilePanel" parent="UI/Root/HUD" unique_id=1077186223 instance=ExtResource("25_2wyq8")]
+visible = false
 layout_mode = 1
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]

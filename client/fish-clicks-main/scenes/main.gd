@@ -3,8 +3,8 @@ extends Node2D
 const ENCYCLOPEDIA_FISH_IDS := {
 	"doblon": 1,
 	"sobrasada": 2,
-	"rufinus": 3,
-	"espuma": 4,
+	"espuma": 3,
+	"rufinus": 4,
 }
 
 @export var floating_text_scene: PackedScene
@@ -274,7 +274,6 @@ var shop_tween: Tween
 var shop_x_open: float
 var shop_x_closed: float
 
-var _block_info_hover := false
 var hud_visible := true
 
 var vallisneria_ground_y: float = 0.0
@@ -285,16 +284,32 @@ var anubia_base_scale: Vector2
 const UiManagerScript = preload("res://scripts/main/ui_manager.gd")
 var ui_manager: UiManager
 
+const FishModeManagerScript = preload("res://scripts/main/fish_mode_manager.gd")
+var fish_mode_manager: FishModeManager
+
+const SaveManagerScript = preload("res://scripts/main/save_manager.gd")
+var save_manager: SaveManager
+
+const StatsManagerScript = preload("res://scripts/main/stats_manager.gd")
+var stats_manager: StatsManager
+
 func _ready() -> void:
 	
 	ui_manager = UiManagerScript.new()
 	add_child(ui_manager)
 	ui_manager.setup(self)
 	
-	var w := get_window()
-	print("window id:", w.get_window_id())
-	print("window size property:", w.size)
-	print("displayserver size:", DisplayServer.window_get_size(w.get_window_id()))
+	fish_mode_manager = FishModeManagerScript.new()
+	add_child(fish_mode_manager)
+	fish_mode_manager.setup(self)
+	
+	save_manager = SaveManagerScript.new()
+	add_child(save_manager)
+	save_manager.setup(self)
+	
+	stats_manager = StatsManagerScript.new()
+	add_child(stats_manager)
+	stats_manager.setup(self)
 
 	http_request.request_completed.connect(_on_request_completed)
 
@@ -353,7 +368,7 @@ func _ready() -> void:
 		ui_manager.toggle_options()
 	)
 	
-	options_panel.modo_pecera_requested.connect(_on_modo_pecera_requested)
+	options_panel.modo_pecera_requested.connect(fish_mode_manager.toggle_fish_mode)
 	
 	btn_stats_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_stats_icon)
@@ -434,7 +449,7 @@ func _ready() -> void:
 	
 	# Guardado
 	# Guardado: Solo conectamos el éxito de carga
-	GlobalData.load_success.connect(apply_save_state)
+	GlobalData.load_success.connect(save_manager.apply_save_state)
 	
 	# Intentamos cargar la partida inicial
 	GlobalData.load_game() 
@@ -447,96 +462,9 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 	@warning_ignore("unused_variable")
 	var i: int;
 
-var modo_pecera := false
-func _on_modo_pecera_requested() -> void:
-	var w := get_window()
-	var id := w.get_window_id()
-
-	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED, id)
-
-	var size_grande := Vector2i(1152, 648)
-	var size_pequeno := Vector2i(384, 216)
-
-	if modo_pecera:
-		hud.visible = true	
-		btn_hide.visible = true
-		pecera_blocker.visible = false
-		w.borderless = false
-		w.always_on_top = false
-		DisplayServer.window_set_size(size_grande, id)
-		var screen := DisplayServer.screen_get_usable_rect()
-		var pos := (screen.size - size_grande) / 2
-		DisplayServer.window_set_position(pos, id)
-	else:
-		if options_panel.visible:
-			options_panel.hide()
-		
-		w.borderless = true
-		w.always_on_top = true
-		DisplayServer.window_set_size(size_pequeno, id)
-
-		var screen := DisplayServer.screen_get_usable_rect()
-		var pos := Vector2i(
-			0,
-			screen.size.y - size_pequeno.y
-		)
-
-		DisplayServer.window_set_position(pos, id)
-		
-		hud.visible = false
-		btn_hide.visible = false
-		pecera_blocker.visible = true
-
-	modo_pecera = !modo_pecera
-
-var arrastrando_pecera := false
-var drag_offset := Vector2i.ZERO
 func _input(event: InputEvent) -> void:
-	if not modo_pecera:
-		return
-
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed:
-			if event.double_click:
-				arrastrando_pecera = false
-				_on_modo_pecera_requested()
-				get_viewport().set_input_as_handled()
-				return
-
-			arrastrando_pecera = true
-			var mouse_pos := DisplayServer.mouse_get_position()
-			var window_pos := DisplayServer.window_get_position()
-			drag_offset = mouse_pos - window_pos
-		else:
-			arrastrando_pecera = false
-
-	elif event is InputEventMouseMotion and arrastrando_pecera:
-		var mouse_pos := DisplayServer.mouse_get_position()
-		var new_pos := mouse_pos - drag_offset
-		DisplayServer.window_set_position(new_pos)
+	fish_mode_manager.handle_input(event)
 		
-func _refresh_stats_panel() -> void:
-	if stats_panel.has_method("set_stats_data"):
-		stats_panel.set_stats_data({
-			"total_clicks": total_clicks,
-			"total_fish": get_total_fish_count(),
-			"total_structures": get_total_unlocked_structures_count(),
-			"total_doblones": get_compact_doblones_text(total_coins_earned),
-			"total_special_fish": get_total_shiny_fish_count(),
-			"play_time": format_play_time(int(session_time_seconds)),
-			"start_date": game_start_date_string,
-			"dps": get_compact_doblones_text(dps) + " d/s",
-			"dpc": get_compact_doblones_text(click_power) + " d/c"
-		})
-
-	if stats_panel.has_method("set_achievements_progress"):
-		stats_panel.set_achievements_progress(
-			get_unlocked_achievements_count(),
-			get_total_achievements_count()
-		)
-
-	if stats_panel.has_method("set_achievements_data"):
-		stats_panel.set_achievements_data(get_achievements_ui_data())
 
 func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 	var def: Dictionary = ITEMS[id]
@@ -585,7 +513,7 @@ func _on_chest_clicked() -> void:
 	check_achievements()
 
 	if stats_panel.visible:
-		_refresh_stats_values_only()
+		stats_manager.refresh_stats_values_only()
 
 func _spawn_floating_text() -> void:
 	var t: Label = floating_text_scene.instantiate()
@@ -637,7 +565,7 @@ func _process(delta: float) -> void:
 		check_achievements()
 
 	if stats_panel.visible:
-		_refresh_stats_values_only()
+		stats_manager.refresh_stats_values_only()
 
 func _play_click_animation() -> void:
 	var tween = create_tween()
@@ -739,7 +667,7 @@ func _on_buy_pressed(id: String) -> void:
 	check_achievements()
 
 	if stats_panel.visible:
-		_refresh_stats_values_only()
+		stats_manager.refresh_stats_values_only()
 
 func _on_unlock_pressed(id: String) -> void:
 	if bool(unlocked.get(id, false)):
@@ -765,7 +693,7 @@ func _on_unlock_pressed(id: String) -> void:
 	check_achievements()
 
 	if stats_panel.visible:
-		_refresh_stats_values_only()
+		stats_manager.refresh_stats_values_only()
 
 func get_item_effect_text(id: String) -> String:
 	var def: Dictionary = ITEMS[id]
@@ -1341,7 +1269,7 @@ func _get_achievement_current_value(kind: String) -> float:
 		"annoy_fish":
 			return float(annoyed_fish_count)
 		"achievements_unlocked":
-			return float(get_unlocked_achievements_count())
+			return float(stats_manager.get_unlocked_achievements_count())
 		_:
 			return 0.0
 
@@ -1374,63 +1302,8 @@ func check_achievements() -> void:
 			_show_achievement_popup(title, condition, icon_tex)
 
 	if changed and stats_panel.visible:
-		_refresh_stats_panel_full()
+		stats_manager.refresh_stats_panel_full()
 
-func get_achievements_ui_data() -> Array:
-	var result: Array = []
-
-	for achievement_id in ACHIEVEMENT_DEFS.keys():
-		var def: Dictionary = ACHIEVEMENT_DEFS[achievement_id]
-		result.append({
-			"id": achievement_id,
-			"title": String(def.get("title", "")),
-			"condition": _get_achievement_condition_text(def),
-			"desc": String(def.get("desc", "")),
-			"icon": def.get("icon", null),
-			"unlocked": bool(achievements_unlocked.get(achievement_id, false)),
-			"hidden": bool(def.get("hidden", false))
-		})
-
-	return result
-
-func get_unlocked_achievements_count() -> int:
-	var total := 0
-	for achievement_id in achievements_unlocked.keys():
-		if bool(achievements_unlocked[achievement_id]):
-			total += 1
-	return total
-
-func get_total_achievements_count() -> int:
-	return ACHIEVEMENT_DEFS.size()
-
-func _refresh_stats_values_only() -> void:
-	if stats_panel.has_method("set_stats_data"):
-		stats_panel.set_stats_data({
-			"total_clicks": total_clicks,
-			"total_fish": get_total_fish_count(),
-			"total_structures": get_total_unlocked_structures_count(),
-			"total_doblones": get_compact_doblones_text(total_coins_earned),
-			"total_special_fish": get_total_shiny_fish_count(),
-			"play_time": format_play_time(int(session_time_seconds)),
-			"start_date": game_start_date_string,
-			"dps": get_compact_doblones_text(dps) + " d/s",
-			"dpc": get_compact_doblones_text(click_power) + " d/c"
-		})
-
-func _refresh_stats_panel_full() -> void:
-	_refresh_stats_values_only()
-
-	if stats_panel.has_method("set_achievements_progress"):
-		stats_panel.set_achievements_progress(
-			get_unlocked_achievements_count(),
-			get_total_achievements_count()
-		)
-
-	if stats_panel.has_method("set_achievements_data"):
-		stats_panel.set_achievements_data(get_achievements_ui_data())
-
-func _get_achievement_condition_text(def: Dictionary) -> String:
-	return "Desbloqueo: %s" % String(def.get("condition", "Desbloqueo especial"))
 
 func _show_achievement_popup(title: String, condition: String, icon_tex: Texture2D = null) -> void:
 	achievement_popup_queue.append({
@@ -1575,134 +1448,3 @@ func _update_tronco_visibility_by_level() -> void:
 		tronco_2.visible = true
 	else:
 		tronco_1.visible = true
-
-
-# ── GUARDADO DE PARTIDA ─────────────────────────────────────────────────────
-func get_save_state() -> Dictionary:
-	# Serializa aquarium_data (los arrays tienen null o strings)
-	var aquarium_serialized := {}
-	for habitat_id in aquarium_data.keys():
-		var slots := []
-		for slot in aquarium_data[habitat_id]:
-			slots.append(slot if slot != null else "")
-		aquarium_serialized[habitat_id] = slots
-
-	return {
-		"coins": coins,
-		"levels": levels,
-		"unlocked": unlocked,
-		"lifetime_generated": lifetime_generated,
-		"achievements_unlocked": achievements_unlocked,
-		"random_tick_unlocked": random_tick_unlocked,
-		"volume_slider_spam_unlocked": volume_slider_spam_unlocked,
-		"aquarium_data": aquarium_serialized,
-		"current_habitat": current_habitat,
-		"unlocked_habitats": unlocked_habitats,
-		"sound_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")), # Volumen
-		"total_clicks": total_clicks, # Stats
-		"total_coins_earned": total_coins_earned,
-		"total_shinies_ever": total_shinies_ever,
-		"session_time_seconds": session_time_seconds,
-		"fish_inventory": fish_inventory, # Inventario completo
-		"game_start_date": game_start_date_string # Fecha inicio
-	}
-
-func reset_local_state() -> void:
-	# 1. Resetear variables numéricas
-	coins = 0.0
-	total_coins_earned = 0.0
-	total_clicks = 0
-	total_shinies_ever = 0
-	session_time_seconds = 0.0
-	dps = 0.0
-	click_power = 1
-
-	# 2. Vaciar diccionarios de progreso
-	levels.clear()
-	unlocked.clear()
-	achievements_unlocked.clear()
-	fish_inventory.clear()
-	
-	# 3. Reiniciar aquarium_data a null
-	for habitat_id in aquarium_data.keys():
-		var empty_slots = []
-		empty_slots.resize(10) # o el tamaño que uses
-		empty_slots.fill(null)
-		aquarium_data[habitat_id] = empty_slots
-
-	# 4. Eliminar físicamente los peces del acuario
-	for child in fish_layer.get_children():
-		child.queue_free()
-
-func apply_save_state(state: Dictionary) -> void:
-	coins = float(state.get("coins", 0.0))
-
-	var saved_levels: Dictionary = state.get("levels", {})
-	for k in saved_levels:
-		levels[k] = int(saved_levels[k])
-
-	var saved_unlocked: Dictionary = state.get("unlocked", {})
-	for k in saved_unlocked:
-		unlocked[k] = bool(saved_unlocked[k])
-
-	var saved_lifetime: Dictionary = state.get("lifetime_generated", {})
-	for k in saved_lifetime:
-		lifetime_generated[k] = float(saved_lifetime[k])
-
-	var saved_achievements: Dictionary = state.get("achievements_unlocked", {})
-	for k in saved_achievements:
-		achievements_unlocked[k] = bool(saved_achievements[k])
-
-	random_tick_unlocked = bool(state.get("random_tick_unlocked", false))
-	volume_slider_spam_unlocked = bool(state.get("volume_slider_spam_unlocked", false))
-	current_habitat = state.get("current_habitat", "habitat_1")
-
-	var saved_habitats = state.get("unlocked_habitats", ["habitat_1"])
-	unlocked_habitats.clear()
-	for h in saved_habitats:
-		unlocked_habitats.append(str(h))
-
-	# Restaurar aquarium_data y spawnear peces
-	var saved_aquarium: Dictionary = state.get("aquarium_data", {})
-	# Limpiar peces actuales en pantalla
-	for child in fish_layer.get_children():
-		child.queue_free()
-	# Resetear slots
-	for habitat_id in aquarium_data.keys():
-		var empty_slots = []
-		empty_slots.resize(aquarium_data[habitat_id].size())
-		empty_slots.fill(null)
-		aquarium_data[habitat_id] = empty_slots
-
-	# Restaurar slots y spawnear
-	for habitat_id in saved_aquarium.keys():
-		if not aquarium_data.has(habitat_id):
-			continue
-		var slots: Array = saved_aquarium[habitat_id]
-		for slot_index in slots.size():
-			var fish_id = slots[slot_index]
-			if fish_id == null or fish_id == "":
-				continue
-			aquarium_data[habitat_id][slot_index] = fish_id
-			_spawn_fish(fish_id, habitat_id, slot_index)
-	# Restaurar volumen del juego
-	if state.has("sound_volume"):
-		AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), state["sound_volume"])
-	
-	total_clicks = int(state.get("total_clicks", 0))
-	total_coins_earned = float(state.get("total_coins_earned", 0.0))
-	total_shinies_ever = int(state.get("total_shinies_ever", 0))
-	session_time_seconds = float(state.get("session_time_seconds", 0.0))
-	game_start_date_string = state.get("game_start_date", game_start_date_string)
-	
-	# Inventario e Inventario de Enciclopedia (vienen de 'unlocked')
-	fish_inventory = state.get("fish_inventory", {})
-
-	_update_cps()
-	ui_manager._update_ui()
-	_actualizar_peces_desbloqueados_en_enciclopedia()
-	
-	_update_algas_sprite_by_level()
-	_update_anubia_sprite_by_level()
-	_update_tronco_visibility_by_level()
-	_update_chest_sprite_by_level()

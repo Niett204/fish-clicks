@@ -138,7 +138,7 @@ func toggle_stats_panel() -> void:
 		if main.info_panel:
 			main.info_panel.request_hide()
 
-		main._refresh_stats_panel_full()
+		main.stats_manager.refresh_stats_panel_full()
 	else:
 		main.stats_panel.visible = false
 		play_ui_sfx(main.SFX_ICON_CLOSE)
