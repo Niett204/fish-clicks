@@ -85,7 +85,7 @@ func _refresh_view() -> void:
 	if GlobalData.is_logged_in:
 		nick_label.text  = "Hola, %s!" % GlobalData.user_nickname
 		email_label.text = GlobalData.user_email
-		_load_user_photo(GlobalData.user_photo_url) # Carga la foto desde la sesión
+		_load_user_photo(GlobalData.user_photo_url)
 		profile_view.show()
 		auth_view.hide()
 	else:
@@ -185,6 +185,8 @@ func _on_register_err(err: String) -> void:
 func _do_logout() -> void:
 	GlobalData.clear_session()
 	_refresh_view()
+	if get_tree().has_group("main"):
+		get_tree().call_group("main", "reset_local_state")
 
 # ── Utilidades ─────────────────────────────────────────────────────────────
 func _show_err(lbl: Label, msg: String) -> void:

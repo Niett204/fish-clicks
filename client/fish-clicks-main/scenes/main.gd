@@ -427,8 +427,13 @@ func _ready() -> void:
 	shop_open = false
 	
 	# Guardado
+	# Guardado: Solo conectamos el éxito de carga
 	GlobalData.load_success.connect(apply_save_state)
-	GlobalData.load_game()  # intenta cargar al arrancar si hay sesión
+	
+	# Intentamos cargar la partida inicial
+	GlobalData.load_game() 
+	
+	# Añadimos al grupo al final
 	add_to_group("main")
 
 # Función para reproducir el sonido
@@ -1816,8 +1821,47 @@ func get_save_state() -> Dictionary:
 		"game_start_date": game_start_date_string # Fecha inicio
 	}
 
+func reset_local_state() -> void:
+	# 1. Resetear variables numéricas
+	coins = 0.0
+	total_coins_earned = 0.0
+	total_clicks = 0
+	total_shinies_ever = 0
+	session_time_seconds = 0.0
+	dps = 0.0
+	click_power = 1
+
+	# 2. Vaciar diccionarios de progreso
+	levels.clear()
+	unlocked.clear()
+	achievements_unlocked.clear()
+	fish_inventory.clear()
+	
+	# 3. Reiniciar aquarium_data a null
+	for habitat_id in aquarium_data.keys():
+		var empty_slots = []
+		empty_slots.resize(10) # o el tamaño que uses
+		empty_slots.fill(null)
+		aquarium_data[habitat_id] = empty_slots
+
+	# 4. Eliminar físicamente los peces del acuario
+	for child in fish_layer.get_children():
+		child.queue_free()
 
 func apply_save_state(state: Dictionary) -> void:
+	# 1. Validación de seguridad: 
+	# Si el estado no tiene monedas o es una partida "vacía", no hacemos nada.
+	if state.is_empty() or state.get("total_coins_earned", 0.0) <= 0:
+		print("Aviso: El servidor mandó una partida vacía. Manteniendo progreso local.")
+		return
+	
+	# 2. Solo si hay datos reales, procedemos a limpiar y cargar
+	reset_local_state()
+
+	# 3. Aplicamos la foto de perfil (si la añadiste al guardado)
+	if state.has("user_photo"):
+		GlobalData.user_photo_url = state["user_photo"]
+	
 	coins = float(state.get("coins", 0.0))
 
 	var saved_levels: Dictionary = state.get("levels", {})
@@ -1888,3 +1932,8 @@ func apply_save_state(state: Dictionary) -> void:
 	_update_cps()
 	_update_ui()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
+	
+	_update_algas_sprite_by_level()
+	_update_anubia_sprite_by_level()
+	_update_tronco_visibility_by_level()
+	_update_chest_sprite_by_level()
