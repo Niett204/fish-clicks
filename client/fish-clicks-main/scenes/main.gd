@@ -377,6 +377,67 @@ func _on_chest_clicked() -> void:
 
 	if stats_panel.visible:
 		stats_manager.refresh_stats_values_only()
+		
+func reset_local_state() -> void:
+	# 1. Reseteo de variables numéricas y progreso
+	coins = 0.0
+	total_coins_earned = 0.0
+	total_clicks = 0
+	session_time_seconds = 0.0
+	click_power = 1
+	# El DPS se pondrá a 0 automáticamente al llamar a update_cps() más abajo
+
+	# 2. Limpieza de diccionarios e inventario
+	levels.clear()
+	unlocked.clear()
+	fish_inventory.clear()
+
+	# Re-inicializamos los objetos gratuitos según la base de datos (como el cofre)
+	for k in ITEMS.keys():
+		var id := String(k)
+		levels[id] = 0
+		unlocked[id] = int(ITEMS[id].get("unlock_price", 0)) == 0
+
+	# 3. Reseteo de Logros y contadores del AchievementsManager
+	achievements_manager.achievements_unlocked.clear()
+	for achievement_id in achievements_manager.ACHIEVEMENT_DEFS.keys():
+		achievements_manager.achievements_unlocked[achievement_id] = false
+
+	achievements_manager.random_tick_unlocked = false
+	achievements_manager.volume_slider_spam_unlocked = false
+	achievements_manager.total_shinies_ever = 0
+	achievements_manager.total_structures_spent = 0.0
+	achievements_manager.alien_clicked_count = 0
+	achievements_manager.profile_clicks_count = 0
+	achievements_manager.annoyed_fish_count = 0
+	achievements_manager.achievement_check_accum = 0.0
+
+	# 4. Limpieza física de Acuarios (Peces nadando)
+	for habitat_id in aquarium_data.keys():
+		var empty_slots := []
+		empty_slots.resize(10)
+		empty_slots.fill(null)
+		aquarium_data[habitat_id] = empty_slots
+
+	for child in fish_layer.get_children():
+		child.queue_free()
+
+	# 5. ACTUALIZACIÓN VISUAL Y RECALCULO (Lo que faltaba para resetear DPS y estructuras)
+	# Recalcular el DPS (dará 0 porque no hay niveles)
+	shop_manager.update_cps()
+	
+	# Forzar a los sprites del escenario a ocultarse/actualizarse al nivel 0
+	_update_chest_sprite_by_level()
+	_update_algas_sprite_by_level()
+	_update_tronco_visibility_by_level()
+	_update_anubia_sprite_by_level()
+	
+	# Actualizar la interfaz de usuario completa (etiquetas de doblones, botellas, etc.)
+	ui_manager._update_ui()
+	
+	# Limpiar la foto de perfil en el Singleton Global
+	GlobalData.user_photo_url = ""
+
 
 func _on_btn_shop_pressed() -> void:
 	pass # Replace with function body.
