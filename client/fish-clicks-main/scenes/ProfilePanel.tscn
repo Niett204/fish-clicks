@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="3"]
 [ext_resource type="Texture2D" uid="uid://c5yprfiyit17s" path="res://pergamino_v2.png" id="3_ok5j1"]
 [ext_resource type="Texture2D" uid="uid://cq0j1orhhg43v" path="res://assets/ui/iconos/default_avatar.png" id="4"]
-[ext_resource type="Texture2D" uid="uid://cgjbjq3ublcr2" path="res://assets/ui/rarezas/tag_rareza_default.png" id="5_p6fjv"]
+[ext_resource type="Texture2D" uid="uid://k1grpwa1v36v" path="res://assets/ui/rarezas/tag_rareza_default.png" id="5_p6fjv"]
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="5_sthu2"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ok5j1"]
@@ -146,7 +146,6 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_da4h1")
 text = "Cerrar sesión"
 
 [node name="AuthView" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBox" unique_id=696995360]
-visible = false
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -159,9 +158,10 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_p6fjv")
 theme_override_styles/tab_unselected = SubResource("StyleBoxTexture_6td75")
 theme_override_styles/tab_hovered = SubResource("StyleBoxTexture_p6fjv")
 theme_override_styles/tab_selected = SubResource("StyleBoxTexture_da4h1")
-current_tab = 0
+current_tab = 1
 
 [node name="Login" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer" unique_id=1059425927]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -215,7 +215,6 @@ layout_mode = 2
 autowrap_mode = 3
 
 [node name="Registro" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer" unique_id=1197755639]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
@@ -232,45 +231,63 @@ theme_override_constants/separation = 10
 
 [node name="LabelNick" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1172821484]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 18
 text = "Nickname"
 
 [node name="RegNick" type="LineEdit" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1633321476]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 18
 placeholder_text = "Elige un nickname"
 
 [node name="LabelEmail" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1285604983]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 18
 text = "Email"
 
 [node name="RegEmail" type="LineEdit" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=448674724]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 18
 placeholder_text = "tu@email.com"
 
 [node name="LabelPass" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1553613686]
 layout_mode = 2
-text = "Contrasena"
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 18
+text = "Contraseña"
 
 [node name="RegPass" type="LineEdit" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=718964495]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
-placeholder_text = "Contrasena"
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 18
+placeholder_text = "Contraseña"
 secret = true
 
 [node name="LabelConfirm" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=221917329]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 18
 text = "Repite contrasena"
 
 [node name="RegConfirm" type="LineEdit" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1369840241]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 18
 placeholder_text = "Repite la contrasena"
 secret = true
 
 [node name="BtnRegister" type="Button" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=1608490359]
 custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_sthu2")
+theme_override_font_sizes/font_size = 18
 text = "Crear cuenta"
 
 [node name="ErrorLabel" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=699419396]

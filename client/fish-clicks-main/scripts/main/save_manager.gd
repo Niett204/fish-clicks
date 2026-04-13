@@ -42,41 +42,6 @@ func get_save_state() -> Dictionary:
 	}
 
 
-func reset_local_state() -> void:
-	main.coins = 0.0
-	main.total_coins_earned = 0.0
-	main.total_clicks = 0
-	main.session_time_seconds = 0.0
-	main.dps = 0.0
-	main.click_power = 1
-
-	main.levels.clear()
-	main.unlocked.clear()
-	main.fish_inventory.clear()
-
-	main.achievements_manager.achievements_unlocked.clear()
-	for achievement_id in main.achievements_manager.ACHIEVEMENT_DEFS.keys():
-		main.achievements_manager.achievements_unlocked[achievement_id] = false
-
-	main.achievements_manager.random_tick_unlocked = false
-	main.achievements_manager.volume_slider_spam_unlocked = false
-	main.achievements_manager.total_shinies_ever = 0
-	main.achievements_manager.total_structures_spent = 0.0
-	main.achievements_manager.alien_clicked_count = 0
-	main.achievements_manager.profile_clicks_count = 0
-	main.achievements_manager.annoyed_fish_count = 0
-	main.achievements_manager.achievement_check_accum = 0.0
-
-	for habitat_id in main.aquarium_data.keys():
-		var empty_slots := []
-		empty_slots.resize(10)
-		empty_slots.fill(null)
-		main.aquarium_data[habitat_id] = empty_slots
-
-	for child in main.fish_layer.get_children():
-		child.queue_free()
-
-
 func apply_save_state(state: Dictionary) -> void:
 	main.coins = float(state.get("coins", 0.0))
 
