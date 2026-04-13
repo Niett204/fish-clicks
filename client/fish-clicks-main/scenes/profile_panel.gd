@@ -3,32 +3,32 @@ extends Control
 signal close_requested
 
 # ── Nodos de la Interfaz ──────────────────────────────────────────────────
-@onready var profile_view: VBoxContainer = $PanelContainer/VBox/ProfileView
-@onready var auth_view:    VBoxContainer = $PanelContainer/VBox/AuthView
+@onready var profile_view: VBoxContainer = $PanelContainer/MarginContainer/VBox/ProfileView
+@onready var auth_view:    VBoxContainer = $PanelContainer/MarginContainer/VBox/AuthView
 
 # Elementos del Perfil (Logueado)
-@onready var user_photo:   TextureRect   = $PanelContainer/VBox/ProfileView/MarginProfile/Fields/PhotoFrame/UserPhoto
-@onready var nick_label:   Label         = $PanelContainer/VBox/ProfileView/MarginProfile/Fields/NickLabel
-@onready var email_label:  Label         = $PanelContainer/VBox/ProfileView/MarginProfile/Fields/EmailLabel
-@onready var btn_logout:   Button        = $PanelContainer/VBox/ProfileView/MarginProfile/Fields/BtnLogout
+@onready var user_photo:   TextureRect   = $PanelContainer/MarginContainer/VBox/ProfileView/MarginProfile/Fields/PhotoFrame/UserPhoto
+@onready var nick_label:   Label         = $PanelContainer/MarginContainer/VBox/ProfileView/MarginProfile/Fields/NickLabel
+@onready var email_label:  Label         = $PanelContainer/MarginContainer/VBox/ProfileView/MarginProfile/Fields/EmailLabel
+@onready var btn_logout:   Button        = $PanelContainer/MarginContainer/VBox/ProfileView/MarginProfile/Fields/BtnLogout
 
 # Elementos de Auth (No logueado)
-@onready var tab_container: TabContainer = $PanelContainer/VBox/AuthView/TabContainer
-@onready var nick_field:   LineEdit      = $PanelContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields/NickField
-@onready var pass_field:   LineEdit      = $PanelContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields/PassField
-@onready var btn_login:    Button        = $PanelContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields/BtnLogin
-@onready var login_error:  Label         = $PanelContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields/ErrorLabel
+@onready var tab_container: TabContainer = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer
+@onready var nick_field:   LineEdit      = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields/NickField
+@onready var pass_field:   LineEdit      = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields/PassField
+@onready var btn_login:    Button        = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields/BtnLogin
+@onready var login_error:  Label         = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Login/MarginLogin/Fields/ErrorLabel
 
-@onready var reg_nick:     LineEdit      = $PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/RegNick
-@onready var reg_email:    LineEdit      = $PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/RegEmail
-@onready var reg_pass:     LineEdit      = $PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/RegPass
-@onready var reg_confirm:  LineEdit      = $PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/RegConfirm
-@onready var btn_register: Button        = $PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/BtnRegister
-@onready var reg_error:    Label         = $PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/ErrorLabel
-@onready var reg_ok:       Label         = $PanelContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/OkLabel
+@onready var reg_nick:     LineEdit      = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/RegNick
+@onready var reg_email:    LineEdit      = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/RegEmail
+@onready var reg_pass:     LineEdit      = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/RegPass
+@onready var reg_confirm:  LineEdit      = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/RegConfirm
+@onready var btn_register: Button        = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/BtnRegister
+@onready var reg_error:    Label         = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/ErrorLabel
+@onready var reg_ok:       Label         = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/OkLabel
 
 # Común (Botón cerrar - ahora con cruz.jpg)
-@onready var btn_close: TextureButton = $PanelContainer/VBox/TopBar/BtnClose
+@onready var btn_close: TextureButton = $PanelContainer/MarginContainer2/BtnClose
 
 var default_avatar = load("res://assets/ui/iconos/default_avatar.png")
 func _ready() -> void:

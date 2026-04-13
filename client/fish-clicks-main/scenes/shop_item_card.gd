@@ -16,6 +16,7 @@ extends Button
 
 @onready var plank_normal_bg = $NormalView/PlankBG        # ajusta nombre/path
 @onready var plank_locked_bg = $LockedView/BG    # si tienes fondo locked
+var _block_info_hover: bool = false
 
 signal unlock_pressed(item_id: String)
 signal buy_pressed(item_id: String)
@@ -98,7 +99,7 @@ func _on_enter_info() -> void:
 		return
 
 	var main = get_tree().get_first_node_in_group("main")
-	if main and main._block_info_hover:
+	if main and _block_info_hover:
 		return
 
 	if info_panel == null:
