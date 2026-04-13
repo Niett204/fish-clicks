@@ -28,7 +28,7 @@ signal modo_pecera_requested
 @onready var fish_preview_player: AudioStreamPlayer = $FishPreviewPlayer
 
 @onready var btn_guardar: Button = $CenterContainer/PanelRoot/ButtonsRowBottom/BtnGuardar
-@onready var lbl_save_status: Label = $CenterContainer/PanelRoot/ButtonsRowBottom/LblSaveStatus 
+#@onready var lbl_save_status: Label = $CenterContainer/PanelRoot/ButtonsRowBottom/LblSaveStatus 
 
 var slider_items: Array[Dictionary] = []
 var _general_last_value: float = -1.0
@@ -338,10 +338,10 @@ func _on_btn_guardar_pressed() -> void:
 
 	# Recoge el estado del juego desde main
 	var main = get_tree().get_first_node_in_group("main")
-	if main and main.has_method("get_save_state"):
-		GlobalData.save_game(main.get_save_state())
+	if main and main.save_manager:
+		GlobalData.save_game(main.save_manager.get_save_state())
 	else:
-		push_error("No se encontró main con get_save_state()")
+		push_error("No se encontró save_manager")
 		btn_guardar.disabled = false
 
 
