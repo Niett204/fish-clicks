@@ -30,6 +30,9 @@ signal close_requested
 # Común (Botón cerrar - ahora con cruz.jpg)
 @onready var btn_close: TextureButton = $PanelContainer/MarginContainer2/BtnClose
 
+# Foto de perfil
+@onready var avatar_dialog: FileDialog = $AvatarDialog
+
 var default_avatar = load("res://assets/ui/iconos/default_avatar.png")
 func _ready() -> void:
 	GlobalData.login_success.connect(_on_login_ok)
@@ -53,6 +56,25 @@ func _ready() -> void:
 	pass_field.text_submitted.connect(func(_t): _do_login())
 	reg_confirm.text_submitted.connect(func(_t): _do_register())
 	hide()
+	if user_photo:
+		# Habilitamos que el ratón no traspase la imagen
+		user_photo.mouse_filter = Control.MOUSE_FILTER_STOP 
+		
+		# EFECTO GRISÁCEO
+		user_photo.mouse_entered.connect(func():
+			user_photo.modulate = Color(0.6, 0.6, 0.6, 1.0) # Tinte oscuro
+			Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
+		)
+		user_photo.mouse_exited.connect(func():
+			user_photo.modulate = Color.WHITE # Color normal
+			Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+		)
+		
+		# CLIC PARA CAMBIAR FOTO
+		user_photo.gui_input.connect(_on_photo_gui_input)
+
+	if avatar_dialog:
+		avatar_dialog.file_selected.connect(_on_avatar_selected)
 
 # ── Abrir / cerrar ─────────────────────────────────────────────────────────
 func toggle() -> void:
@@ -76,7 +98,7 @@ func _refresh_view() -> void:
 	if GlobalData.is_logged_in:
 		nick_label.text  = "Hola, %s!" % GlobalData.user_nickname
 		email_label.text = GlobalData.user_email
-		_load_user_photo(GlobalData.user_photo_url) # Carga la foto desde la sesión
+		_load_user_photo(GlobalData.user_photo_url) 
 		profile_view.show()
 		auth_view.hide()
 	else:
@@ -92,6 +114,17 @@ func _load_user_photo(photo_url: String) -> void:
 		user_photo.texture = load(photo_url)
 	elif photo_url.begins_with("http"):
 		_download_external_image(photo_url)
+	else:
+		# NUEVO: Si no es ruta ni URL, asumimos que es Base64 (de la base de datos)
+		var img = Image.new()
+		var raw_data = Marshalls.base64_to_raw(photo_url)
+		var err = img.load_png_from_buffer(raw_data)
+		if err != OK: err = img.load_jpg_from_buffer(raw_data)
+		
+		if err == OK:
+			user_photo.texture = ImageTexture.create_from_image(img)
+		else:
+			user_photo.texture = default_avatar
 
 func _download_external_image(url: String) -> void:
 	var http := HTTPRequest.new()
@@ -180,3 +213,24 @@ func _show_err(lbl: Label, msg: String) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if visible and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		_close()
+		
+func _on_photo_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if avatar_dialog:
+			avatar_dialog.popup_centered_ratio(0.5)
+
+func _on_avatar_selected(path: String) -> void:
+	var img = Image.load_from_file(path)
+	if img:
+		# Ajustamos tamaño para que la base de datos no sufra
+		img.resize(256, 256, Image.INTERPOLATE_LANCZOS)
+		
+		# Lo pasamos a Base64 para guardarlo en tu GlobalData
+		var buffer = img.save_jpg_to_buffer()
+		GlobalData.user_photo_url = Marshalls.raw_to_base64(buffer)
+		
+		# Actualizamos la textura del nodo (el shader hará el resto)
+		user_photo.texture = ImageTexture.create_from_image(img)
+		
+		# Avisamos al HUD para que se actualice también
+		get_tree().call_group("main_hud_buttons", "update_avatar")
