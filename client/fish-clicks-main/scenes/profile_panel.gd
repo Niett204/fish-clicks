@@ -208,7 +208,15 @@ func _do_logout() -> void:
 # ── Utilidades ─────────────────────────────────────────────────────────────
 func _show_err(lbl: Label, msg: String) -> void:
 	lbl.text = msg
+	lbl.modulate = Color.INDIAN_RED # Cambia a un rojo suave
 	lbl.show()
+	
+	# Pequeña animación de "sacudida" para llamar la atención
+	var tw = create_tween()
+	var original_pos = lbl.position
+	tw.tween_property(lbl, "position:x", original_pos.x + 5, 0.05)
+	tw.tween_property(lbl, "position:x", original_pos.x - 5, 0.1)
+	tw.tween_property(lbl, "position:x", original_pos.x, 0.05)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if visible and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
