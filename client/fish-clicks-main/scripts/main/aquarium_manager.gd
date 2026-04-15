@@ -12,7 +12,7 @@ func spawn_fish(fish_id: String, habitat_id: String, slot_index: int) -> void:
 	var fish = main.fish_scene.instantiate()
 
 	if "swim_area" in fish:
-		fish.swim_area = main.get_node("SwimArea")
+		fish.swim_area = main.get_node("ContentPecera/SwimArea")
 	else:
 		push_error("El pez no tiene propiedad swim_area")
 

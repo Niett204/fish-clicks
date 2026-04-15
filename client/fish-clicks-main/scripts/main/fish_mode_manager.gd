@@ -25,6 +25,8 @@ func toggle_fish_mode() -> void:
 		main.hud.visible = true
 		main.btn_hide.visible = true
 		main.pecera_blocker.visible = false
+		main.apply_normal_mode_layout()
+		
 		w.borderless = false
 		w.always_on_top = false
 		DisplayServer.window_set_size(size_grande, id)
@@ -54,6 +56,7 @@ func toggle_fish_mode() -> void:
 		main.hud.visible = false
 		main.btn_hide.visible = false
 		main.pecera_blocker.visible = true
+		main.apply_fish_mode_layout()
 
 	modo_pecera = !modo_pecera
 

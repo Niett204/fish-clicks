@@ -33,6 +33,7 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 @onready var btn_stats_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnStats
 @onready var btn_profile_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnProfile
 @onready var btn_hide: TextureButton = $UI/Root/BtnHideHUD
+@onready var marco_pecera: TextureRect = $UI/Root/MarcoPecera
 @onready var hud: Control = $UI/Root/HUD
 @onready var ui_root: Control = $UI/Root
 @onready var info_panel: Control = $UI/Root/HUD/InfoExtraPanel
@@ -47,14 +48,15 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 @onready var unidades_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/UnidadesLabel
 
 # ------------------- NODOS DE MUNDO -------------------
-@onready var chest: Area2D = $Cofre
-@onready var chest_sprite: Sprite2D = $Cofre/Sprite2D
-@onready var fish_layer = $PecesLayer
-@onready var vallisneria: Sprite2D = $EstructurasLayer/Vallisneria
-@onready var anubia: Sprite2D = $EstructurasLayer/Anubia
-@onready var tronco_1: Sprite2D = $EstructurasLayer/Tronco
-@onready var tronco_2: Sprite2D = $EstructurasLayer/Tronco2
-@onready var tronco_3: Sprite2D = $EstructurasLayer/Tronco3
+@onready var content_pecera: Node2D = $ContentPecera
+@onready var chest: Area2D = $ContentPecera/Cofre
+@onready var chest_sprite: Sprite2D = $ContentPecera/Cofre/Sprite2D
+@onready var fish_layer = $ContentPecera/PecesLayer
+@onready var vallisneria: Sprite2D = $ContentPecera/EstructurasLayer/Vallisneria
+@onready var anubia: Sprite2D = $ContentPecera/EstructurasLayer/Anubia
+@onready var tronco_1: Sprite2D = $ContentPecera/EstructurasLayer/Tronco
+@onready var tronco_2: Sprite2D = $ContentPecera/EstructurasLayer/Tronco2
+@onready var tronco_3: Sprite2D = $ContentPecera/EstructurasLayer/Tronco3
 
 # ------------------- AUDIO -------------------
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
@@ -124,6 +126,8 @@ var vallisneria_ground_y: float = 0.0
 var anubia_ground_y: float = 0.0
 var vallisneria_base_scale: Vector2
 var anubia_base_scale: Vector2
+var content_pecera_normal_position: Vector2
+var content_pecera_normal_scale: Vector2
 
 # ------------------- MANAGERS -------------------
 const UiManagerScript = preload("res://scripts/main/ui_manager.gd")
@@ -249,6 +253,10 @@ func _ready() -> void:
 
 	vallisneria_base_scale = vallisneria.scale
 	anubia_base_scale = anubia.scale
+	
+	content_pecera_normal_position = content_pecera.position
+	content_pecera_normal_scale = content_pecera.scale
+	marco_pecera.visible = false
 
 	if vallisneria.texture:
 		vallisneria_ground_y = vallisneria.position.y + (vallisneria.texture.get_height() * abs(vallisneria.scale.y) * 0.5)
@@ -726,3 +734,13 @@ func format_play_time(total_seconds: int) -> String:
 	var minutes := (total_seconds % 3600) / 60
 	var seconds := total_seconds % 60
 	return "%02d:%02d:%02d" % [hours, minutes, seconds]
+
+func apply_normal_mode_layout() -> void:
+	content_pecera.position = content_pecera_normal_position
+	content_pecera.scale = content_pecera_normal_scale
+	marco_pecera.visible = false
+
+func apply_fish_mode_layout() -> void:
+	content_pecera.position = Vector2(30, 18)
+	content_pecera.scale = Vector2(0.6, 0.6)
+	marco_pecera.visible = true
