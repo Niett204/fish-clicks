@@ -33,28 +33,42 @@ func _http_result_to_text(result: int) -> String:
 
 
 func _build_error_message(result: int, code: int, body: PackedByteArray, default_msg: String) -> String:
-	# 1) Error de red (no llego respuesta HTTP valida)
+	# 1) Error de red (Capa física/transporte)
 	if result != HTTPRequest.RESULT_SUCCESS:
 		return _http_result_to_text(result)
 
-	# 2) Intentar leer JSON del backend
+	# 2) Intentar obtener el mensaje específico del servidor si existe
 	var raw := body.get_string_from_utf8()
 	var data = JSON.parse_string(raw)
-
+	var server_detail = ""
+	
 	if data is Dictionary:
-		# Prioridad: message -> error -> detail
-		var message := str(data.get("message", "")).strip_edges()
-		if message != "":
-			return "%s (HTTP %d)" % [message, code]
+		# Buscamos en las claves comunes de error de los frameworks de backend
+		server_detail = data.get("message", data.get("error", data.get("detail", "")))
 
-		var error_text := str(data.get("error", "")).strip_edges()
-		if error_text != "":
-			return "%s (HTTP %d)" % [error_text, code]
-
-		var detail := str(data.get("detail", "")).strip_edges()
-		if detail != "":
-			return "%s (HTTP %d)" % [detail, code]
-
+	# 3) Mapeo de errores por Código HTTP
+	match code:
+		400:
+			return "Solicitud inválida. Revisa los datos introducidos."
+		401:
+			return "La contraseña es incorrecta."
+		403:
+			return "No tienes permiso para acceder a este recurso."
+		404:
+			return "El nombre de usuario no existe."
+		409:
+			# Generalmente usado en el registro para duplicados
+			return "El nombre de usuario o el email ya están en uso."
+		422:
+			return "Datos no procesables (posible formato de email incorrecto)."
+		500, 502, 503, 504:
+			return "El servidor tiene problemas técnicos. Inténtalo más tarde."
+	
+	# 4) Fallback: Si el servidor envió un texto útil, lo usamos, si no, el default
+	if server_detail != "":
+		return str(server_detail)
+		
+	return "%s (Error %d)" % [default_msg, code]
 	# 3) Fallback por codigo HTTP
 	match code:
 		400:
@@ -97,8 +111,6 @@ func _on_login_done(result, code: int, _headers, body: PackedByteArray, http: HT
 	var data = JSON.parse_string(body.get_string_from_utf8())
 
 	if result == HTTPRequest.RESULT_SUCCESS and code == 200 and data is Dictionary:
-		if get_tree().has_group("main"):
-			get_tree().call_group("main", "reset_local_state")
 		
 		set_user_session(
 			data.get("token", ""), 

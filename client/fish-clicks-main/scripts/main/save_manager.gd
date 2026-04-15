@@ -3,10 +3,8 @@ class_name SaveManager
 
 var main: Node = null
 
-
 func setup(main_ref: Node) -> void:
 	main = main_ref
-
 
 func get_save_state() -> Dictionary:
 	var aquarium_serialized := {}
@@ -18,6 +16,7 @@ func get_save_state() -> Dictionary:
 		aquarium_serialized[habitat_id] = slots
 
 	return {
+		"user_photo": GlobalData.user_photo_url, # Añadido para que se guarde la foto
 		"coins": main.coins,
 		"levels": main.levels,
 		"unlocked": main.unlocked,
@@ -41,8 +40,69 @@ func get_save_state() -> Dictionary:
 		"annoyed_fish_count": main.achievements_manager.annoyed_fish_count,
 	}
 
+func reset_local_state() -> void:
+	# Reseteo de variables en Main
+	main.coins = 0.0
+	main.total_coins_earned = 0.0
+	main.total_clicks = 0
+	main.session_time_seconds = 0.0
+	main.click_power = 1
+
+	main.levels.clear()
+	main.unlocked.clear()
+	main.fish_inventory.clear()
+
+	# Re-inicializar desbloqueos gratuitos
+	for k in main.ITEMS.keys():
+		var id := String(k)
+		main.levels[id] = 0
+		main.unlocked[id] = int(main.ITEMS[id].get("unlock_price", 0)) == 0
+
+	# Reseteo de Logros
+	main.achievements_manager.achievements_unlocked.clear()
+	for achievement_id in main.achievements_manager.ACHIEVEMENT_DEFS.keys():
+		main.achievements_manager.achievements_unlocked[achievement_id] = false
+
+	main.achievements_manager.random_tick_unlocked = false
+	main.achievements_manager.volume_slider_spam_unlocked = false
+	main.achievements_manager.total_shinies_ever = 0
+	main.achievements_manager.total_structures_spent = 0.0
+	main.achievements_manager.alien_clicked_count = 0
+	main.achievements_manager.profile_clicks_count = 0
+	main.achievements_manager.annoyed_fish_count = 0
+	main.achievements_manager.achievement_check_accum = 0.0
+
+	# Limpieza de Acuarios
+	for habitat_id in main.aquarium_data.keys():
+		var empty_slots := []
+		empty_slots.resize(10)
+		empty_slots.fill(null)
+		main.aquarium_data[habitat_id] = empty_slots
+
+	for child in main.fish_layer.get_children():
+		child.queue_free()
+
+	# Actualización Visual
+	main.shop_manager.update_cps()
+	main._update_chest_sprite_by_level()
+	main._update_algas_sprite_by_level()
+	main._update_tronco_visibility_by_level()
+	main._update_anubia_sprite_by_level()
+	main.ui_manager._update_ui()
+	GlobalData.user_photo_url = ""
 
 func apply_save_state(state: Dictionary) -> void:
+	if state.is_empty():
+		print("Cuenta nueva sin datos. Manteniendo progreso local.")
+		return 
+
+	# CORRECCIÓN: Llamada local a la función de este script
+	reset_local_state() 
+
+	if state.has("user_photo"):
+		GlobalData.user_photo_url = state["user_photo"]
+		main.get_tree().call_group("main_hud_buttons", "update_avatar")
+	
 	main.coins = float(state.get("coins", 0.0))
 
 	var saved_levels: Dictionary = state.get("levels", {})

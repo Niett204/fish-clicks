@@ -220,11 +220,11 @@ func _ready() -> void:
 		ui_manager.toggle_encyclopedia()
 	)
 	
-	btn_profile_icon.pressed.connect(func():
-		achievements_manager.register_profile_click()
-		ui_manager.play_squish(btn_profile_icon)
-		ui_manager.toggle_profile()
-	)
+	#btn_profile_icon.pressed.connect(func():
+		#achievements_manager.register_profile_click()
+		#ui_manager.play_squish(btn_profile_icon)
+		#ui_manager.toggle_profile()
+	#)
 
 	btn_inventory_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_inventory_icon)
