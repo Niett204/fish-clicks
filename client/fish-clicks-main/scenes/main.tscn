@@ -18,8 +18,7 @@
 [ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://rljxhda6odwj" path="res://assets/ui/iconos/icono_enciclopedia.png" id="11_yc10j"]
 [ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
-[ext_resource type="Texture2D" uid="uid://bsbjtjtpcatjl" path="res://assets/ui/inventario/pecera_vacia.png" id="12_qkpxi"]
-[ext_resource type="Texture2D" uid="uid://cdi0rx08m5at3" path="res://assets/ui/inventario/pecera_vacia2.png" id="12_qkpxi"]
+[ext_resource type="Texture2D" uid="uid://etiyc1qlnhhy" path="res://assets/ui/inventario/pecera_vacia2.png" id="12_qkpxi"]
 [ext_resource type="Texture2D" uid="uid://b33wxaxja8jx0" path="res://assets/ui/red.png" id="13_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://c5ht6q767emx5" path="res://assets/ui/botella_mensaje.png" id="13_muem4"]
 [ext_resource type="Script" uid="uid://gmyjxeo8kray" path="res://scenes/btn_profile.gd" id="13_qkpxi"]
@@ -35,7 +34,7 @@
 [ext_resource type="PackedScene" uid="uid://csohusujfqgej" path="res://scenes/stats_panel.tscn" id="23_y6deb"]
 [ext_resource type="Script" uid="uid://dq5rdt0gb7n50" path="res://scenes/options_panel.gd" id="25_2f3dj"]
 [ext_resource type="PackedScene" uid="uid://buvdg6kk8oju2" path="res://scenes/ProfilePanel.tscn" id="25_2wyq8"]
-[ext_resource type="Texture2D" uid="uid://simg5b7itmvf" path="res://assets/ui/ampliar.png" id="33_5q0nq"]
+[ext_resource type="Texture2D" uid="uid://bpgxqk77y7lih" path="res://assets/ui/ampliar.png" id="33_5q0nq"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y6deb"]
 load_path = "res://.godot/imported/anubia_large.png-9dd54c4d539590f8396e886059658b60.ctex"
@@ -45,6 +44,9 @@ size = Vector2(268, 237)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a8y0u"]
 size = Vector2(1022, 516)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dgi5k"]
+shader = ExtResource("14_5q0nq")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dp3eg"]
 texture = ExtResource("13_muem4")
