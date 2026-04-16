@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://csohusujfqgej"]
 
-[ext_resource type="Texture2D" uid="uid://d1h3xsm418jol" path="res://assets/ui/pergamino_v2.png" id="1_11237"]
+[ext_resource type="Texture2D" uid="uid://bicarrylo3grx" path="res://assets/ui/pergamino_v2.png" id="1_11237"]
 [ext_resource type="Script" uid="uid://2rxaob60v4r7" path="res://scenes/stats_panel.gd" id="1_tpkst"]
-[ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="2_11237"]
-[ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="2_h0ltc"]
-[ext_resource type="Texture2D" uid="uid://sce6m2jrsyl8" path="res://assets/ui/marco_small_v2.png" id="2_x23uq"]
+[ext_resource type="Texture2D" uid="uid://4js67mc3pou0" path="res://assets/ui/cruz.png" id="2_11237"]
+[ext_resource type="FontFile" uid="uid://dkkmqm6p1jj0p" path="res://assets/fuentes/PirataOne-Regular.ttf" id="2_h0ltc"]
+[ext_resource type="Texture2D" uid="uid://dsgo21eqrfs3n" path="res://assets/ui/marco_small_v2.png" id="2_x23uq"]
 
-[node name="StatsPanel" type="Control" unique_id=493873659]
+[node name="RankingPanel" type="Control" unique_id=493873659]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -330,7 +330,7 @@ theme_override_colors/font_color = Color(0.5058824, 0.36862746, 0.15294118, 1)
 theme_override_fonts/font = ExtResource("2_h0ltc")
 text = "100%"
 
-[node name="TitleStats" type="Label" parent="." unique_id=1273803388]
+[node name="TitleRanking" type="Label" parent="." unique_id=1273803388]
 layout_mode = 0
 offset_left = 194.0
 offset_top = 84.0
@@ -339,7 +339,7 @@ offset_bottom = 126.0
 theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
 theme_override_fonts/font = ExtResource("2_h0ltc")
 theme_override_font_sizes/font_size = 27
-text = "Estadísticas"
+text = "Ranking global"
 horizontal_alignment = 1
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=302629687]

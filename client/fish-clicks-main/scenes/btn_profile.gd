@@ -42,17 +42,21 @@ func update_avatar() -> void:
 	
 	# CASO 1: Usuario logueado con foto personalizada
 	if GlobalData.is_logged_in and not GlobalData.user_photo_url.is_empty():
-		var img = Image.new()
 		var raw_data = Marshalls.base64_to_raw(GlobalData.user_photo_url)
-		var err = img.load_png_from_buffer(raw_data)
-		if err != OK: err = img.load_jpg_from_buffer(raw_data)
-			
-		if err == OK:
-			user_image.texture = ImageTexture.create_from_image(img)
-			user_image.show()
-			return # Salimos de la función si todo fue bien
+		
+		# Validación Crítica: Un PNG/JPG real nunca mide menos de 100 bytes
+		# Si raw_data es muy pequeño, evitamos llamar a load_png para no ensuciar la consola
+		if raw_data.size() > 100: 
+			var img = Image.new()
+			var err = img.load_png_from_buffer(raw_data)
+			if err != OK: 
+				err = img.load_jpg_from_buffer(raw_data)
+				
+			if err == OK:
+				user_image.texture = ImageTexture.create_from_image(img)
+				user_image.show()
+				return 
 
-	# CASO 2: Fallback (Si no hay login o no hay foto, ponemos la default)
-	# Reemplaza 'default_avatar' con tu preload si lo tienes, o déjalo en null para que se vea el marco vacío
+	# CASO 2: Fallback (Si no hay login, variable vacía o datos corruptos)
 	user_image.texture = load("res://assets/ui/iconos/default_avatar.png") 
 	user_image.show()
