@@ -46,6 +46,8 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 @onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var dps_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer2/DpsLabel
 @onready var unidades_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/UnidadesLabel
+@onready var btn_ranking_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnRanking
+@onready var ranking_panel: Control = $UI/Root/HUD/RankingPanel
 @onready var fish_mode_overlay: Control = $UI/Root/FishModeOverlay
 @onready var fish_mode_dark_bg: ColorRect = $UI/Root/FishModeOverlay/DarkBg
 @onready var btn_expand_fish_mode: Control = $UI/Root/FishModeOverlay/BtnExpand
@@ -228,6 +230,11 @@ func _ready() -> void:
 		ui_manager.toggle_shop()
 	)
 
+	btn_ranking_icon.pressed.connect(func():
+		ui_manager.play_squish(btn_ranking_icon)
+		ui_manager.toggle_ranking()
+	)
+
 	btn_encyclopedia_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_encyclopedia_icon)
 		ui_manager.toggle_encyclopedia()
@@ -255,7 +262,7 @@ func _ready() -> void:
 		ui_manager.play_squish(btn_stats_icon)
 		ui_manager.toggle_stats_panel()
 	)
-	
+
 	btn_expand_fish_mode.pressed.connect(func():
 		hide_fish_mode_overlay()
 		fish_mode_manager.toggle_fish_mode()
@@ -267,10 +274,10 @@ func _ready() -> void:
 
 	vallisneria_base_scale = vallisneria.scale
 	anubia_base_scale = anubia.scale
-	
+
 	content_pecera_normal_position = content_pecera.position
 	content_pecera_normal_scale = content_pecera.scale
-	
+
 	swim_area_normal_position = swim_area_collision.position
 	var swim_shape: RectangleShape2D = swim_area_collision.shape as RectangleShape2D
 	swim_area_normal_size = swim_shape.size
@@ -325,6 +332,11 @@ func _ready() -> void:
 		profile_panel._close()
 	)
 	
+	ranking_panel.close_requested.connect(func():
+		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
+		ranking_panel.visible = false
+	)
+
 	if game_start_date_string == "":
 		var dt := Time.get_datetime_dict_from_system()
 		game_start_date_string = "%02d/%02d/%04d" % [dt.day, dt.month, dt.year]
@@ -758,32 +770,32 @@ func format_play_time(total_seconds: int) -> String:
 func apply_normal_mode_layout() -> void:
 	content_pecera.position = content_pecera_normal_position
 	content_pecera.scale = content_pecera_normal_scale
-	
+
 	swim_area_collision.position = swim_area_normal_position
 	var swim_shape: RectangleShape2D = swim_area_collision.shape as RectangleShape2D
 	swim_shape.size = swim_area_normal_size
-	
+
 	refresh_fishes_swim_rect()
-	
+
 	marco_pecera.visible = false
 
 func apply_fish_mode_layout() -> void:
 	content_pecera.position = Vector2(26, 24)
 	content_pecera.scale = Vector2(0.96, 0.96)
-	
+
 	swim_area_collision.position = Vector2(577, 330)
 	var swim_shape: RectangleShape2D = swim_area_collision.shape as RectangleShape2D
 	swim_shape.size = Vector2(1022, 490)
-	
+
 	refresh_fishes_swim_rect()
-	
+
 	marco_pecera.visible = true
-	
+
 func refresh_fishes_swim_rect() -> void:
 	for fish in fish_layer.get_children():
 		if fish.has_method("_update_swim_rect"):
 			fish._update_swim_rect()
-			
+
 func show_fish_mode_overlay() -> void:
 	fish_mode_overlay.visible = true
 

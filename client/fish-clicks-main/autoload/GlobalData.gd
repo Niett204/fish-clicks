@@ -168,9 +168,13 @@ func clear_session() -> void:
 	user_id       = ""
 	user_email    = ""
 	user_nickname = ""
+	user_photo_url = ""
 	is_logged_in  = false
 	if FileAccess.file_exists(SESSION_FILE):
 		DirAccess.remove_absolute(SESSION_FILE)
+	
+	if get_tree().has_group("main_hud_buttons"):
+		get_tree().call_group("main_hud_buttons", "update_avatar")
 
 func get_auth_header() -> String:
 	return "Bearer " + user_token
@@ -282,3 +286,51 @@ func _on_load_done(_result, code: int, _headers, body: PackedByteArray, http: HT
 		load_failed.emit("No hay partida guardada")
 	else:
 		load_failed.emit("Error al cargar la partida")
+
+func upload_user_photo(base64_data: String) -> void:
+	if not is_logged_in: return
+	
+	var http := HTTPRequest.new()
+	add_child(http)
+	
+	var body = JSON.stringify({"foto": base64_data})
+	var headers = [
+		"Content-Type: application/json",
+		"Authorization: " + get_auth_header()
+	]
+	
+	http.request(BASE_URL + "/auth/update-photo", headers, HTTPClient.METHOD_POST, body)
+	
+	# Actualizamos localmente para que se vea el cambio al instante
+	user_photo_url = base64_data
+	_save_session() # Actualizamos el archivo local .save para que no se pierda al reiniciar
+
+# --- RANKING ---
+signal ranking_received(type: String, data: Array)
+signal ranking_failed(error: String)
+
+func fetch_ranking(type: String) -> void:
+	# type: "clicks" o "money"
+	var http := HTTPRequest.new()
+	add_child(http)
+	
+	http.request_completed.connect(func(result, code, headers, body):
+		http.queue_free()
+		if code == 200:
+			var data = JSON.parse_string(body.get_string_from_utf8())
+			if data is Array:
+				ranking_received.emit(type, data)
+			else:
+				ranking_failed.emit("Formato de ranking inválido")
+		else:
+			var msg = _build_error_message(result, code, body, "Error al obtener ranking")
+			ranking_failed.emit(msg)
+	)
+
+	var headers := [
+		"Content-Type: application/json",
+		"Authorization: " + get_auth_header()
+	]
+	
+	# Asegúrate de que las rutas en el backend coincidan (/ranking/clicks y /ranking/money)
+	http.request(BASE_URL + "/ranking/" + type, headers, HTTPClient.METHOD_GET)

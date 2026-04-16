@@ -230,15 +230,15 @@ func _on_photo_gui_input(event: InputEvent) -> void:
 func _on_avatar_selected(path: String) -> void:
 	var img = Image.load_from_file(path)
 	if img:
-		# Ajustamos tamaño para que la base de datos no sufra
-		img.resize(256, 256, Image.INTERPOLATE_LANCZOS)
+		img.resize(128, 128, Image.INTERPOLATE_LANCZOS)
+		var buffer = img.save_png_to_buffer()
+		var b64 = Marshalls.raw_to_base64(buffer)
 		
-		# Lo pasamos a Base64 para guardarlo en tu GlobalData
-		var buffer = img.save_jpg_to_buffer()
-		GlobalData.user_photo_url = Marshalls.raw_to_base64(buffer)
+		# 1. Subir al servidor (Llama a tu GlobalData.upload_user_photo)
+		GlobalData.upload_user_photo(b64)
 		
-		# Actualizamos la textura del nodo (el shader hará el resto)
-		user_photo.texture = ImageTexture.create_from_image(img)
-		
-		# Avisamos al HUD para que se actualice también
+		# 2. Refrescar el botón de la TopBar inmediatamente
 		get_tree().call_group("main_hud_buttons", "update_avatar")
+		
+		# 3. Refrescar la imagen del propio Panel de Perfil (el círculo grande)
+		user_photo.texture = ImageTexture.create_from_image(img)

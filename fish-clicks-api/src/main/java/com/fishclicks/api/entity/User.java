@@ -32,6 +32,12 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column (name = "total_clicks")
+    private int totalClicks;
+
+    @Column (name = "coins")
+    private double coins;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Password> passwords;
 

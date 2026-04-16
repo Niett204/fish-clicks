@@ -37,6 +37,9 @@ func _close_overlay_panels(except_panel: Control = null) -> void:
 
 	if main.stats_panel != except_panel:
 		main.stats_panel.visible = false
+		
+	if main.ranking_panel != except_panel:
+		main.ranking_panel.visible = false
 
 
 func _toggle_hud() -> void:
@@ -244,3 +247,21 @@ func _refresh_card(card) -> void:
 
 	if card.has_method("refresh_info_panel_if_hovered"):
 		card.refresh_info_panel_if_hovered()
+		
+func toggle_ranking() -> void:
+	var will_open: bool = not main.ranking_panel.visible
+
+	if will_open:
+		_close_overlay_panels(main.ranking_panel)
+		play_ui_sfx(main.SFX_ICON_OPEN)
+		main.ranking_panel.visible = true
+
+		if main.info_panel:
+			main.info_panel.request_hide()
+		
+		# Llamamos al método de apertura del panel si existe
+		if main.ranking_panel.has_method("_open"):
+			main.ranking_panel._open()
+	else:
+		main.ranking_panel.visible = false
+		play_ui_sfx(main.SFX_ICON_CLOSE)
