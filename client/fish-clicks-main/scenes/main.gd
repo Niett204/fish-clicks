@@ -46,12 +46,18 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 @onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var dps_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer2/DpsLabel
 @onready var unidades_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/UnidadesLabel
+@onready var fish_mode_overlay: Control = $UI/Root/FishModeOverlay
+@onready var fish_mode_dark_bg: ColorRect = $UI/Root/FishModeOverlay/DarkBg
+@onready var btn_expand_fish_mode: Control = $UI/Root/FishModeOverlay/BtnExpand
 
 # ------------------- NODOS DE MUNDO -------------------
 @onready var content_pecera: Node2D = $ContentPecera
 @onready var chest: Area2D = $ContentPecera/Cofre
 @onready var chest_sprite: Sprite2D = $ContentPecera/Cofre/Sprite2D
 @onready var fish_layer = $ContentPecera/PecesLayer
+@onready var bg: Sprite2D = $ContentPecera/BG
+@onready var swim_area: Node2D = $ContentPecera/SwimArea
+@onready var swim_area_collision: CollisionShape2D = $ContentPecera/SwimArea/CollisionShape2D
 @onready var vallisneria: Sprite2D = $ContentPecera/EstructurasLayer/Vallisneria
 @onready var anubia: Sprite2D = $ContentPecera/EstructurasLayer/Anubia
 @onready var tronco_1: Sprite2D = $ContentPecera/EstructurasLayer/Tronco
@@ -126,8 +132,11 @@ var vallisneria_ground_y: float = 0.0
 var anubia_ground_y: float = 0.0
 var vallisneria_base_scale: Vector2
 var anubia_base_scale: Vector2
+# --- para el modo pecera ---
 var content_pecera_normal_position: Vector2
 var content_pecera_normal_scale: Vector2
+var swim_area_normal_position: Vector2
+var swim_area_normal_size: Vector2
 
 # ------------------- MANAGERS -------------------
 const UiManagerScript = preload("res://scripts/main/ui_manager.gd")
@@ -246,6 +255,11 @@ func _ready() -> void:
 		ui_manager.play_squish(btn_stats_icon)
 		ui_manager.toggle_stats_panel()
 	)
+	
+	btn_expand_fish_mode.pressed.connect(func():
+		hide_fish_mode_overlay()
+		fish_mode_manager.toggle_fish_mode()
+	)
 
 	tab_container.tab_changed.connect(ui_manager._on_tab_changed)
 	_update_chest_sprite_by_level()
@@ -256,7 +270,13 @@ func _ready() -> void:
 	
 	content_pecera_normal_position = content_pecera.position
 	content_pecera_normal_scale = content_pecera.scale
+	
+	swim_area_normal_position = swim_area_collision.position
+	var swim_shape: RectangleShape2D = swim_area_collision.shape as RectangleShape2D
+	swim_area_normal_size = swim_shape.size
+
 	marco_pecera.visible = false
+	fish_mode_overlay.visible = false
 
 	if vallisneria.texture:
 		vallisneria_ground_y = vallisneria.position.y + (vallisneria.texture.get_height() * abs(vallisneria.scale.y) * 0.5)
@@ -738,9 +758,34 @@ func format_play_time(total_seconds: int) -> String:
 func apply_normal_mode_layout() -> void:
 	content_pecera.position = content_pecera_normal_position
 	content_pecera.scale = content_pecera_normal_scale
+	
+	swim_area_collision.position = swim_area_normal_position
+	var swim_shape: RectangleShape2D = swim_area_collision.shape as RectangleShape2D
+	swim_shape.size = swim_area_normal_size
+	
+	refresh_fishes_swim_rect()
+	
 	marco_pecera.visible = false
 
 func apply_fish_mode_layout() -> void:
-	content_pecera.position = Vector2(30, 18)
-	content_pecera.scale = Vector2(0.6, 0.6)
+	content_pecera.position = Vector2(26, 24)
+	content_pecera.scale = Vector2(0.96, 0.96)
+	
+	swim_area_collision.position = Vector2(577, 330)
+	var swim_shape: RectangleShape2D = swim_area_collision.shape as RectangleShape2D
+	swim_shape.size = Vector2(1022, 490)
+	
+	refresh_fishes_swim_rect()
+	
 	marco_pecera.visible = true
+	
+func refresh_fishes_swim_rect() -> void:
+	for fish in fish_layer.get_children():
+		if fish.has_method("_update_swim_rect"):
+			fish._update_swim_rect()
+			
+func show_fish_mode_overlay() -> void:
+	fish_mode_overlay.visible = true
+
+func hide_fish_mode_overlay() -> void:
+	fish_mode_overlay.visible = false

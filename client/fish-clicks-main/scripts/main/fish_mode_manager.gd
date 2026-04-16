@@ -19,7 +19,7 @@ func toggle_fish_mode() -> void:
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED, id)
 
 	var size_grande := Vector2i(1152, 648)
-	var size_pequeno := Vector2i(384, 216)
+	var size_pequeno := Vector2i(368, 207)
 
 	if modo_pecera:
 		main.hud.visible = true
@@ -65,11 +65,21 @@ func handle_input(event: InputEvent) -> void:
 	if not modo_pecera:
 		return
 
+	if main.fish_mode_overlay.visible:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			var button_rect: Rect2 = main.btn_expand_fish_mode.get_global_rect()
+			var mouse_pos := main.get_viewport().get_mouse_position()
+
+			if not button_rect.has_point(mouse_pos):
+				main.hide_fish_mode_overlay()
+				main.get_viewport().set_input_as_handled()
+			return
+
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			if event.double_click:
 				arrastrando_pecera = false
-				toggle_fish_mode()
+				main.show_fish_mode_overlay()
 				main.get_viewport().set_input_as_handled()
 				return
 
