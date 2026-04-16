@@ -434,6 +434,11 @@ func _play_water_splash_at(impact_pos: Vector2, impact_dir: Vector2) -> void:
 		splash_player.stop()
 		splash_player.play()
 		
+	if _is_current_fish_shiny():
+		var main_node = get_tree().get_first_node_in_group("main")
+		if main_node:
+			main_node.ui_manager.play_ui_sfx(main_node.SFX_SHINY)
+		
 	if splash_particles == null:
 		return
 

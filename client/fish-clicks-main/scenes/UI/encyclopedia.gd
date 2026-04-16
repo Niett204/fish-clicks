@@ -1,5 +1,7 @@
 extends Control
 signal close_requested
+signal page_changed
+signal category_changed
 
 @onready var http_request: HTTPRequest = $HTTPRequest
 @onready var rareza_container: VBoxContainer = $FondoLibro/RarezaPanel/RarezaContainer
@@ -344,6 +346,7 @@ func cambiar_rareza(nueva_rareza: String) -> void:
 
 	rareza_actual = nueva_rareza
 	current_page = 0
+	category_changed.emit()
 	load_fishes(rareza_actual)
 
 
@@ -465,12 +468,14 @@ func _on_btn_anterior_pressed() -> void:
 	if current_page > 0:
 		current_page -= 1
 		update_book()
+		page_changed.emit()
 
 
 func _on_btn_siguiente_pressed() -> void:
 	if (current_page + 1) * 2 < fishes.size():
 		current_page += 1
 		update_book()
+		page_changed.emit()
 
 
 func capitalizar_rareza(texto: String) -> String:

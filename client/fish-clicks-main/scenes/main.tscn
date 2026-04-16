@@ -22,13 +22,7 @@
 [ext_resource type="Texture2D" uid="uid://b33wxaxja8jx0" path="res://assets/ui/red.png" id="13_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://c5ht6q767emx5" path="res://assets/ui/botella_mensaje.png" id="13_muem4"]
 [ext_resource type="Script" uid="uid://gmyjxeo8kray" path="res://scenes/btn_profile.gd" id="13_qkpxi"]
-[ext_resource type="Shader" uid="uid://clhdnox30mfge" path="res://scenes/ProfilePanel.gdshader" id="14_5q0nq"]
-[ext_resource type="Texture2D" uid="uid://c11vv84nkq6dj" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
-[ext_resource type="Texture2D" uid="uid://djfuqkl1d07r3" path="res://assets/ui/iconos/icono_ranking.png" id="17_dgi5k"]
-[ext_resource type="FontFile" uid="uid://dkkmqm6p1jj0p" path="res://assets/fuentes/PirataOne-Regular.ttf" id="18_og1vs"]
-[ext_resource type="Texture2D" uid="uid://0qoeov5gmr34" path="res://assets/ui/alga.png" id="18_yc10j"]
-[ext_resource type="Texture2D" uid="uid://bixk0wn142e60" path="res://assets/ui/bandera.png" id="19_0ld40"]
-[ext_resource type="Texture2D" uid="uid://ci0tx2xpyonnb" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
+[ext_resource type="Shader" path="res://scenes/ProfilePanel.gdshader" id="14_5q0nq"]
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="18_og1vs"]
 [ext_resource type="Texture2D" uid="uid://tyjvk13keej5" path="res://assets/ui/alga.png" id="18_yc10j"]
@@ -159,6 +153,7 @@ grow_vertical = 2
 mouse_filter = 1
 
 [node name="MarcoPecera" type="TextureRect" parent="UI/Root" unique_id=989869189]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -243,7 +238,6 @@ stretch_mode = 5
 [node name="BtnRanking" type="TextureButton" parent="UI/Root/HUD/TopBar/LeftGroup" unique_id=103365818]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-texture_normal = ExtResource("17_dgi5k")
 ignore_texture_size = true
 stretch_mode = 5
 

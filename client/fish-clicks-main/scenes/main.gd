@@ -76,6 +76,9 @@ const SFX_COFRE_CLICK := preload("res://assets/audio/UI/pulsar_cofre.wav")
 const SFX_BUY_ITEM := preload("res://assets/audio/UI/comprar.wav")
 const SFX_SHINY := preload("res://assets/audio/UI/shiny.wav")
 const SFX_CAMBIAR_TAB := preload("res://assets/audio/UI/cambiar_tab.wav")
+const SFX_PASA_PAGINA := preload("res://assets/audio/UI/pasa_pagina.wav")
+const SFX_CAMBIAR_CATEGORIA := preload("res://assets/audio/UI/cambiar_tab.wav")
+const SFX_ICON_BOTTLE := preload("res://assets/audio/UI/cerrar_icono.wav")
 
 # ------------------- ASSETS VISUALES -------------------
 const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado_arena.png")
@@ -315,6 +318,14 @@ func _ready() -> void:
 	encyclopedia_panel.close_requested.connect(func():
 		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
 		encyclopedia_panel.visible = false
+	)
+	
+	encyclopedia_panel.page_changed.connect(func():
+		ui_manager.play_ui_sfx(SFX_PASA_PAGINA)
+	)
+	
+	encyclopedia_panel.category_changed.connect(func():
+		ui_manager.play_ui_sfx(SFX_CAMBIAR_CATEGORIA)
 	)
 	
 	stats_panel.close_requested.connect(func():
