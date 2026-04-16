@@ -69,6 +69,12 @@ texture = ExtResource("18_yc10j")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_muem4"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5q0nq"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_j8jky"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dgi5k"]
+
 [node name="Main" type="Node2D" unique_id=1758773918]
 script = ExtResource("1_0wfyh")
 floating_text_scene = ExtResource("2_tefeu")
@@ -150,7 +156,7 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -13.0
-offset_top = -8.0
+offset_top = -35.0
 offset_right = 2.0
 offset_bottom = 5.0
 grow_horizontal = 2
@@ -612,22 +618,24 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.39215687)
 
-[node name="BtnExpand" type="TextureButton" parent="UI/Root/FishModeOverlay" unique_id=1529741794]
+[node name="BtnExpand" type="Button" parent="UI/Root/FishModeOverlay" unique_id=1640228427]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -151.25
-offset_top = -151.25
-offset_right = 151.25
-offset_bottom = 151.25
+offset_left = -184.5
+offset_top = -184.5
+offset_right = 184.5
+offset_bottom = 184.5
 grow_horizontal = 2
 grow_vertical = 2
-texture_normal = ExtResource("33_5q0nq")
-ignore_texture_size = true
-stretch_mode = 0
+theme_override_styles/normal = SubResource("StyleBoxEmpty_5q0nq")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_j8jky")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_dgi5k")
+icon = ExtResource("33_5q0nq")
+expand_icon = true
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=121986834]
 
