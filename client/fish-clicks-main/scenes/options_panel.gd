@@ -53,9 +53,9 @@ func _ready() -> void:
 	_configure_slider(SliderEfectos)
 	
 	# Inicializar las Sliders a un valor predeterminado
-	SliderGeneral.value = 70
-	SliderMusica.value = 60
-	SliderEfectos.value = 80
+	SliderGeneral.value = 15
+	SliderMusica.value = 20
+	SliderEfectos.value = 25
 
 	_apply_all_slider_audio()
 	

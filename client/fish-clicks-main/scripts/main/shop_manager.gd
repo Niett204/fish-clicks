@@ -85,7 +85,6 @@ func apply_purchase(id: String) -> void:
 
 	update_cps()
 
-
 func on_buy_pressed(id: String) -> void:
 	var price: int = get_price(id)
 	if main.coins < price:
@@ -101,11 +100,12 @@ func on_buy_pressed(id: String) -> void:
 
 	if main.fish_defs.has(id):
 		var spawned_fish_id: String = id
+		var is_shiny := false
 
 		if randf() < 0.01 and main.fish_defs.has(id + "_shiny"):
 			spawned_fish_id = id + "_shiny"
+			is_shiny = true
 			main.achievements_manager.register_shiny_obtained()
-			main.ui_manager.play_ui_sfx(main.SFX_SHINY)
 
 		var slot_index: int = main.aquarium_manager.try_add_fish_to_aquarium(main.current_habitat, spawned_fish_id)
 
@@ -114,13 +114,16 @@ func on_buy_pressed(id: String) -> void:
 		else:
 			main.fish_inventory[spawned_fish_id] = int(main.fish_inventory.get(spawned_fish_id, 0)) + 1
 
+		if is_shiny:
+			await main.get_tree().create_timer(0.5).timeout
+			main.ui_manager.play_ui_sfx(main.SFX_SHINY)
+
 	main.aquarium_manager.refresh_inventory_panel_data()
 	main.ui_manager._update_ui()
 	main.achievements_manager.check_achievements()
 
 	if main.stats_panel.visible:
 		main.stats_manager.refresh_stats_values_only()
-
 
 func on_unlock_pressed(id: String) -> void:
 	if bool(main.unlocked.get(id, false)):

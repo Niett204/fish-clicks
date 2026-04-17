@@ -138,7 +138,7 @@ func check_achievements() -> void:
 				icon_tex = icon_data
 			elif icon_data is String and icon_data != "":
 				icon_tex = load(icon_data)
-
+			
 			_show_achievement_popup(title, condition, icon_tex)
 
 	if changed and main.stats_panel.visible:
@@ -167,6 +167,8 @@ func _try_show_next_achievement_popup() -> void:
 	var popup = ACHIEVEMENT_POPUP_SCENE.instantiate()
 	main.get_node("UI/Root").add_child(popup)
 	achievement_popup_active = popup
+	
+	main.ui_manager.play_achievement_sfx(main.SFX_ACHIEVEMENT)
 
 	if popup.has_method("setup_popup"):
 		popup.setup_popup(
