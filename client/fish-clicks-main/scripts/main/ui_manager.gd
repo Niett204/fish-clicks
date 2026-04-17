@@ -15,6 +15,13 @@ func play_ui_sfx(stream: AudioStream) -> void:
 	main.ui_sfx_player.stop()
 	main.ui_sfx_player.play()
 
+func play_achievement_sfx(stream: AudioStream) -> void:
+	if stream == null:
+		return
+
+	main.achievement_sfx_player.stream = stream
+	main.achievement_sfx_player.stop()
+	main.achievement_sfx_player.play()
 
 func play_squish(node: Control) -> void:
 	var t := main.create_tween()

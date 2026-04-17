@@ -69,6 +69,7 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 # ------------------- AUDIO -------------------
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
 @onready var ui_sfx_player: AudioStreamPlayer = $UiSfxPlayer
+@onready var achievement_sfx_player: AudioStreamPlayer = $AchievementSfxPlayer
 
 const SFX_ICON_OPEN := preload("res://assets/audio/UI/abrir_icono.wav")
 const SFX_ICON_CLOSE := preload("res://assets/audio/UI/cerrar_icono.wav")
@@ -78,7 +79,8 @@ const SFX_SHINY := preload("res://assets/audio/UI/shiny.wav")
 const SFX_CAMBIAR_TAB := preload("res://assets/audio/UI/cambiar_tab.wav")
 const SFX_PASA_PAGINA := preload("res://assets/audio/UI/pasa_pagina.wav")
 const SFX_CAMBIAR_CATEGORIA := preload("res://assets/audio/UI/cambiar_tab.wav")
-const SFX_ICON_BOTTLE := preload("res://assets/audio/UI/cerrar_icono.wav")
+const SFX_ACHIEVEMENT := preload("res://assets/audio/UI/shiny.wav")
+const SFX_BOTTLE := preload("res://assets/audio/UI/cambiar_tab.wav")
 
 # ------------------- ASSETS VISUALES -------------------
 const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado_arena.png")
@@ -346,6 +348,10 @@ func _ready() -> void:
 	ranking_panel.close_requested.connect(func():
 		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
 		ranking_panel.visible = false
+	)
+	
+	left_info_panel.bottle_clicked.connect(func():
+		ui_manager.play_ui_sfx(SFX_BOTTLE)
 	)
 
 	if game_start_date_string == "":

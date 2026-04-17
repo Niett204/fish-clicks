@@ -29,6 +29,7 @@
 [ext_resource type="Texture2D" uid="uid://bgs77das3fpu1" path="res://assets/ui/bandera.png" id="19_0ld40"]
 [ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
 [ext_resource type="PackedScene" uid="uid://d4kjqemcayt4t" path="res://scenes/inventario.tscn" id="21_pm3ni"]
+[ext_resource type="Script" uid="uid://drdsaa7gdbvuj" path="res://scenes/left_info_panel.gd" id="22_kmb1v"]
 [ext_resource type="PackedScene" uid="uid://cbbihh5ocgssr" path="res://scenes/options_panel.tscn" id="22_pm3ni"]
 [ext_resource type="PackedScene" uid="uid://crojbj03flfr6" path="res://scenes/UI/encyclopedia_panel.tscn" id="23_ency"]
 [ext_resource type="PackedScene" uid="uid://csohusujfqgej" path="res://scenes/stats_panel.tscn" id="23_y6deb"]
@@ -298,6 +299,7 @@ offset_right = 487.76318
 offset_bottom = 360.89478
 rotation = 3.1415927
 theme_override_styles/panel = SubResource("StyleBoxTexture_dp3eg")
+script = ExtResource("22_kmb1v")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/Root/HUD/LeftInfoPanel" unique_id=1724032618]
 layout_mode = 1
@@ -661,6 +663,9 @@ bus = &"Musica"
 [node name="GeneralPlayer" type="AudioStreamPlayer" parent="." unique_id=439498732]
 
 [node name="EfectosPlayer" type="AudioStreamPlayer" parent="." unique_id=1761682386]
+
+[node name="AchievementSfxPlayer" type="AudioStreamPlayer" parent="." unique_id=1311800141]
+bus = &"Efectos"
 
 [connection signal="input_event" from="ContentPecera/Cofre" to="ContentPecera/Cofre" method="_on_input_event"]
 [connection signal="pressed" from="UI/Root/HUD/TopBar/RightGroup/BtnShop" to="." method="_on_btn_shop_pressed"]
