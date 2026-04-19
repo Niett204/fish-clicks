@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://b7hm2boircney"]
+
+[ext_resource type="Texture2D" uid="uid://ltdn6qxh12qx" path="res://assets/minijuegos/alien/blerp.png" id="1_inuqh"]
+[ext_resource type="Script" uid="uid://6rrbft0cyoa0" path="res://scripts/alien_minigame/alien_worm.gd" id="1_x8l6g"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_inuqh"]
+radius = 56.994415
+height = 113.98883
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_x8l6g"]
+radius = 97.0
+height = 464.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sy3be"]
+radius = 94.07997
+height = 469.6206
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_inhqf"]
+radius = 177.0
+height = 634.0
+
+[node name="AlienWorm" type="Area2D" unique_id=1289029932]
+script = ExtResource("1_x8l6g")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=238673059]
+texture = ExtResource("1_inuqh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1718547011]
+position = Vector2(339, 88.99999)
+rotation = 2.188643
+scale = Vector2(3.7497153, 2.447415)
+shape = SubResource("CapsuleShape2D_inuqh")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="." unique_id=700949649]
+position = Vector2(90, 107)
+rotation = -0.56199604
+shape = SubResource("CapsuleShape2D_x8l6g")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="." unique_id=890090603]
+position = Vector2(-143, 91.99999)
+rotation = 0.6754424
+shape = SubResource("CapsuleShape2D_sy3be")
+
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="." unique_id=988881400]
+position = Vector2(-323, -3)
+shape = SubResource("CapsuleShape2D_inhqf")

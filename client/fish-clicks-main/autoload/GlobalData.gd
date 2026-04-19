@@ -69,26 +69,6 @@ func _build_error_message(result: int, code: int, body: PackedByteArray, default
 		return str(server_detail)
 		
 	return "%s (Error %d)" % [default_msg, code]
-	# 3) Fallback por codigo HTTP
-	match code:
-		400:
-			return "Datos invalidos (HTTP 400)"
-		401:
-			return "Credenciales incorrectas (HTTP 401)"
-		403:
-			return "Acceso denegado (HTTP 403)"
-		404:
-			return "Endpoint no encontrado (HTTP 404)"
-		409:
-			return "El usuario o email ya existe (HTTP 409)"
-		422:
-			return "No se pudo procesar la solicitud (HTTP 422)"
-		500:
-			return "Error interno del servidor (HTTP 500)"
-		502, 503, 504:
-			return "Servidor no disponible temporalmente (HTTP %d)" % code
-		_:
-			return "%s (HTTP %d)" % [default_msg, code]
 
 
 
@@ -172,7 +152,7 @@ func clear_session() -> void:
 	is_logged_in  = false
 	if FileAccess.file_exists(SESSION_FILE):
 		DirAccess.remove_absolute(SESSION_FILE)
-	
+
 	if get_tree().has_group("main_hud_buttons"):
 		get_tree().call_group("main_hud_buttons", "update_avatar")
 
@@ -289,18 +269,18 @@ func _on_load_done(_result, code: int, _headers, body: PackedByteArray, http: HT
 
 func upload_user_photo(base64_data: String) -> void:
 	if not is_logged_in: return
-	
+
 	var http := HTTPRequest.new()
 	add_child(http)
-	
+
 	var body = JSON.stringify({"foto": base64_data})
 	var headers = [
 		"Content-Type: application/json",
 		"Authorization: " + get_auth_header()
 	]
-	
+
 	http.request(BASE_URL + "/auth/update-photo", headers, HTTPClient.METHOD_POST, body)
-	
+
 	# Actualizamos localmente para que se vea el cambio al instante
 	user_photo_url = base64_data
 	_save_session() # Actualizamos el archivo local .save para que no se pierda al reiniciar
@@ -313,7 +293,7 @@ func fetch_ranking(type: String) -> void:
 	# type: "clicks" o "money"
 	var http := HTTPRequest.new()
 	add_child(http)
-	
+
 	http.request_completed.connect(func(result, code, headers, body):
 		http.queue_free()
 		if code == 200:
@@ -331,6 +311,54 @@ func fetch_ranking(type: String) -> void:
 		"Content-Type: application/json",
 		"Authorization: " + get_auth_header()
 	]
-	
+
 	# Asegúrate de que las rutas en el backend coincidan (/ranking/clicks y /ranking/money)
 	http.request(BASE_URL + "/ranking/" + type, headers, HTTPClient.METHOD_GET)
+
+var pending_runtime_state: Dictionary = {}
+var pending_alien_result: Dictionary = {}
+var pending_abducted_fish_snapshots: Array[Dictionary] = []
+
+func set_pending_abducted_fish_snapshots(snapshots: Array[Dictionary]) -> void:
+	pending_abducted_fish_snapshots = snapshots.duplicate(true)
+
+func consume_pending_abducted_fish_snapshots() -> Array[Dictionary]:
+	var out := pending_abducted_fish_snapshots.duplicate(true)
+	pending_abducted_fish_snapshots.clear()
+	return out
+
+func set_pending_runtime_state(state: Dictionary) -> void:
+	pending_runtime_state = state.duplicate(true)
+
+func consume_pending_runtime_state() -> Dictionary:
+	var out := pending_runtime_state.duplicate(true)
+	pending_runtime_state.clear()
+	return out
+
+func set_pending_alien_result(result: Dictionary) -> void:
+	pending_alien_result = result.duplicate(true)
+
+func consume_pending_alien_result() -> Dictionary:
+	var out := pending_alien_result.duplicate(true)
+	pending_alien_result.clear()
+	return out
+
+var pending_abduct_return_origin: Vector2 = Vector2.ZERO
+
+func set_pending_abduct_return_origin(origin: Vector2) -> void:
+	pending_abduct_return_origin = origin
+
+func consume_pending_abduct_return_origin() -> Vector2:
+	var out := pending_abduct_return_origin
+	pending_abduct_return_origin = Vector2.ZERO
+	return out
+
+var pending_minigame_display_fish_data: Array[Dictionary] = []
+
+func set_pending_minigame_display_fish_data(data: Array[Dictionary]) -> void:
+	pending_minigame_display_fish_data = data.duplicate(true)
+
+func consume_pending_minigame_display_fish_data() -> Array[Dictionary]:
+	var data := pending_minigame_display_fish_data.duplicate(true)
+	pending_minigame_display_fish_data.clear()
+	return data

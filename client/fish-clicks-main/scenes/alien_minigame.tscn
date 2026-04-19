@@ -1,0 +1,254 @@
+[gd_scene format=3 uid="uid://dgow1sqv5k4us"]
+
+[ext_resource type="Texture2D" uid="uid://luud3idj6pha" path="res://assets/minijuegos/alien/auspicio.png" id="1_ejsvn"]
+[ext_resource type="Script" uid="uid://b0scbn0dnhlgp" path="res://scripts/alien_minigame/alien_minigame.gd" id="1_g1yec"]
+[ext_resource type="Texture2D" uid="uid://ylfuc86x7t35" path="res://assets/minijuegos/alien/player.png" id="2_ejsvn"]
+[ext_resource type="Script" uid="uid://tdlbpuphs7qh" path="res://scripts/alien_minigame/alien_boss.gd" id="2_f52h7"]
+[ext_resource type="Texture2D" uid="uid://b88owf2caw6yq" path="res://assets/minijuegos/alien/auspicio_pistola_brillante.png" id="2_g1yec"]
+[ext_resource type="PackedScene" uid="uid://bkt0j5iuossqe" path="res://scenes/alien_laser.tscn" id="2_v0g2y"]
+[ext_resource type="PackedScene" uid="uid://dmcngkhb3y340" path="res://scenes/floating_gun.tscn" id="3_eb0fa"]
+[ext_resource type="PackedScene" uid="uid://b7hm2boircney" path="res://scenes/alien_worm.tscn" id="4_j6bht"]
+[ext_resource type="PackedScene" uid="uid://7hub84c1fhkc" path="res://scenes/glitch_zone.tscn" id="4_knlmx"]
+[ext_resource type="Texture2D" uid="uid://dpt0tp2jyvrbe" path="res://assets/minijuegos/alien/bg_vacio.png" id="7_wa0n8"]
+[ext_resource type="Texture2D" uid="uid://c3k643s4adxh2" path="res://assets/minijuegos/alien/concha.png" id="8_0stt7"]
+[ext_resource type="Texture2D" uid="uid://dnlpku75o4lvb" path="res://assets/peces/rufinus.png" id="8_4c5uy"]
+[ext_resource type="Texture2D" uid="uid://csqjf34ly2qtx" path="res://assets/peces/espuma.png" id="8_fn43i"]
+[ext_resource type="Texture2D" uid="uid://qphqglbo6jc2" path="res://assets/minijuegos/alien/glow_circle.png" id="9_glow"]
+[ext_resource type="Texture2D" uid="uid://hy8sicmmfaxs" path="res://assets/minijuegos/alien/bg_tanques_detras.png" id="10_oyhxh"]
+[ext_resource type="Texture2D" uid="uid://caccnasaooopc" path="res://assets/peces/doblon.png" id="10_vbo6p"]
+[ext_resource type="Texture2D" uid="uid://ia4v3fqsr7p8" path="res://assets/peces/sobrasada.png" id="11_oyhxh"]
+[ext_resource type="Texture2D" uid="uid://cc4roh4lmpjgb" path="res://assets/minijuegos/alien/bg_tanques_delante.png" id="13_clsbr"]
+[ext_resource type="Texture2D" uid="uid://cmxuudxsgprp" path="res://assets/minijuegos/alien/auspicio_dedo.png" id="17_oyhxh"]
+[ext_resource type="Texture2D" uid="uid://bjl0kcufist4o" path="res://assets/minijuegos/alien/enfado.png" id="19_clsbr"]
+[ext_resource type="FontFile" uid="uid://d2awp6ecbv7d4" path="res://assets/fuentes/extragalactic.regular.ttf" id="19_vbo6p"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_glow"]
+blend_mode = 1
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_g1yec"]
+radius = 1.0025479
+
+[node name="AlienMinigame" type="Node2D" unique_id=431702466]
+script = ExtResource("1_g1yec")
+laser_scene = ExtResource("2_v0g2y")
+floating_gun_scene = ExtResource("3_eb0fa")
+glitch_zone_scene = ExtResource("4_knlmx")
+worm_scene = ExtResource("4_j6bht")
+shell_full_texture = ExtResource("8_0stt7")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1989996074]
+custom_minimum_size = Vector2(1, 1)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -0.5
+offset_top = -0.5
+offset_right = 1155.0
+offset_bottom = 650.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("7_wa0n8")
+
+[node name="Pez" type="Sprite2D" parent="Background" unique_id=914586738]
+position = Vector2(923.5001, 208.50002)
+scale = Vector2(0.13518518, 0.13518518)
+texture = ExtResource("8_fn43i")
+
+[node name="Pez2" type="Sprite2D" parent="Background" unique_id=903711871]
+position = Vector2(230, 208.5)
+scale = Vector2(0.135, 0.135)
+texture = ExtResource("8_4c5uy")
+flip_h = true
+
+[node name="TextureRect" type="TextureRect" parent="Background" unique_id=1821510262]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("10_oyhxh")
+
+[node name="Pez3" type="Sprite2D" parent="Background" unique_id=1667842732]
+position = Vector2(1024.5, 354.5)
+scale = Vector2(0.135, 0.135)
+texture = ExtResource("10_vbo6p")
+
+[node name="Pez4" type="Sprite2D" parent="Background" unique_id=161762606]
+position = Vector2(127, 354.5)
+scale = Vector2(0.135, 0.135)
+texture = ExtResource("11_oyhxh")
+flip_h = true
+
+[node name="TextureRect2" type="TextureRect" parent="Background" unique_id=354844322]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("13_clsbr")
+
+[node name="BattleLayer" type="Node2D" parent="Background" unique_id=1108859609]
+
+[node name="Camera2D" type="Camera2D" parent="Background/BattleLayer" unique_id=199999999]
+position = Vector2(576, 324)
+
+[node name="Alien" type="Node2D" parent="Background/BattleLayer" unique_id=947884753]
+script = ExtResource("2_f52h7")
+idle_texture = ExtResource("1_ejsvn")
+gun_texture = ExtResource("2_g1yec")
+worm_release_texture = ExtResource("17_oyhxh")
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/BattleLayer/Alien" unique_id=1330550693]
+position = Vector2(580.5, 180.5)
+scale = Vector2(0.28194445, 0.28194445)
+texture = ExtResource("1_ejsvn")
+
+[node name="LaserSpawn" type="Marker2D" parent="Background/BattleLayer/Alien" unique_id=777420920]
+position = Vector2(581.5, 315.5)
+gizmo_extents = 2.0
+
+[node name="AntennaGlowLeftSprite" type="Sprite2D" parent="Background/BattleLayer/Alien" unique_id=374569855]
+modulate = Color(0.6, 1, 0.5, 0.65)
+material = SubResource("CanvasItemMaterial_glow")
+position = Vector2(507.5, 49.5)
+scale = Vector2(0.13605475, 0.13605475)
+texture = ExtResource("9_glow")
+
+[node name="AntennaGlowRightSprite" type="Sprite2D" parent="Background/BattleLayer/Alien" unique_id=1258135895]
+modulate = Color(0.6, 1, 0.5, 0.65)
+material = SubResource("CanvasItemMaterial_glow")
+position = Vector2(655.5, 49.499996)
+scale = Vector2(0.136, 0.136)
+texture = ExtResource("9_glow")
+
+[node name="Arena" type="Control" parent="Background/BattleLayer" unique_id=1306985741]
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_top = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ArenaBorder" type="ColorRect" parent="Background/BattleLayer/Arena" unique_id=2005114455]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 288.5
+offset_top = 348.5
+offset_right = 886.5
+offset_bottom = 643.5
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ArenaInner" type="ColorRect" parent="Background/BattleLayer/Arena/ArenaBorder" unique_id=1188707059]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Player" type="Area2D" parent="Background/BattleLayer" unique_id=453381825]
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/BattleLayer/Player" unique_id=652679533]
+scale = Vector2(0.057581007, 0.057581007)
+texture = ExtResource("2_ejsvn")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Background/BattleLayer/Player" unique_id=1190847363]
+position = Vector2(3.4999998, -3.4999998)
+scale = Vector2(14, 14)
+shape = SubResource("CircleShape2D_g1yec")
+
+[node name="Attacks" type="Node2D" parent="Background/BattleLayer" unique_id=941649389]
+
+[node name="Summons" type="Node2D" parent="Background/BattleLayer" unique_id=1703173268]
+
+[node name="UI" type="CanvasLayer" parent="Background" unique_id=668552756]
+
+[node name="HpLabel" type="Label" parent="Background/UI" unique_id=490309877]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="TimerLabel" type="Label" parent="Background/UI" unique_id=1699898592]
+offset_left = 25.0
+offset_top = 579.0
+offset_right = 242.0
+offset_bottom = 625.0
+theme_override_fonts/font = ExtResource("19_vbo6p")
+theme_override_font_sizes/font_size = 40
+text = "19:00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LivesRow" type="HBoxContainer" parent="Background/UI" unique_id=1382167017]
+custom_minimum_size = Vector2(150, 60)
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -233.0
+offset_top = -69.0
+offset_right = -40.0
+offset_bottom = -9.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Life1" type="TextureRect" parent="Background/UI/LivesRow" unique_id=957130930]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+texture = ExtResource("8_0stt7")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Life2" type="TextureRect" parent="Background/UI/LivesRow" unique_id=466226969]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+texture = ExtResource("8_0stt7")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Life3" type="TextureRect" parent="Background/UI/LivesRow" unique_id=1046807579]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+texture = ExtResource("8_0stt7")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Life4" type="TextureRect" parent="Background/UI/LivesRow" unique_id=1718778409]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+texture = ExtResource("8_0stt7")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Life5" type="TextureRect" parent="Background/UI/LivesRow" unique_id=1380411995]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+texture = ExtResource("8_0stt7")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Enfado" type="TextureRect" parent="." unique_id=1326563567]
+visible = false
+offset_left = 511.0
+offset_top = 64.0
+offset_right = 550.0
+offset_bottom = 103.0
+texture = ExtResource("19_clsbr")
+expand_mode = 1
+stretch_mode = 5

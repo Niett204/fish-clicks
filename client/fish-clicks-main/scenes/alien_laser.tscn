@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bkt0j5iuossqe"]
+
+[ext_resource type="Script" uid="uid://blpcgthvjdldx" path="res://scripts/alien_minigame/alien_laser.gd" id="1_m64bb"]
+[ext_resource type="Texture2D" uid="uid://dwwepshhpjdjx" path="res://assets/minijuegos/alien/rayo_laser_chato.png" id="2_8dgud"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_bscku"]
+radius = 164.0
+height = 750.0
+
+[node name="AlienLaser" type="Area2D" unique_id=713993425]
+script = ExtResource("1_m64bb")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1987188017]
+texture = ExtResource("2_8dgud")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=884847502]
+position = Vector2(-1, 509)
+shape = SubResource("CapsuleShape2D_bscku")

@@ -8,7 +8,13 @@ func setup(main_ref: Node) -> void:
 	main = main_ref
 
 
-func spawn_fish(fish_id: String, habitat_id: String, slot_index: int) -> void:
+func spawn_fish(
+	fish_id: String,
+	habitat_id: String,
+	slot_index: int,
+	play_spawn_animation: bool = true,
+	initial_global_position: Variant = null
+) -> Node:
 	var fish = main.fish_scene.instantiate()
 
 	if "swim_area" in fish:
@@ -27,16 +33,22 @@ func spawn_fish(fish_id: String, habitat_id: String, slot_index: int) -> void:
 		var tex: Texture2D = main.fish_defs[fish_id]["icon"]
 		fish.set_fish_texture(tex)
 
-	var target_pos := Vector2(
-		randi_range(120, 920),
-		randi_range(120, 520)
-	)
+	if initial_global_position != null:
+		fish.global_position = initial_global_position
 
-	if fish.has_method("play_spawn_arc"):
-		fish.play_spawn_arc(target_pos)
-	else:
-		fish.position = target_pos
+	if play_spawn_animation:
+		var target_pos := Vector2(
+			randi_range(120, 920),
+			randi_range(120, 520)
+		)
 
+		if fish.has_method("play_spawn_arc"):
+			fish.play_spawn_arc(target_pos)
+		else:
+			fish.position = target_pos
+
+	return fish
+	
 
 func try_add_fish_to_aquarium(habitat_id: String, fish_id: String) -> int:
 	if not main.aquarium_data.has(habitat_id):
@@ -73,6 +85,7 @@ func on_move_fish_to_inventory(fish_id: String, slot_index: int, habitat_id: Str
 	main.fish_inventory[fish_id] = int(main.fish_inventory.get(fish_id, 0)) + 1
 
 	refresh_inventory_panel_data()
+	main.alien_manager.check_alien_event_unlock()
 
 
 func on_move_fish_to_aquarium(fish_id: String, habitat_id: String, slot_index: int) -> void:
@@ -103,6 +116,7 @@ func on_move_fish_to_aquarium(fish_id: String, habitat_id: String, slot_index: i
 	spawn_fish(fish_id, habitat_id, slot_index)
 	refresh_visible_fish_by_habitat()
 	refresh_inventory_panel_data()
+	main.alien_manager.check_alien_event_unlock()
 
 
 func on_move_fish_within_aquarium(from_slot_index: int, to_slot_index: int, habitat_id: String) -> void:

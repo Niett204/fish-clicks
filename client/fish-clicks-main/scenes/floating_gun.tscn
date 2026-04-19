@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://dmcngkhb3y340"]
+
+[ext_resource type="Script" uid="uid://bprpaibxay3e7" path="res://scripts/alien_minigame/floating_gun.gd" id="1_8aihg"]
+[ext_resource type="Texture2D" uid="uid://ddgxcrb1iqv1y" path="res://assets/minijuegos/alien/pistola_aura.png" id="2_7riq2"]
+
+[node name="FloatingGun" type="Node2D" unique_id=696507743]
+script = ExtResource("1_8aihg")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1770196708]
+texture = ExtResource("2_7riq2")
+
+[node name="Muzzle" type="Marker2D" parent="." unique_id=802174063]
