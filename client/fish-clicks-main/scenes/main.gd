@@ -167,6 +167,9 @@ var aquarium_manager: AquariumManager
 const ShopManagerScript = preload("res://scripts/main/shop_manager.gd")
 var shop_manager: ShopManager
 
+const AlienManagerScript = preload("res://scripts/main/alien_manager.gd")
+var alien_manager: AlienManager
+
 # ------------------- FUNCIONES -------------------
 
 # --------- De Ciclo de Vida ---------
@@ -199,6 +202,10 @@ func _ready() -> void:
 	shop_manager = ShopManagerScript.new()
 	add_child(shop_manager)
 	shop_manager.setup(self)
+	
+	alien_manager = AlienManagerScript.new()
+	add_child(alien_manager)
+	alien_manager.setup(self)
 	
 	http_request.request_completed.connect(_on_request_completed)
 
@@ -370,12 +377,28 @@ func _ready() -> void:
 	# Guardado
 	# Guardado: Solo conectamos el éxito de carga
 	GlobalData.load_success.connect(save_manager.apply_save_state)
-	
-	# Intentamos cargar la partida inicial
-	GlobalData.load_game() 
+	alien_manager.check_alien_event_unlock()
+
+	var runtime_state := GlobalData.consume_pending_runtime_state()
+	var alien_return_data := GlobalData.consume_pending_alien_result()
+	var abducted_fish_snapshots := GlobalData.consume_pending_abducted_fish_snapshots()
+	var abduct_return_origin := GlobalData.consume_pending_abduct_return_origin()
+
+	if not runtime_state.is_empty():
+		save_manager.apply_save_state(runtime_state, false)
+
+		if not alien_return_data.is_empty():
+			alien_manager.abducted_fish_snapshots = abducted_fish_snapshots
+			alien_manager.abduct_return_origin = abduct_return_origin
+			_resume_alien_after_runtime_restore(alien_return_data)
+	else:
+		GlobalData.load_game()
 	
 	# Añadimos al grupo al final
 	add_to_group("main")
+
+func _resume_alien_after_runtime_restore(alien_return_data: Dictionary) -> void:
+	alien_manager.resume_after_minigame(alien_return_data)
 
 func _process(delta: float) -> void:
 	session_time_seconds += delta
@@ -400,6 +423,9 @@ func _process(delta: float) -> void:
 
 func _input(event: InputEvent) -> void:
 	fish_mode_manager.handle_input(event)
+
+	if event is InputEventKey and event.pressed and event.keycode == KEY_K:
+		alien_manager.try_start_alien_event()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:

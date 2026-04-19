@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://7hub84c1fhkc"]
+
+[ext_resource type="Script" uid="uid://dow4l11cso4b" path="res://scripts/alien_minigame/glitch_zone.gd" id="1_ji8r0"]
+[ext_resource type="Texture2D" uid="uid://3x5we1gn55k0" path="res://assets/minijuegos/alien/glitch_1.png" id="2_x0khn"]
+[ext_resource type="Texture2D" uid="uid://6bepuvsx2emx" path="res://assets/minijuegos/alien/glitch_2.png" id="3_oil58"]
+
+[node name="GlitchZone" type="Area2D" unique_id=2103902336]
+script = ExtResource("1_ji8r0")
+square_glitch_textures = Array[Texture2D]([ExtResource("2_x0khn")])
+rectangular_glitch_textures = Array[Texture2D]([ExtResource("3_oil58")])
+
+[node name="VisualRoot" type="Node2D" parent="." unique_id=2101946674]
+
+[node name="WarningRect" type="ColorRect" parent="." unique_id=734790526]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=106694013]

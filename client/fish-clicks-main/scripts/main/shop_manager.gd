@@ -120,6 +120,7 @@ func on_buy_pressed(id: String) -> void:
 
 	main.aquarium_manager.refresh_inventory_panel_data()
 	main.ui_manager._update_ui()
+	main.alien_manager.check_alien_event_unlock()
 	main.achievements_manager.check_achievements()
 
 	if main.stats_panel.visible:

@@ -81,7 +81,15 @@ func reset_local_state() -> void:
 
 	for child in main.fish_layer.get_children():
 		child.queue_free()
+	
+	main.alien_manager.alien_event_state = AlienManager.AlienEventState.IDLE
+	main.alien_manager.alien_event_available = false
+	main.alien_manager.alien_event_done = false
 
+	if main.alien_manager.alien_instance != null:
+		main.alien_manager.alien_instance.queue_free()
+		main.alien_manager.alien_instance = null
+	
 	# Actualización Visual
 	main.shop_manager.update_cps()
 	main._update_chest_sprite_by_level()
@@ -91,12 +99,11 @@ func reset_local_state() -> void:
 	main.ui_manager._update_ui()
 	GlobalData.user_photo_url = ""
 
-func apply_save_state(state: Dictionary) -> void:
+func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void:
 	if state.is_empty():
 		print("Cuenta nueva sin datos. Manteniendo progreso local.")
 		return 
 
-	# CORRECCIÓN: Llamada local a la función de este script
 	reset_local_state() 
 
 	if state.has("user_photo"):
@@ -152,7 +159,9 @@ func apply_save_state(state: Dictionary) -> void:
 				continue
 
 			main.aquarium_data[habitat_id][slot_index] = fish_id
-			main.aquarium_manager.spawn_fish(fish_id, habitat_id, slot_index)
+
+			if spawn_visual_fish:
+				main.aquarium_manager.spawn_fish(fish_id, habitat_id, slot_index)
 
 	if state.has("sound_volume"):
 		AudioServer.set_bus_volume_db(
@@ -180,3 +189,4 @@ func apply_save_state(state: Dictionary) -> void:
 	main._update_anubia_sprite_by_level()
 	main._update_tronco_visibility_by_level()
 	main._update_chest_sprite_by_level()
+	main.alien_manager.check_alien_event_unlock()
