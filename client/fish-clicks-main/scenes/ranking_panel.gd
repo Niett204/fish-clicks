@@ -2,7 +2,7 @@ extends Control
 
 signal close_requested
 
-@onready var list_container = $Panel/ScrollContainer/VBoxContainer
+@onready var list_container = $AchievementInfoPanel/MarginContainer/VBoxContainer
 @export var row_scene: PackedScene # Aquí asignarás una escena simple con Labels
 
 func _ready():
