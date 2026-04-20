@@ -174,6 +174,9 @@ var alien_manager: AlienManager
 const HabitatManagerScript = preload("res://scripts/main/habitat_manager.gd")
 var habitat_manager: HabitatManager
 
+const CleaningManagerScript = preload("res://scripts/main/cleaning_manager.gd")
+var cleaning_manager: CleaningManager
+
 # ------------------- FUNCIONES -------------------
 
 # --------- De Ciclo de Vida ---------
@@ -211,10 +214,14 @@ func _ready() -> void:
 	add_child(alien_manager)
 	alien_manager.setup(self)
 	
+	cleaning_manager = CleaningManagerScript.new()
+	add_child(cleaning_manager)
+	cleaning_manager.setup(self)
+
 	habitat_manager = HabitatManagerScript.new()
 	add_child(habitat_manager)
 	habitat_manager.setup(self)
-	
+
 	http_request.request_completed.connect(_on_request_completed)
 
 	var url := "https://fish-clicks.onrender.com/api/test"
@@ -271,7 +278,7 @@ func _ready() -> void:
 		ui_manager.play_squish(btn_inventory_icon)
 		ui_manager.toggle_inventario()
 	)
-	
+
 	btn_world_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_world_icon)
 		habitat_manager.cycle_habitat()
@@ -439,6 +446,12 @@ func _process(delta: float) -> void:
 
 func _input(event: InputEvent) -> void:
 	fish_mode_manager.handle_input(event)
+
+	# Detectar cualquier click y reiniciar inactividad
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]:
+			if cleaning_manager != null and cleaning_manager.should_count_inactivity():
+				cleaning_manager.register_player_activity()
 
 	if event is InputEventKey and event.pressed and event.keycode == KEY_K:
 		alien_manager.try_start_alien_event()
@@ -755,8 +768,8 @@ func _set_vallisneria_texture(tex: Texture2D) -> void:
 		vallisneria.position.y = vallisneria_ground_y - tex_height * 0.5
 	else:
 		vallisneria.position.y = vallisneria_ground_y - tex_height
-	
-		
+
+
 # --------- Escenario (Segundo Mundo) ---------
 func _update_barco_sprite_by_level() -> void:
 	var level: int = shop_manager.get_level("barco")

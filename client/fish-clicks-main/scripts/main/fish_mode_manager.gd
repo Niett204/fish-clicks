@@ -18,6 +18,9 @@ var normal_window_state_saved: bool = false
 func setup(main_ref: Node) -> void:
 	main = main_ref
 
+# Usado en el minijuego de limpieza
+func is_fish_mode_active() -> bool:
+	return modo_pecera
 
 func toggle_fish_mode() -> void:
 	var w := main.get_window()
