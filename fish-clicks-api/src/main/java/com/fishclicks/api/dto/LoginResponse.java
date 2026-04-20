@@ -14,4 +14,5 @@ public class LoginResponse {
     private String email;
     private String nickname;
     private String foto;
+    private String extension;
 }

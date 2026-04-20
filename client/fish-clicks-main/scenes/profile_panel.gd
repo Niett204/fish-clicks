@@ -39,6 +39,7 @@ func _ready() -> void:
 	GlobalData.login_failed.connect(_on_login_err)
 	GlobalData.register_success.connect(_on_register_ok)
 	GlobalData.register_failed.connect(_on_register_err)
+	GlobalData.login_success.connect(func(_d): _refresh_view())
 
 	btn_close.pressed.connect(func(): close_requested.emit())
 	btn_login.pressed.connect(_do_login)
@@ -115,16 +116,30 @@ func _load_user_photo(photo_url: String) -> void:
 	elif photo_url.begins_with("http"):
 		_download_external_image(photo_url)
 	else:
-		# NUEVO: Si no es ruta ni URL, asumimos que es Base64 (de la base de datos)
-		var img = Image.new()
 		var raw_data = Marshalls.base64_to_raw(photo_url)
-		var err = img.load_png_from_buffer(raw_data)
-		if err != OK: err = img.load_jpg_from_buffer(raw_data)
+		if raw_data.size() > 100: 
+			var img = Image.new()
+			var err = OK
+			
+			# --- CAMBIO AQUÍ: Usamos la extensión guardada ---
+			var ext = GlobalData.user_photo_extension.to_lower()
+			
+			if ext == "png":
+				err = img.load_png_from_buffer(raw_data)
+			elif ext == "jpg" or ext == "jpeg":
+				err = img.load_jpg_from_buffer(raw_data)
+			else:
+				# Si por alguna razón la extensión falla, intentamos ambos (fallback)
+				err = img.load_png_from_buffer(raw_data)
+				if err != OK: err = img.load_jpg_from_buffer(raw_data)
+			# ------------------------------------------------
+			
+			if err == OK:
+				img.convert(Image.FORMAT_RGBA8) 
+				user_photo.texture = ImageTexture.create_from_image(img)
+				return
 		
-		if err == OK:
-			user_photo.texture = ImageTexture.create_from_image(img)
-		else:
-			user_photo.texture = default_avatar
+		user_photo.texture = default_avatar
 
 func _download_external_image(url: String) -> void:
 	var http := HTTPRequest.new()
@@ -230,15 +245,15 @@ func _on_photo_gui_input(event: InputEvent) -> void:
 func _on_avatar_selected(path: String) -> void:
 	var img = Image.load_from_file(path)
 	if img:
+		img.convert(Image.FORMAT_RGBA8)
 		img.resize(128, 128, Image.INTERPOLATE_LANCZOS)
-		var buffer = img.save_png_to_buffer()
+		
+		var ext = path.get_extension().to_lower()
+		if ext != "png" and ext != "jpg" and ext != "jpeg":
+			ext = "png" # Fallback por seguridad
+			
+		var buffer = img.save_png_to_buffer() if ext == "png" else img.save_jpg_to_buffer()
 		var b64 = Marshalls.raw_to_base64(buffer)
 		
-		# 1. Subir al servidor (Llama a tu GlobalData.upload_user_photo)
-		GlobalData.upload_user_photo(b64)
-		
-		# 2. Refrescar el botón de la TopBar inmediatamente
-		get_tree().call_group("main_hud_buttons", "update_avatar")
-		
-		# 3. Refrescar la imagen del propio Panel de Perfil (el círculo grande)
-		user_photo.texture = ImageTexture.create_from_image(img)
+		# Enviamos ambos datos al servidor
+		GlobalData.upload_user_photo(b64, ext)

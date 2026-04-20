@@ -97,7 +97,8 @@ func _on_login_done(result, code: int, _headers, body: PackedByteArray, http: HT
 			data.get("userId", ""), 
 			data.get("nickname", nickname),
 			data.get("email", ""),
-			data.get("foto", "")
+			data.get("foto", ""),
+			data.get("extension", "")
 		)
 		login_success.emit(data)
 		load_game()
@@ -133,15 +134,19 @@ func _on_register_done(result, code: int, _headers, body: PackedByteArray, http:
 
 # ── Sesión ──────────────────────────────────────────
 var user_photo_url: String = ""
+var user_photo_extension: String = ""
 
-func set_user_session(token: String, uid: String, nickname: String, email: String, photo: String) -> void:
-	user_token    = token
-	user_id       = uid
+
+func set_user_session(token: String, uid: String, nickname: String, email: String, photo: String, extension: String) -> void:
+	user_token = token
+	user_id = uid
 	user_nickname = nickname
-	user_email    = email
-	user_photo_url = photo # Asegúrate de tener esta variable declarada arriba
-	is_logged_in  = true
+	user_email = email
+	user_photo_url = photo
+	user_photo_extension = extension if not extension.is_empty() else "png"
+	is_logged_in = true
 	_save_session()
+	# No hace falta emitir aquí si ya lo haces en _on_login_done
 
 func clear_session() -> void:
 	user_token    = ""
@@ -167,7 +172,8 @@ func _save_session() -> void:
 			"user_id":  user_id,
 			"email":    user_email,
 			"nickname": user_nickname,
-			"photo":    user_photo_url # Guardamos la foto en el disco
+			"photo":    user_photo_url,
+			"extension": user_photo_extension
 		})
 
 func _load_session() -> void:
@@ -180,7 +186,8 @@ func _load_session() -> void:
 				user_id       = d.get("user_id",  "")
 				user_email    = d.get("email",    "")
 				user_nickname = d.get("nickname", "")
-				user_photo_url = d.get("photo",    "") # Cargamos la foto guardada
+				user_photo_url = d.get("photo",    "")
+				user_photo_extension = d.get("extension", "png")
 				is_logged_in  = true
 
 
@@ -267,13 +274,18 @@ func _on_load_done(_result, code: int, _headers, body: PackedByteArray, http: HT
 	else:
 		load_failed.emit("Error al cargar la partida")
 
-func upload_user_photo(base64_data: String) -> void:
+func upload_user_photo(base64_data: String, extension: String) -> void:
 	if not is_logged_in: return
 
 	var http := HTTPRequest.new()
 	add_child(http)
 
-	var body = JSON.stringify({"foto": base64_data})
+	# Ahora enviamos tanto la foto como la extensión en el JSON
+	var body = JSON.stringify({
+		"foto": base64_data,
+		"extension": extension
+	})
+	
 	var headers = [
 		"Content-Type: application/json",
 		"Authorization: " + get_auth_header()
@@ -281,10 +293,11 @@ func upload_user_photo(base64_data: String) -> void:
 
 	http.request(BASE_URL + "/auth/update-photo", headers, HTTPClient.METHOD_POST, body)
 
-	# Actualizamos localmente para que se vea el cambio al instante
+	# ACTUALIZACIÓN LOCAL
 	user_photo_url = base64_data
-	_save_session() # Actualizamos el archivo local .save para que no se pierda al reiniciar
-
+	user_photo_extension = extension # Guardamos la extensión para que BtnProfile sepa qué cargar
+	_save_session()
+	
 # --- RANKING ---
 signal ranking_received(type: String, data: Array)
 signal ranking_failed(error: String)

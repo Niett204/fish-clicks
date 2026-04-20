@@ -26,6 +26,9 @@ public class User {
     @Column(name = "foto")
     private String foto;
 
+    @Column(name = "foto_extension")
+    private String fotoExtension;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

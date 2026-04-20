@@ -63,6 +63,7 @@ public class AuthController {
         // El userId lo sacamos del atributo que setea el JwtFilter
         String userIdStr = (String) request.getAttribute("userId");
         String base64Foto = body.get("foto");
+        String extension = body.get("extension");
 
         if (userIdStr == null || base64Foto == null) {
             return ResponseEntity.badRequest().body(Map.of("error", "Datos incompletos"));
@@ -71,6 +72,7 @@ public class AuthController {
         return userRepository.findById(UUID.fromString(userIdStr))
                 .map(user -> {
                     user.setFoto(base64Foto);
+                    user.setFotoExtension(extension.toLowerCase());
                     user.setUpdatedAt(LocalDateTime.now());
                     userRepository.save(user);
                     return ResponseEntity.ok(Map.of("message", "Foto actualizada con éxito"));
