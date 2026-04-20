@@ -38,6 +38,7 @@
 [ext_resource type="Script" uid="uid://dq5rdt0gb7n50" path="res://scenes/options_panel.gd" id="25_2f3dj"]
 [ext_resource type="PackedScene" uid="uid://buvdg6kk8oju2" path="res://scenes/ProfilePanel.tscn" id="25_2wyq8"]
 [ext_resource type="Texture2D" uid="uid://simg5b7itmvf" path="res://assets/ui/ampliar.png" id="33_5q0nq"]
+[ext_resource type="PackedScene" uid="uid://dj8jfr82fffsq" path="res://scenes/ranking_panel.tscn" id="36_pibwh"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y6deb"]
 load_path = "res://.godot/imported/anubia_large.png-9dd54c4d539590f8396e886059658b60.ctex"
