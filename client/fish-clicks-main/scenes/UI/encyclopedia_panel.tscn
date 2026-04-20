@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://crojbj03flfr6"]
 
 [ext_resource type="Script" uid="uid://dshk18d2tj4io" path="res://scenes/UI/encyclopedia.gd" id="1_4h8ff"]
-[ext_resource type="Texture2D" uid="uid://casgo8fwtfcga" path="res://assets/ui/libro_abierto.png" id="1_g574a"]
-[ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="3_k3767"]
-[ext_resource type="Texture2D" uid="uid://dm1qa7qppmo7k" path="res://assets/ui/marco_peces.png" id="4_xskg5"]
-[ext_resource type="Texture2D" uid="uid://cgjbjq3ublcr2" path="res://assets/ui/rarezas/tag_rareza_default.png" id="5_xskg5"]
-[ext_resource type="Texture2D" uid="uid://cknbwrkydgsv" path="res://assets/ui/flecha.png" id="6_xskg5"]
-[ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="7_k887v"]
+[ext_resource type="Texture2D" uid="uid://b8a5a4mqviw1c" path="res://assets/ui/libro_abierto.png" id="1_g574a"]
+[ext_resource type="FontFile" uid="uid://dkkmqm6p1jj0p" path="res://assets/fuentes/PirataOne-Regular.ttf" id="3_k3767"]
+[ext_resource type="Texture2D" uid="uid://ddxkc2hgrfolc" path="res://assets/ui/marco_peces.png" id="4_xskg5"]
+[ext_resource type="Texture2D" uid="uid://dsq4vibgcwjl6" path="res://assets/ui/rarezas/tag_rareza_default.png" id="5_xskg5"]
+[ext_resource type="Texture2D" uid="uid://cgupojjr3wp6q" path="res://assets/ui/flecha.png" id="6_xskg5"]
+[ext_resource type="Texture2D" uid="uid://4js67mc3pou0" path="res://assets/ui/cruz.png" id="7_k887v"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_4h8ff"]
 font = ExtResource("3_k3767")

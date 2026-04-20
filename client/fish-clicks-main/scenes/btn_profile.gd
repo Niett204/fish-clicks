@@ -33,30 +33,36 @@ func _on_pressed() -> void:
 func _on_auth_changed(_data) -> void:
 	update_avatar()
 
-# Esta función es la que recibe la orden del grupo "main_hud_buttons"
 func update_avatar() -> void:
 	if nick_label:
 		nick_label.text = GlobalData.user_nickname if GlobalData.is_logged_in else "Perfil"
 	
 	if not user_image: return
 	
-	# CASO 1: Usuario logueado con foto personalizada
 	if GlobalData.is_logged_in and not GlobalData.user_photo_url.is_empty():
 		var raw_data = Marshalls.base64_to_raw(GlobalData.user_photo_url)
 		
-		# Validación Crítica: Un PNG/JPG real nunca mide menos de 100 bytes
-		# Si raw_data es muy pequeño, evitamos llamar a load_png para no ensuciar la consola
 		if raw_data.size() > 100: 
 			var img = Image.new()
-			var err = img.load_png_from_buffer(raw_data)
-			if err != OK: 
+			var err = OK
+			
+			# --- CAMBIO AQUÍ: Usamos la extensión guardada ---
+			var ext = GlobalData.user_photo_extension.to_lower()
+			
+			if ext == "png":
+				err = img.load_png_from_buffer(raw_data)
+			elif ext == "jpg" or ext == "jpeg":
 				err = img.load_jpg_from_buffer(raw_data)
+			else:
+				err = img.load_png_from_buffer(raw_data)
+				if err != OK: err = img.load_jpg_from_buffer(raw_data)
+			# ------------------------------------------------
 				
 			if err == OK:
+				img.convert(Image.FORMAT_RGBA8)
 				user_image.texture = ImageTexture.create_from_image(img)
 				user_image.show()
 				return 
 
-	# CASO 2: Fallback (Si no hay login, variable vacía o datos corruptos)
 	user_image.texture = load("res://assets/ui/iconos/default_avatar.png") 
 	user_image.show()

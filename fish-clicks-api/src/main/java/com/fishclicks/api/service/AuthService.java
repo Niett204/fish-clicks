@@ -57,7 +57,8 @@ public class AuthService {
                 user.getUid(),
                 user.getEmail(),
                 user.getNickname(),
-                user.getFoto()
+                user.getFoto(),
+                user.getFotoExtension()
         );
     }
 
@@ -104,7 +105,8 @@ public class AuthService {
                 createdUser.getUid(),
                 createdUser.getEmail(),
                 createdUser.getNickname(),
-                createdUser.getFoto()
+                createdUser.getFoto(),
+                user.getFotoExtension()
         );
     }
 }
