@@ -24,6 +24,7 @@
 [ext_resource type="Script" uid="uid://gmyjxeo8kray" path="res://scenes/btn_profile.gd" id="13_qkpxi"]
 [ext_resource type="Shader" uid="uid://clhdnox30mfge" path="res://scenes/ProfilePanel.gdshader" id="14_5q0nq"]
 [ext_resource type="Texture2D" uid="uid://c11vv84nkq6dj" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
+[ext_resource type="Texture2D" uid="uid://djfuqkl1d07r3" path="res://assets/ui/iconos/icono_ranking.png" id="18_fuf3a"]
 [ext_resource type="FontFile" uid="uid://dkkmqm6p1jj0p" path="res://assets/fuentes/PirataOne-Regular.ttf" id="18_og1vs"]
 [ext_resource type="Texture2D" uid="uid://0qoeov5gmr34" path="res://assets/ui/alga.png" id="18_yc10j"]
 [ext_resource type="Texture2D" uid="uid://bixk0wn142e60" path="res://assets/ui/bandera.png" id="19_0ld40"]
@@ -36,6 +37,7 @@
 [ext_resource type="Script" uid="uid://dq5rdt0gb7n50" path="res://scenes/options_panel.gd" id="25_2f3dj"]
 [ext_resource type="PackedScene" uid="uid://buvdg6kk8oju2" path="res://scenes/ProfilePanel.tscn" id="25_2wyq8"]
 [ext_resource type="Texture2D" uid="uid://simg5b7itmvf" path="res://assets/ui/ampliar.png" id="33_5q0nq"]
+[ext_resource type="PackedScene" uid="uid://dj8jfr82fffsq" path="res://scenes/ranking_panel.tscn" id="36_pibwh"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y6deb"]
 load_path = "res://.godot/imported/anubia_large.png-9dd54c4d539590f8396e886059658b60.ctex"
@@ -239,6 +241,7 @@ stretch_mode = 5
 [node name="BtnRanking" type="TextureButton" parent="UI/Root/HUD/TopBar/LeftGroup" unique_id=103365818]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
+texture_normal = ExtResource("18_fuf3a")
 ignore_texture_size = true
 stretch_mode = 5
 
@@ -577,11 +580,11 @@ script = ExtResource("25_2f3dj")
 visible = false
 layout_mode = 1
 
-[node name="RankingPanel" parent="UI/Root/HUD" unique_id=1441203419 instance=ExtResource("23_y6deb")]
+[node name="ProfilePanel" parent="UI/Root/HUD" unique_id=1077186223 instance=ExtResource("25_2wyq8")]
 visible = false
 layout_mode = 1
 
-[node name="ProfilePanel" parent="UI/Root/HUD" unique_id=1077186223 instance=ExtResource("25_2wyq8")]
+[node name="RankingPanel" parent="UI/Root/HUD" unique_id=763575264 instance=ExtResource("36_pibwh")]
 visible = false
 layout_mode = 1
 
