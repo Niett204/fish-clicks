@@ -587,6 +587,7 @@ layout_mode = 1
 [node name="RankingPanel" parent="UI/Root/HUD" unique_id=763575264 instance=ExtResource("36_pibwh")]
 visible = false
 layout_mode = 1
+script = null
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]
 custom_minimum_size = Vector2(32, 32)

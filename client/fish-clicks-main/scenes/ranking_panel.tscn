@@ -1,0 +1,362 @@
+[gd_scene format=3 uid="uid://dj8jfr82fffsq"]
+
+[ext_resource type="Script" uid="uid://dermeorsaodof" path="res://scenes/ranking_panel.gd" id="1_mtvgp"]
+[ext_resource type="Texture2D" uid="uid://bicarrylo3grx" path="res://assets/ui/pergamino_v2.png" id="1_x87ak"]
+[ext_resource type="FontFile" uid="uid://dkkmqm6p1jj0p" path="res://assets/fuentes/PirataOne-Regular.ttf" id="2_mtvgp"]
+[ext_resource type="Texture2D" uid="uid://dsgo21eqrfs3n" path="res://assets/ui/marco_small_v2.png" id="3_kiu8h"]
+[ext_resource type="Texture2D" uid="uid://4js67mc3pou0" path="res://assets/ui/cruz.png" id="4_peu1r"]
+
+[node name="RankingPanel" type="Control" unique_id=763575264]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_mtvgp")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1170145717]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 170
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 170
+theme_override_constants/margin_bottom = 40
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer" unique_id=1144801977]
+layout_mode = 2
+texture = ExtResource("1_x87ak")
+expand_mode = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer" unique_id=307560495]
+layout_mode = 2
+theme_override_constants/margin_left = 114
+theme_override_constants/margin_top = 100
+theme_override_constants/margin_right = 130
+theme_override_constants/margin_bottom = 81
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer" unique_id=1631370315]
+layout_mode = 2
+
+[node name="LeftPage" type="VBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer" unique_id=1833356437]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StatsSpacer" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage" unique_id=1480603268]
+layout_mode = 2
+
+[node name="StatsList" type="VBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage" unique_id=1313183835]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="StatRow_Clicks" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=1340112100]
+layout_mode = 2
+
+[node name="LabelStat_Clicks_Name" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Clicks" unique_id=1524788670]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "Nº de clicks totales:"
+
+[node name="Separator_Clicks" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Clicks" unique_id=49980177]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LabelStat_Clicks_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Clicks" unique_id=1300426593]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "0"
+
+[node name="StatRow_Peces" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=1650255677]
+layout_mode = 2
+
+[node name="LabelStat_Peces_Name" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Peces" unique_id=511948091]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "Nº de peces totales:"
+
+[node name="Separator_Peces" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Peces" unique_id=1623182846]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LabelStat_Peces_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Peces" unique_id=343329155]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "0"
+
+[node name="StatRow_Estructuras" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=804591451]
+layout_mode = 2
+
+[node name="LabelStat_Estructuras_Name" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Estructuras" unique_id=1325164186]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "Nº de estructuras totales:"
+
+[node name="Separator_Estructuras" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Estructuras" unique_id=484880934]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LabelStat_Estructuras_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Estructuras" unique_id=2044573219]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "0"
+
+[node name="StatRow_Doblones" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=285603258]
+layout_mode = 2
+
+[node name="LabelStat_Doblones_Name" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Doblones" unique_id=123736979]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "Nº de doblones totales:"
+
+[node name="Separator_Doblones" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Doblones" unique_id=1229247188]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LabelStat_Doblones_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Doblones" unique_id=1491336622]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "0"
+
+[node name="StatRow_PecesEspeciales" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=1650972921]
+layout_mode = 2
+
+[node name="LabelStat_PecesEspeciales_Name" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_PecesEspeciales" unique_id=2106466965]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "Nº de peces especiales totales:"
+
+[node name="Separator_PecesEspeciales" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_PecesEspeciales" unique_id=479279927]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LabelStat_PecesEspeciales_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_PecesEspeciales" unique_id=1435035149]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "0"
+
+[node name="StatRow_TiempoJuego" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=1316968162]
+layout_mode = 2
+
+[node name="LabelStat_TiempoJuego_Name" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_TiempoJuego" unique_id=1308129938]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "Tiempo de juego total:"
+
+[node name="Separator_TiempoJuego" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_TiempoJuego" unique_id=1678400674]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LabelStat_TiempoJuego_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_TiempoJuego" unique_id=1717054313]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "0 s"
+
+[node name="StatRow_FechaInicio" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=1074307228]
+layout_mode = 2
+
+[node name="LabelStat_FechaInicio_Name" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_FechaInicio" unique_id=39148533]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "Partida empezada:"
+
+[node name="Separator_FechaInicio" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_FechaInicio" unique_id=1584803964]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LabelStat_FechaInicio_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_FechaInicio" unique_id=686851925]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "DD/MM/AAAA"
+
+[node name="StatRow_DPS" type="VBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=296790684]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="LabelStat_DPS_Name" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_DPS" unique_id=129905097]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "DPS (Doblones por Segundo) actual:"
+
+[node name="LabelStat_DPS_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_DPS" unique_id=378831146]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+theme_override_font_sizes/font_size = 17
+text = "0 d/s"
+horizontal_alignment = 2
+
+[node name="StatRow_DPC" type="VBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=394788809]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="LabelStat_DPC_Name" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_DPC" unique_id=994045902]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "DPC (Doblones por Click) actual:"
+
+[node name="LabelStat_DPC_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_DPC" unique_id=957462295]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+theme_override_font_sizes/font_size = 17
+text = "0 d/c"
+horizontal_alignment = 2
+
+[node name="Divider" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer" unique_id=1628318572]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+
+[node name="RightPage" type="MarginContainer" parent="MarginContainer/MarginContainer/HBoxContainer" unique_id=741014097]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 25
+
+[node name="AchievementsScroll" type="ScrollContainer" parent="MarginContainer/MarginContainer/HBoxContainer/RightPage" unique_id=2000644551]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="AchievementsCenter" type="CenterContainer" parent="MarginContainer/MarginContainer/HBoxContainer/RightPage/AchievementsScroll" unique_id=823082667]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AchievementsGrid" type="GridContainer" parent="MarginContainer/MarginContainer/HBoxContainer/RightPage/AchievementsScroll/AchievementsCenter" unique_id=1821899247]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 3
+
+[node name="AchievementInfoPanel" type="PanelContainer" parent="." unique_id=94731556]
+visible = false
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 0
+offset_left = 578.0
+offset_top = 144.0
+offset_right = 798.0
+offset_bottom = 20.0
+mouse_filter = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="AchievementInfoPanel" unique_id=1839725895]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="AchievementInfoPanel/MarginContainer" unique_id=1881849296]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="LabelAchievementTitle" type="Label" parent="AchievementInfoPanel/MarginContainer/VBoxContainer" unique_id=207369547]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+theme_override_font_sizes/font_size = 18
+text = "Nombre del logro"
+
+[node name="LabelAchievementCondition" type="Label" parent="AchievementInfoPanel/MarginContainer/VBoxContainer" unique_id=566046671]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.36, 0.2, 0.08, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+theme_override_font_sizes/font_size = 14
+text = "Desbloqueo: haz 10 clicks"
+
+[node name="LabelAchievementDesc" type="Label" parent="AchievementInfoPanel/MarginContainer/VBoxContainer" unique_id=1349422944]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+theme_override_font_sizes/font_size = 12
+text = "Descripción del logro"
+autowrap_mode = 3
+
+[node name="AchievementsHeader" type="HBoxContainer" parent="." unique_id=1561373939]
+layout_mode = 0
+offset_left = 618.0
+offset_top = 116.0
+offset_right = 804.0
+offset_bottom = 144.0
+
+[node name="LabelLogros" type="Label" parent="AchievementsHeader" unique_id=1844486362]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5058824, 0.36862746, 0.15294118, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "Logros"
+
+[node name="Control" type="Control" parent="AchievementsHeader" unique_id=1975984946]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+
+[node name="LabelCount" type="Label" parent="AchievementsHeader" unique_id=1306426365]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5058824, 0.36862746, 0.15294118, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "999/999"
+
+[node name="Control2" type="Control" parent="AchievementsHeader" unique_id=13616028]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="LabelPercent" type="Label" parent="AchievementsHeader" unique_id=2053161636]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5058824, 0.36862746, 0.15294118, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "100%"
+
+[node name="TitleRanking" type="Label" parent="." unique_id=644016045]
+layout_mode = 0
+offset_left = 194.0
+offset_top = 84.0
+offset_right = 955.0
+offset_bottom = 126.0
+theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+theme_override_font_sizes/font_size = 27
+text = "Ranking global"
+horizontal_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=420654220]
+layout_mode = 0
+offset_left = 578.0
+offset_top = 140.0
+offset_right = 843.0
+offset_bottom = 527.0
+mouse_filter = 2
+texture = ExtResource("3_kiu8h")
+expand_mode = 1
+
+[node name="BtnClose" type="TextureButton" parent="." unique_id=1164162130]
+layout_mode = 0
+offset_left = 857.0
+offset_top = 96.0
+offset_right = 887.0
+offset_bottom = 126.0
+texture_normal = ExtResource("4_peu1r")
+ignore_texture_size = true
+stretch_mode = 0
