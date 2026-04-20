@@ -108,8 +108,8 @@ func toggle_inventario() -> void:
 
 		main.inventory_panel.set_inventory_data(
 			main.HABITATS,
-			main.unlocked_habitats,
-			main.inventory_habitat,
+			main.habitat_manager.unlocked_habitats,
+			main.habitat_manager.inventory_habitat,
 			main.aquarium_data,
 			main.fish_defs,
 			main.fish_inventory

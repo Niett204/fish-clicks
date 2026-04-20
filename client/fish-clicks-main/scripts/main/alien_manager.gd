@@ -227,7 +227,7 @@ func start_aquarium_abduction_sequence() -> void:
 
 		abducted_fish_snapshots.append({
 			"fish_id": fish.fish_id if "fish_id" in fish else "",
-			"habitat_id": fish.habitat_id if "habitat_id" in fish else main.current_habitat,
+			"habitat_id": fish.habitat_id if "habitat_id" in fish else main.habitat_manager.current_habitat,
 			"slot_index": fish.slot_index if "slot_index" in fish else -1,
 			"position": fish.global_position,
 			"scale": fish.scale,

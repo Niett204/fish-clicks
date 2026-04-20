@@ -107,10 +107,10 @@ func on_buy_pressed(id: String) -> void:
 			is_shiny = true
 			main.achievements_manager.register_shiny_obtained()
 
-		var slot_index: int = main.aquarium_manager.try_add_fish_to_aquarium(main.current_habitat, spawned_fish_id)
+		var slot_index: int = main.aquarium_manager.try_add_fish_to_aquarium(main.habitat_manager.current_habitat, spawned_fish_id)
 
 		if slot_index != -1:
-			main.aquarium_manager.spawn_fish(spawned_fish_id, main.current_habitat, slot_index)
+			main.aquarium_manager.spawn_fish(spawned_fish_id, main.habitat_manager.current_habitat, slot_index)
 		else:
 			main.fish_inventory[spawned_fish_id] = int(main.fish_inventory.get(spawned_fish_id, 0)) + 1
 

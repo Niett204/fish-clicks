@@ -51,6 +51,7 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 @onready var fish_mode_overlay: Control = $UI/Root/FishModeOverlay
 @onready var fish_mode_dark_bg: ColorRect = $UI/Root/FishModeOverlay/DarkBg
 @onready var btn_expand_fish_mode: Control = $UI/Root/FishModeOverlay/BtnExpand
+@onready var btn_world_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnWorld
 
 # ------------------- NODOS DE MUNDO -------------------
 @onready var content_pecera: Node2D = $ContentPecera
@@ -99,10 +100,6 @@ const ICON_HIDE = preload("res://assets/ui/iconos/icono_hud_abierto.png")
 const ICON_SHOW = preload("res://assets/ui/iconos/icono_hud_cerrado.png")
 
 # ------------------- ESTADO DEL JUEGO -------------------
-var unlocked_habitats: Array[String] = ["habitat_1", "habitat_2"]
-var current_habitat: String = "habitat_1"
-var inventory_habitat: String = "habitat_1"
-
 var aquarium_data := {
 	"habitat_1": [null, null, null, null, null, null, null, null, null, null],
 	"habitat_2": [null, null, null, null, null, null, null, null, null, null]
@@ -170,6 +167,9 @@ var shop_manager: ShopManager
 const AlienManagerScript = preload("res://scripts/main/alien_manager.gd")
 var alien_manager: AlienManager
 
+const HabitatManagerScript = preload("res://scripts/main/habitat_manager.gd")
+var habitat_manager: HabitatManager
+
 # ------------------- FUNCIONES -------------------
 
 # --------- De Ciclo de Vida ---------
@@ -207,6 +207,10 @@ func _ready() -> void:
 	add_child(alien_manager)
 	alien_manager.setup(self)
 	
+	habitat_manager = HabitatManagerScript.new()
+	add_child(habitat_manager)
+	habitat_manager.setup(self)
+	
 	http_request.request_completed.connect(_on_request_completed)
 
 	var url := "https://fish-clicks.onrender.com/api/test"
@@ -225,6 +229,7 @@ func _ready() -> void:
 	shop_panel.visible = false
 	encyclopedia_panel.visible = false
 	profile_panel.visible = false
+	btn_world_icon.visible = true
 	chest_base_scale = chest_sprite.scale
 	
 	shop_panel.z_index = 1
@@ -261,6 +266,11 @@ func _ready() -> void:
 	btn_inventory_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_inventory_icon)
 		ui_manager.toggle_inventario()
+	)
+	
+	btn_world_icon.pressed.connect(func():
+		ui_manager.play_squish(btn_world_icon)
+		habitat_manager.cycle_habitat()
 	)
 
 	btn_options_icon.pressed.connect(func():
@@ -305,6 +315,7 @@ func _ready() -> void:
 
 	shop_manager.update_cps()
 	ui_manager._update_ui()
+	habitat_manager.apply_current_habitat()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
 	_update_algas_sprite_by_level()
 	_update_anubia_sprite_by_level()

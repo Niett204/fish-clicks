@@ -204,10 +204,10 @@ func _get_base_fish_id(fish_id: String) -> String:
 func _get_current_aquarium_fish_ids() -> Array[String]:
 	var result: Array[String] = []
 
-	if not main.aquarium_data.has(main.current_habitat):
+	if not main.aquarium_data.has(main.habitat_manager.current_habitat):
 		return result
 
-	for fish_id in main.aquarium_data[main.current_habitat]:
+	for fish_id in main.aquarium_data[main.habitat_manager.current_habitat]:
 		if fish_id != null:
 			result.append(String(fish_id))
 
@@ -215,10 +215,10 @@ func _get_current_aquarium_fish_ids() -> Array[String]:
 
 
 func _is_current_aquarium_full() -> bool:
-	if not main.aquarium_data.has(main.current_habitat):
+	if not main.aquarium_data.has(main.habitat_manager.current_habitat):
 		return false
 
-	for fish_id in main.aquarium_data[main.current_habitat]:
+	for fish_id in main.aquarium_data[main.habitat_manager.current_habitat]:
 		if fish_id == null:
 			return false
 
