@@ -49,15 +49,28 @@ func _update_background() -> void:
 
 	if habitat_info.has("background"):
 		main.bg.texture = habitat_info["background"]
-
+	
 func _update_world_structure_visibility() -> void:
-	var is_main_aquarium := current_habitat == "habitat_1"
+	var is_habitat_1 := current_habitat == "habitat_1"
+	var is_habitat_2 := current_habitat == "habitat_2"
 
-	main.chest.visible = is_main_aquarium
-	main.vallisneria.visible = is_main_aquarium and main.shop_manager.get_level("vallisneria") > 0
-	main.anubia.visible = is_main_aquarium and main.shop_manager.get_level("anubia") > 0
+	main.chest.visible = true
+
+	main.vallisneria.visible = is_habitat_1 and main.shop_manager.get_level("vallisneria") > 0
+	main.anubia.visible = is_habitat_1 and main.shop_manager.get_level("anubia") > 0
+	main.barco.visible = is_habitat_2 and main.shop_manager.get_level("barco") > 0
 
 	var tronco_level = main.shop_manager.get_level("tronco")
-	main.tronco_1.visible = is_main_aquarium and tronco_level >= 1
-	main.tronco_2.visible = is_main_aquarium and tronco_level >= 2
-	main.tronco_3.visible = is_main_aquarium and tronco_level >= 3
+	var tronco_unlocked: bool = bool(main.unlocked.get("tronco", false))
+
+	main.tronco_1.visible = false
+	main.tronco_2.visible = false
+	main.tronco_3.visible = false
+
+	if is_habitat_1 and tronco_unlocked and tronco_level > 0:
+		if tronco_level <= 5:
+			main.tronco_3.visible = true
+		elif tronco_level <= 10:
+			main.tronco_2.visible = true
+		else:
+			main.tronco_1.visible = true

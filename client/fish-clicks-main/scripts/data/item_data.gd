@@ -111,5 +111,17 @@ const ITEMS := {
 		"base_value": 12.0,
 		"value_label": "DPS",
 		"habitat_ids": ["habitat_1"]
+	},
+	"barco": {
+		"tab": "Estructuras",
+		"title": "Barco Hundido",
+		"icon": "res://assets/estructuras/anubia/barco_1.png",
+		"unlock_price": 1200,
+		"kind": "passive",
+		"base_price": 400.0,
+		"price_growth": 1.16,
+		"base_value": 12.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
 	}
 }

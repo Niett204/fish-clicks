@@ -66,6 +66,7 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 @onready var tronco_1: Sprite2D = $ContentPecera/EstructurasLayer/Tronco
 @onready var tronco_2: Sprite2D = $ContentPecera/EstructurasLayer/Tronco2
 @onready var tronco_3: Sprite2D = $ContentPecera/EstructurasLayer/Tronco3
+@onready var barco: Sprite2D = $ContentPecera/EstructurasLayer/Barco
 
 # ------------------- AUDIO -------------------
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
@@ -96,6 +97,9 @@ const TEX_ANUBIA_0 := preload("res://assets/estructuras/anubia/anubia_mini.png")
 const TEX_ANUBIA_1 := preload("res://assets/estructuras/anubia/anubia_small.png")
 const TEX_ANUBIA_2 := preload("res://assets/estructuras/anubia/anubia_medium.png")
 const TEX_ANUBIA_3 := preload("res://assets/estructuras/anubia/anubia_large.png")
+const TEX_BARCO_0 := preload("res://assets/estructuras/barco/barco_1.png")
+const TEX_BARCO_1 := preload("res://assets/estructuras/barco/barco_2.png")
+const TEX_BARCO_2 := preload("res://assets/estructuras/barco/barco_3.png")
 const ICON_HIDE = preload("res://assets/ui/iconos/icono_hud_abierto.png")
 const ICON_SHOW = preload("res://assets/ui/iconos/icono_hud_cerrado.png")
 
@@ -320,6 +324,7 @@ func _ready() -> void:
 	_update_algas_sprite_by_level()
 	_update_anubia_sprite_by_level()
 	_update_tronco_visibility_by_level()
+	_update_barco_sprite_by_level()
 
 	inventory_panel.move_fish_to_inventory.connect(aquarium_manager.on_move_fish_to_inventory)
 	inventory_panel.move_fish_to_aquarium.connect(aquarium_manager.on_move_fish_to_aquarium)
@@ -750,6 +755,25 @@ func _set_vallisneria_texture(tex: Texture2D) -> void:
 		vallisneria.position.y = vallisneria_ground_y - tex_height * 0.5
 	else:
 		vallisneria.position.y = vallisneria_ground_y - tex_height
+	
+		
+# --------- Escenario (Segundo Mundo) ---------
+func _update_barco_sprite_by_level() -> void:
+	var level: int = shop_manager.get_level("barco")
+	var is_unlocked: bool = bool(unlocked.get("barco", false))
+
+	if not is_unlocked or level <= 0:
+		barco.visible = false
+		return
+
+	barco.visible = true
+
+	if level <= 5:
+		barco.texture = TEX_BARCO_0
+	elif level <= 10:
+		barco.texture = TEX_BARCO_1
+	else:
+		barco.texture = TEX_BARCO_2
 
 # --------- Formateo/Utils ---------
 

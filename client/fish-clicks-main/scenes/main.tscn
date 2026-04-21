@@ -122,6 +122,8 @@ position = Vector2(497, 541)
 scale = Vector2(0.11820317, 0.11820316)
 texture = SubResource("CompressedTexture2D_y6deb")
 
+[node name="Barco" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=1345349808]
+
 [node name="Cofre" type="Area2D" parent="ContentPecera" unique_id=379332226]
 script = ExtResource("3_jyhfs")
 
