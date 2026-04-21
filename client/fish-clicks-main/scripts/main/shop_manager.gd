@@ -8,9 +8,18 @@ func setup(main_ref: Node) -> void:
 	main = main_ref
 
 
-func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
+func item_belongs_to_current_habitat(id: String) -> bool:
 	var def: Dictionary = main.ITEMS[id]
+	var current_habitat: String = main.habitat_manager.current_habitat
+	var habitat_ids: Array = def.get("habitat_ids", ["habitat_1"])
+	return current_habitat in habitat_ids
 
+
+func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
+	if not item_belongs_to_current_habitat(id):
+		return
+
+	var def: Dictionary = main.ITEMS[id]
 	var card = main.shop_item_card_scene.instantiate()
 	card.info_panel_path = main.info_panel.get_path()
 	list.add_child(card)
@@ -52,6 +61,7 @@ func get_total_passive_dps() -> float:
 	for key in main.ITEMS.keys():
 		var id := String(key)
 		var def: Dictionary = main.ITEMS[id]
+
 		if String(def.get("kind", "")) == "passive":
 			total += get_item_current_value(id)
 
@@ -82,8 +92,11 @@ func apply_purchase(id: String) -> void:
 			main._update_tronco_visibility_by_level()
 		"anubia":
 			main._update_anubia_sprite_by_level()
+		"barco":
+			main._update_barco_sprite_by_level()
 
 	update_cps()
+
 
 func on_buy_pressed(id: String) -> void:
 	var price: int = get_price(id)
@@ -107,10 +120,17 @@ func on_buy_pressed(id: String) -> void:
 			is_shiny = true
 			main.achievements_manager.register_shiny_obtained()
 
-		var slot_index: int = main.aquarium_manager.try_add_fish_to_aquarium(main.current_habitat, spawned_fish_id)
+		var slot_index: int = main.aquarium_manager.try_add_fish_to_aquarium(
+			main.habitat_manager.current_habitat,
+			spawned_fish_id
+		)
 
 		if slot_index != -1:
-			main.aquarium_manager.spawn_fish(spawned_fish_id, main.current_habitat, slot_index)
+			main.aquarium_manager.spawn_fish(
+				spawned_fish_id,
+				main.habitat_manager.current_habitat,
+				slot_index
+			)
 		else:
 			main.fish_inventory[spawned_fish_id] = int(main.fish_inventory.get(spawned_fish_id, 0)) + 1
 
@@ -125,6 +145,7 @@ func on_buy_pressed(id: String) -> void:
 
 	if main.stats_panel.visible:
 		main.stats_manager.refresh_stats_values_only()
+
 
 func on_unlock_pressed(id: String) -> void:
 	if bool(main.unlocked.get(id, false)):
@@ -145,6 +166,8 @@ func on_unlock_pressed(id: String) -> void:
 			main._update_algas_sprite_by_level()
 		"tronco":
 			main._update_tronco_visibility_by_level()
+		"barco":
+			main._update_barco_sprite_by_level()
 
 	main.ui_manager._update_ui()
 	main._actualizar_peces_desbloqueados_en_enciclopedia()

@@ -25,8 +25,8 @@ func get_save_state() -> Dictionary:
 		"random_tick_unlocked": main.achievements_manager.random_tick_unlocked,
 		"volume_slider_spam_unlocked": main.achievements_manager.volume_slider_spam_unlocked,
 		"aquarium_data": aquarium_serialized,
-		"current_habitat": main.current_habitat,
-		"unlocked_habitats": main.unlocked_habitats,
+		"current_habitat": main.habitat_manager.current_habitat,
+		"unlocked_habitats": main.habitat_manager.unlocked_habitats,
 		"sound_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")),
 		"total_clicks": main.total_clicks,
 		"total_coins_earned": main.total_coins_earned,
@@ -130,12 +130,17 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 
 	main.achievements_manager.random_tick_unlocked = bool(state.get("random_tick_unlocked", false))
 	main.achievements_manager.volume_slider_spam_unlocked = bool(state.get("volume_slider_spam_unlocked", false))
-	main.current_habitat = state.get("current_habitat", "habitat_1")
+	main.habitat_manager.current_habitat = state.get("current_habitat", "habitat_1")
 
 	var saved_habitats = state.get("unlocked_habitats", ["habitat_1"])
-	main.unlocked_habitats.clear()
+	main.habitat_manager.unlocked_habitats.clear()
 	for h in saved_habitats:
-		main.unlocked_habitats.append(str(h))
+		main.habitat_manager.unlocked_habitats.append(str(h))
+
+	if not main.habitat_manager.unlocked_habitats.has(main.habitat_manager.current_habitat):
+		main.habitat_manager.current_habitat = main.habitat_manager.unlocked_habitats[0]
+
+	main.habitat_manager.inventory_habitat = main.habitat_manager.current_habitat
 
 	var saved_aquarium: Dictionary = state.get("aquarium_data", {})
 
@@ -190,3 +195,4 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 	main._update_tronco_visibility_by_level()
 	main._update_chest_sprite_by_level()
 	main.alien_manager.check_alien_event_unlock()
+	main.habitat_manager.apply_current_habitat()

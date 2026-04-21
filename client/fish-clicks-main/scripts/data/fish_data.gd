@@ -4,37 +4,50 @@ class_name FishData
 const FISH_DEFS := {
 	"doblon": {
 		"name": "Doblon",
-		"icon": preload("res://assets/peces/doblon.png")
+		"icon": preload("res://assets/peces/doblon.png"),
+		"habitat": "habitat_1"
 	},
 	"doblon_shiny": {
 		"name": "Doblon",
-		"icon": preload("res://assets/peces/doblon_shiny.png")
+		"icon": preload("res://assets/peces/doblon_shiny.png"),
+		"habitat": "habitat_1"
 	},
 
 	"sobrasada": {
 		"name": "Sobrasada",
-		"icon": preload("res://assets/peces/sobrasada.png")
+		"icon": preload("res://assets/peces/sobrasada.png"),
+		"habitat": "habitat_1"
 	},
 	"sobrasada_shiny": {
 		"name": "Sobrasada",
-		"icon": preload("res://assets/peces/sobrasada_shiny.png")
+		"icon": preload("res://assets/peces/sobrasada_shiny.png"),
+		"habitat": "habitat_1"
 	},
 
 	"espuma": {
 		"name": "Espuma",
-		"icon": preload("res://assets/peces/espuma.png")
+		"icon": preload("res://assets/peces/espuma.png"),
+		"habitat": "habitat_1"
 	},
 	"espuma_shiny": {
 		"name": "Espuma",
-		"icon": preload("res://assets/peces/espuma_shiny.png")
+		"icon": preload("res://assets/peces/espuma_shiny.png"),
+		"habitat": "habitat_1"
 	},
 
 	"rufinus": {
 		"name": "Rufinus",
-		"icon": preload("res://assets/peces/rufinus.png")
+		"icon": preload("res://assets/peces/rufinus.png"),
+		"habitat": "habitat_1"
 	},
 	"rufinus_shiny": {
 		"name": "Rufinus",
-		"icon": preload("res://assets/peces/rufinus_shiny.png")
+		"icon": preload("res://assets/peces/rufinus_shiny.png"),
+		"habitat": "habitat_1"
+	},
+	"tilapia": {
+		"name": "Tilapia",
+		"icon": preload("res://assets/peces/tilapia.png"),
+		"habitat": "habitat_2"
 	}
 }

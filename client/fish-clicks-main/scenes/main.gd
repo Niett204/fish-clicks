@@ -51,6 +51,7 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 @onready var fish_mode_overlay: Control = $UI/Root/FishModeOverlay
 @onready var fish_mode_dark_bg: ColorRect = $UI/Root/FishModeOverlay/DarkBg
 @onready var btn_expand_fish_mode: Control = $UI/Root/FishModeOverlay/BtnExpand
+@onready var btn_world_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnWorld
 
 # ------------------- NODOS DE MUNDO -------------------
 @onready var content_pecera: Node2D = $ContentPecera
@@ -65,6 +66,7 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 @onready var tronco_1: Sprite2D = $ContentPecera/EstructurasLayer/Tronco
 @onready var tronco_2: Sprite2D = $ContentPecera/EstructurasLayer/Tronco2
 @onready var tronco_3: Sprite2D = $ContentPecera/EstructurasLayer/Tronco3
+@onready var barco: Sprite2D = $ContentPecera/EstructurasLayer/Barco
 
 # ------------------- AUDIO -------------------
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
@@ -95,14 +97,13 @@ const TEX_ANUBIA_0 := preload("res://assets/estructuras/anubia/anubia_mini.png")
 const TEX_ANUBIA_1 := preload("res://assets/estructuras/anubia/anubia_small.png")
 const TEX_ANUBIA_2 := preload("res://assets/estructuras/anubia/anubia_medium.png")
 const TEX_ANUBIA_3 := preload("res://assets/estructuras/anubia/anubia_large.png")
+const TEX_BARCO_0 := preload("res://assets/estructuras/barco/barco_1.png")
+const TEX_BARCO_1 := preload("res://assets/estructuras/barco/barco_2.png")
+const TEX_BARCO_2 := preload("res://assets/estructuras/barco/barco_3.png")
 const ICON_HIDE = preload("res://assets/ui/iconos/icono_hud_abierto.png")
 const ICON_SHOW = preload("res://assets/ui/iconos/icono_hud_cerrado.png")
 
 # ------------------- ESTADO DEL JUEGO -------------------
-var unlocked_habitats: Array[String] = ["habitat_1", "habitat_2"]
-var current_habitat: String = "habitat_1"
-var inventory_habitat: String = "habitat_1"
-
 var aquarium_data := {
 	"habitat_1": [null, null, null, null, null, null, null, null, null, null],
 	"habitat_2": [null, null, null, null, null, null, null, null, null, null]
@@ -170,6 +171,9 @@ var shop_manager: ShopManager
 const AlienManagerScript = preload("res://scripts/main/alien_manager.gd")
 var alien_manager: AlienManager
 
+const HabitatManagerScript = preload("res://scripts/main/habitat_manager.gd")
+var habitat_manager: HabitatManager
+
 # ------------------- FUNCIONES -------------------
 
 # --------- De Ciclo de Vida ---------
@@ -207,6 +211,10 @@ func _ready() -> void:
 	add_child(alien_manager)
 	alien_manager.setup(self)
 	
+	habitat_manager = HabitatManagerScript.new()
+	add_child(habitat_manager)
+	habitat_manager.setup(self)
+	
 	http_request.request_completed.connect(_on_request_completed)
 
 	var url := "https://fish-clicks.onrender.com/api/test"
@@ -225,6 +233,7 @@ func _ready() -> void:
 	shop_panel.visible = false
 	encyclopedia_panel.visible = false
 	profile_panel.visible = false
+	btn_world_icon.visible = true
 	chest_base_scale = chest_sprite.scale
 	
 	shop_panel.z_index = 1
@@ -261,6 +270,11 @@ func _ready() -> void:
 	btn_inventory_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_inventory_icon)
 		ui_manager.toggle_inventario()
+	)
+	
+	btn_world_icon.pressed.connect(func():
+		ui_manager.play_squish(btn_world_icon)
+		habitat_manager.cycle_habitat()
 	)
 
 	btn_options_icon.pressed.connect(func():
@@ -305,10 +319,12 @@ func _ready() -> void:
 
 	shop_manager.update_cps()
 	ui_manager._update_ui()
+	habitat_manager.apply_current_habitat()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
 	_update_algas_sprite_by_level()
 	_update_anubia_sprite_by_level()
 	_update_tronco_visibility_by_level()
+	_update_barco_sprite_by_level()
 
 	inventory_panel.move_fish_to_inventory.connect(aquarium_manager.on_move_fish_to_inventory)
 	inventory_panel.move_fish_to_aquarium.connect(aquarium_manager.on_move_fish_to_aquarium)
@@ -739,6 +755,25 @@ func _set_vallisneria_texture(tex: Texture2D) -> void:
 		vallisneria.position.y = vallisneria_ground_y - tex_height * 0.5
 	else:
 		vallisneria.position.y = vallisneria_ground_y - tex_height
+	
+		
+# --------- Escenario (Segundo Mundo) ---------
+func _update_barco_sprite_by_level() -> void:
+	var level: int = shop_manager.get_level("barco")
+	var is_unlocked: bool = bool(unlocked.get("barco", false))
+
+	if not is_unlocked or level <= 0:
+		barco.visible = false
+		return
+
+	barco.visible = true
+
+	if level <= 5:
+		barco.texture = TEX_BARCO_0
+	elif level <= 10:
+		barco.texture = TEX_BARCO_1
+	else:
+		barco.texture = TEX_BARCO_2
 
 # --------- Formateo/Utils ---------
 

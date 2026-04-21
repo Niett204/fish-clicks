@@ -27,7 +27,7 @@ func spawn_fish(
 	if fish.has_method("setup_fish_instance"):
 		fish.setup_fish_instance(fish_id, habitat_id, slot_index)
 
-	fish.visible = habitat_id == main.current_habitat
+	fish.visible = habitat_id == main.habitat_manager.current_habitat
 
 	if main.fish_defs.has(fish_id) and fish.has_method("set_fish_texture"):
 		var tex: Texture2D = main.fish_defs[fish_id]["icon"]
@@ -148,11 +148,11 @@ func on_move_fish_within_aquarium(from_slot_index: int, to_slot_index: int, habi
 
 func refresh_visible_fish_by_habitat() -> void:
 	for child in main.fish_layer.get_children():
-		child.visible = child.get("habitat_id") == main.current_habitat
+		child.visible = child.get("habitat_id") == main.habitat_manager.current_habitat
 
 
 func on_inventory_habitat_changed(habitat_id: String) -> void:
-	main.inventory_habitat = habitat_id
+	main.habitat_manager.inventory_habitat = habitat_id
 
 
 func swap_spawned_fish_slots(habitat_id: String, from_slot_index: int, to_slot_index: int) -> void:
@@ -185,8 +185,8 @@ func refresh_inventory_panel_data() -> void:
 	if main.inventory_panel.visible:
 		main.inventory_panel.set_inventory_data(
 			main.HABITATS,
-			main.unlocked_habitats,
-			main.inventory_habitat,
+			main.habitat_manager.unlocked_habitats,
+			main.habitat_manager.inventory_habitat,
 			main.aquarium_data,
 			main.fish_defs,
 			main.fish_inventory

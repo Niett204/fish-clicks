@@ -108,8 +108,8 @@ func toggle_inventario() -> void:
 
 		main.inventory_panel.set_inventory_data(
 			main.HABITATS,
-			main.unlocked_habitats,
-			main.inventory_habitat,
+			main.habitat_manager.unlocked_habitats,
+			main.habitat_manager.inventory_habitat,
 			main.aquarium_data,
 			main.fish_defs,
 			main.fish_inventory
@@ -206,6 +206,11 @@ func _refresh_current_shop_tab(tab: int) -> void:
 	await main.get_tree().process_frame
 	_block_info_hover = false
 
+func refresh_open_shop_for_current_habitat() -> void:
+	if not main.shop_open:
+		return
+
+	await _refresh_current_shop_tab(main.tab_container.current_tab)
 
 func _rebuild_tab(tab_name: String, list: VBoxContainer) -> void:
 	for c in list.get_children():
