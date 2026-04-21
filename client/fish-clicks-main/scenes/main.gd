@@ -34,6 +34,7 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 @onready var btn_profile_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnProfile
 @onready var btn_hide: TextureButton = $UI/Root/BtnHideHUD
 @onready var marco_pecera: TextureRect = $UI/Root/MarcoPecera
+@onready var cleaning_event_layer: Control = $UI/Root/CleaningEventLayer
 @onready var hud: Control = $UI/Root/HUD
 @onready var ui_root: Control = $UI/Root
 @onready var info_panel: Control = $UI/Root/HUD/InfoExtraPanel

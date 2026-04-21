@@ -9,12 +9,14 @@ var cleaning_event_available: bool = false # Evita que el evento se dispare vari
 var fish_mode_manager: FishModeManager = null # Función de fish_mode_manager que devuelve si está
 											  # en modo pecera o no
 var shop_manager: ShopManager = null
+var cleaning_event_layer: CleaningEventLayer = null
 
 
 func setup(main_ref: Node) -> void:
 	main = main_ref
 	fish_mode_manager = main.fish_mode_manager
 	shop_manager = main.shop_manager
+	cleaning_event_layer = main.cleaning_event_layer
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -70,4 +72,16 @@ func can_activate_cleaning_event() -> bool:
 func activate_cleaning_event() -> void:
 	cleaning_event_available = true
 	inactivity_time = 0.0
+
+	if cleaning_event_layer != null:
+		cleaning_event_layer.show_event()
+
 	print("Evento de limpieza disponible")
+
+
+func deactivate_cleaning_event() -> void:
+	cleaning_event_available = false
+	inactivity_time = 0.0
+
+	if cleaning_event_layer != null:
+		cleaning_event_layer.hide_event()
