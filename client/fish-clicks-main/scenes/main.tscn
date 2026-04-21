@@ -15,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://bpvte078h1smo" path="res://assets/estructuras/tronco/tronco_mini.png" id="9_tel4y"]
 [ext_resource type="Texture2D" uid="uid://bapfvmfpgbe7p" path="res://assets/ui/iconos/icono_opciones.png" id="9_trceg"]
 [ext_resource type="Texture2D" uid="uid://casqwt2ogwyax" path="res://assets/ui/iconos/icono_stats.png" id="10_a8y0u"]
+[ext_resource type="Texture2D" uid="uid://cupv5gdsagyrf" path="res://assets/estructuras/barco/barco_1.png" id="10_fuf3a"]
 [ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://rljxhda6odwj" path="res://assets/ui/iconos/icono_enciclopedia.png" id="11_yc10j"]
 [ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
@@ -123,6 +124,9 @@ scale = Vector2(0.11820317, 0.11820316)
 texture = SubResource("CompressedTexture2D_y6deb")
 
 [node name="Barco" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=1345349808]
+position = Vector2(875.00006, 378)
+scale = Vector2(0.4399988, 0.47999877)
+texture = ExtResource("10_fuf3a")
 
 [node name="Cofre" type="Area2D" parent="ContentPecera" unique_id=379332226]
 script = ExtResource("3_jyhfs")
