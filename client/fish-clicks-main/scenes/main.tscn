@@ -15,7 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://bpvte078h1smo" path="res://assets/estructuras/tronco/tronco_mini.png" id="9_tel4y"]
 [ext_resource type="Texture2D" uid="uid://bapfvmfpgbe7p" path="res://assets/ui/iconos/icono_opciones.png" id="9_trceg"]
 [ext_resource type="Texture2D" uid="uid://casqwt2ogwyax" path="res://assets/ui/iconos/icono_stats.png" id="10_a8y0u"]
-[ext_resource type="Texture2D" uid="uid://cupv5gdsagyrf" path="res://assets/estructuras/barco/barco_1.png" id="10_fuf3a"]
+[ext_resource type="Texture2D" uid="uid://f36arktw3huv" path="res://assets/estructuras/barco/barco_1.png" id="10_fuf3a"]
 [ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://rljxhda6odwj" path="res://assets/ui/iconos/icono_enciclopedia.png" id="11_yc10j"]
 [ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
@@ -23,7 +23,7 @@
 [ext_resource type="Texture2D" uid="uid://b33wxaxja8jx0" path="res://assets/ui/red.png" id="13_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://c5ht6q767emx5" path="res://assets/ui/botella_mensaje.png" id="13_muem4"]
 [ext_resource type="Script" uid="uid://gmyjxeo8kray" path="res://scenes/btn_profile.gd" id="13_qkpxi"]
-[ext_resource type="Shader" uid="uid://clhdnox30mfge" path="res://scenes/ProfilePanel.gdshader" id="14_5q0nq"]
+[ext_resource type="Shader" path="res://scenes/ProfilePanel.gdshader" id="14_5q0nq"]
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
 [ext_resource type="Texture2D" uid="uid://dyttmjwyi13od" path="res://assets/ui/iconos/icono_ranking.png" id="18_fuf3a"]
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="18_og1vs"]
@@ -681,9 +681,9 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 20.0
-offset_top = -270.0
-offset_right = 270.0
-offset_bottom = -20.0
+offset_top = -220.0
+offset_right = 200.0
+offset_bottom = -40.0
 grow_vertical = 0
 texture = ExtResource("41_5poiv")
 expand_mode = 1

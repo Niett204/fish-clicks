@@ -18,3 +18,6 @@ func _update_collision_shape() -> void:
 	var shape := RectangleShape2D.new()
 	shape.size = size
 	collision_shape.shape = shape
+	
+func set_texture(tex: Texture2D) -> void:
+	$Sprite2D.texture = tex
