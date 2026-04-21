@@ -206,6 +206,11 @@ func _refresh_current_shop_tab(tab: int) -> void:
 	await main.get_tree().process_frame
 	_block_info_hover = false
 
+func refresh_open_shop_for_current_habitat() -> void:
+	if not main.shop_open:
+		return
+
+	await _refresh_current_shop_tab(main.tab_container.current_tab)
 
 func _rebuild_tab(tab_name: String, list: VBoxContainer) -> void:
 	for c in list.get_children():

@@ -331,12 +331,14 @@ func build_shelf_list() -> void:
 
 			var fish_matches_habitat := fish_belongs_to_current_habitat(fish_id)
 
-			item.pressed_item.connect(_on_inventory_item_pressed)
 			item.scale = Vector2(0.9, 0.9)
 
 			if fish_matches_habitat:
+				item.pressed_item.connect(_on_inventory_item_pressed)
+				item.mouse_filter = Control.MOUSE_FILTER_STOP
 				item.modulate = Color(1, 1, 1, 0.0)
 			else:
+				item.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				item.modulate = Color(0.55, 0.55, 0.55, 0.0)
 
 			var t := create_tween()

@@ -15,6 +15,7 @@ func apply_current_habitat() -> void:
 	_update_world_structure_visibility()
 	main.aquarium_manager.refresh_visible_fish_by_habitat()
 	main.aquarium_manager.refresh_inventory_panel_data()
+	await main.ui_manager.refresh_open_shop_for_current_habitat()
 
 func switch_to_habitat(habitat_id: String) -> void:
 	if not unlocked_habitats.has(habitat_id):
