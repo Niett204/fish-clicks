@@ -4,7 +4,7 @@ class_name CleaningManager
 var main: Node = null
 
 var inactivity_time: float = 0.0 # Acumula segundos
-@export var inactivity_threshold: float = 10.0 # Tiempo necesario para que paparezca el evento
+@export var inactivity_threshold: float = 60.0 # Tiempo necesario para que paparezca el evento
 var cleaning_event_available: bool = false # Evita que el evento se dispare varias veces seguidas
 var fish_mode_manager: FishModeManager = null # Función de fish_mode_manager que devuelve si está
 											  # en modo pecera o no

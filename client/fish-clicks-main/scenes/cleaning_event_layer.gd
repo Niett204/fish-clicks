@@ -14,8 +14,20 @@ signal cleaning_finished_successfully
 @export var growth_delay_between_stages: float = 0.8 # tiempo entre small → medium → large
 @export var growth_stagger_max: float = 0.4 # cuánto se desincronizan entre sí las manchas
 @export var dirt_spot_min_distance: float = 250.0 # distancia entre manchas
+@export var dirt_base_radius: float = 80.0
+
+# Frotado 
 @export var scrub_radius: float = 90.0
 @export var scrub_interval: float = 0.3
+var last_mouse_pos: Vector2 = Vector2.ZERO
+@export var min_scrub_movement: float = 20.0 # píxeles mínimos para considerar frotado
+var scrub_movement_accum: float = 0.0
+
+# Movimiento de frotado de la esponja
+var scrub_anim_time: float = 0.0
+@export var scrub_shake_intensity: float = 5.0
+@export var scrub_rotation_intensity: float = 0.1
+@export var scrub_speed: float = 10.0
 
 var cleaning_manager: CleaningManager = null
 var scrub_timer: float = 0.0
@@ -46,21 +58,48 @@ func _process(_delta: float) -> void:
 	if not visible:
 		return
 
+	var mouse_pos := get_global_mouse_position()
+
+	# --- MOVIMIENTO ESPONJA ---
 	if sponge_icon.visible:
-		var mouse_pos := get_global_mouse_position()
-		sponge_icon.global_position = mouse_pos + sponge_offset
+		var target_pos := mouse_pos + sponge_offset
+		
+		if is_scrubbing:
+			scrub_anim_time += _delta * scrub_speed
+			
+			var shake := Vector2(
+				sin(scrub_anim_time) * scrub_shake_intensity,
+				cos(scrub_anim_time * 1.3) * scrub_shake_intensity * 0.5
+			)
+
+			sponge_icon.global_position = target_pos + shake
+			sponge_icon.rotation = sin(scrub_anim_time * 1.5) * scrub_rotation_intensity
+		else:
+			scrub_anim_time = 0.0
+			sponge_icon.global_position = target_pos
+			sponge_icon.rotation = lerp(sponge_icon.rotation, 0.0, 0.2)
 
 	if not cleaning_ready:
 		return
 
-	if is_scrubbing:
-		scrub_timer += _delta
+	# --- LÓGICA DE SCRUB REAL ---
+	var movement := mouse_pos.distance_to(last_mouse_pos)
 
-		if scrub_timer >= scrub_interval:
-			scrub_timer = 0.0
-			_apply_scrub_to_nearby_spots()
+	if is_scrubbing:
+		scrub_movement_accum += movement
+
+		if scrub_movement_accum >= min_scrub_movement:
+			scrub_timer += _delta
+
+			if scrub_timer >= scrub_interval:
+				scrub_timer = 0.0
+				_apply_scrub_to_nearby_spots()
+				scrub_movement_accum = 0.0  # reset tras aplicar
 	else:
 		scrub_timer = 0.0
+		scrub_movement_accum = 0.0
+
+	last_mouse_pos = mouse_pos
 
 func setup_cleaning_layer(cleaning_manager_ref: CleaningManager) -> void:
 	cleaning_manager = cleaning_manager_ref
@@ -80,6 +119,7 @@ func show_event() -> void:
 	cleaning_ready = false
 	is_scrubbing = false
 	cleaning_finished = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 
 	if cleaning_manager != null and cleaning_manager.main != null:
 		cleaning_manager.main.pecera_blocker.visible = true
@@ -104,6 +144,7 @@ func hide_event() -> void:
 	green_overlay.visible = false
 	fish_icon.visible = false
 	sponge_icon.visible = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 	if cleaning_manager != null and cleaning_manager.main != null:
 		cleaning_manager.main.pecera_blocker.visible = false
@@ -132,16 +173,15 @@ func spawn_dirt_spots() -> void:
 	var max_y := 560.0
 
 	var count := dirt_spot_count
-	var min_distance := dirt_spot_min_distance
-	var used_positions: Array[Vector2] = []
+	var used_spots: Array = [] # [{pos, radius}]
 
 	for i in range(count):
 		var spot: DirtSpot = dirt_spot_scene.instantiate()
 		dirt_spots.add_child(spot)
-		
+
 		if not spot.fully_cleaned.is_connected(_on_dirt_spot_fully_cleaned):
 			spot.fully_cleaned.connect(_on_dirt_spot_fully_cleaned)
-	
+
 		var small_textures: Array[Texture2D] = [
 			preload("res://assets/minijuegos/limpieza/algas/alga_1_small.png"),
 			preload("res://assets/minijuegos/limpieza/algas/alga_2_small.png"),
@@ -150,8 +190,34 @@ func spawn_dirt_spots() -> void:
 
 		var alga_type: int = randi() % 3
 
+		var r := randf()
+		var max_stage: int
+		if r < 0.2:
+			max_stage = 0
+		elif r < 0.7:
+			max_stage = 1
+		else:
+			max_stage = 2
+
+		spot.set_meta("max_stage", max_stage)
+
 		var random_texture: Texture2D = small_textures[alga_type]
 		spot.setup(random_texture, alga_type, 0)
+
+		# Escala y radio ANTES de calcular posición
+		var random_scale: float = randf_range(0.12, 0.20)
+		spot.scale = Vector2(random_scale, random_scale)
+
+		var growth_multiplier: float = 1.0
+		match max_stage:
+			0:
+				growth_multiplier = 1.0
+			1:
+				growth_multiplier = 1.4
+			2:
+				growth_multiplier = 1.8
+
+		var spot_radius: float = dirt_base_radius * random_scale * growth_multiplier
 
 		var chosen_position := Vector2.ZERO
 		var found_valid_position := false
@@ -163,8 +229,11 @@ func spawn_dirt_spots() -> void:
 			)
 
 			var too_close := false
-			for used_pos in used_positions:
-				if candidate.distance_to(used_pos) < min_distance:
+			for used in used_spots:
+				var dist: float = candidate.distance_to(used["pos"])
+				var min_dist: float = used["radius"] + spot_radius + 90.0
+
+				if dist < min_dist:
 					too_close = true
 					break
 
@@ -179,13 +248,13 @@ func spawn_dirt_spots() -> void:
 				randf_range(min_y, max_y)
 			)
 
-		used_positions.append(chosen_position)
+		used_spots.append({
+			"pos": chosen_position,
+			"radius": spot_radius
+		})
 
 		spot.position = chosen_position
 		spot.rotation = randf_range(-0.25, 0.25)
-
-		var random_scale := randf_range(0.12, 0.20)
-		spot.scale = Vector2(random_scale, random_scale)
 
 func clear_dirt_spots() -> void:
 	for child in dirt_spots.get_children():
@@ -206,14 +275,20 @@ func grow_to_medium() -> void:
 		await get_tree().create_timer(randf_range(0.0, growth_stagger_max)).timeout
 
 		if spot is DirtSpot:
-			(spot as DirtSpot).set_stage(1)
+			var max_stage: int = int(spot.get_meta("max_stage"))
+
+			if max_stage >= 1:
+				(spot as DirtSpot).set_stage(1)
 
 func grow_to_large() -> void:
 	for spot in dirt_spots.get_children():
 		await get_tree().create_timer(randf_range(0.0, growth_stagger_max)).timeout
 
 		if spot is DirtSpot:
-			(spot as DirtSpot).set_stage(2)
+			var max_stage: int = int(spot.get_meta("max_stage"))
+
+			if max_stage >= 2:
+				(spot as DirtSpot).set_stage(2)
 		
 func _apply_scrub_to_nearby_spots() -> void:
 	var sponge_center := sponge_icon.global_position + sponge_icon.size * 0.5
