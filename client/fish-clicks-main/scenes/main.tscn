@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bxcwld43d6ph0"]
 
 [ext_resource type="Script" uid="uid://cwqjlq8k1q0ls" path="res://scenes/main.gd" id="1_0wfyh"]
-[ext_resource type="Texture2D" uid="uid://cr5yogl8hvnw3" path="res://assets/fondos/fondo1.png" id="1_o5qli"]
+[ext_resource type="Texture2D" uid="uid://brqdecgjy4jth" path="res://assets/fondos/fondo1.png" id="1_o5qli"]
 [ext_resource type="PackedScene" uid="uid://ubk2btwo8ltc" path="res://scenes/pez.tscn" id="2_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://dinpoywkt4vsq" path="res://scenes/FloatingText.tscn" id="2_tefeu"]
 [ext_resource type="Script" uid="uid://cw3knghd0miub" path="res://scenes/cofre.gd" id="3_jyhfs"]
@@ -29,7 +29,7 @@
 [ext_resource type="Texture2D" uid="uid://dyttmjwyi13od" path="res://assets/ui/iconos/icono_ranking.png" id="18_fuf3a"]
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="18_og1vs"]
 [ext_resource type="Texture2D" uid="uid://tyjvk13keej5" path="res://assets/ui/alga.png" id="18_yc10j"]
-[ext_resource type="Texture2D" uid="uid://bf4pt3ldg3d0c" path="res://assets/ui/bandera.png" id="19_0ld40"]
+[ext_resource type="Texture2D" uid="uid://bgs77das3fpu1" path="res://assets/ui/bandera.png" id="19_0ld40"]
 [ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
 [ext_resource type="PackedScene" uid="uid://d4kjqemcayt4t" path="res://scenes/inventario.tscn" id="21_pm3ni"]
 [ext_resource type="Texture2D" uid="uid://builocmjnow0p" path="res://assets/ui/iconos/icono_mundos.png" id="21_txyw0"]
