@@ -308,7 +308,11 @@ func _ready() -> void:
 
 	btn_ranking_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_ranking_icon)
-		ui_manager.toggle_ranking()
+		# Si el panel está oculto, lo abrimos y cargamos datos
+		if not ranking_panel.visible:
+			ranking_panel._open() 
+		else:
+			ranking_panel._close() # O simplemente ranking_panel.visible = false
 	)
 
 	btn_encyclopedia_icon.pressed.connect(func():
@@ -441,10 +445,10 @@ func _ready() -> void:
 		profile_panel._close()
 	)
 	
-	#ranking_panel.close_requested.connect(func():
-		#ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
-		#ranking_panel.visible = false
-	#)
+	ranking_panel.close_requested.connect(func():
+		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
+		ranking_panel.visible = false
+	)
 
 	left_info_panel.bottle_clicked.connect(func():
 		ui_manager.play_ui_sfx(SFX_BOTTLE)
