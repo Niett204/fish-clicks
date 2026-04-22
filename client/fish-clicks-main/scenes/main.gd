@@ -427,7 +427,12 @@ func _resume_alien_after_runtime_restore(alien_return_data: Dictionary) -> void:
 func _process(delta: float) -> void:
 	session_time_seconds += delta
 
-	var total_generated: float = shop_manager.get_total_passive_dps() * delta
+	var passive_multiplier := 1.0
+	if cleaning_manager != null:
+		# Los ingresos pasivos se ven afectados durante el minijuego de limpieza
+		passive_multiplier = cleaning_manager.get_coin_penalty_multiplier()
+
+	var total_generated: float = shop_manager.get_total_passive_dps() * passive_multiplier * delta
 	coins += total_generated
 	total_coins_earned += total_generated
 
@@ -551,10 +556,6 @@ func reset_local_state() -> void:
 	# Limpiar la foto de perfil en el Singleton Global
 	GlobalData.user_photo_url = ""
 
-
-func _on_btn_shop_pressed() -> void:
-	pass # Replace with function body.
-
 func _on_btn_hide_hud_pressed() -> void:
 	pass # Replace with function body.
 
@@ -567,7 +568,7 @@ func get_list_for_category(category: String) -> VBoxContainer:
 			return list_estructuras
 		_:
 			return list_peces
-
+			
 # --------- Animaciones ---------
 func _play_click_animation() -> void:
 	var tween = create_tween()

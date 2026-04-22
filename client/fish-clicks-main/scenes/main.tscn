@@ -42,6 +42,7 @@
 [ext_resource type="Script" uid="uid://bn6sp33ncncs" path="res://scenes/cleaning_event_layer.gd" id="39_c6pm6"]
 [ext_resource type="PackedScene" uid="uid://bqr5662a2ybqw" path="res://scenes/dirt_spot.tscn" id="40_5he1u"]
 [ext_resource type="Texture2D" uid="uid://vtnb4ut02ura" path="res://assets/minijuegos/limpieza/chupete_jr_frente.png" id="41_5poiv"]
+[ext_resource type="Texture2D" uid="uid://cyr1klymgiotf" path="res://assets/minijuegos/limpieza/esponja.png" id="43_chjal"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y6deb"]
 load_path = "res://.godot/imported/anubia_large.png-9dd54c4d539590f8396e886059658b60.ctex"
@@ -586,7 +587,6 @@ layout_mode = 1
 script = ExtResource("25_2f3dj")
 
 [node name="StatsPanel" parent="UI/Root/HUD" unique_id=493873659 instance=ExtResource("23_y6deb")]
-visible = false
 layout_mode = 1
 
 [node name="ProfilePanel" parent="UI/Root/HUD" unique_id=1077186223 instance=ExtResource("25_2wyq8")]
@@ -666,6 +666,7 @@ icon = ExtResource("33_5q0nq")
 expand_icon = true
 
 [node name="CleaningEventLayer" type="Control" parent="UI/Root" unique_id=2050991050]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -699,6 +700,24 @@ mouse_filter = 2
 color = Color(0.33333334, 0.5254902, 0.24313726, 0.59607846)
 
 [node name="DirtSpots" type="Node2D" parent="UI/Root/CleaningEventLayer" unique_id=857359412]
+
+[node name="SpongeIcon" type="TextureRect" parent="UI/Root/CleaningEventLayer" unique_id=276578948]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.5
+offset_top = -40.5
+offset_right = 40.5
+offset_bottom = 40.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("43_chjal")
+expand_mode = 1
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=121986834]
 

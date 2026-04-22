@@ -168,7 +168,33 @@ func toggle_profile() -> void:
 		play_ui_sfx(main.SFX_ICON_CLOSE)
 		main.profile_panel._close()
 
+func close_all_panels() -> void:
+	if main.shop_panel.visible:
+		main.shop_open = false
 
+		if main.shop_tween:
+			main.shop_tween.kill()
+
+		main.shop_panel.position.x = main.shop_x_closed
+	
+	if main.stats_panel.visible:
+		main.stats_panel.visible = false
+	
+	if main.profile_panel.visible:
+		main.profile_panel.visible = false
+	
+	if main.options_panel.visible:
+		main.options_panel.visible = false
+	
+	if main.encyclopedia_panel.visible:
+		main.encyclopedia_panel.visible = false
+	
+	if main.inventory_panel.visible:
+		main.inventory_panel.visible = false
+	
+	if main.ranking_panel.visible:
+		main.ranking_panel.visible = false
+	
 func _update_ui() -> void:
 	_update_currency_ui()
 	_update_dps_ui()
