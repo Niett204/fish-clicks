@@ -34,6 +34,7 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 @onready var btn_profile_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnProfile
 @onready var btn_hide: TextureButton = $UI/Root/BtnHideHUD
 @onready var marco_pecera: TextureRect = $UI/Root/MarcoPecera
+@onready var cleaning_event_layer: Control = $UI/Root/CleaningEventLayer
 @onready var hud: Control = $UI/Root/HUD
 @onready var ui_root: Control = $UI/Root
 @onready var info_panel: Control = $UI/Root/HUD/InfoExtraPanel
@@ -174,6 +175,9 @@ var alien_manager: AlienManager
 const HabitatManagerScript = preload("res://scripts/main/habitat_manager.gd")
 var habitat_manager: HabitatManager
 
+const CleaningManagerScript = preload("res://scripts/main/cleaning_manager.gd")
+var cleaning_manager: CleaningManager
+
 # ------------------- FUNCIONES -------------------
 
 # --------- De Ciclo de Vida ---------
@@ -211,10 +215,14 @@ func _ready() -> void:
 	add_child(alien_manager)
 	alien_manager.setup(self)
 	
+	cleaning_manager = CleaningManagerScript.new()
+	add_child(cleaning_manager)
+	cleaning_manager.setup(self)
+
 	habitat_manager = HabitatManagerScript.new()
 	add_child(habitat_manager)
 	habitat_manager.setup(self)
-	
+
 	http_request.request_completed.connect(_on_request_completed)
 
 	var url := "https://fish-clicks.onrender.com/api/test"
@@ -271,7 +279,7 @@ func _ready() -> void:
 		ui_manager.play_squish(btn_inventory_icon)
 		ui_manager.toggle_inventario()
 	)
-	
+
 	btn_world_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_world_icon)
 		habitat_manager.cycle_habitat()
@@ -419,7 +427,12 @@ func _resume_alien_after_runtime_restore(alien_return_data: Dictionary) -> void:
 func _process(delta: float) -> void:
 	session_time_seconds += delta
 
-	var total_generated: float = shop_manager.get_total_passive_dps() * delta
+	var passive_multiplier := 1.0
+	if cleaning_manager != null:
+		# Los ingresos pasivos se ven afectados durante el minijuego de limpieza
+		passive_multiplier = cleaning_manager.get_coin_penalty_multiplier()
+
+	var total_generated: float = shop_manager.get_total_passive_dps() * passive_multiplier * delta
 	coins += total_generated
 	total_coins_earned += total_generated
 
@@ -439,6 +452,12 @@ func _process(delta: float) -> void:
 
 func _input(event: InputEvent) -> void:
 	fish_mode_manager.handle_input(event)
+
+	# Detectar cualquier click y reiniciar inactividad
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]:
+			if cleaning_manager != null and cleaning_manager.should_count_inactivity():
+				cleaning_manager.register_player_activity()
 
 	if event is InputEventKey and event.pressed and event.keycode == KEY_K:
 		alien_manager.try_start_alien_event()
@@ -537,10 +556,6 @@ func reset_local_state() -> void:
 	# Limpiar la foto de perfil en el Singleton Global
 	GlobalData.user_photo_url = ""
 
-
-func _on_btn_shop_pressed() -> void:
-	pass # Replace with function body.
-
 func _on_btn_hide_hud_pressed() -> void:
 	pass # Replace with function body.
 
@@ -553,7 +568,7 @@ func get_list_for_category(category: String) -> VBoxContainer:
 			return list_estructuras
 		_:
 			return list_peces
-
+			
 # --------- Animaciones ---------
 func _play_click_animation() -> void:
 	var tween = create_tween()
@@ -755,8 +770,8 @@ func _set_vallisneria_texture(tex: Texture2D) -> void:
 		vallisneria.position.y = vallisneria_ground_y - tex_height * 0.5
 	else:
 		vallisneria.position.y = vallisneria_ground_y - tex_height
-	
-		
+
+
 # --------- Escenario (Segundo Mundo) ---------
 func _update_barco_sprite_by_level() -> void:
 	var level: int = shop_manager.get_level("barco")

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cfhhda8qg0bq0"]
 
 [ext_resource type="Script" uid="uid://bk086nx0y3smj" path="res://scenes/shop_item_card.gd" id="1_87dkc"]
-[ext_resource type="Texture2D" uid="uid://bva22m6ipd063" path="res://assets/ui/tabla.png" id="2_njvbf"]
+[ext_resource type="Texture2D" uid="uid://ddynsf231cada" path="res://assets/ui/tabla.png" id="2_njvbf"]
 [ext_resource type="Texture2D" uid="uid://bx28me4bvwn16" path="res://assets/ui/tabla_bloqueada (1).png" id="3_jykwe"]
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="5_niagg"]
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="6_dkuh8"]

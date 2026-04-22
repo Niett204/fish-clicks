@@ -13,6 +13,8 @@ signal close_requested
 @onready var label_fecha_inicio_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_FechaInicio/LabelStat_FechaInicio_Value
 @onready var label_dps_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_DPS/LabelStat_DPS_Value
 @onready var label_dpc_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_DPC/LabelStat_DPC_Value
+@onready var label_dirt_cleaned_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Manchas/LabelStat_Manchas_Value
+@onready var label_cleaning_events_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_EventosLimpieza/LabelStat_EventosLimpieza_Value
 
 @onready var label_count: Label = $AchievementsHeader/LabelCount
 @onready var label_percent: Label = $AchievementsHeader/LabelPercent
@@ -107,6 +109,8 @@ func set_stats_data(data: Dictionary) -> void:
 	label_fecha_inicio_value.text = str(data.get("start_date", "DD/MM/AAAA"))
 	label_dps_value.text = str(data.get("dps", "0 d/s"))
 	label_dpc_value.text = str(data.get("dpc", "0 d/c"))
+	label_dirt_cleaned_value.text = str(data.get("total_dirt_cleaned", 0))
+	label_cleaning_events_value.text = str(data.get("cleaning_events_completed", 0))
 
 func set_achievements_progress(unlocked_count: int, total_count: int) -> void:
 	label_count.text = "%d/%d" % [unlocked_count, total_count]

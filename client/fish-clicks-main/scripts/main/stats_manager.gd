@@ -19,7 +19,9 @@ func refresh_stats_panel() -> void:
 			"play_time": main.format_play_time(int(main.session_time_seconds)),
 			"start_date": main.game_start_date_string,
 			"dps": main.get_compact_doblones_text(main.dps) + " d/s",
-			"dpc": main.get_compact_doblones_text(main.click_power) + " d/c"
+			"dpc": main.get_compact_doblones_text(main.click_power) + " d/c",
+			"total_dirt_cleaned": main.cleaning_manager.total_dirt_spots_cleaned,
+			"cleaning_events_completed": main.cleaning_manager.cleaning_events_completed
 		})
 
 	if main.stats_panel.has_method("set_achievements_progress"):
@@ -43,7 +45,9 @@ func refresh_stats_values_only() -> void:
 			"play_time": main.format_play_time(int(main.session_time_seconds)),
 			"start_date": main.game_start_date_string,
 			"dps": main.get_compact_doblones_text(main.dps) + " d/s",
-			"dpc": main.get_compact_doblones_text(main.click_power) + " d/c"
+			"dpc": main.get_compact_doblones_text(main.click_power) + " d/c",
+			"total_dirt_cleaned": main.cleaning_manager.total_dirt_spots_cleaned,
+			"cleaning_events_completed": main.cleaning_manager.cleaning_events_completed
 		})
 
 

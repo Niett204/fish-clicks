@@ -38,6 +38,8 @@ func get_save_state() -> Dictionary:
 		"alien_clicked_count": main.achievements_manager.alien_clicked_count,
 		"profile_clicks_count": main.achievements_manager.profile_clicks_count,
 		"annoyed_fish_count": main.achievements_manager.annoyed_fish_count,
+		"total_dirt_spots_cleaned": main.cleaning_manager.total_dirt_spots_cleaned,
+		"cleaning_events_completed": main.cleaning_manager.cleaning_events_completed,
 	}
 
 func reset_local_state() -> void:
@@ -71,6 +73,8 @@ func reset_local_state() -> void:
 	main.achievements_manager.profile_clicks_count = 0
 	main.achievements_manager.annoyed_fish_count = 0
 	main.achievements_manager.achievement_check_accum = 0.0
+	main.cleaning_manager.total_dirt_spots_cleaned = 0
+	main.cleaning_manager.cleaning_events_completed = 0
 
 	# Limpieza de Acuarios
 	for habitat_id in main.aquarium_data.keys():
@@ -183,6 +187,8 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 	main.achievements_manager.alien_clicked_count = int(state.get("alien_clicked_count", 0))
 	main.achievements_manager.profile_clicks_count = int(state.get("profile_clicks_count", 0))
 	main.achievements_manager.annoyed_fish_count = int(state.get("annoyed_fish_count", 0))
+	main.cleaning_manager.total_dirt_spots_cleaned = int(state.get("total_dirt_spots_cleaned", 0))
+	main.cleaning_manager.cleaning_events_completed = int(state.get("cleaning_events_completed", 0))
 
 	main.fish_inventory = state.get("fish_inventory", {})
 
