@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://c26glntfrei7b"]
+
+[ext_resource type="Script" uid="uid://ceyn7nfgwh21v" path="res://scenes/UI/ranking_row.gd" id="1_m3n1r"]
+
+[node name="RankingRow" type="HBoxContainer" unique_id=175981940]
+custom_minimum_size = Vector2(787, 30)
+script = ExtResource("1_m3n1r")
+
+[node name="RankLabel" type="Label" parent="." unique_id=1677640811]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NameLabel" type="Label" parent="." unique_id=1812350715]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ValueLabel" type="Label" parent="." unique_id=486836115]
+layout_mode = 2
+horizontal_alignment = 2
