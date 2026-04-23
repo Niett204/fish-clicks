@@ -58,7 +58,7 @@ func reset_local_state() -> void:
 	for k in main.ITEMS.keys():
 		var id := String(k)
 		main.levels[id] = 0
-		main.unlocked[id] = int(main.ITEMS[id].get("unlock_price", 0)) == 0
+		main.unlocked[id] = main._is_item_unlocked_by_default(id)
 
 	# Reseteo de Logros
 	main.achievements_manager.achievements_unlocked.clear()
@@ -189,6 +189,7 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 	main.achievements_manager.annoyed_fish_count = int(state.get("annoyed_fish_count", 0))
 	main.cleaning_manager.total_dirt_spots_cleaned = int(state.get("total_dirt_spots_cleaned", 0))
 	main.cleaning_manager.cleaning_events_completed = int(state.get("cleaning_events_completed", 0))
+	main.cleaning_manager.try_unlock_cleaner_fish()
 
 	main.fish_inventory = state.get("fish_inventory", {})
 

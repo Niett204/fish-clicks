@@ -50,12 +50,24 @@ const ITEMS := {
 		"value_label": "DPS",
 		"habitat_ids": ["habitat_1"]
 	},
+	"chupete_jr": {
+		"tab": "Únicos",
+		"title": "Chupete jr",
+		"icon": "res://assets/peces/chupete_jr.png",
+		"unlock_price": 6000,
+		"kind": "passive",
+		"base_price": 4500.0,
+		"price_growth": 1.35,
+		"base_value": 35.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_1"]
+	},
 	
 	"tilapia": {
 		"tab": "Peces",
 		"title": "Tilapia",
 		"icon": "res://assets/peces/tilapia.png",
-		"unlock_price": 5000,
+		"unlock_price": 0,
 		"kind": "passive",
 		"base_price": 3500.0,
 		"price_growth": 1.35,

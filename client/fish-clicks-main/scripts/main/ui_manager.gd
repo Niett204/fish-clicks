@@ -226,6 +226,8 @@ func _refresh_current_shop_tab(tab: int) -> void:
 		await _rebuild_tab("Peces", main.list_peces)
 	elif tab_name == "Estructuras":
 		await _rebuild_tab("Estructuras", main.list_estructuras)
+	elif tab_name == "Únicos":
+		await _rebuild_tab("Únicos", main.list_unicos)
 
 	update_shop_cards()
 
@@ -264,6 +266,9 @@ func update_shop_cards() -> void:
 
 	for card in main.list_estructuras.get_children():
 		_refresh_card(card)
+		
+	for card in main.list_unicos.get_children():
+		_refresh_card(card)
 
 
 func _refresh_card(card) -> void:
@@ -283,8 +288,17 @@ func _refresh_card(card) -> void:
 	card.extra_b2 = main.shop_manager.get_tooltip_line_2(id)
 	card.extra_b3 = main.shop_manager.get_tooltip_line_3(id)
 
-	if card.has_method("refresh_info_panel_if_hovered"):
-		card.refresh_info_panel_if_hovered()
+	card.set_unlocked(bool(main.unlocked.get(id, true)))
+
+	if card.has_method("set_locked_text"):
+		card.set_locked_text(main.shop_manager.get_locked_text(id))
+
+	card.set_dynamic(
+		p,
+		"%d" % p,
+		main.shop_manager.get_item_effect_text(id),
+		str(main.shop_manager.get_level(id))
+	)
 		
 func toggle_ranking() -> void:
 	var will_open: bool = not main.ranking_panel.visible

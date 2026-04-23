@@ -10,6 +10,7 @@ signal cleaning_finished_successfully
 @onready var dirt_spots: Node2D = $DirtSpots
 @onready var fish_icon: TextureRect = $FishCornerIcon
 @onready var sponge_icon: TextureRect = $SpongeIcon
+@onready var auto_cleaner_fish_icon: TextureRect = $AutoCleanerFishIcon
 
 @export var growth_delay_between_stages: float = 0.8 # tiempo entre small → medium → large
 @export var growth_stagger_max: float = 0.4 # cuánto se desincronizan entre sí las manchas
@@ -36,6 +37,20 @@ var sponge_offset: Vector2 = Vector2(-40, -40) # para que la esponja no tape el 
 var cleaning_ready: bool = false # Será false mientras el minijuego esté en transición de aparecer
 var cleaning_finished: bool = false # flag temporal de esta ejecución del minijuego
 
+# Limpiado automático 
+const CLEANER_FISH_ID := "chupete_jr"
+
+var auto_clean_enabled: bool = false
+var auto_clean_interval: float = 999.0
+var auto_clean_scrubs_per_cycle: int = 0
+var auto_clean_level: int = 0
+var auto_clean_move_speed: float = 140.0 # velocidad de desplazamiento del pez limpiador
+var auto_clean_target: DirtSpot = null
+var auto_clean_arrive_distance: float = 18.0
+var auto_clean_is_scrubbing_target: bool = false
+var auto_clean_scrub_cooldown: float = 0.0
+var auto_clean_spawn_position: Vector2 = Vector2(80, 500)
+
 var dirt_textures: Array[Texture2D] = [
 	preload("res://assets/minijuegos/limpieza/algas/alga_1_small.png"),
 	preload("res://assets/minijuegos/limpieza/algas/alga_1_medium.png"),
@@ -53,6 +68,8 @@ func _ready() -> void:
 	green_overlay.visible = false
 	fish_icon.visible = false
 	sponge_icon.visible = false
+	auto_cleaner_fish_icon.visible = false
+	auto_cleaner_fish_icon.global_position = auto_clean_spawn_position
 
 func _process(_delta: float) -> void:
 	if not visible:
@@ -78,9 +95,13 @@ func _process(_delta: float) -> void:
 			scrub_anim_time = 0.0
 			sponge_icon.global_position = target_pos
 			sponge_icon.rotation = lerp(sponge_icon.rotation, 0.0, 0.2)
-
+	
+	_refresh_cleaner_visuals()
+	
 	if not cleaning_ready:
 		return
+		
+	_process_auto_clean(_delta)
 
 	# --- LÓGICA DE SCRUB REAL ---
 	var movement := mouse_pos.distance_to(last_mouse_pos)
@@ -114,19 +135,45 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		is_scrubbing = event.pressed
 
+func _refresh_cleaner_visuals() -> void:
+	if cleaning_finished:
+		fish_icon.visible = false
+		auto_cleaner_fish_icon.visible = false
+		return
+
+	var using_auto_cleaner: bool = auto_clean_enabled and visible
+
+	fish_icon.visible = not using_auto_cleaner
+	auto_cleaner_fish_icon.visible = using_auto_cleaner
+	
 func show_event() -> void:
 	visible = true
 	cleaning_ready = false
 	is_scrubbing = false
 	cleaning_finished = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+	
+	_update_auto_clean_stats()
 
 	if cleaning_manager != null and cleaning_manager.main != null:
 		cleaning_manager.main.pecera_blocker.visible = true
+		cleaning_manager.main.aquarium_manager.set_fish_visual_hidden_by_id(CLEANER_FISH_ID, auto_clean_enabled)
 
-	fish_icon.visible = true
 	green_overlay.visible = true
 	sponge_icon.visible = false
+
+	# Limpieza automática
+	auto_clean_target = null
+	auto_clean_is_scrubbing_target = false
+	auto_clean_scrub_cooldown = 0.0
+
+	spawn_dirt_spots()
+
+	_refresh_cleaner_visuals()
+
+	if auto_clean_enabled:
+		auto_cleaner_fish_icon.global_position = auto_clean_spawn_position
+		auto_clean_target = _get_best_auto_clean_target()
 
 	var color := green_overlay.color
 	color.a = 0.0
@@ -135,9 +182,7 @@ func show_event() -> void:
 	var tween = create_tween()
 	tween.tween_property(green_overlay, "color:a", 0.6, 0.8)
 
-	spawn_dirt_spots()
 	start_dirt_growth()
-
 
 func hide_event() -> void:
 	clear_dirt_spots()
@@ -145,9 +190,15 @@ func hide_event() -> void:
 	fish_icon.visible = false
 	sponge_icon.visible = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	auto_cleaner_fish_icon.visible = false
+	auto_clean_enabled = false
+	auto_clean_target = null
+	auto_clean_is_scrubbing_target = false
+	auto_clean_scrub_cooldown = 0.0
 
 	if cleaning_manager != null and cleaning_manager.main != null:
 		cleaning_manager.main.pecera_blocker.visible = false
+		cleaning_manager.main.aquarium_manager.set_fish_visual_hidden_by_id(CLEANER_FISH_ID, false)
 
 	visible = false
 	cleaning_finished = false
@@ -222,7 +273,7 @@ func spawn_dirt_spots() -> void:
 		var chosen_position := Vector2.ZERO
 		var found_valid_position := false
 
-		for attempt in range(20):
+		for attempt in range(40):
 			var candidate := Vector2(
 				randf_range(min_x, max_x),
 				randf_range(min_y, max_y)
@@ -339,6 +390,8 @@ func _on_cleaning_finished() -> void:
 
 	is_scrubbing = false
 	sponge_icon.visible = false
+	fish_icon.visible = false
+	auto_cleaner_fish_icon.visible = false
 
 	var tween = create_tween()
 	tween.tween_property(green_overlay, "color:a", 0.0, 0.5)
@@ -346,3 +399,158 @@ func _on_cleaning_finished() -> void:
 	await tween.finished
 
 	cleaning_finished_successfully.emit()
+	
+# ------------- LIMPIEZA AUTOMÁTICA -------------
+func _process_auto_clean(delta: float) -> void:
+	if not auto_clean_enabled:
+		return
+
+	if cleaning_finished:
+		return
+
+	if not auto_cleaner_fish_icon.visible:
+		return
+
+	if dirt_spots.get_child_count() == 0:
+		return
+
+	if auto_clean_target == null or not is_instance_valid(auto_clean_target):
+		auto_clean_target = _get_best_auto_clean_target()
+		auto_clean_is_scrubbing_target = false
+
+	if auto_clean_target == null:
+		return
+
+	if auto_clean_is_scrubbing_target:
+		_process_auto_scrub_on_target(delta)
+	else:
+		_process_auto_move_to_target(delta)
+
+func _process_auto_move_to_target(delta: float) -> void:
+	if auto_clean_target == null or not is_instance_valid(auto_clean_target):
+		auto_clean_target = null
+		return
+
+	var fish_center := auto_cleaner_fish_icon.global_position + auto_cleaner_fish_icon.size * 0.5
+	var target_pos := auto_clean_target.global_position
+	var to_target := target_pos - fish_center
+	var distance := to_target.length()
+
+	if distance <= auto_clean_arrive_distance:
+		auto_clean_is_scrubbing_target = true
+		auto_clean_scrub_cooldown = 0.0
+		return
+
+	var direction := to_target.normalized()
+	var move_amount: float = auto_clean_move_speed * delta
+	var step: float = min(move_amount, distance)
+	var new_center: Vector2 = fish_center + direction * step
+
+	auto_cleaner_fish_icon.global_position = new_center - auto_cleaner_fish_icon.size * 0.5
+
+	# opcional: flip horizontal según dirección
+	if direction.x != 0.0:
+		auto_cleaner_fish_icon.flip_h = direction.x < 0.0
+
+func _get_best_auto_clean_target_excluding(excluded: DirtSpot) -> DirtSpot:
+	var best_spot: DirtSpot = null
+	var best_stage: int = -1
+
+	for spot in dirt_spots.get_children():
+		if not (spot is DirtSpot):
+			continue
+
+		var dirt := spot as DirtSpot
+
+		if dirt == excluded:
+			continue
+
+		if dirt.size_stage > best_stage:
+			best_stage = dirt.size_stage
+			best_spot = dirt
+
+	return best_spot
+
+func _process_auto_scrub_on_target(delta: float) -> void:
+	if auto_clean_target == null or not is_instance_valid(auto_clean_target):
+		auto_clean_target = null
+		auto_clean_is_scrubbing_target = false
+		return
+
+	auto_clean_scrub_cooldown += delta
+
+	if auto_clean_scrub_cooldown < auto_clean_interval:
+		return
+
+	auto_clean_scrub_cooldown = 0.0
+
+	var total_scrubs := auto_clean_scrubs_per_cycle
+	for i in range(total_scrubs):
+		if auto_clean_target == null or not is_instance_valid(auto_clean_target):
+			break
+
+		var changed: bool = auto_clean_target.apply_scrub()
+
+		if changed:
+			_reduce_green_overlay()
+			_check_if_clean_finished()
+
+	# si la mancha ya no existe o ya cambió tras limpiar, elegir otra
+	if auto_clean_target == null or not is_instance_valid(auto_clean_target):
+		auto_clean_target = _get_best_auto_clean_target()
+		auto_clean_is_scrubbing_target = false
+		return
+
+	# aunque siga existiendo, después de un ciclo puede cambiar de objetivo
+	auto_clean_target = _get_best_auto_clean_target_excluding(auto_clean_target)
+	if auto_clean_target == null:
+		auto_clean_target = _get_best_auto_clean_target()
+
+	auto_clean_is_scrubbing_target = false
+
+func _get_best_auto_clean_target() -> DirtSpot:
+	var best_spot: DirtSpot = null
+	var best_stage: int = -1
+
+	for spot in dirt_spots.get_children():
+		if not (spot is DirtSpot):
+			continue
+
+		var dirt := spot as DirtSpot
+		if dirt.size_stage > best_stage:
+			best_stage = dirt.size_stage
+			best_spot = dirt
+
+	return best_spot
+	
+func _get_cleaner_fish_level() -> int:
+	if cleaning_manager == null or cleaning_manager.main == null:
+		return 0
+
+	return int(cleaning_manager.main.shop_manager.get_level(CLEANER_FISH_ID))
+
+func _has_cleaner_fish_assistance() -> bool:
+	if cleaning_manager == null or cleaning_manager.main == null:
+		return false
+
+	var main_ref = cleaning_manager.main
+	var is_unlocked: bool = bool(main_ref.unlocked.get(CLEANER_FISH_ID, false))
+	var level: int = _get_cleaner_fish_level()
+	var is_in_aquarium: bool = main_ref.aquarium_manager.has_fish_in_aquarium(CLEANER_FISH_ID)
+
+	return is_unlocked and level > 0 and is_in_aquarium
+
+func _update_auto_clean_stats() -> void:
+	auto_clean_level = _get_cleaner_fish_level()
+
+	if not _has_cleaner_fish_assistance():
+		auto_clean_enabled = false
+		auto_clean_interval = 999.0
+		auto_clean_scrubs_per_cycle = 0
+		auto_clean_move_speed = 0.0
+		return
+
+	auto_clean_enabled = true
+	auto_clean_interval = max(0.55, 2.4 - float(auto_clean_level) * 0.22)
+	auto_clean_scrubs_per_cycle = 1 + int(auto_clean_level / 4)
+	auto_clean_move_speed = 110.0 + float(auto_clean_level) * 18.0

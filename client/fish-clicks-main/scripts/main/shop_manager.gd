@@ -37,6 +37,8 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 		get_price(id),
 		unlock_price
 	)
+	
+	card.set_locked_text(get_locked_text(id))
 
 	card.extra_title = String(def.get("title", id))
 	card.extra_desc = "\"Mejora tu producción.\""
@@ -148,6 +150,9 @@ func on_buy_pressed(id: String) -> void:
 
 
 func on_unlock_pressed(id: String) -> void:
+	if is_item_locked_by_progress(id):
+		return
+		
 	if bool(main.unlocked.get(id, false)):
 		return
 
@@ -283,3 +288,25 @@ func get_total_unlocked_structures_count() -> int:
 			total += 1
 
 	return total
+
+# Pez limpiador solo se desbloquea al progresar 
+func is_item_locked_by_progress(id: String) -> bool:
+	if id == "pez_limpiador":
+		if main.cleaning_manager == null:
+			return true
+		return not main.cleaning_manager.is_cleaner_fish_unlocked()
+
+	return false
+	
+func get_locked_text(id: String) -> String:
+	if id == "chupete_jr":
+		var current := 0
+		var target := 5
+
+		if main.cleaning_manager != null:
+			current = main.cleaning_manager.get_cleaner_fish_progress()
+			target = main.cleaning_manager.CLEANER_FISH_REQUIRED_EVENTS
+
+		return "Limpiezas %d/%d" % [current, target]
+
+	return str(int(main.ITEMS[id].get("unlock_price", 0)))

@@ -44,6 +44,7 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 @onready var tab_container: TabContainer = $UI/Root/HUD/TiendaPanel/TabContainer
 @onready var list_peces: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer/ListPeces
 @onready var list_estructuras: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Estructuras/ScrollContainer/ListEstructuras
+@onready var list_unicos: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Únicos/ScrollContainer/ListUnicos
 @onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var dps_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer2/DpsLabel
 @onready var unidades_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/UnidadesLabel
@@ -235,7 +236,7 @@ func _ready() -> void:
 	for k in ITEMS.keys():
 		var id := String(k)
 		levels[id] = 0
-		unlocked[id] = int(ITEMS[id].get("unlock_price", 0)) == 0
+		unlocked[id] = _is_item_unlocked_by_default(id)
 		lifetime_generated[id] = 0.0
 
 	shop_panel.visible = false
@@ -420,7 +421,13 @@ func _ready() -> void:
 	
 	# Añadimos al grupo al final
 	add_to_group("main")
+	
+func _is_item_unlocked_by_default(id: String) -> bool:
+	if id == "chupete_jr":
+		return false
 
+	return int(ITEMS[id].get("unlock_price", 0)) == 0 
+	
 func _resume_alien_after_runtime_restore(alien_return_data: Dictionary) -> void:
 	alien_manager.resume_after_minigame(alien_return_data)
 
