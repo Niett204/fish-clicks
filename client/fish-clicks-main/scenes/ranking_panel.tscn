@@ -43,10 +43,10 @@ expand_mode = 1
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer" unique_id=307560495]
 layout_mode = 2
-theme_override_constants/margin_left = 114
-theme_override_constants/margin_top = 100
-theme_override_constants/margin_right = 130
-theme_override_constants/margin_bottom = 81
+theme_override_constants/margin_left = 65
+theme_override_constants/margin_top = 95
+theme_override_constants/margin_right = 67
+theme_override_constants/margin_bottom = 75
 
 [node name="VBoxMain" type="VBoxContainer" parent="MarginContainer/MarginContainer" unique_id=399049451]
 layout_mode = 2
@@ -56,10 +56,10 @@ layout_mode = 2
 
 [node name="PodiumTexture" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection" unique_id=2125568874]
 layout_mode = 0
-offset_left = 9.0
+offset_left = 84.0
 offset_top = -18.0
-offset_right = 205.0
-offset_bottom = 227.0
+offset_right = 224.0
+offset_bottom = 157.0
 texture = ExtResource("3_kiu8h")
 expand_mode = 1
 stretch_mode = 5
@@ -144,6 +144,8 @@ vertical_alignment = 1
 
 [node name="ListSection" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxMain" unique_id=2087348152]
 layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 204
 
 [node name="Header" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxMain/ListSection" unique_id=1246448042]
 layout_mode = 2
