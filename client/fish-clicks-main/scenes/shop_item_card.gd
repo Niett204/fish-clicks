@@ -188,6 +188,12 @@ func update_state(coins: float) -> void:
 	_can_afford = coins >= needed
 	_apply_plank_tint()
 
+var locked_text: String = ""
+func set_locked_text(text: String) -> void:
+	locked_text = text
+	if not is_unlocked:
+		_apply_locked_visual()
+		
 
 func _apply_locked_visual() -> void:
 	disabled = false
@@ -195,7 +201,10 @@ func _apply_locked_visual() -> void:
 	if plank_locked_bg and plank_locked:
 		plank_locked_bg.texture = plank_locked
 
-	locked_price_lbl.text = "%d" % unlock_price
+	if locked_text != "":
+		locked_price_lbl.text = locked_text
+	else:
+		locked_price_lbl.text = "%d" % unlock_price
 
 
 func _apply_unlocked_visual() -> void:
@@ -213,7 +222,6 @@ func _apply_unlocked_visual() -> void:
 	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	stat_left.text = _left_normal
 	level_lbl.text = _level_normal
-
 
 func set_dynamic(new_price: float, new_left: String, new_right: String, new_level: String) -> void:
 	price = int(new_price)

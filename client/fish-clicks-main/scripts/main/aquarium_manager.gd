@@ -243,3 +243,26 @@ func get_total_shiny_fish_count() -> int:
 			total += int(main.fish_inventory[fish_id])
 
 	return total
+
+func has_fish_in_aquarium(fish_id: String) -> bool:
+	for habitat_id in main.aquarium_data.keys():
+		var slots: Array = main.aquarium_data[habitat_id]
+
+		for slot_fish_id in slots:
+			if slot_fish_id != null and String(slot_fish_id) == fish_id:
+				return true
+
+	return false
+
+func set_fish_visual_hidden_by_id(fish_id: String, hidden: bool) -> void:
+	for child in main.fish_layer.get_children():
+		if child == null or not is_instance_valid(child):
+			continue
+
+		if String(child.get("fish_id")) != fish_id:
+			continue
+
+		if hidden:
+			child.visible = false
+		else:
+			child.visible = child.get("habitat_id") == main.habitat_manager.current_habitat

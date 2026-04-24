@@ -16,6 +16,10 @@ var ui_manager: UiManager = null
 var total_dirt_spots_cleaned: int = 0 # Número de manchas limpiadas
 var cleaning_events_completed: int = 0 # Número de minijuegos completados
 
+# Pez limpiador
+const CLEANER_FISH_ID := "chupete_jr"
+const CLEANER_FISH_REQUIRED_EVENTS := 5
+
 func setup(main_ref: Node) -> void:
 	main = main_ref
 	fish_mode_manager = main.fish_mode_manager
@@ -113,3 +117,36 @@ func register_dirt_spot_cleaned() -> void:
 
 func register_cleaning_event_completed() -> void:
 	cleaning_events_completed += 1
+	try_unlock_cleaner_fish()
+	
+# ---------- DESBLOQUEO PEZ LIMPIADOR ----------
+func get_cleaner_fish_progress() -> int:
+	return min(cleaning_events_completed, CLEANER_FISH_REQUIRED_EVENTS)
+
+func is_cleaner_fish_unlocked() -> bool:
+	if main == null:
+		return false
+
+	return bool(main.unlocked.get(CLEANER_FISH_ID, false))
+
+func try_unlock_cleaner_fish() -> void:
+	if main == null:
+		return
+
+	if is_cleaner_fish_unlocked():
+		return
+
+	if cleaning_events_completed < CLEANER_FISH_REQUIRED_EVENTS:
+		return
+
+	main.unlocked[CLEANER_FISH_ID] = true
+
+	if main.ui_manager != null:
+		main.ui_manager.update_shop_cards()
+
+	main._actualizar_peces_desbloqueados_en_enciclopedia()
+
+	if main.stats_panel.visible:
+		main.stats_manager.refresh_stats_panel_full()
+
+	print("Pez limpiador desbloqueado")

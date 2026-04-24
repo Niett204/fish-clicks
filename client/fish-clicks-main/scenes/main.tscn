@@ -43,6 +43,7 @@
 [ext_resource type="PackedScene" uid="uid://bqr5662a2ybqw" path="res://scenes/dirt_spot.tscn" id="40_5he1u"]
 [ext_resource type="Texture2D" uid="uid://vtnb4ut02ura" path="res://assets/minijuegos/limpieza/chupete_jr_frente.png" id="41_5poiv"]
 [ext_resource type="Texture2D" uid="uid://cyr1klymgiotf" path="res://assets/minijuegos/limpieza/esponja.png" id="43_chjal"]
+[ext_resource type="Texture2D" uid="uid://bwu5qviekelnr" path="res://assets/minijuegos/limpieza/chupete_jr_limpia.png" id="43_cjqg0"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y6deb"]
 load_path = "res://.godot/imported/anubia_large.png-9dd54c4d539590f8396e886059658b60.ctex"
@@ -414,9 +415,10 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_jkv2x")
 theme_override_styles/tab_unselected = SubResource("StyleBoxTexture_0ld40")
 theme_override_styles/tab_hovered = SubResource("StyleBoxTexture_yc10j")
 theme_override_styles/tab_selected = SubResource("StyleBoxTexture_jbj1t")
-current_tab = 0
+current_tab = 1
 
 [node name="Estructuras" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1013639139]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -439,7 +441,6 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
 [node name="Peces" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1632976240]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
@@ -666,7 +667,6 @@ icon = ExtResource("33_5q0nq")
 expand_icon = true
 
 [node name="CleaningEventLayer" type="Control" parent="UI/Root" unique_id=2050991050]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -687,6 +687,22 @@ offset_right = 200.0
 offset_bottom = -40.0
 grow_vertical = 0
 texture = ExtResource("41_5poiv")
+expand_mode = 1
+
+[node name="AutoCleanerFishIcon" type="TextureRect" parent="UI/Root/CleaningEventLayer" unique_id=1183109001]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -63.5
+offset_top = -63.5
+offset_right = 81.0
+offset_bottom = 81.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("43_cjqg0")
 expand_mode = 1
 
 [node name="GreenOverlay" type="ColorRect" parent="UI/Root/CleaningEventLayer" unique_id=1504048117]
