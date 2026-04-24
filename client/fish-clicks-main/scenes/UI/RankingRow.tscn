@@ -3,7 +3,11 @@
 [ext_resource type="Script" uid="uid://ceyn7nfgwh21v" path="res://scenes/UI/ranking_row.gd" id="1_m3n1r"]
 
 [node name="RankingRow" type="HBoxContainer" unique_id=175981940]
-custom_minimum_size = Vector2(787, 30)
+custom_minimum_size = Vector2(0, 30)
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
 script = ExtResource("1_m3n1r")
 
 [node name="RankLabel" type="Label" parent="." unique_id=1677640811]

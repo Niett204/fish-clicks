@@ -84,29 +84,38 @@ func _on_ranking_data(type: String, data: Array):
 			
 # Función con seguridad para evitar errores de Base64
 func _load_external_photo(base64_str: String, rect: TextureRect):
-	if base64_str == null or base64_str.length() < 50: # Una imagen real siempre es larga
+	# 1. Filtro de seguridad inicial
+	if base64_str == null or base64_str.length() < 100: 
 		rect.texture = default_avatar
 		return
 		
-	# 1. Limpieza de prefijos data:image/... si existieran
-	var b64_limpio = base64_str
+	# 2. Limpieza de prefijos (por si acaso el Base64 trae metadatos)
+	var b64_limpio = base64_str.strip_edges()
 	if b64_limpio.contains(","):
 		b64_limpio = b64_limpio.split(",")[1]
 
-	var image = Image.new()
+	# 3. Convertir a buffer de bytes
 	var raw_data = Marshalls.base64_to_raw(b64_limpio)
-	
 	if raw_data.is_empty():
 		rect.texture = default_avatar
 		return
 
-	# 2. Intentar cargar como PNG, y si falla, intentar como JPG
-	var error = image.load_png_from_buffer(raw_data)
-	if error != OK:
-		error = image.load_jpg_from_buffer(raw_data)
-	
-	if error == OK:
+	var image = Image.new()
+	var err = -1 # Valor de error por defecto
+
+	# 4. ESCUDO: Solo llamar a Godot si la cabecera es válida
+	# PNG: empieza por [137, 80, 78, 71] | JPG: empieza por [255, 216]
+	if raw_data.size() > 4 and raw_data[0] == 137 and raw_data[1] == 80:
+		err = image.load_png_from_buffer(raw_data)
+	elif raw_data.size() > 2 and raw_data[0] == 255 and raw_data[1] == 216:
+		err = image.load_jpg_from_buffer(raw_data)
+	else:
+		# Si no es ninguna, salimos en silencio SIN lanzar error al log
+		rect.texture = default_avatar
+		return
+
+	# 5. Aplicar textura si todo fue OK
+	if err == OK:
 		rect.texture = ImageTexture.create_from_image(image)
 	else:
-		print("DEBUG: Error real al cargar imagen: ", error)
 		rect.texture = default_avatar
