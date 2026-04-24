@@ -26,11 +26,20 @@ public class User {
     @Column(name = "foto")
     private String foto;
 
+    @Column(name = "foto_extension")
+    private String fotoExtension;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column (name = "total_clicks")
+    private int totalClicks;
+
+    @Column (name = "coins")
+    private double coins;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Password> passwords;

@@ -226,6 +226,7 @@ func set_current_habitat(habitat_id: String) -> void:
 	current_habitat = habitat_id
 
 	build_aquarium_grid()
+	build_shelf_list()
 	rebuild_habitat_tabs()
 	refresh_panel()
 
@@ -312,6 +313,7 @@ func build_shelf_list() -> void:
 			var fish_id := visible_fish[fish_index]
 			var item = INVENTORY_FISH_ITEM_SCENE.instantiate()
 			shelf_row.items_row.add_child(item)
+
 			var is_shiny := fish_id.ends_with("_shiny")
 			var base_fish_id := fish_id.replace("_shiny", "")
 			var icon_to_use: Texture2D = fish_defs[base_fish_id]["icon"]
@@ -327,10 +329,17 @@ func build_shelf_list() -> void:
 				is_shiny
 			)
 
-			item.pressed_item.connect(_on_inventory_item_pressed)
+			var fish_matches_habitat := fish_belongs_to_current_habitat(fish_id)
 
 			item.scale = Vector2(0.9, 0.9)
-			item.modulate.a = 0.0
+
+			if fish_matches_habitat:
+				item.pressed_item.connect(_on_inventory_item_pressed)
+				item.mouse_filter = Control.MOUSE_FILTER_STOP
+				item.modulate = Color(1, 1, 1, 0.0)
+			else:
+				item.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				item.modulate = Color(0.55, 0.55, 0.55, 0.0)
 
 			var t := create_tween()
 			t.set_trans(Tween.TRANS_BACK)
@@ -352,6 +361,10 @@ func _on_aquarium_slot_pressed(slot_index: int, fish_id: String) -> void:
 func _on_inventory_item_pressed(fish_id: String) -> void:
 	if is_dragging or pending_drag:
 		return
+	
+	if not fish_belongs_to_current_habitat(fish_id):
+		return
+	
 	begin_pending_drag(fish_id, "inventory", -1)
 
 func begin_pending_drag(fish_id: String, source: String, slot_index: int) -> void:
@@ -362,7 +375,11 @@ func begin_pending_drag(fish_id: String, source: String, slot_index: int) -> voi
 	drag_start_mouse_pos = get_viewport().get_mouse_position()
 	
 func start_drag(fish_id: String, source: String, slot_index: int) -> void:
-	if not fish_defs.has(fish_id):
+	var base_fish_id := fish_id.replace("_shiny", "")
+	if not fish_defs.has(base_fish_id):
+		return
+	
+	if source == "inventory" and not fish_belongs_to_current_habitat(fish_id):
 		return
 	
 	play_sfx(SFX_COGER_PEZ)
@@ -388,7 +405,9 @@ func start_drag(fish_id: String, source: String, slot_index: int) -> void:
 		drag_preview.queue_free()
 
 	drag_preview = TextureRect.new()
-	drag_preview.texture = fish_defs[fish_id]["icon"]
+	drag_preview.texture = fish_defs[base_fish_id]["icon"]
+	if fish_defs.has(fish_id):
+		drag_preview.texture = fish_defs[fish_id]["icon"]
 	drag_preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	drag_preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	drag_preview.custom_minimum_size = Vector2(48, 48)
@@ -480,7 +499,7 @@ func finish_drag() -> void:
 			move_fish_within_aquarium.emit(drag_slot_index, slot_under_mouse.my_slot_index, current_habitat)
 
 	elif drag_source == "inventory":
-		if slot_under_mouse != null:
+		if slot_under_mouse != null and fish_belongs_to_current_habitat(drag_fish_id):
 			move_fish_to_aquarium.emit(drag_fish_id, current_habitat, slot_under_mouse.my_slot_index)
 		
 	clear_drag()
@@ -533,3 +552,15 @@ func _on_btn_close_button_up() -> void:
 	var tween := create_tween()
 	tween.tween_property(btn_close, "scale", target_scale, 0.06)
 	tween.parallel().tween_property(btn_close, "modulate", target_modulate, 0.06)
+
+# Para el cambio de hábitat
+func fish_belongs_to_current_habitat(fish_id: String) -> bool:
+	var base_fish_id := fish_id.replace("_shiny", "")
+	
+	if not fish_defs.has(base_fish_id):
+		return false
+	
+	var def: Dictionary = fish_defs[base_fish_id]
+	var fish_habitat: String = String(def.get("habitat", "habitat_1"))
+	
+	return fish_habitat == current_habitat

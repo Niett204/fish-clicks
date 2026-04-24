@@ -14,31 +14,29 @@ extends Button
 @onready var stat_left: Label = $NormalView/Padding/Content/TextCol/HBoxContainer/StatLeft
 @onready var level_lbl: Label = $NormalView/Padding/Content/Level
 
-@onready var plank_normal_bg = $NormalView/PlankBG        # ajusta nombre/path
-@onready var plank_locked_bg = $LockedView/BG    # si tienes fondo locked
+@onready var plank_normal_bg = $NormalView/PlankBG
+@onready var plank_locked_bg = $LockedView/BG
+
 var _block_info_hover: bool = false
 
 signal unlock_pressed(item_id: String)
 signal buy_pressed(item_id: String)
 
-# -------- INFO EXTRA --------
 @export var info_panel_path: NodePath
 @onready var info_panel: Control = get_node_or_null(info_panel_path)
 
 @export var extra_title := ""
-@export var extra_desc := ""      # la frase tipo "Autoclicks once every..."
+@export var extra_desc := ""
 @export var extra_b1 := ""
 @export var extra_b2 := ""
 @export var extra_b3 := ""
-@export var extra_footer := ""    # la barra de abajo tipo "X clicked so far"
-# ----------------------------
+@export var extra_footer := ""
 
 var is_unlocked: bool = false
 var unlock_price: int = 0
 var price: int = 0
 var item_id: String = ""
 
-# Guardamos lo "normal" para restaurar al desbloquear
 var _title_normal := ""
 var _left_normal := ""
 var _right_normal := ""
@@ -52,6 +50,7 @@ var hover_rotation := 2.0
 var pressed_rotation := 5.0
 var click_rotation := 5.0
 var tween: Tween
+
 
 func _ready() -> void:
 	z_index = 10
@@ -76,13 +75,12 @@ func _ready() -> void:
 	button_down.connect(func():
 		_pressed = true
 		_apply_plank_tint()
-		_animate_rotation(pressed_rotation, 0.08)  # mientras mantienes
+		_animate_rotation(pressed_rotation, 0.08)
 	)
 
 	button_up.connect(func():
 		_pressed = false
 		_apply_plank_tint()
-		# vuelve a hover si sigues encima, si no a 0
 		_animate_rotation(hover_rotation if _hovered else 0.0, 0.12)
 	)
 
@@ -90,9 +88,10 @@ func _ready() -> void:
 
 	_apply_view()
 	_apply_plank_tint()
-	
+
 	mouse_entered.connect(_on_enter_info)
 	mouse_exited.connect(_on_exit_info)
+
 
 func _on_enter_info() -> void:
 	if not is_unlocked:
@@ -103,7 +102,7 @@ func _on_enter_info() -> void:
 		return
 
 	if info_panel == null:
-		print("INFO: info_panel_path no asignado o mal:", info_panel_path)
+		print("INFO: info_panel_path no asignado o mal: ", info_panel_path)
 		return
 
 	var owned := 0
@@ -120,9 +119,11 @@ func _on_enter_info() -> void:
 		extra_b3
 	)
 
+
 func _on_exit_info() -> void:
 	if info_panel:
 		info_panel.schedule_hide(0.06)
+
 
 func _on_card_pressed() -> void:
 	if is_unlocked:
@@ -130,27 +131,20 @@ func _on_card_pressed() -> void:
 	else:
 		unlock_pressed.emit(item_id)
 
+
 func _apply_plank_tint() -> void:
-	# Base según si puedes comprar
 	var c := Color(1, 1, 1, 1) if _can_afford else Color(0.55, 0.55, 0.55, 1)
 
-	# Encima de eso, hover/click (solo si puedes, o si quieres también cuando no puedes)
 	if _pressed:
 		c = c * Color(0.85, 0.85, 0.85, 1)
 	elif _hovered:
 		c = c * Color(0.93, 0.93, 0.93, 1)
 
-	# Aplica al fondo visible
 	if plank_normal_bg:
 		plank_normal_bg.modulate = c
 	if plank_locked_bg:
 		plank_locked_bg.modulate = c
 
-func _on_pressed() -> void:
-	if is_unlocked:
-		buy_pressed.emit(item_id)
-	else:
-		unlock_pressed.emit(item_id)
 
 func setup(
 	_id: String,
@@ -180,6 +174,7 @@ func setup(
 
 	_apply_view()
 
+
 func set_unlocked(v: bool) -> void:
 	is_unlocked = v
 	_apply_view()
@@ -187,10 +182,18 @@ func set_unlocked(v: bool) -> void:
 	if not is_unlocked and info_panel:
 		info_panel.schedule_hide(0.0)
 
+
 func update_state(coins: float) -> void:
 	var needed := price if is_unlocked else unlock_price
 	_can_afford = coins >= needed
 	_apply_plank_tint()
+
+var locked_text: String = ""
+func set_locked_text(text: String) -> void:
+	locked_text = text
+	if not is_unlocked:
+		_apply_locked_visual()
+		
 
 func _apply_locked_visual() -> void:
 	disabled = false
@@ -198,10 +201,13 @@ func _apply_locked_visual() -> void:
 	if plank_locked_bg and plank_locked:
 		plank_locked_bg.texture = plank_locked
 
-	locked_price_lbl.text = "%d" % unlock_price
+	if locked_text != "":
+		locked_price_lbl.text = locked_text
+	else:
+		locked_price_lbl.text = "%d" % unlock_price
+
 
 func _apply_unlocked_visual() -> void:
-	# Ojo: aquí NO decidimos si se puede comprar (eso lo hace update_state)
 	disabled = false
 
 	if plank_normal:
@@ -228,7 +234,7 @@ func set_dynamic(new_price: float, new_left: String, new_right: String, new_leve
 		level_lbl.text = _level_normal
 
 	refresh_info_panel_if_hovered()
-		
+
 
 func _apply_view() -> void:
 	normal_view.visible = is_unlocked
@@ -241,6 +247,7 @@ func _apply_view() -> void:
 
 	_apply_plank_tint()
 
+
 func _animate_rotation(target: float, duration: float) -> void:
 	if tween:
 		tween.kill()
@@ -248,6 +255,7 @@ func _animate_rotation(target: float, duration: float) -> void:
 	tween.tween_property(self, "rotation_degrees", target, duration) \
 		.set_trans(Tween.TRANS_SINE) \
 		.set_ease(Tween.EASE_OUT)
+
 
 func _wiggle_click() -> void:
 	if tween:
@@ -258,8 +266,10 @@ func _wiggle_click() -> void:
 	tween.tween_property(self, "rotation_degrees", -click_rotation, 0.08)
 	tween.tween_property(self, "rotation_degrees", 0.0, 0.10)
 
+
 func _reset_rotation_smooth() -> void:
 	_animate_rotation(0.0, 0.15)
+
 
 func refresh_info_panel_if_hovered() -> void:
 	if not is_unlocked:

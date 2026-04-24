@@ -138,7 +138,7 @@ func check_achievements() -> void:
 				icon_tex = icon_data
 			elif icon_data is String and icon_data != "":
 				icon_tex = load(icon_data)
-
+			
 			_show_achievement_popup(title, condition, icon_tex)
 
 	if changed and main.stats_panel.visible:
@@ -167,6 +167,8 @@ func _try_show_next_achievement_popup() -> void:
 	var popup = ACHIEVEMENT_POPUP_SCENE.instantiate()
 	main.get_node("UI/Root").add_child(popup)
 	achievement_popup_active = popup
+	
+	main.ui_manager.play_achievement_sfx(main.SFX_ACHIEVEMENT)
 
 	if popup.has_method("setup_popup"):
 		popup.setup_popup(
@@ -202,10 +204,10 @@ func _get_base_fish_id(fish_id: String) -> String:
 func _get_current_aquarium_fish_ids() -> Array[String]:
 	var result: Array[String] = []
 
-	if not main.aquarium_data.has(main.current_habitat):
+	if not main.aquarium_data.has(main.habitat_manager.current_habitat):
 		return result
 
-	for fish_id in main.aquarium_data[main.current_habitat]:
+	for fish_id in main.aquarium_data[main.habitat_manager.current_habitat]:
 		if fish_id != null:
 			result.append(String(fish_id))
 
@@ -213,10 +215,10 @@ func _get_current_aquarium_fish_ids() -> Array[String]:
 
 
 func _is_current_aquarium_full() -> bool:
-	if not main.aquarium_data.has(main.current_habitat):
+	if not main.aquarium_data.has(main.habitat_manager.current_habitat):
 		return false
 
-	for fish_id in main.aquarium_data[main.current_habitat]:
+	for fish_id in main.aquarium_data[main.habitat_manager.current_habitat]:
 		if fish_id == null:
 			return false
 

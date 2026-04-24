@@ -33,6 +33,8 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 @onready var btn_stats_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnStats
 @onready var btn_profile_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnProfile
 @onready var btn_hide: TextureButton = $UI/Root/BtnHideHUD
+@onready var marco_pecera: TextureRect = $UI/Root/MarcoPecera
+@onready var cleaning_event_layer: Control = $UI/Root/CleaningEventLayer
 @onready var hud: Control = $UI/Root/HUD
 @onready var ui_root: Control = $UI/Root
 @onready var info_panel: Control = $UI/Root/HUD/InfoExtraPanel
@@ -42,23 +44,36 @@ var fish_defs = FishData.FISH_DEFS.duplicate(true)
 @onready var tab_container: TabContainer = $UI/Root/HUD/TiendaPanel/TabContainer
 @onready var list_peces: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer/ListPeces
 @onready var list_estructuras: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Estructuras/ScrollContainer/ListEstructuras
+@onready var list_unicos: VBoxContainer = $UI/Root/HUD/TiendaPanel/TabContainer/Únicos/ScrollContainer/ListUnicos
 @onready var coins_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/HBoxContainer/DoblonesLabel
 @onready var dps_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer2/DpsLabel
 @onready var unidades_label: Label = $UI/Root/HUD/LeftInfoPanel/VBoxContainer/UnidadesLabel
+@onready var btn_ranking_icon: TextureButton = $UI/Root/HUD/TopBar/LeftGroup/BtnRanking
+@onready var ranking_panel: Control = $UI/Root/HUD/RankingPanel
+@onready var fish_mode_overlay: Control = $UI/Root/FishModeOverlay
+@onready var fish_mode_dark_bg: ColorRect = $UI/Root/FishModeOverlay/DarkBg
+@onready var btn_expand_fish_mode: Control = $UI/Root/FishModeOverlay/BtnExpand
+@onready var btn_world_icon: TextureButton = $UI/Root/HUD/TopBar/RightGroup/BtnWorld
 
 # ------------------- NODOS DE MUNDO -------------------
-@onready var chest: Area2D = $Cofre
-@onready var chest_sprite: Sprite2D = $Cofre/Sprite2D
-@onready var fish_layer = $PecesLayer
-@onready var vallisneria: Sprite2D = $EstructurasLayer/Vallisneria
-@onready var anubia: Sprite2D = $EstructurasLayer/Anubia
-@onready var tronco_1: Sprite2D = $EstructurasLayer/Tronco
-@onready var tronco_2: Sprite2D = $EstructurasLayer/Tronco2
-@onready var tronco_3: Sprite2D = $EstructurasLayer/Tronco3
+@onready var content_pecera: Node2D = $ContentPecera
+@onready var chest: Area2D = $ContentPecera/Cofre
+@onready var chest_sprite: Sprite2D = $ContentPecera/Cofre/Sprite2D
+@onready var fish_layer = $ContentPecera/PecesLayer
+@onready var bg: Sprite2D = $ContentPecera/BG
+@onready var swim_area: Node2D = $ContentPecera/SwimArea
+@onready var swim_area_collision: CollisionShape2D = $ContentPecera/SwimArea/CollisionShape2D
+@onready var vallisneria: Sprite2D = $ContentPecera/EstructurasLayer/Vallisneria
+@onready var anubia: Sprite2D = $ContentPecera/EstructurasLayer/Anubia
+@onready var tronco_1: Sprite2D = $ContentPecera/EstructurasLayer/Tronco
+@onready var tronco_2: Sprite2D = $ContentPecera/EstructurasLayer/Tronco2
+@onready var tronco_3: Sprite2D = $ContentPecera/EstructurasLayer/Tronco3
+@onready var barco: Sprite2D = $ContentPecera/EstructurasLayer/Barco
 
 # ------------------- AUDIO -------------------
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
 @onready var ui_sfx_player: AudioStreamPlayer = $UiSfxPlayer
+@onready var achievement_sfx_player: AudioStreamPlayer = $AchievementSfxPlayer
 
 const SFX_ICON_OPEN := preload("res://assets/audio/UI/abrir_icono.wav")
 const SFX_ICON_CLOSE := preload("res://assets/audio/UI/cerrar_icono.wav")
@@ -66,6 +81,10 @@ const SFX_COFRE_CLICK := preload("res://assets/audio/UI/pulsar_cofre.wav")
 const SFX_BUY_ITEM := preload("res://assets/audio/UI/comprar.wav")
 const SFX_SHINY := preload("res://assets/audio/UI/shiny.wav")
 const SFX_CAMBIAR_TAB := preload("res://assets/audio/UI/cambiar_tab.wav")
+const SFX_PASA_PAGINA := preload("res://assets/audio/UI/pasa_pagina.wav")
+const SFX_CAMBIAR_CATEGORIA := preload("res://assets/audio/UI/cambiar_tab.wav")
+const SFX_ACHIEVEMENT := preload("res://assets/audio/UI/shiny.wav")
+const SFX_BOTTLE := preload("res://assets/audio/UI/cambiar_tab.wav")
 
 # ------------------- ASSETS VISUALES -------------------
 const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado_arena.png")
@@ -80,14 +99,13 @@ const TEX_ANUBIA_0 := preload("res://assets/estructuras/anubia/anubia_mini.png")
 const TEX_ANUBIA_1 := preload("res://assets/estructuras/anubia/anubia_small.png")
 const TEX_ANUBIA_2 := preload("res://assets/estructuras/anubia/anubia_medium.png")
 const TEX_ANUBIA_3 := preload("res://assets/estructuras/anubia/anubia_large.png")
+const TEX_BARCO_0 := preload("res://assets/estructuras/barco/barco_1.png")
+const TEX_BARCO_1 := preload("res://assets/estructuras/barco/barco_2.png")
+const TEX_BARCO_2 := preload("res://assets/estructuras/barco/barco_3.png")
 const ICON_HIDE = preload("res://assets/ui/iconos/icono_hud_abierto.png")
 const ICON_SHOW = preload("res://assets/ui/iconos/icono_hud_cerrado.png")
 
 # ------------------- ESTADO DEL JUEGO -------------------
-var unlocked_habitats: Array[String] = ["habitat_1", "habitat_2"]
-var current_habitat: String = "habitat_1"
-var inventory_habitat: String = "habitat_1"
-
 var aquarium_data := {
 	"habitat_1": [null, null, null, null, null, null, null, null, null, null],
 	"habitat_2": [null, null, null, null, null, null, null, null, null, null]
@@ -124,6 +142,11 @@ var vallisneria_ground_y: float = 0.0
 var anubia_ground_y: float = 0.0
 var vallisneria_base_scale: Vector2
 var anubia_base_scale: Vector2
+# --- para el modo pecera ---
+var content_pecera_normal_position: Vector2
+var content_pecera_normal_scale: Vector2
+var swim_area_normal_position: Vector2
+var swim_area_normal_size: Vector2
 
 # ------------------- MANAGERS -------------------
 const UiManagerScript = preload("res://scripts/main/ui_manager.gd")
@@ -146,6 +169,15 @@ var aquarium_manager: AquariumManager
 
 const ShopManagerScript = preload("res://scripts/main/shop_manager.gd")
 var shop_manager: ShopManager
+
+const AlienManagerScript = preload("res://scripts/main/alien_manager.gd")
+var alien_manager: AlienManager
+
+const HabitatManagerScript = preload("res://scripts/main/habitat_manager.gd")
+var habitat_manager: HabitatManager
+
+const CleaningManagerScript = preload("res://scripts/main/cleaning_manager.gd")
+var cleaning_manager: CleaningManager
 
 # ------------------- FUNCIONES -------------------
 
@@ -180,6 +212,18 @@ func _ready() -> void:
 	add_child(shop_manager)
 	shop_manager.setup(self)
 	
+	alien_manager = AlienManagerScript.new()
+	add_child(alien_manager)
+	alien_manager.setup(self)
+	
+	cleaning_manager = CleaningManagerScript.new()
+	add_child(cleaning_manager)
+	cleaning_manager.setup(self)
+
+	habitat_manager = HabitatManagerScript.new()
+	add_child(habitat_manager)
+	habitat_manager.setup(self)
+
 	http_request.request_completed.connect(_on_request_completed)
 
 	var url := "https://fish-clicks.onrender.com/api/test"
@@ -192,12 +236,13 @@ func _ready() -> void:
 	for k in ITEMS.keys():
 		var id := String(k)
 		levels[id] = 0
-		unlocked[id] = int(ITEMS[id].get("unlock_price", 0)) == 0
+		unlocked[id] = _is_item_unlocked_by_default(id)
 		lifetime_generated[id] = 0.0
 
 	shop_panel.visible = false
 	encyclopedia_panel.visible = false
 	profile_panel.visible = false
+	btn_world_icon.visible = true
 	chest_base_scale = chest_sprite.scale
 	
 	shop_panel.z_index = 1
@@ -215,20 +260,30 @@ func _ready() -> void:
 		ui_manager.toggle_shop()
 	)
 
+	btn_ranking_icon.pressed.connect(func():
+		ui_manager.play_squish(btn_ranking_icon)
+		ui_manager.toggle_ranking()
+	)
+
 	btn_encyclopedia_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_encyclopedia_icon)
 		ui_manager.toggle_encyclopedia()
 	)
 	
-	btn_profile_icon.pressed.connect(func():
-		achievements_manager.register_profile_click()
-		ui_manager.play_squish(btn_profile_icon)
-		ui_manager.toggle_profile()
-	)
+	#btn_profile_icon.pressed.connect(func():
+		#achievements_manager.register_profile_click()
+		#ui_manager.play_squish(btn_profile_icon)
+		#ui_manager.toggle_profile()
+	#)
 
 	btn_inventory_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_inventory_icon)
 		ui_manager.toggle_inventario()
+	)
+
+	btn_world_icon.pressed.connect(func():
+		ui_manager.play_squish(btn_world_icon)
+		habitat_manager.cycle_habitat()
 	)
 
 	btn_options_icon.pressed.connect(func():
@@ -243,12 +298,27 @@ func _ready() -> void:
 		ui_manager.toggle_stats_panel()
 	)
 
+	btn_expand_fish_mode.pressed.connect(func():
+		hide_fish_mode_overlay()
+		fish_mode_manager.toggle_fish_mode()
+	)
+
 	tab_container.tab_changed.connect(ui_manager._on_tab_changed)
 	_update_chest_sprite_by_level()
 	chest.clicked.connect(_on_chest_clicked)
 
 	vallisneria_base_scale = vallisneria.scale
 	anubia_base_scale = anubia.scale
+
+	content_pecera_normal_position = content_pecera.position
+	content_pecera_normal_scale = content_pecera.scale
+
+	swim_area_normal_position = swim_area_collision.position
+	var swim_shape: RectangleShape2D = swim_area_collision.shape as RectangleShape2D
+	swim_area_normal_size = swim_shape.size
+
+	marco_pecera.visible = false
+	fish_mode_overlay.visible = false
 
 	if vallisneria.texture:
 		vallisneria_ground_y = vallisneria.position.y + (vallisneria.texture.get_height() * abs(vallisneria.scale.y) * 0.5)
@@ -258,10 +328,12 @@ func _ready() -> void:
 
 	shop_manager.update_cps()
 	ui_manager._update_ui()
+	habitat_manager.apply_current_habitat()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
 	_update_algas_sprite_by_level()
 	_update_anubia_sprite_by_level()
 	_update_tronco_visibility_by_level()
+	_update_barco_sprite_by_level()
 
 	inventory_panel.move_fish_to_inventory.connect(aquarium_manager.on_move_fish_to_inventory)
 	inventory_panel.move_fish_to_aquarium.connect(aquarium_manager.on_move_fish_to_aquarium)
@@ -282,6 +354,14 @@ func _ready() -> void:
 		encyclopedia_panel.visible = false
 	)
 	
+	encyclopedia_panel.page_changed.connect(func():
+		ui_manager.play_ui_sfx(SFX_PASA_PAGINA)
+	)
+	
+	encyclopedia_panel.category_changed.connect(func():
+		ui_manager.play_ui_sfx(SFX_CAMBIAR_CATEGORIA)
+	)
+	
 	stats_panel.close_requested.connect(func():
 		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
 		stats_panel.visible = false
@@ -297,6 +377,15 @@ func _ready() -> void:
 		profile_panel._close()
 	)
 	
+	#ranking_panel.close_requested.connect(func():
+		#ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
+		#ranking_panel.visible = false
+	#)
+
+	left_info_panel.bottle_clicked.connect(func():
+		ui_manager.play_ui_sfx(SFX_BOTTLE)
+	)
+
 	if game_start_date_string == "":
 		var dt := Time.get_datetime_dict_from_system()
 		game_start_date_string = "%02d/%02d/%04d" % [dt.day, dt.month, dt.year]
@@ -313,17 +402,44 @@ func _ready() -> void:
 	# Guardado
 	# Guardado: Solo conectamos el éxito de carga
 	GlobalData.load_success.connect(save_manager.apply_save_state)
-	
-	# Intentamos cargar la partida inicial
-	GlobalData.load_game() 
+	alien_manager.check_alien_event_unlock()
+
+	var runtime_state := GlobalData.consume_pending_runtime_state()
+	var alien_return_data := GlobalData.consume_pending_alien_result()
+	var abducted_fish_snapshots := GlobalData.consume_pending_abducted_fish_snapshots()
+	var abduct_return_origin := GlobalData.consume_pending_abduct_return_origin()
+
+	if not runtime_state.is_empty():
+		save_manager.apply_save_state(runtime_state, false)
+
+		if not alien_return_data.is_empty():
+			alien_manager.abducted_fish_snapshots = abducted_fish_snapshots
+			alien_manager.abduct_return_origin = abduct_return_origin
+			_resume_alien_after_runtime_restore(alien_return_data)
+	else:
+		GlobalData.load_game()
 	
 	# Añadimos al grupo al final
 	add_to_group("main")
+	
+func _is_item_unlocked_by_default(id: String) -> bool:
+	if id == "chupete_jr":
+		return false
+
+	return int(ITEMS[id].get("unlock_price", 0)) == 0 
+	
+func _resume_alien_after_runtime_restore(alien_return_data: Dictionary) -> void:
+	alien_manager.resume_after_minigame(alien_return_data)
 
 func _process(delta: float) -> void:
 	session_time_seconds += delta
 
-	var total_generated: float = shop_manager.get_total_passive_dps() * delta
+	var passive_multiplier := 1.0
+	if cleaning_manager != null:
+		# Los ingresos pasivos se ven afectados durante el minijuego de limpieza
+		passive_multiplier = cleaning_manager.get_coin_penalty_multiplier()
+
+	var total_generated: float = shop_manager.get_total_passive_dps() * passive_multiplier * delta
 	coins += total_generated
 	total_coins_earned += total_generated
 
@@ -343,6 +459,15 @@ func _process(delta: float) -> void:
 
 func _input(event: InputEvent) -> void:
 	fish_mode_manager.handle_input(event)
+
+	# Detectar cualquier click y reiniciar inactividad
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]:
+			if cleaning_manager != null and cleaning_manager.should_count_inactivity():
+				cleaning_manager.register_player_activity()
+
+	if event is InputEventKey and event.pressed and event.keycode == KEY_K:
+		alien_manager.try_start_alien_event()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -438,10 +563,6 @@ func reset_local_state() -> void:
 	# Limpiar la foto de perfil en el Singleton Global
 	GlobalData.user_photo_url = ""
 
-
-func _on_btn_shop_pressed() -> void:
-	pass # Replace with function body.
-
 func _on_btn_hide_hud_pressed() -> void:
 	pass # Replace with function body.
 
@@ -454,7 +575,7 @@ func get_list_for_category(category: String) -> VBoxContainer:
 			return list_estructuras
 		_:
 			return list_peces
-
+			
 # --------- Animaciones ---------
 func _play_click_animation() -> void:
 	var tween = create_tween()
@@ -657,6 +778,25 @@ func _set_vallisneria_texture(tex: Texture2D) -> void:
 	else:
 		vallisneria.position.y = vallisneria_ground_y - tex_height
 
+
+# --------- Escenario (Segundo Mundo) ---------
+func _update_barco_sprite_by_level() -> void:
+	var level: int = shop_manager.get_level("barco")
+	var is_unlocked: bool = bool(unlocked.get("barco", false))
+
+	if not is_unlocked or level <= 0:
+		barco.visible = false
+		return
+
+	barco.visible = true
+
+	if level <= 5:
+		barco.texture = TEX_BARCO_0
+	elif level <= 10:
+		barco.texture = TEX_BARCO_1
+	else:
+		barco.texture = TEX_BARCO_2
+
 # --------- Formateo/Utils ---------
 
 func format_doblones_parts(n: float) -> Dictionary:
@@ -726,3 +866,38 @@ func format_play_time(total_seconds: int) -> String:
 	var minutes := (total_seconds % 3600) / 60
 	var seconds := total_seconds % 60
 	return "%02d:%02d:%02d" % [hours, minutes, seconds]
+
+func apply_normal_mode_layout() -> void:
+	content_pecera.position = content_pecera_normal_position
+	content_pecera.scale = content_pecera_normal_scale
+
+	swim_area_collision.position = swim_area_normal_position
+	var swim_shape: RectangleShape2D = swim_area_collision.shape as RectangleShape2D
+	swim_shape.size = swim_area_normal_size
+
+	refresh_fishes_swim_rect()
+
+	marco_pecera.visible = false
+
+func apply_fish_mode_layout() -> void:
+	content_pecera.position = Vector2(26, 24)
+	content_pecera.scale = Vector2(0.96, 0.96)
+
+	swim_area_collision.position = Vector2(577, 330)
+	var swim_shape: RectangleShape2D = swim_area_collision.shape as RectangleShape2D
+	swim_shape.size = Vector2(1022, 490)
+
+	refresh_fishes_swim_rect()
+
+	marco_pecera.visible = true
+
+func refresh_fishes_swim_rect() -> void:
+	for fish in fish_layer.get_children():
+		if fish.has_method("_update_swim_rect"):
+			fish._update_swim_rect()
+
+func show_fish_mode_overlay() -> void:
+	fish_mode_overlay.visible = true
+
+func hide_fish_mode_overlay() -> void:
+	fish_mode_overlay.visible = false

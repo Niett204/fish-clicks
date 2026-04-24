@@ -33,48 +33,42 @@ func _http_result_to_text(result: int) -> String:
 
 
 func _build_error_message(result: int, code: int, body: PackedByteArray, default_msg: String) -> String:
-	# 1) Error de red (no llego respuesta HTTP valida)
+	# 1) Error de red (Capa física/transporte)
 	if result != HTTPRequest.RESULT_SUCCESS:
 		return _http_result_to_text(result)
 
-	# 2) Intentar leer JSON del backend
+	# 2) Intentar obtener el mensaje específico del servidor si existe
 	var raw := body.get_string_from_utf8()
 	var data = JSON.parse_string(raw)
-
+	var server_detail = ""
+	
 	if data is Dictionary:
-		# Prioridad: message -> error -> detail
-		var message := str(data.get("message", "")).strip_edges()
-		if message != "":
-			return "%s (HTTP %d)" % [message, code]
+		# Buscamos en las claves comunes de error de los frameworks de backend
+		server_detail = data.get("message", data.get("error", data.get("detail", "")))
 
-		var error_text := str(data.get("error", "")).strip_edges()
-		if error_text != "":
-			return "%s (HTTP %d)" % [error_text, code]
-
-		var detail := str(data.get("detail", "")).strip_edges()
-		if detail != "":
-			return "%s (HTTP %d)" % [detail, code]
-
-	# 3) Fallback por codigo HTTP
+	# 3) Mapeo de errores por Código HTTP
 	match code:
 		400:
-			return "Datos invalidos (HTTP 400)"
+			return "Solicitud inválida. Revisa los datos introducidos."
 		401:
-			return "Credenciales incorrectas (HTTP 401)"
+			return "La contraseña es incorrecta."
 		403:
-			return "Acceso denegado (HTTP 403)"
+			return "No tienes permiso para acceder a este recurso."
 		404:
-			return "Endpoint no encontrado (HTTP 404)"
+			return "El nombre de usuario no existe."
 		409:
-			return "El usuario o email ya existe (HTTP 409)"
+			# Generalmente usado en el registro para duplicados
+			return "El nombre de usuario o el email ya están en uso."
 		422:
-			return "No se pudo procesar la solicitud (HTTP 422)"
-		500:
-			return "Error interno del servidor (HTTP 500)"
-		502, 503, 504:
-			return "Servidor no disponible temporalmente (HTTP %d)" % code
-		_:
-			return "%s (HTTP %d)" % [default_msg, code]
+			return "Datos no procesables (posible formato de email incorrecto)."
+		500, 502, 503, 504:
+			return "El servidor tiene problemas técnicos. Inténtalo más tarde."
+	
+	# 4) Fallback: Si el servidor envió un texto útil, lo usamos, si no, el default
+	if server_detail != "":
+		return str(server_detail)
+		
+	return "%s (Error %d)" % [default_msg, code]
 
 
 
@@ -97,15 +91,14 @@ func _on_login_done(result, code: int, _headers, body: PackedByteArray, http: HT
 	var data = JSON.parse_string(body.get_string_from_utf8())
 
 	if result == HTTPRequest.RESULT_SUCCESS and code == 200 and data is Dictionary:
-		if get_tree().has_group("main"):
-			get_tree().call_group("main", "reset_local_state")
 		
 		set_user_session(
 			data.get("token", ""), 
 			data.get("userId", ""), 
 			data.get("nickname", nickname),
 			data.get("email", ""),
-			data.get("foto", "")
+			data.get("foto", ""),
+			data.get("extension", "")
 		)
 		login_success.emit(data)
 		load_game()
@@ -141,24 +134,32 @@ func _on_register_done(result, code: int, _headers, body: PackedByteArray, http:
 
 # ── Sesión ──────────────────────────────────────────
 var user_photo_url: String = ""
+var user_photo_extension: String = ""
 
-func set_user_session(token: String, uid: String, nickname: String, email: String, photo: String) -> void:
-	user_token    = token
-	user_id       = uid
+
+func set_user_session(token: String, uid: String, nickname: String, email: String, photo: String, extension: String) -> void:
+	user_token = token
+	user_id = uid
 	user_nickname = nickname
-	user_email    = email
-	user_photo_url = photo # Asegúrate de tener esta variable declarada arriba
-	is_logged_in  = true
+	user_email = email
+	user_photo_url = photo
+	user_photo_extension = extension if not extension.is_empty() else "png"
+	is_logged_in = true
 	_save_session()
+	# No hace falta emitir aquí si ya lo haces en _on_login_done
 
 func clear_session() -> void:
 	user_token    = ""
 	user_id       = ""
 	user_email    = ""
 	user_nickname = ""
+	user_photo_url = ""
 	is_logged_in  = false
 	if FileAccess.file_exists(SESSION_FILE):
 		DirAccess.remove_absolute(SESSION_FILE)
+
+	if get_tree().has_group("main_hud_buttons"):
+		get_tree().call_group("main_hud_buttons", "update_avatar")
 
 func get_auth_header() -> String:
 	return "Bearer " + user_token
@@ -171,7 +172,8 @@ func _save_session() -> void:
 			"user_id":  user_id,
 			"email":    user_email,
 			"nickname": user_nickname,
-			"photo":    user_photo_url # Guardamos la foto en el disco
+			"photo":    user_photo_url,
+			"extension": user_photo_extension
 		})
 
 func _load_session() -> void:
@@ -184,7 +186,8 @@ func _load_session() -> void:
 				user_id       = d.get("user_id",  "")
 				user_email    = d.get("email",    "")
 				user_nickname = d.get("nickname", "")
-				user_photo_url = d.get("photo",    "") # Cargamos la foto guardada
+				user_photo_url = d.get("photo",    "")
+				user_photo_extension = d.get("extension", "png")
 				is_logged_in  = true
 
 
@@ -270,3 +273,105 @@ func _on_load_done(_result, code: int, _headers, body: PackedByteArray, http: HT
 		load_failed.emit("No hay partida guardada")
 	else:
 		load_failed.emit("Error al cargar la partida")
+
+func upload_user_photo(base64_data: String, extension: String) -> void:
+	if not is_logged_in: return
+
+	var http := HTTPRequest.new()
+	add_child(http)
+
+	# Ahora enviamos tanto la foto como la extensión en el JSON
+	var body = JSON.stringify({
+		"foto": base64_data,
+		"extension": extension
+	})
+	
+	var headers = [
+		"Content-Type: application/json",
+		"Authorization: " + get_auth_header()
+	]
+
+	http.request(BASE_URL + "/auth/update-photo", headers, HTTPClient.METHOD_POST, body)
+
+	# ACTUALIZACIÓN LOCAL
+	user_photo_url = base64_data
+	user_photo_extension = extension # Guardamos la extensión para que BtnProfile sepa qué cargar
+	_save_session()
+	
+# --- RANKING ---
+signal ranking_received(type: String, data: Array)
+signal ranking_failed(error: String)
+
+func fetch_ranking(type: String) -> void:
+	# type: "clicks" o "money"
+	var http := HTTPRequest.new()
+	add_child(http)
+
+	http.request_completed.connect(func(result, code, headers, body):
+		http.queue_free()
+		if code == 200:
+			var data = JSON.parse_string(body.get_string_from_utf8())
+			if data is Array:
+				ranking_received.emit(type, data)
+			else:
+				ranking_failed.emit("Formato de ranking inválido")
+		else:
+			var msg = _build_error_message(result, code, body, "Error al obtener ranking")
+			ranking_failed.emit(msg)
+	)
+
+	var headers := [
+		"Content-Type: application/json",
+		"Authorization: " + get_auth_header()
+	]
+
+	# Asegúrate de que las rutas en el backend coincidan (/ranking/clicks y /ranking/money)
+	http.request(BASE_URL + "/ranking/" + type, headers, HTTPClient.METHOD_GET)
+
+var pending_runtime_state: Dictionary = {}
+var pending_alien_result: Dictionary = {}
+var pending_abducted_fish_snapshots: Array[Dictionary] = []
+
+func set_pending_abducted_fish_snapshots(snapshots: Array[Dictionary]) -> void:
+	pending_abducted_fish_snapshots = snapshots.duplicate(true)
+
+func consume_pending_abducted_fish_snapshots() -> Array[Dictionary]:
+	var out := pending_abducted_fish_snapshots.duplicate(true)
+	pending_abducted_fish_snapshots.clear()
+	return out
+
+func set_pending_runtime_state(state: Dictionary) -> void:
+	pending_runtime_state = state.duplicate(true)
+
+func consume_pending_runtime_state() -> Dictionary:
+	var out := pending_runtime_state.duplicate(true)
+	pending_runtime_state.clear()
+	return out
+
+func set_pending_alien_result(result: Dictionary) -> void:
+	pending_alien_result = result.duplicate(true)
+
+func consume_pending_alien_result() -> Dictionary:
+	var out := pending_alien_result.duplicate(true)
+	pending_alien_result.clear()
+	return out
+
+var pending_abduct_return_origin: Vector2 = Vector2.ZERO
+
+func set_pending_abduct_return_origin(origin: Vector2) -> void:
+	pending_abduct_return_origin = origin
+
+func consume_pending_abduct_return_origin() -> Vector2:
+	var out := pending_abduct_return_origin
+	pending_abduct_return_origin = Vector2.ZERO
+	return out
+
+var pending_minigame_display_fish_data: Array[Dictionary] = []
+
+func set_pending_minigame_display_fish_data(data: Array[Dictionary]) -> void:
+	pending_minigame_display_fish_data = data.duplicate(true)
+
+func consume_pending_minigame_display_fish_data() -> Array[Dictionary]:
+	var data := pending_minigame_display_fish_data.duplicate(true)
+	pending_minigame_display_fish_data.clear()
+	return data

@@ -15,6 +15,13 @@ func play_ui_sfx(stream: AudioStream) -> void:
 	main.ui_sfx_player.stop()
 	main.ui_sfx_player.play()
 
+func play_achievement_sfx(stream: AudioStream) -> void:
+	if stream == null:
+		return
+
+	main.achievement_sfx_player.stream = stream
+	main.achievement_sfx_player.stop()
+	main.achievement_sfx_player.play()
 
 func play_squish(node: Control) -> void:
 	var t := main.create_tween()
@@ -37,6 +44,9 @@ func _close_overlay_panels(except_panel: Control = null) -> void:
 
 	if main.stats_panel != except_panel:
 		main.stats_panel.visible = false
+		
+	if main.ranking_panel != except_panel:
+		main.ranking_panel.visible = false
 
 
 func _toggle_hud() -> void:
@@ -98,8 +108,8 @@ func toggle_inventario() -> void:
 
 		main.inventory_panel.set_inventory_data(
 			main.HABITATS,
-			main.unlocked_habitats,
-			main.inventory_habitat,
+			main.habitat_manager.unlocked_habitats,
+			main.habitat_manager.inventory_habitat,
 			main.aquarium_data,
 			main.fish_defs,
 			main.fish_inventory
@@ -158,7 +168,33 @@ func toggle_profile() -> void:
 		play_ui_sfx(main.SFX_ICON_CLOSE)
 		main.profile_panel._close()
 
+func close_all_panels() -> void:
+	if main.shop_panel.visible:
+		main.shop_open = false
 
+		if main.shop_tween:
+			main.shop_tween.kill()
+
+		main.shop_panel.position.x = main.shop_x_closed
+	
+	if main.stats_panel.visible:
+		main.stats_panel.visible = false
+	
+	if main.profile_panel.visible:
+		main.profile_panel.visible = false
+	
+	if main.options_panel.visible:
+		main.options_panel.visible = false
+	
+	if main.encyclopedia_panel.visible:
+		main.encyclopedia_panel.visible = false
+	
+	if main.inventory_panel.visible:
+		main.inventory_panel.visible = false
+	
+	if main.ranking_panel.visible:
+		main.ranking_panel.visible = false
+	
 func _update_ui() -> void:
 	_update_currency_ui()
 	_update_dps_ui()
@@ -190,12 +226,19 @@ func _refresh_current_shop_tab(tab: int) -> void:
 		await _rebuild_tab("Peces", main.list_peces)
 	elif tab_name == "Estructuras":
 		await _rebuild_tab("Estructuras", main.list_estructuras)
+	elif tab_name == "Únicos":
+		await _rebuild_tab("Únicos", main.list_unicos)
 
 	update_shop_cards()
 
 	await main.get_tree().process_frame
 	_block_info_hover = false
 
+func refresh_open_shop_for_current_habitat() -> void:
+	if not main.shop_open:
+		return
+
+	await _refresh_current_shop_tab(main.tab_container.current_tab)
 
 func _rebuild_tab(tab_name: String, list: VBoxContainer) -> void:
 	for c in list.get_children():
@@ -223,6 +266,9 @@ func update_shop_cards() -> void:
 
 	for card in main.list_estructuras.get_children():
 		_refresh_card(card)
+		
+	for card in main.list_unicos.get_children():
+		_refresh_card(card)
 
 
 func _refresh_card(card) -> void:
@@ -242,5 +288,32 @@ func _refresh_card(card) -> void:
 	card.extra_b2 = main.shop_manager.get_tooltip_line_2(id)
 	card.extra_b3 = main.shop_manager.get_tooltip_line_3(id)
 
-	if card.has_method("refresh_info_panel_if_hovered"):
-		card.refresh_info_panel_if_hovered()
+	card.set_unlocked(bool(main.unlocked.get(id, true)))
+
+	if card.has_method("set_locked_text"):
+		card.set_locked_text(main.shop_manager.get_locked_text(id))
+
+	card.set_dynamic(
+		p,
+		"%d" % p,
+		main.shop_manager.get_item_effect_text(id),
+		str(main.shop_manager.get_level(id))
+	)
+		
+func toggle_ranking() -> void:
+	var will_open: bool = not main.ranking_panel.visible
+
+	if will_open:
+		_close_overlay_panels(main.ranking_panel)
+		play_ui_sfx(main.SFX_ICON_OPEN)
+		main.ranking_panel.visible = true
+
+		if main.info_panel:
+			main.info_panel.request_hide()
+		
+		# Llamamos al método de apertura del panel si existe
+		if main.ranking_panel.has_method("_open"):
+			main.ranking_panel._open()
+	else:
+		main.ranking_panel.visible = false
+		play_ui_sfx(main.SFX_ICON_CLOSE)

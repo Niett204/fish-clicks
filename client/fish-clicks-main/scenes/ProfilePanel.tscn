@@ -2,12 +2,16 @@
 
 [ext_resource type="Script" uid="uid://buyotjgv07gsh" path="res://scenes/profile_panel.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="3"]
+[ext_resource type="Shader" uid="uid://clhdnox30mfge" path="res://scenes/ProfilePanel.gdshader" id="3_6td75"]
 [ext_resource type="Texture2D" uid="uid://c5yprfiyit17s" path="res://pergamino_v2.png" id="3_ok5j1"]
 [ext_resource type="Texture2D" uid="uid://cq0j1orhhg43v" path="res://assets/ui/iconos/default_avatar.png" id="4"]
 [ext_resource type="Texture2D" uid="uid://k1grpwa1v36v" path="res://assets/ui/rarezas/tag_rareza_default.png" id="5_p6fjv"]
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="5_sthu2"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ok5j1"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_da4h1"]
+shader = ExtResource("3_6td75")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6td75"]
 
@@ -111,11 +115,13 @@ custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
 
 [node name="UserPhoto" type="TextureRect" parent="PanelContainer/MarginContainer/VBox/ProfileView/MarginProfile/Fields/PhotoFrame" unique_id=1558652004]
+material = SubResource("ShaderMaterial_da4h1")
 custom_minimum_size = Vector2(72, 72)
 layout_mode = 2
+mouse_filter = 0
 texture = ExtResource("4")
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 6
 
 [node name="NickLabel" type="Label" parent="PanelContainer/MarginContainer/VBox/ProfileView/MarginProfile/Fields" unique_id=30087857]
 layout_mode = 2
@@ -319,3 +325,9 @@ size_flags_vertical = 0
 texture_normal = ExtResource("3")
 ignore_texture_size = true
 stretch_mode = 5
+
+[node name="AvatarDialog" type="FileDialog" parent="." unique_id=1123868673]
+title = "Open a File"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.png", "*.jpg", "*.jpeg")

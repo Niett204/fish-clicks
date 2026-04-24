@@ -15,28 +15,47 @@
 [ext_resource type="Texture2D" uid="uid://bpvte078h1smo" path="res://assets/estructuras/tronco/tronco_mini.png" id="9_tel4y"]
 [ext_resource type="Texture2D" uid="uid://bapfvmfpgbe7p" path="res://assets/ui/iconos/icono_opciones.png" id="9_trceg"]
 [ext_resource type="Texture2D" uid="uid://casqwt2ogwyax" path="res://assets/ui/iconos/icono_stats.png" id="10_a8y0u"]
+[ext_resource type="Texture2D" uid="uid://f36arktw3huv" path="res://assets/estructuras/barco/barco_1.png" id="10_fuf3a"]
 [ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://rljxhda6odwj" path="res://assets/ui/iconos/icono_enciclopedia.png" id="11_yc10j"]
 [ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
+[ext_resource type="Texture2D" uid="uid://etiyc1qlnhhy" path="res://assets/ui/inventario/pecera_vacia2.png" id="12_qkpxi"]
 [ext_resource type="Texture2D" uid="uid://b33wxaxja8jx0" path="res://assets/ui/red.png" id="13_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://c5ht6q767emx5" path="res://assets/ui/botella_mensaje.png" id="13_muem4"]
+[ext_resource type="Script" uid="uid://gmyjxeo8kray" path="res://scenes/btn_profile.gd" id="13_qkpxi"]
+[ext_resource type="Shader" path="res://scenes/ProfilePanel.gdshader" id="14_5q0nq"]
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
+[ext_resource type="Texture2D" uid="uid://dyttmjwyi13od" path="res://assets/ui/iconos/icono_ranking.png" id="18_fuf3a"]
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="18_og1vs"]
 [ext_resource type="Texture2D" uid="uid://tyjvk13keej5" path="res://assets/ui/alga.png" id="18_yc10j"]
 [ext_resource type="Texture2D" uid="uid://bgs77das3fpu1" path="res://assets/ui/bandera.png" id="19_0ld40"]
 [ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
 [ext_resource type="PackedScene" uid="uid://d4kjqemcayt4t" path="res://scenes/inventario.tscn" id="21_pm3ni"]
+[ext_resource type="Script" uid="uid://drdsaa7gdbvuj" path="res://scenes/left_info_panel.gd" id="22_kmb1v"]
 [ext_resource type="PackedScene" uid="uid://cbbihh5ocgssr" path="res://scenes/options_panel.tscn" id="22_pm3ni"]
 [ext_resource type="PackedScene" uid="uid://crojbj03flfr6" path="res://scenes/UI/encyclopedia_panel.tscn" id="23_ency"]
 [ext_resource type="PackedScene" uid="uid://csohusujfqgej" path="res://scenes/stats_panel.tscn" id="23_y6deb"]
 [ext_resource type="Script" uid="uid://dq5rdt0gb7n50" path="res://scenes/options_panel.gd" id="25_2f3dj"]
 [ext_resource type="PackedScene" uid="uid://buvdg6kk8oju2" path="res://scenes/ProfilePanel.tscn" id="25_2wyq8"]
+[ext_resource type="Texture2D" uid="uid://bpgxqk77y7lih" path="res://assets/ui/ampliar.png" id="33_5q0nq"]
+[ext_resource type="PackedScene" uid="uid://dj8jfr82fffsq" path="res://scenes/ranking_panel.tscn" id="36_pibwh"]
+[ext_resource type="Script" uid="uid://bn6sp33ncncs" path="res://scenes/cleaning_event_layer.gd" id="39_c6pm6"]
+[ext_resource type="PackedScene" uid="uid://bqr5662a2ybqw" path="res://scenes/dirt_spot.tscn" id="40_5he1u"]
+[ext_resource type="Texture2D" uid="uid://vtnb4ut02ura" path="res://assets/minijuegos/limpieza/chupete_jr_frente.png" id="41_5poiv"]
+[ext_resource type="Texture2D" uid="uid://cyr1klymgiotf" path="res://assets/minijuegos/limpieza/esponja.png" id="43_chjal"]
+[ext_resource type="Texture2D" uid="uid://bwu5qviekelnr" path="res://assets/minijuegos/limpieza/chupete_jr_limpia.png" id="43_cjqg0"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y6deb"]
 load_path = "res://.godot/imported/anubia_large.png-9dd54c4d539590f8396e886059658b60.ctex"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a8y0u"]
+size = Vector2(1022, 516)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dgi5k"]
+shader = ExtResource("14_5q0nq")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dp3eg"]
 texture = ExtResource("13_muem4")
@@ -61,8 +80,11 @@ texture = ExtResource("18_yc10j")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_muem4"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_a8y0u"]
-size = Vector2(1022, 516)
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5q0nq"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_j8jky"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dgi5k"]
 
 [node name="Main" type="Node2D" unique_id=1758773918]
 script = ExtResource("1_0wfyh")
@@ -70,63 +92,68 @@ floating_text_scene = ExtResource("2_tefeu")
 fish_scene = ExtResource("2_tbgi4")
 shop_item_card_scene = ExtResource("4_o6xl0")
 
-[node name="BG" type="CanvasLayer" parent="." unique_id=1211954479]
-layer = -1
+[node name="ContentPecera" type="Node2D" parent="." unique_id=1553201808]
 
-[node name="Background" type="TextureRect" parent="BG" unique_id=1958190654]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
+[node name="BG" type="Sprite2D" parent="ContentPecera" unique_id=655693777]
+position = Vector2(576, 324)
+scale = Vector2(0.6, 0.6)
 texture = ExtResource("1_o5qli")
-expand_mode = 1
-stretch_mode = 6
 
-[node name="EstructurasLayer" type="Node2D" parent="." unique_id=248633790]
+[node name="EstructurasLayer" type="Node2D" parent="ContentPecera" unique_id=248633790]
 
-[node name="Vallisneria" type="Sprite2D" parent="EstructurasLayer" unique_id=806922773]
+[node name="Vallisneria" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=806922773]
 position = Vector2(949.00006, 341.00003)
 scale = Vector2(0.32166666, 0.32166663)
 texture = ExtResource("8_y6deb")
 
-[node name="Tronco" type="Sprite2D" parent="EstructurasLayer" unique_id=1275085002]
+[node name="Tronco" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=1275085002]
 position = Vector2(605.3334, 345.37497)
 scale = Vector2(0.57476854, 0.5747685)
 texture = ExtResource("7_tel4y")
 
-[node name="Tronco2" type="Sprite2D" parent="EstructurasLayer" unique_id=1350221170]
+[node name="Tronco2" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=1350221170]
 visible = false
 position = Vector2(531, 446.00003)
 scale = Vector2(0.34769955, 0.34769946)
 texture = ExtResource("8_qkpxi")
 
-[node name="Tronco3" type="Sprite2D" parent="EstructurasLayer" unique_id=973246666]
+[node name="Tronco3" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=973246666]
 visible = false
 position = Vector2(658, 485)
 scale = Vector2(0.2580597, 0.25805962)
 texture = ExtResource("9_tel4y")
 
-[node name="Anubia" type="Sprite2D" parent="EstructurasLayer" unique_id=279494440]
+[node name="Anubia" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=279494440]
 position = Vector2(497, 541)
 scale = Vector2(0.11820317, 0.11820316)
 texture = SubResource("CompressedTexture2D_y6deb")
 
-[node name="Cofre" type="Area2D" parent="." unique_id=379332226]
+[node name="Barco" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=1345349808]
+position = Vector2(875.00006, 378)
+scale = Vector2(0.4399988, 0.47999877)
+texture = ExtResource("10_fuf3a")
+
+[node name="Cofre" type="Area2D" parent="ContentPecera" unique_id=379332226]
 script = ExtResource("3_jyhfs")
 
-[node name="Sprite2D" type="Sprite2D" parent="Cofre" unique_id=1706070275]
+[node name="Sprite2D" type="Sprite2D" parent="ContentPecera/Cofre" unique_id=1706070275]
 position = Vector2(193, 514.00006)
 scale = Vector2(0.29398158, 0.2740741)
 texture = ExtResource("7_og1vs")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Cofre" unique_id=1343405143]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ContentPecera/Cofre" unique_id=1343405143]
 visible = false
 position = Vector2(188, 507.5)
 shape = SubResource("RectangleShape2D_tefeu")
 
-[node name="PecesLayer" type="Node2D" parent="." unique_id=342514123]
+[node name="PecesLayer" type="Node2D" parent="ContentPecera" unique_id=342514123]
+
+[node name="SwimArea" type="Node2D" parent="ContentPecera" unique_id=1141987209]
+visible = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ContentPecera/SwimArea" unique_id=1106963454]
+position = Vector2(577, 322)
+shape = SubResource("RectangleShape2D_a8y0u")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=237109990]
 
@@ -138,6 +165,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
+
+[node name="MarcoPecera" type="TextureRect" parent="UI/Root" unique_id=989869189]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -13.0
+offset_top = -35.0
+offset_right = 2.0
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("12_qkpxi")
+expand_mode = 1
 
 [node name="HUD" type="Control" parent="UI/Root" unique_id=182761723]
 layout_mode = 1
@@ -155,7 +197,6 @@ anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 35.0
 grow_horizontal = 2
-grow_vertical = 2
 mouse_filter = 2
 
 [node name="LeftGroup" type="HBoxContainer" parent="UI/Root/HUD/TopBar" unique_id=348199901]
@@ -167,11 +208,32 @@ offset_bottom = 55.0
 theme_override_constants/separation = 12
 
 [node name="BtnProfile" type="TextureButton" parent="UI/Root/HUD/TopBar/LeftGroup" unique_id=736051834]
+z_index = 2000
+z_as_relative = false
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture_normal = ExtResource("8_eb6dy")
 ignore_texture_size = true
 stretch_mode = 5
+script = ExtResource("13_qkpxi")
+
+[node name="UserImage" type="TextureRect" parent="UI/Root/HUD/TopBar/LeftGroup/BtnProfile" unique_id=1550653189]
+z_as_relative = false
+material = SubResource("ShaderMaterial_dgi5k")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -24.0
+offset_top = -24.0
+offset_right = 24.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 6
 
 [node name="BtnOptions" type="TextureButton" parent="UI/Root/HUD/TopBar/LeftGroup" unique_id=544079481]
 custom_minimum_size = Vector2(48, 48)
@@ -184,6 +246,13 @@ stretch_mode = 5
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture_normal = ExtResource("10_a8y0u")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="BtnRanking" type="TextureButton" parent="UI/Root/HUD/TopBar/LeftGroup" unique_id=103365818]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture_normal = ExtResource("18_fuf3a")
 ignore_texture_size = true
 stretch_mode = 5
 
@@ -244,6 +313,7 @@ offset_right = 487.76318
 offset_bottom = 360.89478
 rotation = 3.1415927
 theme_override_styles/panel = SubResource("StyleBoxTexture_dp3eg")
+script = ExtResource("22_kmb1v")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/Root/HUD/LeftInfoPanel" unique_id=1724032618]
 layout_mode = 1
@@ -345,9 +415,10 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_jkv2x")
 theme_override_styles/tab_unselected = SubResource("StyleBoxTexture_0ld40")
 theme_override_styles/tab_hovered = SubResource("StyleBoxTexture_yc10j")
 theme_override_styles/tab_selected = SubResource("StyleBoxTexture_jbj1t")
-current_tab = 0
+current_tab = 1
 
 [node name="Estructuras" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1013639139]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -370,7 +441,6 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
 [node name="Peces" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1632976240]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
@@ -518,12 +588,16 @@ layout_mode = 1
 script = ExtResource("25_2f3dj")
 
 [node name="StatsPanel" parent="UI/Root/HUD" unique_id=493873659 instance=ExtResource("23_y6deb")]
-visible = false
 layout_mode = 1
 
 [node name="ProfilePanel" parent="UI/Root/HUD" unique_id=1077186223 instance=ExtResource("25_2wyq8")]
 visible = false
 layout_mode = 1
+
+[node name="RankingPanel" parent="UI/Root/HUD" unique_id=763575264 instance=ExtResource("36_pibwh")]
+visible = false
+layout_mode = 1
+script = null
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]
 custom_minimum_size = Vector2(32, 32)
@@ -554,12 +628,112 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0)
 
-[node name="SwimArea" type="Node2D" parent="." unique_id=1141987209]
+[node name="FishModeOverlay" type="Control" parent="UI/Root" unique_id=934184402]
 visible = false
+z_index = 2000
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SwimArea" unique_id=1106963454]
-position = Vector2(577, 322)
-shape = SubResource("RectangleShape2D_a8y0u")
+[node name="DarkBg" type="ColorRect" parent="UI/Root/FishModeOverlay" unique_id=964233656]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.39215687)
+
+[node name="BtnExpand" type="Button" parent="UI/Root/FishModeOverlay" unique_id=1640228427]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -184.5
+offset_top = -184.5
+offset_right = 184.5
+offset_bottom = 184.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_5q0nq")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_j8jky")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_dgi5k")
+icon = ExtResource("33_5q0nq")
+expand_icon = true
+
+[node name="CleaningEventLayer" type="Control" parent="UI/Root" unique_id=2050991050]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("39_c6pm6")
+dirt_spot_scene = ExtResource("40_5he1u")
+
+[node name="FishCornerIcon" type="TextureRect" parent="UI/Root/CleaningEventLayer" unique_id=1740180597]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -220.0
+offset_right = 200.0
+offset_bottom = -40.0
+grow_vertical = 0
+texture = ExtResource("41_5poiv")
+expand_mode = 1
+
+[node name="AutoCleanerFishIcon" type="TextureRect" parent="UI/Root/CleaningEventLayer" unique_id=1183109001]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -63.5
+offset_top = -63.5
+offset_right = 81.0
+offset_bottom = 81.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("43_cjqg0")
+expand_mode = 1
+
+[node name="GreenOverlay" type="ColorRect" parent="UI/Root/CleaningEventLayer" unique_id=1504048117]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.33333334, 0.5254902, 0.24313726, 0.59607846)
+
+[node name="DirtSpots" type="Node2D" parent="UI/Root/CleaningEventLayer" unique_id=857359412]
+
+[node name="SpongeIcon" type="TextureRect" parent="UI/Root/CleaningEventLayer" unique_id=276578948]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.5
+offset_top = -40.5
+offset_right = 40.5
+offset_bottom = 40.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("43_chjal")
+expand_mode = 1
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=121986834]
 
@@ -573,6 +747,9 @@ bus = &"Musica"
 
 [node name="EfectosPlayer" type="AudioStreamPlayer" parent="." unique_id=1761682386]
 
-[connection signal="input_event" from="Cofre" to="Cofre" method="_on_input_event"]
+[node name="AchievementSfxPlayer" type="AudioStreamPlayer" parent="." unique_id=1311800141]
+bus = &"Efectos"
+
+[connection signal="input_event" from="ContentPecera/Cofre" to="ContentPecera/Cofre" method="_on_input_event"]
 [connection signal="pressed" from="UI/Root/HUD/TopBar/RightGroup/BtnShop" to="." method="_on_btn_shop_pressed"]
 [connection signal="pressed" from="UI/Root/BtnHideHUD" to="." method="_on_btn_hide_hud_pressed"]

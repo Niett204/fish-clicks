@@ -8,9 +8,18 @@ func setup(main_ref: Node) -> void:
 	main = main_ref
 
 
-func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
+func item_belongs_to_current_habitat(id: String) -> bool:
 	var def: Dictionary = main.ITEMS[id]
+	var current_habitat: String = main.habitat_manager.current_habitat
+	var habitat_ids: Array = def.get("habitat_ids", ["habitat_1"])
+	return current_habitat in habitat_ids
 
+
+func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
+	if not item_belongs_to_current_habitat(id):
+		return
+
+	var def: Dictionary = main.ITEMS[id]
 	var card = main.shop_item_card_scene.instantiate()
 	card.info_panel_path = main.info_panel.get_path()
 	list.add_child(card)
@@ -28,6 +37,8 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 		get_price(id),
 		unlock_price
 	)
+	
+	card.set_locked_text(get_locked_text(id))
 
 	card.extra_title = String(def.get("title", id))
 	card.extra_desc = "\"Mejora tu producción.\""
@@ -52,6 +63,7 @@ func get_total_passive_dps() -> float:
 	for key in main.ITEMS.keys():
 		var id := String(key)
 		var def: Dictionary = main.ITEMS[id]
+
 		if String(def.get("kind", "")) == "passive":
 			total += get_item_current_value(id)
 
@@ -82,6 +94,8 @@ func apply_purchase(id: String) -> void:
 			main._update_tronco_visibility_by_level()
 		"anubia":
 			main._update_anubia_sprite_by_level()
+		"barco":
+			main._update_barco_sprite_by_level()
 
 	update_cps()
 
@@ -101,21 +115,34 @@ func on_buy_pressed(id: String) -> void:
 
 	if main.fish_defs.has(id):
 		var spawned_fish_id: String = id
+		var is_shiny := false
 
 		if randf() < 0.01 and main.fish_defs.has(id + "_shiny"):
 			spawned_fish_id = id + "_shiny"
+			is_shiny = true
 			main.achievements_manager.register_shiny_obtained()
-			main.ui_manager.play_ui_sfx(main.SFX_SHINY)
 
-		var slot_index: int = main.aquarium_manager.try_add_fish_to_aquarium(main.current_habitat, spawned_fish_id)
+		var slot_index: int = main.aquarium_manager.try_add_fish_to_aquarium(
+			main.habitat_manager.current_habitat,
+			spawned_fish_id
+		)
 
 		if slot_index != -1:
-			main.aquarium_manager.spawn_fish(spawned_fish_id, main.current_habitat, slot_index)
+			main.aquarium_manager.spawn_fish(
+				spawned_fish_id,
+				main.habitat_manager.current_habitat,
+				slot_index
+			)
 		else:
 			main.fish_inventory[spawned_fish_id] = int(main.fish_inventory.get(spawned_fish_id, 0)) + 1
 
+		if is_shiny:
+			await main.get_tree().create_timer(0.5).timeout
+			main.ui_manager.play_ui_sfx(main.SFX_SHINY)
+
 	main.aquarium_manager.refresh_inventory_panel_data()
 	main.ui_manager._update_ui()
+	main.alien_manager.check_alien_event_unlock()
 	main.achievements_manager.check_achievements()
 
 	if main.stats_panel.visible:
@@ -123,6 +150,9 @@ func on_buy_pressed(id: String) -> void:
 
 
 func on_unlock_pressed(id: String) -> void:
+	if is_item_locked_by_progress(id):
+		return
+		
 	if bool(main.unlocked.get(id, false)):
 		return
 
@@ -141,6 +171,8 @@ func on_unlock_pressed(id: String) -> void:
 			main._update_algas_sprite_by_level()
 		"tronco":
 			main._update_tronco_visibility_by_level()
+		"barco":
+			main._update_barco_sprite_by_level()
 
 	main.ui_manager._update_ui()
 	main._actualizar_peces_desbloqueados_en_enciclopedia()
@@ -256,3 +288,25 @@ func get_total_unlocked_structures_count() -> int:
 			total += 1
 
 	return total
+
+# Pez limpiador solo se desbloquea al progresar 
+func is_item_locked_by_progress(id: String) -> bool:
+	if id == "pez_limpiador":
+		if main.cleaning_manager == null:
+			return true
+		return not main.cleaning_manager.is_cleaner_fish_unlocked()
+
+	return false
+	
+func get_locked_text(id: String) -> String:
+	if id == "chupete_jr":
+		var current := 0
+		var target := 5
+
+		if main.cleaning_manager != null:
+			current = main.cleaning_manager.get_cleaner_fish_progress()
+			target = main.cleaning_manager.CLEANER_FISH_REQUIRED_EVENTS
+
+		return "Limpiezas %d/%d" % [current, target]
+
+	return str(int(main.ITEMS[id].get("unlock_price", 0)))

@@ -11,7 +11,8 @@ const ITEMS := {
 		"base_price": 40.0,
 		"price_growth": 1.28,
 		"base_value": 1.0,
-		"value_label": "DPS"
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_1"]
 	},
 	"sobrasada": {
 		"tab": "Peces",
@@ -22,7 +23,8 @@ const ITEMS := {
 		"base_price": 220.0,
 		"price_growth": 1.30,
 		"base_value": 4.0,
-		"value_label": "DPS"
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_1"]
 	},
 	"espuma": {
 		"tab": "Peces",
@@ -33,7 +35,8 @@ const ITEMS := {
 		"base_price": 900.0,
 		"price_growth": 1.32,
 		"base_value": 12.0,
-		"value_label": "DPS"
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_1"]
 	},
 	"rufinus": {
 		"tab": "Peces",
@@ -44,7 +47,33 @@ const ITEMS := {
 		"base_price": 3500.0,
 		"price_growth": 1.35,
 		"base_value": 35.0,
-		"value_label": "DPS"
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_1"]
+	},
+	"chupete_jr": {
+		"tab": "Únicos",
+		"title": "Chupete jr",
+		"icon": "res://assets/peces/chupete_jr.png",
+		"unlock_price": 6000,
+		"kind": "passive",
+		"base_price": 4500.0,
+		"price_growth": 1.35,
+		"base_value": 35.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_1"]
+	},
+	
+	"tilapia": {
+		"tab": "Peces",
+		"title": "Tilapia",
+		"icon": "res://assets/peces/tilapia.png",
+		"unlock_price": 0,
+		"kind": "passive",
+		"base_price": 3500.0,
+		"price_growth": 1.35,
+		"base_value": 35.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
 	},
 
 	"cofre": {
@@ -56,7 +85,8 @@ const ITEMS := {
 		"base_price": 20.0,
 		"price_growth": 1.10,
 		"base_value": 0.75,
-		"value_label": "clicks"
+		"value_label": "clicks",
+		"habitat_ids": ["habitat_1", "habitat_2"]
 	},
 	"vallisneria": {
 		"tab": "Estructuras",
@@ -67,7 +97,8 @@ const ITEMS := {
 		"base_price": 180.0,
 		"price_growth": 1.14,
 		"base_value": 6.0,
-		"value_label": "DPS"
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_1"]
 	},
 	"tronco": {
 		"tab": "Estructuras",
@@ -78,7 +109,8 @@ const ITEMS := {
 		"base_price": 250.0,
 		"price_growth": 1.15,
 		"base_value": 8.0,
-		"value_label": "DPS"
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_1"]
 	},
 	"anubia": {
 		"tab": "Estructuras",
@@ -89,6 +121,19 @@ const ITEMS := {
 		"base_price": 400.0,
 		"price_growth": 1.16,
 		"base_value": 12.0,
-		"value_label": "DPS"
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_1"]
+	},
+	"barco": {
+		"tab": "Estructuras",
+		"title": "Barco Hundido",
+		"icon": "res://assets/estructuras/barco/barco_1.png",
+		"unlock_price": 1200,
+		"kind": "passive",
+		"base_price": 400.0,
+		"price_growth": 1.16,
+		"base_value": 12.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
 	}
 }

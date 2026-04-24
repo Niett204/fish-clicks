@@ -6,7 +6,7 @@
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="2_h0ltc"]
 [ext_resource type="Texture2D" uid="uid://sce6m2jrsyl8" path="res://assets/ui/marco_small_v2.png" id="2_x23uq"]
 
-[node name="StatsPanel" type="Control" unique_id=493873659]
+[node name="RankingPanel" type="Control" unique_id=493873659]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -224,6 +224,44 @@ theme_override_font_sizes/font_size = 17
 text = "0 d/c"
 horizontal_alignment = 2
 
+[node name="StatRow_Manchas" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=489945908]
+layout_mode = 2
+
+[node name="LabelStat_Manchas_Name" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Manchas" unique_id=1828461729]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_h0ltc")
+text = "Nº de algas eliminadas:"
+
+[node name="Separator_Manchas" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Manchas" unique_id=266222712]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LabelStat_Manchas_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Manchas" unique_id=1447541680]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_h0ltc")
+text = "0"
+
+[node name="StatRow_EventosLimpieza" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=836972526]
+layout_mode = 2
+
+[node name="LabelStat_EventosLimpieza_Name" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_EventosLimpieza" unique_id=1192387720]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_h0ltc")
+text = "Nº de limpiezas realizadas:"
+
+[node name="Separator_EventosLimpieza" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_EventosLimpieza" unique_id=1106571233]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LabelStat_EventosLimpieza_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_EventosLimpieza" unique_id=51166675]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_h0ltc")
+text = "0"
+
 [node name="Divider" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer" unique_id=673498544]
 custom_minimum_size = Vector2(4, 0)
 layout_mode = 2
@@ -330,7 +368,7 @@ theme_override_colors/font_color = Color(0.5058824, 0.36862746, 0.15294118, 1)
 theme_override_fonts/font = ExtResource("2_h0ltc")
 text = "100%"
 
-[node name="TitleStats" type="Label" parent="." unique_id=1273803388]
+[node name="TitleRanking" type="Label" parent="." unique_id=1273803388]
 layout_mode = 0
 offset_left = 194.0
 offset_top = 84.0
