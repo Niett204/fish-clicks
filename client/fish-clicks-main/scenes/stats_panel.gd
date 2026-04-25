@@ -15,6 +15,8 @@ signal close_requested
 @onready var label_dpc_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_DPC/LabelStat_DPC_Value
 @onready var label_dirt_cleaned_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Manchas/LabelStat_Manchas_Value
 @onready var label_cleaning_events_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_EventosLimpieza/LabelStat_EventosLimpieza_Value
+@onready var label_alien_wins_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_AlienWin/LabelStat_AlienWin_Value
+@onready var label_alien_losses_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_AlienLose/LabelStat_AlienLose_Value
 
 @onready var label_count: Label = $AchievementsHeader/LabelCount
 @onready var label_percent: Label = $AchievementsHeader/LabelPercent
@@ -111,6 +113,8 @@ func set_stats_data(data: Dictionary) -> void:
 	label_dpc_value.text = str(data.get("dpc", "0 d/c"))
 	label_dirt_cleaned_value.text = str(data.get("total_dirt_cleaned", 0))
 	label_cleaning_events_value.text = str(data.get("cleaning_events_completed", 0))
+	label_alien_wins_value.text = str(data.get("alien_minigame_wins", 0))
+	label_alien_losses_value.text = str(data.get("alien_minigame_losses", 0))
 
 func set_achievements_progress(unlocked_count: int, total_count: int) -> void:
 	label_count.text = "%d/%d" % [unlocked_count, total_count]

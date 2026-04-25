@@ -169,6 +169,9 @@ func toggle_profile() -> void:
 		main.profile_panel._close()
 
 func close_all_panels() -> void:
+	if main.info_panel:
+		main.info_panel.request_hide()
+
 	if main.shop_panel.visible:
 		main.shop_open = false
 

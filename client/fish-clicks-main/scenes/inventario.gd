@@ -561,6 +561,14 @@ func fish_belongs_to_current_habitat(fish_id: String) -> bool:
 		return false
 	
 	var def: Dictionary = fish_defs[base_fish_id]
-	var fish_habitat: String = String(def.get("habitat", "habitat_1"))
-	
-	return fish_habitat == current_habitat
+	var habitat_data = def.get("habitat", "habitat_1")
+
+	# Caso 1: string
+	if habitat_data is String:
+		return habitat_data == current_habitat
+
+	# Caso 2: array (como auspezio)
+	if habitat_data is Array:
+		return current_habitat in habitat_data
+
+	return false

@@ -45,11 +45,19 @@ const FISH_DEFS := {
 		"icon": preload("res://assets/peces/rufinus_shiny.png"),
 		"habitat": "habitat_1"
 	},
+	
 	"chupete_jr": {
 	"name": "Chupete Jr",
 	"icon": preload("res://assets/peces/chupete_jr.png"),
 	"habitat": "habitat_1"
 	},
+	
+	"auspezio": {
+		"name": "Auspezio",
+		"icon": preload("res://assets/peces/auspezio.png"),
+		"habitat": ["habitat_1", "habitat_2"]
+	},
+	
 	"tilapia": {
 		"name": "Tilapia",
 		"icon": preload("res://assets/peces/tilapia.png"),

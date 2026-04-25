@@ -357,6 +357,7 @@ func consume_pending_alien_result() -> Dictionary:
 	return out
 
 var pending_abduct_return_origin: Vector2 = Vector2.ZERO
+var alien_last_minigame_trigger_unix: float = -1.0
 
 func set_pending_abduct_return_origin(origin: Vector2) -> void:
 	pending_abduct_return_origin = origin
@@ -367,6 +368,7 @@ func consume_pending_abduct_return_origin() -> Vector2:
 	return out
 
 var pending_minigame_display_fish_data: Array[Dictionary] = []
+var pending_auspezio_level: int = 0
 
 func set_pending_minigame_display_fish_data(data: Array[Dictionary]) -> void:
 	pending_minigame_display_fish_data = data.duplicate(true)
@@ -375,3 +377,12 @@ func consume_pending_minigame_display_fish_data() -> Array[Dictionary]:
 	var data := pending_minigame_display_fish_data.duplicate(true)
 	pending_minigame_display_fish_data.clear()
 	return data
+
+func set_pending_auspezio_level(level: int) -> void:
+	pending_auspezio_level = level
+
+
+func consume_pending_auspezio_level() -> int:
+	var level := pending_auspezio_level
+	pending_auspezio_level = 0
+	return level

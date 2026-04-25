@@ -162,12 +162,15 @@ func _try_show_next_achievement_popup() -> void:
 	if achievement_popup_queue.is_empty():
 		return
 
+	if main.alien_manager != null and main.alien_manager.is_event_blocking_achievement_popups():
+		return
+
 	var data: Dictionary = achievement_popup_queue.pop_front()
 
 	var popup = ACHIEVEMENT_POPUP_SCENE.instantiate()
 	main.get_node("UI/Root").add_child(popup)
 	achievement_popup_active = popup
-	
+
 	main.ui_manager.play_achievement_sfx(main.SFX_ACHIEVEMENT)
 
 	if popup.has_method("setup_popup"):
