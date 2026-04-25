@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dpj34hq2cv1aq"]
+
+[ext_resource type="Script" uid="uid://vx4gam6nsoiw" path="res://scripts/alien_minigame/alien_egg.gd" id="1_ca31h"]
+[ext_resource type="Texture2D" uid="uid://n671nw60do2n" path="res://assets/minijuegos/alien/huevo.png" id="1_y6xyj"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ca31h"]
+radius = 31.06445
+
+[node name="AlienEgg" type="Area2D" unique_id=912955258]
+script = ExtResource("1_ca31h")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1452110621]
+scale = Vector2(0.05949074, 0.05949074)
+texture = ExtResource("1_y6xyj")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1434122937]
+shape = SubResource("CircleShape2D_ca31h")

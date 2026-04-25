@@ -32,6 +32,14 @@ var spawn_bubble_base_offset: float = 8.0
 var spawn_bubble_side_phase: float = 0.0
 var spawn_splash_played: bool = false
 var shiny_sparkle_timer: float = 0.0
+var debuff_aura: Sprite2D = null
+var debuff_aura_layers: Array[Sprite2D] = []
+var debuff_aura_offsets: Array[Vector2] = [
+	Vector2(-4, 0),
+	Vector2(4, 0),
+	Vector2(0, -4),
+	Vector2(0, 4)
+]
 
 @onready var spr: Sprite2D = $Sprite2D
 
@@ -42,12 +50,17 @@ func _ready():
 	_setup_shiny_particles()
 	shiny_sparkle_timer = randf_range(1.8, 4.0)
 
+	setup_debuff_aura()
+	update_debuff_visual()
+
 func _process(delta):
 	if _is_current_fish_shiny() and not is_spawning:
 		shiny_sparkle_timer -= delta
 		if shiny_sparkle_timer <= 0.0:
 			_emit_shiny_sparkle_cluster()
 			shiny_sparkle_timer = randf_range(2.2, 4.8)
+
+	_update_debuff_aura_pulse()
 
 	if is_spawning:
 		return
@@ -58,6 +71,75 @@ func _process(delta):
 
 		FishState.SCARED:
 			_scared_step(delta)
+
+func setup_debuff_aura() -> void:
+	if not debuff_aura_layers.is_empty():
+		return
+
+	for offset in debuff_aura_offsets:
+		var aura := Sprite2D.new()
+		aura.centered = true
+		aura.texture = spr.texture
+		aura.position = offset
+		aura.z_as_relative = true
+		aura.z_index = 1
+		aura.scale = _get_visual_scale() * 1.22
+		aura.modulate = Color(0.42, 0.78, 0.52, 0.22)
+		aura.visible = false
+
+		var mat := CanvasItemMaterial.new()
+		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		aura.material = mat
+
+		add_child(aura)
+		debuff_aura_layers.append(aura)
+
+func update_debuff_visual() -> void:
+	if debuff_aura_layers.is_empty():
+		return
+
+	var main_node := get_tree().get_first_node_in_group("main")
+	var debuff_active := false
+
+	if main_node != null and main_node.has_method("is_fish_loss_debuff_active"):
+		debuff_active = main_node.is_fish_loss_debuff_active()
+
+	for aura in debuff_aura_layers:
+		if aura == null or not is_instance_valid(aura):
+			continue
+
+		aura.texture = spr.texture
+		aura.flip_h = spr.flip_h
+		aura.flip_v = spr.flip_v
+		aura.visible = debuff_active
+
+		if debuff_active:
+			aura.modulate = Color(0.42, 0.78, 0.52, 0.20)
+			aura.scale = _get_visual_scale() * 1.08
+		else:
+			aura.modulate = Color(0.35, 1.0, 0.45, 0.0)
+
+func _update_debuff_aura_pulse() -> void:
+	if debuff_aura_layers.is_empty():
+		return
+
+	var pulse := 1.08 + sin(Time.get_ticks_msec() / 180.0) * 0.025
+	var alpha_pulse := 0.16 + (sin(Time.get_ticks_msec() / 200.0) * 0.03 + 0.03)
+
+	for i in range(debuff_aura_layers.size()):
+		var aura := debuff_aura_layers[i]
+		if aura == null or not is_instance_valid(aura) or not aura.visible:
+			continue
+
+		aura.texture = spr.texture
+		aura.flip_h = spr.flip_h
+		aura.flip_v = spr.flip_v
+		aura.scale = _get_visual_scale() * pulse
+		aura.modulate = Color(0.42, 0.78, 0.52, alpha_pulse * 0.85)
+
+		var base_offset := debuff_aura_offsets[i]
+		var extra := sin((Time.get_ticks_msec() / 160.0) + i) * 0.5
+		aura.position = base_offset.normalized() * (3.5 + extra)
 
 func _emit_single_shiny_sparkle() -> void:
 	if not _is_current_fish_shiny() or shiny_particles == null or spr == null:
@@ -167,6 +249,10 @@ func _update_flip() -> void:
 
 	spr.flip_h = vel.x > 0
 
+	for aura in debuff_aura_layers:
+		if aura != null and is_instance_valid(aura):
+			aura.flip_h = spr.flip_h
+
 	if spawn_bubbles:
 		spawn_bubbles.position.x = -8 if spr.flip_h else 8
 
@@ -209,6 +295,7 @@ func setup_fish_instance(
 	slot_index = new_slot_index
 
 	_apply_shiny_visuals()
+	update_debuff_visual()
 
 func _is_current_fish_shiny() -> bool:
 	return fish_id.ends_with("_shiny")
@@ -226,6 +313,10 @@ func _apply_shiny_visuals() -> void:
 
 	if shiny_particles:
 		shiny_particles.emitting = false
+
+	for aura in debuff_aura_layers:
+		if aura != null and is_instance_valid(aura):
+			aura.texture = spr.texture
 
 func _setup_shiny_particles() -> void:
 	if shiny_particles == null:
@@ -262,9 +353,9 @@ func set_fish_texture(texture_to_use: Texture2D) -> void:
 
 	sprite.texture = texture_to_use
 	_apply_shiny_visuals()
+	update_debuff_visual()
 	
 func play_spawn_arc(target_pos: Vector2) -> void:
-	
 	is_spawning = true
 	spawn_splash_played = false
 	_update_swim_rect()
@@ -427,7 +518,6 @@ func _cubic_bezier(p0: Vector2, p1: Vector2, p2: Vector2, p3: Vector2, t: float)
 	)
 
 func _play_water_splash_at(impact_pos: Vector2, impact_dir: Vector2) -> void:
-
 	# Sonido entrada 
 	if splash_player:
 		splash_player.global_position = impact_pos

@@ -47,7 +47,9 @@ func refresh_stats_values_only() -> void:
 			"dps": main.get_compact_doblones_text(main.dps) + " d/s",
 			"dpc": main.get_compact_doblones_text(main.click_power) + " d/c",
 			"total_dirt_cleaned": main.cleaning_manager.total_dirt_spots_cleaned,
-			"cleaning_events_completed": main.cleaning_manager.cleaning_events_completed
+			"cleaning_events_completed": main.cleaning_manager.cleaning_events_completed,
+			"alien_minigame_wins": main.alien_minigame_wins,
+			"alien_minigame_losses": main.alien_minigame_losses
 		})
 
 
@@ -96,3 +98,10 @@ func get_total_achievements_count() -> int:
 
 func get_achievement_condition_text(def: Dictionary) -> String:
 	return "Desbloqueo: %s" % String(def.get("condition", "Desbloqueo especial"))
+
+
+func register_alien_minigame_result(won: bool) -> void:
+	if won:
+		main.alien_minigame_wins += 1
+	else:
+		main.alien_minigame_losses += 1

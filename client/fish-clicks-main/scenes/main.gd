@@ -12,6 +12,7 @@ const ENCYCLOPEDIA_FISH_IDS = EncyclopediaData.ENCYCLOPEDIA_FISH_IDS
 const ITEMS = ItemData.ITEMS
 const HABITATS = HabitatData.HABITATS
 var fish_defs = FishData.FISH_DEFS.duplicate(true)
+const FISH_LOSS_DEBUFF_DURATION: float = 120.0
 
 # ------------------- EXPORTED -------------------
 @export var floating_text_scene: PackedScene
@@ -127,7 +128,7 @@ var total_clicks: int = 0
 var session_time_seconds: float = 0.0
 var game_start_date_string: String = ""
 var dps: float = 0.0
-var coins: float = 10000000.0
+var coins: float = 0.0
 var total_coins_earned: float = 0.0
 var click_power: int = 1
 var hud_visible := true
@@ -135,6 +136,10 @@ var shop_open := false
 var shop_tween: Tween
 var shop_x_open: float
 var shop_x_closed: float
+var fish_loss_debuff_active: bool = false
+var fish_loss_debuff_time_left: float = 0.0
+var alien_minigame_wins: int = 0
+var alien_minigame_losses: int = 0
 
 # ------------------- ESTADO VISUAL -------------------
 var chest_base_scale: Vector2
@@ -179,10 +184,14 @@ var habitat_manager: HabitatManager
 const CleaningManagerScript = preload("res://scripts/main/cleaning_manager.gd")
 var cleaning_manager: CleaningManager
 
+const EggManagerScript = preload("res://scripts/main/egg_manager.gd")
+var egg_manager: EggManager
+
 # ------------------- FUNCIONES -------------------
 
 # --------- De Ciclo de Vida ---------
 func _ready() -> void:
+	add_to_group("main")
 	
 	ui_manager = UiManagerScript.new()
 	add_child(ui_manager)
@@ -223,6 +232,10 @@ func _ready() -> void:
 	habitat_manager = HabitatManagerScript.new()
 	add_child(habitat_manager)
 	habitat_manager.setup(self)
+	
+	egg_manager = EggManagerScript.new()
+	add_child(egg_manager)
+	egg_manager.setup(self)
 
 	http_request.request_completed.connect(_on_request_completed)
 
@@ -256,6 +269,9 @@ func _ready() -> void:
 	)
 
 	btn_shop_icon.pressed.connect(func():
+		if alien_manager.is_event_blocking_achievement_popups():
+			return
+
 		ui_manager.play_squish(btn_shop_icon)
 		ui_manager.toggle_shop()
 	)
@@ -277,11 +293,17 @@ func _ready() -> void:
 	#)
 
 	btn_inventory_icon.pressed.connect(func():
+		if alien_manager.is_event_blocking_achievement_popups():
+			return
+
 		ui_manager.play_squish(btn_inventory_icon)
 		ui_manager.toggle_inventario()
 	)
 
 	btn_world_icon.pressed.connect(func():
+		if alien_manager.is_event_blocking_achievement_popups():
+			return
+
 		ui_manager.play_squish(btn_world_icon)
 		habitat_manager.cycle_habitat()
 	)
@@ -456,6 +478,18 @@ func _process(delta: float) -> void:
 
 	if stats_panel.visible:
 		stats_manager.refresh_stats_values_only()
+	
+	if fish_loss_debuff_active:
+		fish_loss_debuff_time_left = max(fish_loss_debuff_time_left - delta, 0.0)
+
+		if fish_loss_debuff_time_left <= 0.0:
+			clear_fish_loss_debuff()
+
+	if alien_manager != null:
+		alien_manager.check_alien_event_unlock()
+
+		if alien_manager.can_trigger_alien_event():
+			alien_manager.try_start_alien_event()
 
 func _input(event: InputEvent) -> void:
 	fish_mode_manager.handle_input(event)
@@ -467,7 +501,8 @@ func _input(event: InputEvent) -> void:
 				cleaning_manager.register_player_activity()
 
 	if event is InputEventKey and event.pressed and event.keycode == KEY_K:
-		alien_manager.try_start_alien_event()
+		if alien_manager != null:
+			alien_manager.start_alien_event()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -901,3 +936,31 @@ func show_fish_mode_overlay() -> void:
 
 func hide_fish_mode_overlay() -> void:
 	fish_mode_overlay.visible = false
+
+func start_fish_loss_debuff(duration: float = FISH_LOSS_DEBUFF_DURATION) -> void:
+	fish_loss_debuff_active = true
+	fish_loss_debuff_time_left = duration
+	_refresh_all_fish_debuff_visuals()
+
+func clear_fish_loss_debuff() -> void:
+	fish_loss_debuff_active = false
+	fish_loss_debuff_time_left = 0.0
+	_refresh_all_fish_debuff_visuals()
+
+func is_fish_loss_debuff_active() -> bool:
+	return fish_loss_debuff_active
+
+func _refresh_all_fish_debuff_visuals() -> void:
+	for fish in fish_layer.get_children():
+		if fish != null and is_instance_valid(fish) and fish.has_method("update_debuff_visual"):
+			fish.update_debuff_visual()
+
+func update_ui_block_state() -> void:
+	var blocked := alien_manager.is_event_blocking_achievement_popups()
+
+	var blocked_color := Color(0.5, 1.0, 0.7, 0.85)
+	var normal_color := Color(1, 1, 1, 1)
+
+	btn_shop_icon.modulate = blocked_color if blocked else normal_color
+	btn_inventory_icon.modulate = blocked_color if blocked else normal_color
+	btn_world_icon.modulate = blocked_color if blocked else normal_color
