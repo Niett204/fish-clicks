@@ -76,11 +76,50 @@ const ITEMS := {
 		"habitat_ids": ["habitat_1", "habitat_2"]
 	},
 	
-	"tilapia": {
+	"barbacoa": {
 		"tab": "Peces",
-		"title": "Tilapia",
-		"icon": "res://assets/peces/tilapia.png",
-		"unlock_price": 0,
+		"title": "Barbacoa",
+		"icon": "res://assets/peces/barbacoa.png",
+		"unlock_price": 10,
+		"kind": "passive",
+		"base_price": 3500.0,
+		"price_growth": 1.35,
+		"base_value": 35.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
+	},
+	
+	"angeles": {
+		"tab": "Peces",
+		"title": "Angeles",
+		"icon": "res://assets/peces/angeles.png",
+		"unlock_price": 10,
+		"kind": "passive",
+		"base_price": 3500.0,
+		"price_growth": 1.35,
+		"base_value": 35.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
+	},
+
+	"jigou": {
+		"tab": "Peces",
+		"title": "Jigou",
+		"icon": "res://assets/peces/jigou.png",
+		"unlock_price": 10,
+		"kind": "passive",
+		"base_price": 3500.0,
+		"price_growth": 1.35,
+		"base_value": 35.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
+	},
+	
+	"leonardo": {
+		"tab": "Peces",
+		"title": "Leonardo",
+		"icon": "res://assets/peces/leonardo.png",
+		"unlock_price": 10,
 		"kind": "passive",
 		"base_price": 3500.0,
 		"price_growth": 1.35,
@@ -137,6 +176,19 @@ const ITEMS := {
 		"value_label": "DPS",
 		"habitat_ids": ["habitat_1"]
 	},
+	"coral": {
+		"tab": "Estructuras",
+		"title": "Coral Antartico",
+		"icon": "res://assets/estructuras/barco/barco_1.png",
+		"unlock_price": 1200,
+		"kind": "passive",
+		"base_price": 400.0,
+		"price_growth": 1.16,
+		"base_value": 12.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
+	},
+	
 	"barco": {
 		"tab": "Estructuras",
 		"title": "Barco Hundido",
