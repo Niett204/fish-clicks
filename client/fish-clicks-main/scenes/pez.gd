@@ -1,6 +1,7 @@
 extends Node2D
 
 enum FishState { WANDER, SCARED }
+
 var state: FishState = FishState.WANDER
 
 @onready var spawn_bubbles: CPUParticles2D = $SpawnBubbles

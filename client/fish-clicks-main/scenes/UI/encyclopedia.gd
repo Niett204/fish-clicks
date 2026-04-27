@@ -494,8 +494,21 @@ func get_fish_texture(fish_id: int) -> Texture2D:
 			return load("res://assets/peces/espuma.png")
 		4:
 			return load("res://assets/peces/rufinus.png")
+		5:
+			return load("res://assets/peces/chupete_jr.png")
+		6:
+			return load("res://assets/peces/auspezio.png")
+		7:
+			return load("res://assets/peces/barbacoa.png")
+		8:
+			return load("res://assets/peces/angeles.png")
+		9:
+			return load("res://assets/peces/jigou.png")
+		10:
+			return load("res://assets/peces/leonardo.png")
 		_:
 			return null
+			
 func get_rareza_texture(rareza: String) -> Texture2D:
 	match rareza.to_lower():
 		"comun":

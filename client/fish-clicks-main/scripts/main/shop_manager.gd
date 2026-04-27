@@ -97,6 +97,12 @@ func apply_purchase(id: String) -> void:
 			main._update_tronco_visibility_by_level()
 		"anubia":
 			main._update_anubia_sprite_by_level()
+		"coral":
+			main._update_coral_sprite_by_level()
+		"piedra":
+			main._update_piedra_sprite_by_level()
+		"iceberg":
+			main._update_iceberg_sprite_by_level()
 		"barco":
 			main._update_barco_sprite_by_level()
 
@@ -182,6 +188,14 @@ func on_unlock_pressed(id: String) -> void:
 			main._update_algas_sprite_by_level()
 		"tronco":
 			main._update_tronco_visibility_by_level()
+		"anubia":
+			main._update_anubia_sprite_by_level()
+		"coral":
+			main._update_coral_sprite_by_level()
+		"piedra":
+			main._update_piedra_sprite_by_level()
+		"iceberg":
+			main._update_iceberg_sprite_by_level()
 		"barco":
 			main._update_barco_sprite_by_level()
 

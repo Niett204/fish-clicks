@@ -179,7 +179,33 @@ const ITEMS := {
 	"coral": {
 		"tab": "Estructuras",
 		"title": "Coral Antartico",
-		"icon": "res://assets/estructuras/barco/barco_1.png",
+		"icon": "res://assets/estructuras/coral/coral_small.png",
+		"unlock_price": 1200,
+		"kind": "passive",
+		"base_price": 400.0,
+		"price_growth": 1.16,
+		"base_value": 12.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
+	},
+
+	"piedra": {
+		"tab": "Estructuras",
+		"title": "Piedra",
+		"icon": "res://assets/estructuras/coral/piedra_small.png",
+		"unlock_price": 1200,
+		"kind": "passive",
+		"base_price": 400.0,
+		"price_growth": 1.16,
+		"base_value": 12.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
+	},
+	
+	"iceberg": {
+		"tab": "Estructuras",
+		"title": "Iceberg",
+		"icon": "res://assets/estructuras/coral/iceberg_small.png",
 		"unlock_price": 1200,
 		"kind": "passive",
 		"base_price": 400.0,
