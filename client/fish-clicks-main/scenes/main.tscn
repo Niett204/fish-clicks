@@ -132,7 +132,6 @@ scale = Vector2(0.11820317, 0.11820316)
 texture = SubResource("CompressedTexture2D_y6deb")
 
 [node name="Barco" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=1345349808]
-visible = false
 top_level = true
 position = Vector2(1028, 423)
 rotation = 0.16895276
@@ -153,7 +152,6 @@ scale = Vector2(0.36907998, 0.39592925)
 texture = ExtResource("12_nvyfr")
 
 [node name="Iceberg" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=1498366793]
-visible = false
 position = Vector2(828.00006, 218.99998)
 scale = Vector2(0.41130626, 0.39917395)
 texture = ExtResource("12_vc5cj")

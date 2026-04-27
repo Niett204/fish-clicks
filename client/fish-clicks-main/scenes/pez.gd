@@ -1,7 +1,22 @@
 extends Node2D
 
 enum FishState { WANDER, SCARED }
+enum MovementPattern { NORMAL, CRAB, SEAL }
+enum SealBreathState { SWIMMING, GOING_UP, BREATHING, GOING_DOWN }
 
+var seal_breath_state: SealBreathState = SealBreathState.SWIMMING
+var seal_breath_timer: float = 0.0
+var seal_next_breath_time: float = 0.0
+var seal_saved_target: Vector2 = Vector2.ZERO
+
+@export var seal_breath_interval_min: float = 12.0
+@export var seal_breath_interval_max: float = 22.0
+@export var seal_breath_duration: float = 2.5
+
+var movement_pattern: MovementPattern = MovementPattern.NORMAL
+var movement_time: float = 0.0
+var crab_pause_timer: float = 0.0
+var seal_wave_offset: float = 0.0
 var state: FishState = FishState.WANDER
 
 @onready var spawn_bubbles: CPUParticles2D = $SpawnBubbles
@@ -68,7 +83,7 @@ func _process(delta):
 	
 	match state:
 		FishState.WANDER:
-			_wander_step(delta)
+			_movement_step(delta)
 
 		FishState.SCARED:
 			_scared_step(delta)
@@ -204,10 +219,16 @@ func _wander_step(delta: float) -> void:
 	_update_flip()
 
 func _pick_new_target() -> void:
-	target = Vector2(
-		randf_range(swim_rect.position.x, swim_rect.position.x + swim_rect.size.x),
-		randf_range(swim_rect.position.y, swim_rect.position.y + swim_rect.size.y)
-	)
+	match movement_pattern:
+		MovementPattern.CRAB:
+			_pick_crab_target()
+		MovementPattern.SEAL:
+			_pick_seal_target()
+		_:
+			target = Vector2(
+				randf_range(swim_rect.position.x, swim_rect.position.x + swim_rect.size.x),
+				randf_range(swim_rect.position.y, swim_rect.position.y + swim_rect.size.y)
+			)
 
 func scare_from(point: Vector2) -> void:
 	var dir = (global_position - point).normalized()
@@ -245,6 +266,36 @@ func _scared_step(delta: float) -> void:
 		_pick_new_target()
 
 func _update_flip() -> void:
+	if movement_pattern == MovementPattern.SEAL:
+		# Mientras sube o respira, NO dejamos que el flip/rotación normal la rompa.
+		if seal_breath_state == SealBreathState.GOING_UP:
+			spr.flip_h = false
+			rotation = lerp_angle(rotation, 1.35, 0.08)
+			return
+
+		if seal_breath_state == SealBreathState.BREATHING:
+			spr.flip_h = false
+			rotation = lerp_angle(rotation, 1.35, 0.08)
+			return
+
+		if vel.length() <= 0.001:
+			return
+
+		if absf(vel.x) > 0.001:
+			spr.flip_h = vel.x > 0
+
+		for aura in debuff_aura_layers:
+			if aura != null and is_instance_valid(aura):
+				aura.flip_h = spr.flip_h
+
+		if spawn_bubbles:
+			spawn_bubbles.position.x = -8 if spr.flip_h else 8
+
+		var base_tilt: float = -0.10
+		var target_rot: float = clamp(base_tilt - vel.y / maxf(speed, 0.001) * 0.30, -0.40, 0.40)
+		rotation = lerp_angle(rotation, target_rot, 0.08)
+		return
+
 	if vel.length() <= 0.001:
 		return
 
@@ -295,8 +346,27 @@ func setup_fish_instance(
 	habitat_id = new_habitat_id
 	slot_index = new_slot_index
 
+	movement_pattern = _get_movement_pattern_for_fish(fish_id)
+	seal_wave_offset = randf_range(0.0, TAU)
+
+	if movement_pattern == MovementPattern.SEAL:
+		seal_breath_state = SealBreathState.SWIMMING
+		seal_next_breath_time = randf_range(seal_breath_interval_min, seal_breath_interval_max)
+
+	_pick_new_target()
 	_apply_shiny_visuals()
 	update_debuff_visual()
+
+func _get_movement_pattern_for_fish(id: String) -> MovementPattern:
+	var clean_id := id.replace("_shiny", "")
+
+	match clean_id:
+		"jigou":
+			return MovementPattern.CRAB
+		"leonardo":
+			return MovementPattern.SEAL
+		_:
+			return MovementPattern.NORMAL
 
 func _is_current_fish_shiny() -> bool:
 	return fish_id.ends_with("_shiny")
@@ -402,8 +472,13 @@ func play_spawn_arc(target_pos: Vector2) -> void:
 	if preview_end_dir.length() <= 0.001:
 		preview_end_dir = Vector2.DOWN
 
+	var extra_fall: float = randf_range(14.0, 28.0)
+
+	if movement_pattern == MovementPattern.CRAB:
+		extra_fall = randf_range(4.0, 10.0)
+
 	var curve_end_pos: Vector2 = _clamp_to_rect(
-		target_pos + preview_end_dir * randf_range(14.0, 28.0),
+		target_pos + preview_end_dir * extra_fall,
 		swim_rect
 	)
 
@@ -413,6 +488,9 @@ func play_spawn_arc(target_pos: Vector2) -> void:
 	rotation = 0.0
 
 	var duration: float = randf_range(1.40, 1.65)
+
+	if movement_pattern == MovementPattern.CRAB:
+		duration = randf_range(2.40, 3.10)
 
 	var water_surface_y: float = _get_water_surface_y()
 	var previous_pos: Vector2 = start_pos
@@ -567,3 +645,165 @@ func _play_water_splash_at(impact_pos: Vector2, impact_dir: Vector2) -> void:
 
 func _get_visual_scale() -> Vector2:
 	return Vector2(0.125, 0.125) * (1.06 if _is_current_fish_shiny() else 1.0)
+
+func _movement_step(delta: float) -> void:
+	movement_time += delta
+
+	match movement_pattern:
+		MovementPattern.CRAB:
+			_crab_step(delta)
+		MovementPattern.SEAL:
+			_seal_step(delta)
+		_:
+			_wander_step(delta)
+
+func _pick_crab_target() -> void:
+	var floor_y: float = swim_rect.position.y + swim_rect.size.y - 35.0
+
+	target = Vector2(
+		randf_range(swim_rect.position.x + 30.0, swim_rect.position.x + swim_rect.size.x - 30.0),
+		floor_y
+	)
+
+
+func _pick_seal_target() -> void:
+	target = Vector2(
+		randf_range(swim_rect.position.x + 60.0, swim_rect.position.x + swim_rect.size.x - 60.0),
+		randf_range(swim_rect.position.y + 40.0, swim_rect.position.y + swim_rect.size.y * 0.65)
+	)
+
+
+func _crab_step(delta: float) -> void:
+	global_position = _clamp_to_rect(global_position, swim_rect)
+
+	var floor_y: float = swim_rect.position.y + swim_rect.size.y - 35.0
+	global_position.y = lerpf(global_position.y, floor_y, 6.0 * delta)
+
+	crab_pause_timer -= delta
+	if crab_pause_timer > 0.0:
+		vel = vel.move_toward(Vector2.ZERO, 200.0 * delta)
+		_update_flip()
+		return
+
+	var desired: Vector2 = target - global_position
+
+	if absf(desired.x) < 25.0:
+		_pick_crab_target()
+		crab_pause_timer = randf_range(0.25, 0.8)
+		return
+
+	var dir_x: float = signf(desired.x)
+	var crab_speed: float = speed * 0.55
+
+	vel.x = lerpf(vel.x, dir_x * crab_speed, 5.0 * delta)
+	vel.y = sin(movement_time * 12.0) * 8.0
+
+	global_position += vel * delta
+	global_position = _clamp_to_rect(global_position, swim_rect)
+
+	_update_flip()
+
+
+func _seal_step(delta: float) -> void:
+	match seal_breath_state:
+		SealBreathState.SWIMMING:
+			seal_next_breath_time -= delta
+
+			if seal_next_breath_time <= 0.0:
+				seal_saved_target = target
+				seal_breath_state = SealBreathState.GOING_UP
+				return
+
+			_seal_normal_swim_step(delta)
+
+		SealBreathState.GOING_UP:
+			_seal_move_to_surface(delta)
+
+		SealBreathState.BREATHING:
+			_seal_breathing_step(delta)
+
+		SealBreathState.GOING_DOWN:
+			_seal_going_down_step(delta)
+
+
+func _seal_normal_swim_step(delta: float) -> void:
+	global_position = _clamp_to_rect(global_position, swim_rect)
+
+	var desired: Vector2 = target - global_position
+
+	if desired.length() < target_reached_dist:
+		_pick_seal_target()
+		desired = target - global_position
+
+	if desired.length() <= 0.001:
+		return
+
+	var dir: Vector2 = desired.normalized()
+	var seal_speed: float = speed * 0.8
+
+	var wave: Vector2 = Vector2(
+		0.0,
+		sin(movement_time * 3.0 + seal_wave_offset) * 35.0
+	)
+
+	var desired_vel: Vector2 = dir * seal_speed + wave
+
+	vel = vel.lerp(desired_vel, 1.0 - exp(-steer * 0.55 * delta))
+	global_position += vel * delta
+	global_position = _clamp_to_rect(global_position, swim_rect)
+
+	_update_flip()
+
+
+func _seal_move_to_surface(delta: float) -> void:
+	var surface_y: float = swim_rect.position.y - 35.0
+
+	# Subida vertical suave, sin físicas raras.
+	global_position.y = move_toward(global_position.y, surface_y, speed * 1.15 * delta)
+	vel = Vector2(0.0, -speed)
+
+	spr.flip_h = false
+	rotation = lerp_angle(rotation, 1.35, 0.08)
+
+	if absf(global_position.y - surface_y) <= 2.0:
+		seal_breath_state = SealBreathState.BREATHING
+		seal_breath_timer = seal_breath_duration
+		vel = Vector2.ZERO
+
+func _seal_breathing_step(delta: float) -> void:
+	seal_breath_timer -= delta
+
+	var surface_y: float = swim_rect.position.y - 55.0
+
+	global_position.y = lerpf(global_position.y, surface_y, 5.0 * delta)
+	vel = Vector2.ZERO
+
+	# Se queda vertical con la cabeza fuera y la cola visible abajo.
+	spr.flip_h = false
+	rotation = lerp_angle(rotation, 0.85, 0.08)
+
+	if seal_breath_timer <= 0.0:
+		seal_breath_state = SealBreathState.GOING_DOWN
+
+		target = Vector2(
+			randf_range(swim_rect.position.x + 60.0, swim_rect.position.x + swim_rect.size.x - 60.0),
+			randf_range(swim_rect.position.y + 120.0, swim_rect.position.y + swim_rect.size.y * 0.65)
+		)
+
+func _seal_going_down_step(delta: float) -> void:
+	var desired: Vector2 = target - global_position
+
+	if desired.length() <= 10.0:
+		seal_breath_state = SealBreathState.SWIMMING
+		seal_next_breath_time = randf_range(seal_breath_interval_min, seal_breath_interval_max)
+		_pick_seal_target()
+		return
+
+	var dir: Vector2 = desired.normalized()
+	var desired_vel: Vector2 = dir * speed * 0.9
+
+	vel = vel.lerp(desired_vel, 1.0 - exp(-steer * 0.65 * delta))
+	global_position += vel * delta
+	global_position = _clamp_to_rect(global_position, swim_rect)
+
+	_update_flip()
