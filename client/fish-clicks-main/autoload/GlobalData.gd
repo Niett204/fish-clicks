@@ -88,18 +88,21 @@ func login(nickname: String, password: String) -> void:
 
 func _on_login_done(result, code: int, _headers, body: PackedByteArray, http: HTTPRequest, nickname: String) -> void:
 	http.queue_free()
-	var data = JSON.parse_string(body.get_string_from_utf8())
+	var raw_body = body.get_string_from_utf8()
+	var data = JSON.parse_string(raw_body)
 
 	if result == HTTPRequest.RESULT_SUCCESS and code == 200 and data is Dictionary:
 		
-		set_user_session(
-			data.get("token", ""), 
-			data.get("userId", ""), 
-			data.get("nickname", nickname),
-			data.get("email", ""),
-			data.get("foto", ""),
-			data.get("extension", "")
-		)
+		# Forzamos que los valores sean String para evitar el error de tipo Nil
+		var token = str(data.get("token", ""))
+		var uid = str(data.get("userId", ""))
+		var nick = str(data.get("nickname", nickname))
+		var email = str(data.get("email", ""))
+		var foto = str(data.get("foto", ""))
+		var ext = str(data.get("extension", "png")) # Si es nulo, ponemos "png" por defecto
+
+		set_user_session(token, uid, nick, email, foto, ext)
+		
 		login_success.emit(data)
 		load_game()
 	else:
