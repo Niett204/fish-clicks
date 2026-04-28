@@ -9,9 +9,13 @@
 radius = 100.40418
 
 [node name="Alien" type="Node2D" unique_id=958043769]
+z_index = 100
+z_as_relative = false
 script = ExtResource("1_h100l")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1367072354]
+z_index = 100
+z_as_relative = false
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("2_u8rjw")
 

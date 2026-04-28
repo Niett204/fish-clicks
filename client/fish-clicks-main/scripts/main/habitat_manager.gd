@@ -3,7 +3,9 @@ class_name HabitatManager
 
 var main: Node = null
 
-var unlocked_habitats: Array[String] = ["habitat_1", "habitat_2"]
+const HABITAT_2_REQUIRED_FISH := ["doblon", "sobrasada", "espuma", "rufinus"]
+
+var unlocked_habitats: Array[String] = ["habitat_1"]
 var current_habitat: String = "habitat_1"
 var inventory_habitat: String = "habitat_1"
 
@@ -26,17 +28,34 @@ func switch_to_habitat(habitat_id: String) -> void:
 
 	current_habitat = habitat_id
 	apply_current_habitat()
+	
+func can_change_habitat() -> bool:
+	return unlocked_habitats.size() > 1
+	
+func update_habitat_unlocks() -> void:
+	if unlocked_habitats.has("habitat_2"):
+		return
 
+	for fish_id in HABITAT_2_REQUIRED_FISH:
+		if not bool(main.unlocked.get(fish_id, false)):
+			return
+
+	unlocked_habitats.append("habitat_2")
+	main.aquarium_manager.refresh_inventory_panel_data()
+	
 func cycle_habitat() -> void:
+	update_habitat_unlocks()
+
 	if unlocked_habitats.size() <= 1:
 		return
 
 	var current_index := unlocked_habitats.find(current_habitat)
+
 	if current_index == -1:
 		current_habitat = unlocked_habitats[0]
 	else:
-		var next_index := (current_index + 1) % unlocked_habitats.size()
-		current_habitat = unlocked_habitats[next_index]
+		current_index = (current_index + 1) % unlocked_habitats.size()
+		current_habitat = unlocked_habitats[current_index]
 
 	apply_current_habitat()
 
