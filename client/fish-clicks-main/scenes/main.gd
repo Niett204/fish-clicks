@@ -97,6 +97,10 @@ const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado_arena.
 const TEX_CHEST_EMPTY := preload("res://assets/estructuras/cofre_abierto_vacio_arena.png")
 const TEX_CHEST_MID := preload("res://assets/estructuras/cofre_abierto_medio_arena.png")
 const TEX_CHEST_FULL := preload("res://assets/estructuras/cofre_abierto_lleno_arena.png")
+const TEX_CHEST2_CLOSED := preload("res://assets/estructuras/cofre_cerrado_antartida.png")
+const TEX_CHEST2_EMPTY := preload("res://assets/estructuras/cofre_abierto_vacio_antartida.png")
+const TEX_CHEST2_MID := preload("res://assets/estructuras/cofre_abierto_medio_antartida.png")
+const TEX_CHEST2_FULL := preload("res://assets/estructuras/cofre_abierto_lleno_antartida.png")
 const TEX_ALGAS_0 := preload("res://assets/estructuras/vallisneria/vallisneria_mini.png")
 const TEX_ALGAS_1 := preload("res://assets/estructuras/vallisneria/vallisneria_small.png")
 const TEX_ALGAS_2 := preload("res://assets/estructuras/vallisneria/vallisneria_medium.png")
@@ -114,9 +118,9 @@ const TEX_PIEDRA_2 := preload("res://assets/estructuras/piedra/piedra_large.png"
 const TEX_ICEBERG_0 := preload("res://assets/estructuras/iceberg/iceberg_small.png")
 const TEX_ICEBERG_1 := preload("res://assets/estructuras/iceberg/iceberg_medium.png")
 const TEX_ICEBERG_2 := preload("res://assets/estructuras/iceberg/iceberg_large.png")
-const TEX_BARCO_0 := preload("res://assets/estructuras/barco/barco_1.png")
-const TEX_BARCO_1 := preload("res://assets/estructuras/barco/barco_2.png")
-const TEX_BARCO_2 := preload("res://assets/estructuras/barco/barco_3.png")
+const TEX_BARCO_0 := preload("res://assets/estructuras/barco/barco_small.png")
+const TEX_BARCO_1 := preload("res://assets/estructuras/barco/barco_medium.png")
+const TEX_BARCO_2 := preload("res://assets/estructuras/barco/barco_large.png")
 const ICON_HIDE = preload("res://assets/ui/iconos/icono_hud_abierto.png")
 const ICON_SHOW = preload("res://assets/ui/iconos/icono_hud_cerrado.png")
 
@@ -163,6 +167,8 @@ var vallisneria_base_scale: Vector2
 var anubia_base_scale: Vector2
 var coral_ground_y: float = 0.0
 var coral_base_scale: Vector2
+var barco_base_scale: Vector2
+var barco_base_position: Vector2
 # --- para el modo pecera ---
 var content_pecera_normal_position: Vector2
 var content_pecera_normal_scale: Vector2
@@ -278,6 +284,14 @@ func _ready() -> void:
 	encyclopedia_panel.z_index = 20
 	inventory_panel.z_index = 20
 	stats_panel.z_index = 20
+	barco_base_scale = barco.scale
+	barco_base_position = barco.position
+	bg.z_index = -100
+	barco.z_index = 0
+	coral.z_index = 2
+	piedra.z_index = 2
+	iceberg.z_index = 3
+	chest.z_index = 5
 
 	btn_hide.pressed.connect(func():
 		ui_manager.play_squish(btn_hide)
@@ -323,6 +337,7 @@ func _ready() -> void:
 		ui_manager.play_squish(btn_world_icon)
 		habitat_manager.cycle_habitat()
 		refresh_habitat_structures()
+		_update_chest_sprite_by_level()
 	)
 	btn_options_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_options_icon)
@@ -348,6 +363,7 @@ func _ready() -> void:
 	vallisneria_base_scale = vallisneria.scale
 	anubia_base_scale = anubia.scale
 	coral_base_scale = coral.scale
+	barco_base_scale = barco.scale
 
 	content_pecera_normal_position = content_pecera.position
 	content_pecera_normal_scale = content_pecera.scale
@@ -766,15 +782,16 @@ func refresh_habitat_structures() -> void:
 
 func _update_chest_sprite_by_level() -> void:
 	var chest_level: int = shop_manager.get_level("cofre")
+	var is_habitat_2: bool = habitat_manager.current_habitat == "habitat_2"
 
 	if chest_level <= 0:
-		chest_sprite.texture = TEX_CHEST_CLOSED
+		chest_sprite.texture = TEX_CHEST2_CLOSED if is_habitat_2 else TEX_CHEST_CLOSED
 	elif chest_level <= 3:
-		chest_sprite.texture = TEX_CHEST_EMPTY
+		chest_sprite.texture = TEX_CHEST2_EMPTY if is_habitat_2 else TEX_CHEST_EMPTY
 	elif chest_level <= 7:
-		chest_sprite.texture = TEX_CHEST_MID
+		chest_sprite.texture = TEX_CHEST2_MID if is_habitat_2 else TEX_CHEST_MID
 	else:
-		chest_sprite.texture = TEX_CHEST_FULL
+		chest_sprite.texture = TEX_CHEST2_FULL if is_habitat_2 else TEX_CHEST_FULL
 
 func _update_algas_sprite_by_level() -> void:
 	var algas_level: int = shop_manager.get_level("vallisneria")
@@ -876,11 +893,11 @@ func _update_coral_sprite_by_level() -> void:
 	coral.visible = true
 
 	if level <= 5:
-		_set_coral_texture(TEX_CORAL_0, 1.0)
+		_set_coral_texture(TEX_CORAL_0, 0.8)
 	elif level <= 10:
-		_set_coral_texture(TEX_CORAL_1, 1.4)
+		_set_coral_texture(TEX_CORAL_1, 1.0)
 	else:
-		_set_coral_texture(TEX_CORAL_2, 2.0)
+		_set_coral_texture(TEX_CORAL_2, 1.4)
 
 
 func _update_piedra_sprite_by_level() -> void:
@@ -932,11 +949,11 @@ func _update_barco_sprite_by_level() -> void:
 	barco.visible = true
 
 	if level <= 5:
-		barco.texture = TEX_BARCO_0
+		_set_barco_texture(TEX_BARCO_0, 0.8, 0)
 	elif level <= 10:
-		barco.texture = TEX_BARCO_1
+		_set_barco_texture(TEX_BARCO_1, 1.2, -40)
 	else:
-		barco.texture = TEX_BARCO_2
+		_set_barco_texture(TEX_BARCO_2, 1.7, -70)
 		
 
 func _set_coral_texture(tex: Texture2D, scale_mult: float = 1.0) -> void:
@@ -952,6 +969,15 @@ func _set_coral_texture(tex: Texture2D, scale_mult: float = 1.0) -> void:
 		coral.position.y = coral_ground_y - tex_height * 0.5
 	else:
 		coral.position.y = coral_ground_y - tex_height
+		
+func _set_barco_texture(tex: Texture2D, scale_mult: float = 1.0, extra_y: float = 0.0) -> void:
+	if tex == null:
+		return
+
+	barco.texture = tex
+	barco.scale = barco_base_scale * scale_mult
+	barco.position = barco_base_position + Vector2(0, extra_y)
+	barco.z_index = 0
 
 # --------- Formateo/Utils ---------
 

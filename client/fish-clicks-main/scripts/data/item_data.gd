@@ -218,7 +218,7 @@ const ITEMS := {
 	"barco": {
 		"tab": "Estructuras",
 		"title": "Barco Hundido",
-		"icon": "res://assets/estructuras/barco/barco_1.png",
+		"icon": "res://assets/estructuras/barco/barco_small.png",
 		"unlock_price": 1200,
 		"kind": "passive",
 		"base_price": 400.0,

@@ -15,9 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://bpvte078h1smo" path="res://assets/estructuras/tronco/tronco_mini.png" id="9_tel4y"]
 [ext_resource type="Texture2D" uid="uid://bapfvmfpgbe7p" path="res://assets/ui/iconos/icono_opciones.png" id="9_trceg"]
 [ext_resource type="Texture2D" uid="uid://casqwt2ogwyax" path="res://assets/ui/iconos/icono_stats.png" id="10_a8y0u"]
-[ext_resource type="Texture2D" uid="uid://cupv5gdsagyrf" path="res://assets/estructuras/barco/barco_1.png" id="10_fuf3a"]
 [ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
-[ext_resource type="Texture2D" uid="uid://buv800t17nco1" path="res://assets/estructuras/coral/coral_large.png" id="11_vc5cj"]
 [ext_resource type="Texture2D" uid="uid://rljxhda6odwj" path="res://assets/ui/iconos/icono_enciclopedia.png" id="11_yc10j"]
 [ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://csi3purv5anh3" path="res://assets/estructuras/piedra/piedra_large.png" id="12_nvyfr"]
@@ -50,6 +48,12 @@
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y6deb"]
 load_path = "res://.godot/imported/anubia_large.png-9dd54c4d539590f8396e886059658b60.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_vchkt"]
+load_path = "res://.godot/imported/barco_1.png-f9349d7152d707a6724f304ec57141ee.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_txyw0"]
+load_path = "res://.godot/imported/coral_large.png-8664d7abaa6181a7190ae901ebb80d2e.ctex"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
@@ -136,14 +140,14 @@ top_level = true
 position = Vector2(1028, 423)
 rotation = 0.16895276
 scale = Vector2(0.42080194, 0.42519933)
-texture = ExtResource("10_fuf3a")
+texture = SubResource("CompressedTexture2D_vchkt")
 
 [node name="Coral" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=2023546166]
 visible = false
 top_level = true
 position = Vector2(433, 576)
 scale = Vector2(0.14620161, 0.16841169)
-texture = ExtResource("11_vc5cj")
+texture = SubResource("CompressedTexture2D_txyw0")
 
 [node name="Piedra" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=1387241435]
 visible = false
