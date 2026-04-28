@@ -171,6 +171,8 @@ position = Vector2(188, 507.5)
 shape = SubResource("RectangleShape2D_tefeu")
 
 [node name="PecesLayer" type="Node2D" parent="ContentPecera" unique_id=342514123]
+z_index = 10
+z_as_relative = false
 
 [node name="SwimArea" type="Node2D" parent="ContentPecera" unique_id=1141987209]
 visible = false

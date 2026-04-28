@@ -658,13 +658,15 @@ func _movement_step(delta: float) -> void:
 			_wander_step(delta)
 
 func _pick_crab_target() -> void:
-	var floor_y: float = swim_rect.position.y + swim_rect.size.y - 35.0
+	var floor_y: float = swim_rect.position.y + swim_rect.size.y - 12.0
+
+	var left_limit: float = swim_rect.position.x + 420.0
+	var right_limit: float = swim_rect.position.x + swim_rect.size.x - 90.0
 
 	target = Vector2(
-		randf_range(swim_rect.position.x + 30.0, swim_rect.position.x + swim_rect.size.x - 30.0),
+		randf_range(left_limit, right_limit),
 		floor_y
 	)
-
 
 func _pick_seal_target() -> void:
 	target = Vector2(
@@ -676,8 +678,12 @@ func _pick_seal_target() -> void:
 func _crab_step(delta: float) -> void:
 	global_position = _clamp_to_rect(global_position, swim_rect)
 
-	var floor_y: float = swim_rect.position.y + swim_rect.size.y - 35.0
-	global_position.y = lerpf(global_position.y, floor_y, 6.0 * delta)
+	var floor_y: float = swim_rect.position.y + swim_rect.size.y - 12.0
+	var left_limit: float = swim_rect.position.x + 420.0
+	var right_limit: float = swim_rect.position.x + swim_rect.size.x - 90.0
+
+	global_position.x = clampf(global_position.x, left_limit, right_limit)
+	global_position.y = lerpf(global_position.y, floor_y, 8.0 * delta)
 
 	crab_pause_timer -= delta
 	if crab_pause_timer > 0.0:
@@ -693,13 +699,14 @@ func _crab_step(delta: float) -> void:
 		return
 
 	var dir_x: float = signf(desired.x)
-	var crab_speed: float = speed * 0.55
+	var crab_speed: float = speed * 0.45
 
 	vel.x = lerpf(vel.x, dir_x * crab_speed, 5.0 * delta)
-	vel.y = sin(movement_time * 12.0) * 8.0
+	vel.y = sin(movement_time * 12.0) * 3.0
 
 	global_position += vel * delta
-	global_position = _clamp_to_rect(global_position, swim_rect)
+	global_position.x = clampf(global_position.x, left_limit, right_limit)
+	global_position.y = lerpf(global_position.y, floor_y, 10.0 * delta)
 
 	_update_flip()
 

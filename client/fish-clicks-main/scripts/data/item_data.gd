@@ -192,7 +192,7 @@ const ITEMS := {
 	"piedra": {
 		"tab": "Estructuras",
 		"title": "Piedra",
-		"icon": "res://assets/estructuras/coral/piedra_small.png",
+		"icon": "res://assets/estructuras/piedra/piedra_small.png",
 		"unlock_price": 1200,
 		"kind": "passive",
 		"base_price": 400.0,
@@ -205,7 +205,7 @@ const ITEMS := {
 	"iceberg": {
 		"tab": "Estructuras",
 		"title": "Iceberg",
-		"icon": "res://assets/estructuras/coral/iceberg_small.png",
+		"icon": "res://assets/estructuras/iceberg/iceberg_small.png",
 		"unlock_price": 1200,
 		"kind": "passive",
 		"base_price": 400.0,

@@ -440,7 +440,7 @@ func _ready() -> void:
 	
 	# Guardado
 	# Guardado: Solo conectamos el éxito de carga
-	GlobalData.load_success.connect(save_manager.apply_save_state)
+	GlobalData.load_success.connect(_on_save_loaded)
 	alien_manager.check_alien_event_unlock()
 
 	var runtime_state := GlobalData.consume_pending_runtime_state()
@@ -450,6 +450,12 @@ func _ready() -> void:
 
 	if not runtime_state.is_empty():
 		save_manager.apply_save_state(runtime_state, false)
+
+		_update_chest_sprite_by_level()
+		refresh_habitat_structures()
+		shop_manager.update_cps()
+		ui_manager._update_ui()
+		_actualizar_peces_desbloqueados_en_enciclopedia()
 
 		if not alien_return_data.is_empty():
 			alien_manager.abducted_fish_snapshots = abducted_fish_snapshots
@@ -469,6 +475,15 @@ func _is_item_unlocked_by_default(id: String) -> bool:
 	
 func _resume_alien_after_runtime_restore(alien_return_data: Dictionary) -> void:
 	alien_manager.resume_after_minigame(alien_return_data)
+
+func _on_save_loaded(save_data: Dictionary) -> void:
+	save_manager.apply_save_state(save_data)
+
+	_update_chest_sprite_by_level()
+	refresh_habitat_structures()
+	shop_manager.update_cps()
+	ui_manager._update_ui()
+	_actualizar_peces_desbloqueados_en_enciclopedia()
 
 func _process(delta: float) -> void:
 	session_time_seconds += delta
