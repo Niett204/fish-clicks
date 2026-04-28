@@ -182,6 +182,10 @@ func _on_request_completed(
 		push_error("La API no ha devuelto un array")
 		return
 
+	data.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return int(a.get("id", 0)) < int(b.get("id", 0))
+	)
+
 	match request_mode:
 		RequestMode.LOAD_ALL_FOR_RAREZAS:
 			guardar_rarezas_disponibles(data)
