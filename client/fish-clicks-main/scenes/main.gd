@@ -277,7 +277,7 @@ func _ready() -> void:
 	shop_panel.visible = false
 	encyclopedia_panel.visible = false
 	profile_panel.visible = false
-	btn_world_icon.visible = true
+	btn_world_icon.visible = false
 	chest_base_scale = chest_sprite.scale
 	
 	shop_panel.z_index = 1
@@ -334,8 +334,16 @@ func _ready() -> void:
 		if alien_manager.is_event_blocking_achievement_popups():
 			return
 
+		habitat_manager.update_habitat_unlocks()
+
+		if not habitat_manager.can_change_habitat():
+			ui_manager.play_squish(btn_world_icon)
+			return
+
 		ui_manager.play_squish(btn_world_icon)
+
 		habitat_manager.cycle_habitat()
+
 		refresh_habitat_structures()
 		_update_chest_sprite_by_level()
 	)
@@ -389,6 +397,7 @@ func _ready() -> void:
 	habitat_manager.apply_current_habitat()
 	refresh_habitat_structures()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
+	update_world_button_visibility()
 
 	inventory_panel.move_fish_to_inventory.connect(aquarium_manager.on_move_fish_to_inventory)
 	inventory_panel.move_fish_to_aquarium.connect(aquarium_manager.on_move_fish_to_aquarium)
@@ -467,6 +476,9 @@ func _ready() -> void:
 	if not runtime_state.is_empty():
 		save_manager.apply_save_state(runtime_state, false)
 
+		habitat_manager.update_habitat_unlocks()
+		update_world_button_visibility()
+
 		_update_chest_sprite_by_level()
 		refresh_habitat_structures()
 		shop_manager.update_cps()
@@ -483,6 +495,10 @@ func _ready() -> void:
 	# Añadimos al grupo al final
 	add_to_group("main")
 	
+func update_world_button_visibility() -> void:
+	habitat_manager.update_habitat_unlocks()
+	btn_world_icon.visible = habitat_manager.can_change_habitat()
+		
 func _is_item_unlocked_by_default(id: String) -> bool:
 	if id == "chupete_jr":
 		return false
@@ -495,11 +511,14 @@ func _resume_alien_after_runtime_restore(alien_return_data: Dictionary) -> void:
 func _on_save_loaded(save_data: Dictionary) -> void:
 	save_manager.apply_save_state(save_data)
 
+	habitat_manager.update_habitat_unlocks()
+	update_world_button_visibility()
 	_update_chest_sprite_by_level()
 	refresh_habitat_structures()
 	shop_manager.update_cps()
 	ui_manager._update_ui()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
+	
 
 func _process(delta: float) -> void:
 	session_time_seconds += delta

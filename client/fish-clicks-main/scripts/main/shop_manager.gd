@@ -199,6 +199,8 @@ func on_unlock_pressed(id: String) -> void:
 		"barco":
 			main._update_barco_sprite_by_level()
 
+	main.habitat_manager.update_habitat_unlocks()
+	main.update_world_button_visibility()
 	main.ui_manager._update_ui()
 	main._actualizar_peces_desbloqueados_en_enciclopedia()
 	main.achievements_manager.check_achievements()

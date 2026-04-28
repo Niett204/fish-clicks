@@ -7,7 +7,7 @@ const HABITATS := {
 		"background": preload("res://assets/fondos/fondo1.png")
 	},
 	"habitat_2": {
-		"name": "Vacío",
+		"name": "Antártida",
 		"background": preload("res://assets/fondos/fondo2.png")
 	}
 }

@@ -32,6 +32,7 @@
 [ext_resource type="Texture2D" uid="uid://bgs77das3fpu1" path="res://assets/ui/bandera.png" id="19_0ld40"]
 [ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
 [ext_resource type="PackedScene" uid="uid://d4kjqemcayt4t" path="res://scenes/inventario.tscn" id="21_pm3ni"]
+[ext_resource type="Texture2D" uid="uid://builocmjnow0p" path="res://assets/ui/iconos/icono_mundos.png" id="21_txyw0"]
 [ext_resource type="Script" uid="uid://drdsaa7gdbvuj" path="res://scenes/left_info_panel.gd" id="22_kmb1v"]
 [ext_resource type="PackedScene" uid="uid://cbbihh5ocgssr" path="res://scenes/options_panel.tscn" id="22_pm3ni"]
 [ext_resource type="PackedScene" uid="uid://crojbj03flfr6" path="res://scenes/UI/encyclopedia_panel.tscn" id="23_ency"]
@@ -309,7 +310,7 @@ stretch_mode = 5
 [node name="BtnWorld" type="TextureButton" parent="UI/Root/HUD/TopBar/RightGroup" unique_id=266951714]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-texture_normal = ExtResource("9_trceg")
+texture_normal = ExtResource("21_txyw0")
 ignore_texture_size = true
 stretch_mode = 5
 
