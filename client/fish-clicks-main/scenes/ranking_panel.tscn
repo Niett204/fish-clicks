@@ -7,6 +7,16 @@
 [ext_resource type="Texture2D" uid="uid://c1dsnqd6fj4t7" path="res://assets/misc/ranking_sin_peces.png" id="3_kiu8h"]
 [ext_resource type="Texture2D" uid="uid://4js67mc3pou0" path="res://assets/ui/cruz.png" id="4_peu1r"]
 [ext_resource type="Texture2D" uid="uid://cq0j1orhhg43v" path="res://assets/ui/iconos/default_avatar.png" id="4_w8rbo"]
+[ext_resource type="Shader" uid="uid://blxo6we1g8o25" path="res://scenes/ranking_panel_shader.gdshader" id="5_w8rbo"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yjatq"]
+shader = ExtResource("5_w8rbo")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w8rbo"]
+shader = ExtResource("5_w8rbo")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_uc5be"]
+shader = ExtResource("5_w8rbo")
 
 [node name="RankingPanel" type="Control" unique_id=763575264]
 z_index = 20
@@ -59,46 +69,32 @@ layout_mode = 2
 
 [node name="PodiumTexture" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection" unique_id=2125568874]
 layout_mode = 0
-offset_left = 84.0
-offset_top = -5.29
-offset_right = 224.0
-offset_bottom = 169.71
+offset_left = 74.0
+offset_top = -11.0
+offset_right = 233.0
+offset_bottom = 187.75
 texture = ExtResource("3_kiu8h")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Winner1" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection" unique_id=1823520202]
 layout_mode = 0
-offset_left = 136.855
-offset_top = -13.485
-offset_right = 176.855
-offset_bottom = 53.515
+offset_left = 136.33
+offset_top = -13.93
+offset_right = 176.33
+offset_bottom = 53.07
 alignment = 1
-
-[node name="Photo1" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection/Winner1" unique_id=2057802885]
-custom_minimum_size = Vector2(40, 40)
-layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 2.0
-texture = ExtResource("4_w8rbo")
-expand_mode = 1
-stretch_mode = 5
 
 [node name="Name1" type="Label" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection/Winner1" unique_id=1506362693]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
 text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Winner2" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection" unique_id=1270651399]
-layout_mode = 0
-offset_left = 91.55
-offset_top = 18.375
-offset_right = 131.55
-offset_bottom = 85.375
-alignment = 1
-
-[node name="Photo2" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection/Winner2" unique_id=1008811558]
+[node name="Photo1" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection/Winner1" unique_id=2057802885]
+material = SubResource("ShaderMaterial_yjatq")
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 3
@@ -106,35 +102,61 @@ size_flags_stretch_ratio = 2.0
 texture = ExtResource("4_w8rbo")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="Winner2" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection" unique_id=1270651399]
+layout_mode = 0
+offset_left = 84.975
+offset_top = 21.48
+offset_right = 124.975006
+offset_bottom = 88.479996
+alignment = 1
 
 [node name="Name2" type="Label" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection/Winner2" unique_id=1249326471]
 layout_mode = 2
+size_flags_vertical = 6
+theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
 text = "2"
-horizontal_alignment = 1
+horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="Winner3" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection" unique_id=460903551]
-layout_mode = 0
-offset_left = 177.545
-offset_top = 51.45
-offset_right = 217.545
-offset_bottom = 118.45
-alignment = 1
-
-[node name="Photo3" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection/Winner3" unique_id=985777248]
+[node name="Photo2" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection/Winner2" unique_id=1008811558]
+material = SubResource("ShaderMaterial_w8rbo")
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
+size_flags_horizontal = 8
 size_flags_vertical = 3
 size_flags_stretch_ratio = 2.0
 texture = ExtResource("4_w8rbo")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="Winner3" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection" unique_id=460903551]
+layout_mode = 0
+offset_left = 182.465
+offset_top = 58.275
+offset_right = 222.465
+offset_bottom = 125.275
+alignment = 1
+
 [node name="Name3" type="Label" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection/Winner3" unique_id=55543511]
 layout_mode = 2
+size_flags_vertical = 6
+theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
 text = "3"
-horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Photo3" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection/Winner3" unique_id=985777248]
+material = SubResource("ShaderMaterial_uc5be")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+texture = ExtResource("4_w8rbo")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="ListSection" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxMain" unique_id=2087348152]
 layout_mode = 2
@@ -147,15 +169,24 @@ size_flags_stretch_ratio = 0.0
 theme_override_constants/separation = 40
 
 [node name="Pos" type="Label" parent="MarginContainer/MarginContainer/VBoxMain/ListSection/Header" unique_id=1030888336]
+custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
 text = "Posición"
 
 [node name="Nombre" type="Label" parent="MarginContainer/MarginContainer/VBoxMain/ListSection/Header" unique_id=455150654]
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
 text = "Nombre"
 
 [node name="Doblones" type="Label" parent="MarginContainer/MarginContainer/VBoxMain/ListSection/Header" unique_id=2057099603]
+custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
 text = "Doblones"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/MarginContainer/VBoxMain/ListSection" unique_id=544477573]
@@ -200,9 +231,9 @@ layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 237.0
+offset_left = 236.575
 offset_top = -114.0
-offset_right = -270.0
+offset_right = -270.4253
 offset_bottom = -84.0
 grow_vertical = 0
 size_flags_horizontal = 4
