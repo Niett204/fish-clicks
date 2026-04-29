@@ -638,6 +638,13 @@ func reset_local_state() -> void:
 	achievements_manager.profile_clicks_count = 0
 	achievements_manager.annoyed_fish_count = 0
 	achievements_manager.achievement_check_accum = 0.0
+	
+	# 3.1. Reseteo de limpieza
+	if cleaning_manager != null:
+		cleaning_manager.inactivity_time = 0.0
+		cleaning_manager.cleaning_event_available = false
+		cleaning_manager.total_dirt_spots_cleaned = 0
+		cleaning_manager.cleaning_events_completed = 0
 
 	# 4. Limpieza física de Acuarios (Peces nadando)
 	for habitat_id in aquarium_data.keys():
@@ -665,6 +672,9 @@ func reset_local_state() -> void:
 	
 	# Actualizar la interfaz de usuario completa (etiquetas de doblones, botellas, etc.)
 	ui_manager._update_ui()
+	
+	if stats_panel.visible:
+		stats_manager.refresh_stats_panel_full()
 	
 	# Limpiar la foto de perfil en el Singleton Global
 	GlobalData.user_photo_url = ""

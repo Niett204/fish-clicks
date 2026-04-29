@@ -164,7 +164,7 @@ func on_buy_pressed(id: String) -> void:
 
 
 func on_unlock_pressed(id: String) -> void:
-	if id == "auspezio":
+	if id == "auspezio" || id == "chupete_jr":
 		return
 
 	if is_item_locked_by_progress(id):
