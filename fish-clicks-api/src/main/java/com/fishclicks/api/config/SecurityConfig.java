@@ -31,7 +31,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/auth/**", "/api/auth/**").permitAll()
-                        .requestMatchers("/enciclopedia/**").permitAll() // Enciclopedia pública
+                        .requestMatchers("/enciclopedia/**").permitAll()
+                        .requestMatchers("/ranking/**").permitAll()
                         .requestMatchers("/partida/**").authenticated() // SOLO partidas protegidas
                         .anyRequest().permitAll()
                 )
