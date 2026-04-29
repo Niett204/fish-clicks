@@ -612,6 +612,8 @@ func reset_local_state() -> void:
 	total_clicks = 0
 	session_time_seconds = 0.0
 	click_power = 1
+	alien_minigame_wins = 0
+	alien_minigame_losses = 0
 	# El DPS se pondrá a 0 automáticamente al llamar a update_cps() más abajo
 
 	# 2. Limpieza de diccionarios e inventario
