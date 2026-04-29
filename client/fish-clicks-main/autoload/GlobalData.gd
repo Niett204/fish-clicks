@@ -8,8 +8,8 @@ var user_nickname: String = ""
 var is_logged_in: bool = false
 
 const SESSION_FILE = "user://fish_clicks_session.save"
-#const BASE_URL = "http://127.0.0.1:8080"
-const BASE_URL = "https://fish-clicks.onrender.com"
+const BASE_URL = "http://127.0.0.1:8080"
+#const BASE_URL = "https://fish-clicks.onrender.com"
 
 signal login_success(data: Dictionary)
 signal login_failed(error: String)
@@ -306,6 +306,14 @@ signal ranking_received(type: String, data: Array)
 signal ranking_failed(error: String)
 
 func fetch_ranking(type: String) -> void:
+	var url = BASE_URL + "/ranking?type=" + type
+	var headers = ["Content-Type: application/json"]
+	
+	# Solo añadimos el token si el usuario está logueado
+	if is_logged_in:
+		headers.append("Authorization: " + get_auth_header())
+	
+	# Realizamos la petición HTTP normal
 	var http := HTTPRequest.new()
 	add_child(http)
 	
@@ -318,10 +326,6 @@ func fetch_ranking(type: String) -> void:
 		else:
 			ranking_failed.emit("Error servidor: " + str(code))
 	)
-
-	# Importante: El backend esperará el tipo para saber si ordenar por monedas o clicks
-	var url = BASE_URL + "/ranking?type=" + type 
-	var headers = ["Authorization: " + get_auth_header()]
 	http.request(url, headers, HTTPClient.METHOD_GET)
 
 var pending_runtime_state: Dictionary = {}
