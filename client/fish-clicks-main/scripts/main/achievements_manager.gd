@@ -21,6 +21,9 @@ var volume_slider_spam_unlocked: bool = false
 var annoyed_fish_count: int = 0
 var achievement_check_accum: float = 0.0
 
+var auto_cleaning_unlocked: bool = false
+var dirty_aquarium_time_seconds: float = 0.0
+
 
 func setup(main_ref: Node) -> void:
 	main = main_ref
@@ -67,6 +70,21 @@ func register_alien_clicked() -> void:
 	check_achievements()
 
 
+func register_aquarium_cleaned() -> void:
+	check_achievements()
+
+
+func register_auto_cleaning_unlocked() -> void:
+	if auto_cleaning_unlocked:
+		return
+
+	auto_cleaning_unlocked = true
+	check_achievements()
+
+
+func register_dirty_aquarium_time(delta: float) -> void:
+	dirty_aquarium_time_seconds += delta
+
 func _get_achievement_current_value(kind: String) -> float:
 	match kind:
 		"clicks":
@@ -109,6 +127,14 @@ func _get_achievement_current_value(kind: String) -> float:
 			return float(annoyed_fish_count)
 		"achievements_unlocked":
 			return float(get_unlocked_achievements_count())
+		"aquarium_cleaned":
+			if main.cleaning_manager == null:
+				return 0.0
+			return float(main.cleaning_manager.cleaning_events_completed)
+		"auto_cleaning_unlocked":
+			return 1.0 if auto_cleaning_unlocked else 0.0
+		"dirty_aquarium_time":
+			return dirty_aquarium_time_seconds
 		_:
 			return 0.0
 
