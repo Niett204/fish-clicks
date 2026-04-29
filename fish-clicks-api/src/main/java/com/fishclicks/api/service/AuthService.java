@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -25,6 +26,9 @@ public class AuthService {
 
     @Autowired
     private PasswordRepository passwordRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public LoginResponse login(String identifier, String password){
 
@@ -44,8 +48,8 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario sin contraseña activa");
         }
 
-        // Validar contraseña (TODO: implementar BCrypt en el futuro)
-        if (!activePassword.getPasswordHash().equals(password)) {
+        // Validar contraseña
+        if (!passwordEncoder.matches(password, activePassword.getPasswordHash())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Contraseña incorrecta");
         }
 
@@ -93,8 +97,7 @@ public class AuthService {
 
         Password newPassword = new Password();
         newPassword.setUser(createdUser);
-        // Temporal: se mantiene el mismo criterio actual de login (texto plano).
-        newPassword.setPasswordHash(password);
+        newPassword.setPasswordHash(passwordEncoder.encode(password));
         newPassword.setIsActive(true);
         newPassword.setCreatedAt(now);
         passwordRepository.save(newPassword);

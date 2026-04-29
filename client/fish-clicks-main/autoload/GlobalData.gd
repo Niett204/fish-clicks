@@ -306,30 +306,23 @@ signal ranking_received(type: String, data: Array)
 signal ranking_failed(error: String)
 
 func fetch_ranking(type: String) -> void:
-	# type: "clicks" o "money"
 	var http := HTTPRequest.new()
 	add_child(http)
-
+	
 	http.request_completed.connect(func(result, code, headers, body):
 		http.queue_free()
 		if code == 200:
 			var data = JSON.parse_string(body.get_string_from_utf8())
 			if data is Array:
 				ranking_received.emit(type, data)
-			else:
-				ranking_failed.emit("Formato de ranking inválido")
 		else:
-			var msg = _build_error_message(result, code, body, "Error al obtener ranking")
-			ranking_failed.emit(msg)
+			ranking_failed.emit("Error servidor: " + str(code))
 	)
 
-	var headers := [
-		"Content-Type: application/json",
-		"Authorization: " + get_auth_header()
-	]
-
-	# Asegúrate de que las rutas en el backend coincidan (/ranking/clicks y /ranking/money)
-	http.request(BASE_URL + "/ranking/" + type, headers, HTTPClient.METHOD_GET)
+	# Importante: El backend esperará el tipo para saber si ordenar por monedas o clicks
+	var url = BASE_URL + "/ranking?type=" + type 
+	var headers = ["Authorization: " + get_auth_header()]
+	http.request(url, headers, HTTPClient.METHOD_GET)
 
 var pending_runtime_state: Dictionary = {}
 var pending_alien_result: Dictionary = {}
