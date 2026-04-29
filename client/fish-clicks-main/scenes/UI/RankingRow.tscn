@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://c26glntfrei7b"]
 
 [ext_resource type="Script" uid="uid://ceyn7nfgwh21v" path="res://scenes/UI/ranking_row.gd" id="1_m3n1r"]
+[ext_resource type="FontFile" uid="uid://dkkmqm6p1jj0p" path="res://assets/fuentes/PirataOne-Regular.ttf" id="2_hvgts"]
 
 [node name="RankingRow" type="HBoxContainer" unique_id=175981940]
 custom_minimum_size = Vector2(0, 30)
@@ -11,13 +12,20 @@ grow_horizontal = 2
 script = ExtResource("1_m3n1r")
 
 [node name="RankLabel" type="Label" parent="." unique_id=1677640811]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
+theme_override_fonts/font = ExtResource("2_hvgts")
 
 [node name="NameLabel" type="Label" parent="." unique_id=1812350715]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
+theme_override_fonts/font = ExtResource("2_hvgts")
 
 [node name="ValueLabel" type="Label" parent="." unique_id=486836115]
+custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
+theme_override_fonts/font = ExtResource("2_hvgts")
 horizontal_alignment = 2

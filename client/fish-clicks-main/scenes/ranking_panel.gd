@@ -72,22 +72,24 @@ func _on_ranking_data(type: String, data: Array):
 	
 	for i in range(data.size()):
 		var entry = data[i]
-		var score_text = str(int(entry.get("score", 0))) + ( " Doblones" if type == "money" else " Clicks")
+		
+		# --- CAMBIO 1: Solo el número (sin la palabra Doblones/Clicks) ---
+		var score_text = str(int(entry.get("score", 0))) 
 		
 		if i < 3:
 			var p_nodes = podium_nodes[i + 1]
-			p_nodes.name.text = str(entry.get("nickname", "???")) + "\n" + score_text
+			# --- CAMBIO 2: Solo el nombre en el podio (limpio) ---
+			p_nodes.name.text = str(entry.get("nickname", "???"))
 			_load_external_photo(entry.get("foto", ""), p_nodes.photo)
 		
 		var row = row_scene.instantiate()
 		items_container.add_child(row)
+		# Se envía solo el número a la fila
 		row.set_data(i + 1, entry.get("nickname", "???"), score_text, entry.get("foto", ""))
 		
-		# Si soy yo, guardamos los datos en la fila pegajosa
 		if entry.get("nickname") == my_nickname:
 			my_user_row.set_data(i + 1, my_nickname, score_text, entry.get("foto", ""))
-			# Le damos el color amarillo
-			my_user_row.modulate = Color(1, 1, 0, 1) 
+			my_user_row.modulate = Color(1, 1, 0, 1) # Amarillo para el flotante
 
 func _update_sticky_row_visibility():
 	var my_nickname = GlobalData.user_nickname
