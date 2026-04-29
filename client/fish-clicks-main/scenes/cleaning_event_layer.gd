@@ -50,6 +50,13 @@ var auto_clean_arrive_distance: float = 18.0
 var auto_clean_is_scrubbing_target: bool = false
 var auto_clean_scrub_cooldown: float = 0.0
 var auto_clean_spawn_position: Vector2 = Vector2(80, 500)
+var cleaner_source_fish: Node2D = null
+var cleaner_source_fish_was_hidden: bool = false
+
+# Transición pez esquina
+var fish_corner_visible_position: Vector2 = Vector2.ZERO
+var fish_corner_hidden_position: Vector2 = Vector2.ZERO
+var fish_corner_exit_animating: bool = false
 
 var dirt_textures: Array[Texture2D] = [
 	preload("res://assets/minijuegos/limpieza/algas/alga_1_small.png"),
@@ -70,6 +77,14 @@ func _ready() -> void:
 	sponge_icon.visible = false
 	auto_cleaner_fish_icon.visible = false
 	auto_cleaner_fish_icon.global_position = auto_clean_spawn_position
+
+	fish_corner_visible_position = fish_icon.position
+	fish_corner_hidden_position = Vector2(
+		-fish_icon.size.x - 40.0,
+		fish_corner_visible_position.y
+	)
+
+	fish_icon.position = fish_corner_hidden_position
 
 func _process(_delta: float) -> void:
 	if not visible:
@@ -137,14 +152,14 @@ func _input(event: InputEvent) -> void:
 
 func _refresh_cleaner_visuals() -> void:
 	if cleaning_finished:
-		fish_icon.visible = false
 		auto_cleaner_fish_icon.visible = false
 		return
 
-	var using_auto_cleaner: bool = auto_clean_enabled and visible
-
-	fish_icon.visible = not using_auto_cleaner
-	auto_cleaner_fish_icon.visible = using_auto_cleaner
+	if auto_clean_enabled:
+		fish_icon.visible = false
+		auto_cleaner_fish_icon.visible = true
+	else:
+		auto_cleaner_fish_icon.visible = false
 	
 func show_event() -> void:
 	visible = true
@@ -157,7 +172,6 @@ func show_event() -> void:
 
 	if cleaning_manager != null and cleaning_manager.main != null:
 		cleaning_manager.main.pecera_blocker.visible = true
-		cleaning_manager.main.aquarium_manager.set_fish_visual_hidden_by_id(CLEANER_FISH_ID, auto_clean_enabled)
 
 	green_overlay.visible = true
 	sponge_icon.visible = false
@@ -170,9 +184,10 @@ func show_event() -> void:
 	spawn_dirt_spots()
 
 	_refresh_cleaner_visuals()
+	_play_fish_corner_enter()
 
 	if auto_clean_enabled:
-		auto_cleaner_fish_icon.global_position = auto_clean_spawn_position
+		_prepare_cleaner_fish_transition()
 		auto_clean_target = _get_best_auto_clean_target()
 
 	var color := green_overlay.color
@@ -190,7 +205,14 @@ func hide_event() -> void:
 	fish_icon.visible = false
 	sponge_icon.visible = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	auto_cleaner_fish_icon.visible = false
+	
+	if cleaner_source_fish != null and is_instance_valid(cleaner_source_fish):
+		var final_cleaner_pos: Vector2 = auto_cleaner_fish_icon.global_position + auto_cleaner_fish_icon.size * 0.5
+		auto_cleaner_fish_icon.visible = false
+		_restore_cleaner_fish_from_transition(final_cleaner_pos)
+	else:
+		auto_cleaner_fish_icon.visible = false
+		
 	auto_clean_enabled = false
 	auto_clean_target = null
 	auto_clean_is_scrubbing_target = false
@@ -340,6 +362,71 @@ func grow_to_large() -> void:
 
 			if max_stage >= 2:
 				(spot as DirtSpot).set_stage(2)
+
+func _play_fish_corner_enter() -> void:
+	if auto_clean_enabled:
+		fish_icon.visible = false
+		return
+
+	fish_corner_exit_animating = false
+	fish_icon.visible = true
+	fish_icon.position = fish_corner_hidden_position
+
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(fish_icon, "position", fish_corner_visible_position, 0.45)
+
+func _play_fish_corner_exit() -> void:
+	if not fish_icon.visible:
+		return
+
+	fish_corner_exit_animating = true
+
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_IN)
+	tween.tween_property(fish_icon, "position", fish_corner_hidden_position, 0.35)
+
+	await tween.finished
+
+	fish_icon.visible = false
+	fish_corner_exit_animating = false
+
+func _prepare_cleaner_fish_transition() -> void:
+	cleaner_source_fish = null
+	cleaner_source_fish_was_hidden = false
+
+	if not auto_clean_enabled:
+		return
+
+	if cleaning_manager == null or cleaning_manager.main == null:
+		return
+
+	cleaner_source_fish = cleaning_manager.main.aquarium_manager.get_spawned_fish_by_id(CLEANER_FISH_ID)
+
+	if cleaner_source_fish == null or not is_instance_valid(cleaner_source_fish):
+		return
+
+	var fish_start_pos: Vector2 = cleaner_source_fish.global_position
+	auto_cleaner_fish_icon.global_position = fish_start_pos - auto_cleaner_fish_icon.size * 0.5
+
+	cleaner_source_fish.visible = false
+	cleaner_source_fish_was_hidden = true
+
+func _restore_cleaner_fish_from_transition(final_position: Vector2) -> void:
+	if cleaner_source_fish == null or not is_instance_valid(cleaner_source_fish):
+		return
+
+	cleaner_source_fish.global_position = final_position
+
+	if cleaning_manager != null and cleaning_manager.main != null:
+		cleaner_source_fish.visible = cleaner_source_fish.get("habitat_id") == cleaning_manager.main.habitat_manager.current_habitat
+	else:
+		cleaner_source_fish.visible = true
+
+	cleaner_source_fish = null
+	cleaner_source_fish_was_hidden = false
 		
 func _apply_scrub_to_nearby_spots() -> void:
 	var sponge_center := sponge_icon.global_position + sponge_icon.size * 0.5
@@ -390,8 +477,15 @@ func _on_cleaning_finished() -> void:
 
 	is_scrubbing = false
 	sponge_icon.visible = false
-	fish_icon.visible = false
-	auto_cleaner_fish_icon.visible = false
+
+	if auto_clean_enabled:
+		var final_cleaner_pos: Vector2 = auto_cleaner_fish_icon.global_position + auto_cleaner_fish_icon.size * 0.5
+		auto_cleaner_fish_icon.visible = false
+		_restore_cleaner_fish_from_transition(final_cleaner_pos)
+	else:
+		auto_cleaner_fish_icon.visible = false
+
+	await _play_fish_corner_exit()
 
 	var tween = create_tween()
 	tween.tween_property(green_overlay, "color:a", 0.0, 0.5)

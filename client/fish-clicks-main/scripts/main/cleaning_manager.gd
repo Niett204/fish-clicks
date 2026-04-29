@@ -40,6 +40,10 @@ func _process(delta: float) -> void:
 	if should_count_inactivity():
 		inactivity_time += delta
 
+	if cleaning_event_available and cleaning_event_layer != null and cleaning_event_layer.has_dirt_remaining():
+		if main != null and main.achievements_manager != null:
+			main.achievements_manager.register_dirty_aquarium_time(delta)
+
 	if can_activate_cleaning_event():
 		activate_cleaning_event()
 		
@@ -111,12 +115,16 @@ func get_coin_penalty_multiplier() -> float:
 
 	return 1.0
 
-# Funciones para actualizar las estadísticas
+# Funciones para actualizar las estadísticas y logros
 func register_dirt_spot_cleaned() -> void:
 	total_dirt_spots_cleaned += 1
 
 func register_cleaning_event_completed() -> void:
 	cleaning_events_completed += 1
+
+	if main != null and main.achievements_manager != null:
+		main.achievements_manager.check_achievements()
+
 	try_unlock_cleaner_fish()
 	
 # ---------- DESBLOQUEO PEZ LIMPIADOR ----------
@@ -140,6 +148,9 @@ func try_unlock_cleaner_fish() -> void:
 		return
 
 	main.unlocked[CLEANER_FISH_ID] = true
+
+	if main.achievements_manager != null:
+		main.achievements_manager.register_auto_cleaning_unlocked()
 
 	if main.ui_manager != null:
 		main.ui_manager.update_shop_cards()
