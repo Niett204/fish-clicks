@@ -72,11 +72,12 @@ func _on_ranking_data(type: String, data: Array):
 	
 	for i in range(data.size()):
 		var entry = data[i]
-		var score_text = str(int(entry.get("score", 0))) + ( " Doblones" if type == "money" else " Clicks")
+		var score_text = str(int(entry.get("score", 0)))
 		
 		if i < 3:
 			var p_nodes = podium_nodes[i + 1]
-			p_nodes.name.text = str(entry.get("nickname", "???")) + "\n" + score_text
+			# Ahora solo asignamos el apodo:
+			p_nodes.name.text = str(entry.get("nickname", "???")) 
 			_load_external_photo(entry.get("foto", ""), p_nodes.photo)
 		
 		var row = row_scene.instantiate()

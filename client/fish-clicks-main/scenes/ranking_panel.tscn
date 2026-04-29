@@ -4,11 +4,11 @@
 [ext_resource type="Texture2D" uid="uid://bicarrylo3grx" path="res://assets/ui/pergamino_v2.png" id="1_x87ak"]
 [ext_resource type="FontFile" uid="uid://dkkmqm6p1jj0p" path="res://assets/fuentes/PirataOne-Regular.ttf" id="2_mtvgp"]
 [ext_resource type="PackedScene" uid="uid://c26glntfrei7b" path="res://scenes/UI/RankingRow.tscn" id="2_peu1r"]
-[ext_resource type="Texture2D" uid="uid://c1dsnqd6fj4t7" path="res://assets/misc/ranking_sin_peces.png" id="3_kiu8h"]
+[ext_resource type="Texture2D" uid="uid://7raka7aipend" path="res://assets/misc/ranking_sin_peces.png" id="3_kiu8h"]
 [ext_resource type="Texture2D" uid="uid://4js67mc3pou0" path="res://assets/ui/cruz.png" id="4_peu1r"]
 [ext_resource type="Texture2D" uid="uid://cq0j1orhhg43v" path="res://assets/ui/iconos/default_avatar.png" id="4_w8rbo"]
-[ext_resource type="Shader" uid="uid://blxo6we1g8o25" path="res://scenes/ranking_panel_shader.gdshader" id="5_w8rbo"]
-[ext_resource type="Texture2D" uid="uid://ba1n5j0cvhvlw" path="res://assets/misc/corona.png" id="8_yjatq"]
+[ext_resource type="Shader" path="res://scenes/ranking_panel_shader.gdshader" id="5_w8rbo"]
+[ext_resource type="Texture2D" uid="uid://cdby5ig42c3fy" path="res://assets/misc/corona.png" id="8_yjatq"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yjatq"]
 shader = ExtResource("5_w8rbo")
