@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://4js67mc3pou0" path="res://assets/ui/cruz.png" id="4_peu1r"]
 [ext_resource type="Texture2D" uid="uid://cq0j1orhhg43v" path="res://assets/ui/iconos/default_avatar.png" id="4_w8rbo"]
 [ext_resource type="Shader" uid="uid://blxo6we1g8o25" path="res://scenes/ranking_panel_shader.gdshader" id="5_w8rbo"]
+[ext_resource type="Texture2D" uid="uid://ba1n5j0cvhvlw" path="res://assets/misc/corona.png" id="8_yjatq"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yjatq"]
 shader = ExtResource("5_w8rbo")
@@ -158,6 +159,17 @@ texture = ExtResource("4_w8rbo")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection" unique_id=554124425]
+show_behind_parent = true
+layout_mode = 0
+offset_left = 176.99998
+offset_top = -1.49999
+offset_right = 198.80019
+offset_bottom = 20.30021
+rotation = 0.83775806
+texture = ExtResource("8_yjatq")
+expand_mode = 1
+
 [node name="ListSection" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxMain" unique_id=2087348152]
 layout_mode = 2
 size_flags_vertical = 3
@@ -183,7 +195,7 @@ theme_override_fonts/font = ExtResource("2_mtvgp")
 text = "Nombre"
 
 [node name="Doblones" type="Label" parent="MarginContainer/MarginContainer/VBoxMain/ListSection/Header" unique_id=2057099603]
-custom_minimum_size = Vector2(10, 0)
+custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
 theme_override_fonts/font = ExtResource("2_mtvgp")
@@ -197,8 +209,8 @@ horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
 [node name="ItemsContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxMain/ListSection/ScrollContainer" unique_id=86006121]
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
-size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
 [node name="TitleRanking" type="Label" parent="." unique_id=644016045]
@@ -231,9 +243,9 @@ layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 236.575
+offset_left = 231.335
 offset_top = -114.0
-offset_right = -270.4253
+offset_right = -275.66608
 offset_bottom = -84.0
 grow_vertical = 0
 size_flags_horizontal = 4
