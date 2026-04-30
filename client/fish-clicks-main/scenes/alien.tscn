@@ -3,14 +3,19 @@
 [ext_resource type="Script" uid="uid://c6k7jlwxj0ic4" path="res://scripts/alien_minigame/alien.gd" id="1_h100l"]
 [ext_resource type="Texture2D" uid="uid://b211nt8ns37xn" path="res://assets/minijuegos/alien/nave_auspicio_brillante.png" id="2_u8rjw"]
 [ext_resource type="Texture2D" uid="uid://ci6irryhl42g2" path="res://assets/minijuegos/alien/rayo_abductor.png" id="3_3vbw7"]
+[ext_resource type="FontFile" uid="uid://d2awp6ecbv7d4" path="res://assets/fuentes/extragalactic.regular.ttf" id="4_np108"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
 radius = 100.40418
 
 [node name="Alien" type="Node2D" unique_id=958043769]
+z_index = 100
+z_as_relative = false
 script = ExtResource("1_h100l")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1367072354]
+z_index = 100
+z_as_relative = false
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("2_u8rjw")
 
@@ -27,9 +32,10 @@ shape = SubResource("CircleShape2D_1")
 [node name="ClickHint" type="Label" parent="." unique_id=1614145910]
 visible = false
 offset_left = -40.0
-offset_top = 60.0
+offset_top = -84.0
 offset_right = 40.0
-offset_bottom = 85.0
+offset_bottom = -59.0
+theme_override_fonts/font = ExtResource("4_np108")
 text = "¡Pulsa!"
 horizontal_alignment = 1
 

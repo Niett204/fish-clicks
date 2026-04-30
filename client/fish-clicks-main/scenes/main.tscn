@@ -15,15 +15,16 @@
 [ext_resource type="Texture2D" uid="uid://bpvte078h1smo" path="res://assets/estructuras/tronco/tronco_mini.png" id="9_tel4y"]
 [ext_resource type="Texture2D" uid="uid://bapfvmfpgbe7p" path="res://assets/ui/iconos/icono_opciones.png" id="9_trceg"]
 [ext_resource type="Texture2D" uid="uid://casqwt2ogwyax" path="res://assets/ui/iconos/icono_stats.png" id="10_a8y0u"]
-[ext_resource type="Texture2D" uid="uid://f36arktw3huv" path="res://assets/estructuras/barco/barco_1.png" id="10_fuf3a"]
 [ext_resource type="Texture2D" uid="uid://bdp4yakc85yet" path="res://assets/ui/iconos/icono_inventario.png" id="11_a8y0u"]
 [ext_resource type="Texture2D" uid="uid://rljxhda6odwj" path="res://assets/ui/iconos/icono_enciclopedia.png" id="11_yc10j"]
 [ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
+[ext_resource type="Texture2D" uid="uid://csi3purv5anh3" path="res://assets/estructuras/piedra/piedra_large.png" id="12_nvyfr"]
 [ext_resource type="Texture2D" uid="uid://etiyc1qlnhhy" path="res://assets/ui/inventario/pecera_vacia2.png" id="12_qkpxi"]
+[ext_resource type="Texture2D" uid="uid://b3dmql08os7g0" path="res://assets/estructuras/iceberg/iceberg_large.png" id="12_vc5cj"]
 [ext_resource type="Texture2D" uid="uid://b33wxaxja8jx0" path="res://assets/ui/red.png" id="13_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://c5ht6q767emx5" path="res://assets/ui/botella_mensaje.png" id="13_muem4"]
 [ext_resource type="Script" uid="uid://gmyjxeo8kray" path="res://scenes/btn_profile.gd" id="13_qkpxi"]
-[ext_resource type="Shader" path="res://scenes/ProfilePanel.gdshader" id="14_5q0nq"]
+[ext_resource type="Shader" uid="uid://clhdnox30mfge" path="res://scenes/ProfilePanel.gdshader" id="14_5q0nq"]
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
 [ext_resource type="Texture2D" uid="uid://dyttmjwyi13od" path="res://assets/ui/iconos/icono_ranking.png" id="18_fuf3a"]
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="18_og1vs"]
@@ -31,6 +32,7 @@
 [ext_resource type="Texture2D" uid="uid://bgs77das3fpu1" path="res://assets/ui/bandera.png" id="19_0ld40"]
 [ext_resource type="Texture2D" uid="uid://cxeimq0em71f1" path="res://assets/ui/iconos/icono_hud_abierto.png" id="21_jscy8"]
 [ext_resource type="PackedScene" uid="uid://d4kjqemcayt4t" path="res://scenes/inventario.tscn" id="21_pm3ni"]
+[ext_resource type="Texture2D" uid="uid://builocmjnow0p" path="res://assets/ui/iconos/icono_mundos.png" id="21_txyw0"]
 [ext_resource type="Script" uid="uid://drdsaa7gdbvuj" path="res://scenes/left_info_panel.gd" id="22_kmb1v"]
 [ext_resource type="PackedScene" uid="uid://cbbihh5ocgssr" path="res://scenes/options_panel.tscn" id="22_pm3ni"]
 [ext_resource type="PackedScene" uid="uid://crojbj03flfr6" path="res://scenes/UI/encyclopedia_panel.tscn" id="23_ency"]
@@ -47,6 +49,12 @@
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y6deb"]
 load_path = "res://.godot/imported/anubia_large.png-9dd54c4d539590f8396e886059658b60.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_vchkt"]
+load_path = "res://.godot/imported/barco_1.png-f9349d7152d707a6724f304ec57141ee.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_txyw0"]
+load_path = "res://.godot/imported/coral_large.png-8664d7abaa6181a7190ae901ebb80d2e.ctex"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
 size = Vector2(268, 237)
@@ -129,9 +137,32 @@ scale = Vector2(0.11820317, 0.11820316)
 texture = SubResource("CompressedTexture2D_y6deb")
 
 [node name="Barco" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=1345349808]
-position = Vector2(875.00006, 378)
-scale = Vector2(0.4399988, 0.47999877)
-texture = ExtResource("10_fuf3a")
+visible = false
+top_level = true
+position = Vector2(1028, 423)
+rotation = 0.16895276
+scale = Vector2(0.42080194, 0.42519933)
+texture = SubResource("CompressedTexture2D_vchkt")
+
+[node name="Coral" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=2023546166]
+visible = false
+top_level = true
+position = Vector2(433, 576)
+scale = Vector2(0.14620161, 0.16841169)
+texture = SubResource("CompressedTexture2D_txyw0")
+
+[node name="Piedra" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=1387241435]
+visible = false
+position = Vector2(372.00003, 384.00003)
+scale = Vector2(0.36907998, 0.39592925)
+texture = ExtResource("12_nvyfr")
+
+[node name="Iceberg" type="Sprite2D" parent="ContentPecera/EstructurasLayer" unique_id=1498366793]
+visible = false
+position = Vector2(828.00006, 218.99998)
+scale = Vector2(0.41130626, 0.39917395)
+texture = ExtResource("12_vc5cj")
+flip_h = true
 
 [node name="Cofre" type="Area2D" parent="ContentPecera" unique_id=379332226]
 script = ExtResource("3_jyhfs")
@@ -147,6 +178,8 @@ position = Vector2(188, 507.5)
 shape = SubResource("RectangleShape2D_tefeu")
 
 [node name="PecesLayer" type="Node2D" parent="ContentPecera" unique_id=342514123]
+z_index = 10
+z_as_relative = false
 
 [node name="SwimArea" type="Node2D" parent="ContentPecera" unique_id=1141987209]
 visible = false
@@ -277,10 +310,9 @@ ignore_texture_size = true
 stretch_mode = 5
 
 [node name="BtnWorld" type="TextureButton" parent="UI/Root/HUD/TopBar/RightGroup" unique_id=266951714]
-visible = false
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-texture_normal = ExtResource("9_trceg")
+texture_normal = ExtResource("21_txyw0")
 ignore_texture_size = true
 stretch_mode = 5
 
@@ -371,7 +403,6 @@ text = "por segundo: 0.0"
 horizontal_alignment = 1
 
 [node name="TiendaPanel" type="Panel" parent="UI/Root/HUD" unique_id=1545511951]
-visible = false
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 1
 anchors_preset = 11
@@ -588,6 +619,7 @@ layout_mode = 1
 script = ExtResource("25_2f3dj")
 
 [node name="StatsPanel" parent="UI/Root/HUD" unique_id=493873659 instance=ExtResource("23_y6deb")]
+visible = false
 layout_mode = 1
 
 [node name="ProfilePanel" parent="UI/Root/HUD" unique_id=1077186223 instance=ExtResource("25_2wyq8")]
@@ -597,7 +629,6 @@ layout_mode = 1
 [node name="RankingPanel" parent="UI/Root/HUD" unique_id=763575264 instance=ExtResource("36_pibwh")]
 visible = false
 layout_mode = 1
-script = null
 
 [node name="BtnHideHUD" type="TextureButton" parent="UI/Root" unique_id=2090329672]
 custom_minimum_size = Vector2(32, 32)
@@ -667,6 +698,7 @@ icon = ExtResource("33_5q0nq")
 expand_icon = true
 
 [node name="CleaningEventLayer" type="Control" parent="UI/Root" unique_id=2050991050]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -734,6 +766,7 @@ grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("43_chjal")
 expand_mode = 1
+flip_v = true
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=121986834]
 

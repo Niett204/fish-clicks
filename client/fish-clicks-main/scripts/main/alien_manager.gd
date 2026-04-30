@@ -8,10 +8,13 @@ enum AlienEventState {
 	MINIGAME
 }
 
-const UNLOCK_FISH_COUNT := 0
+const UNLOCK_FISH_COUNT := 10
 const MINIGAME_DISPLAY_FISH_COUNT := 4
 const ALIEN_SCENE := preload("res://scenes/alien.tscn")
 const MAIN_SCENE_PATH := "res://scenes/main.tscn"
+const ALIEN_MINIGAME_COOLDOWN_SECONDS := 600.0
+const ALIEN_EVENT_TRIGGER_CHANCE := 0.15
+const ALIEN_EVENT_STARTUP_GRACE_SECONDS := 180.0
 
 var main: Node = null
 var alien_event_state := AlienEventState.IDLE
@@ -20,29 +23,38 @@ var alien_event_done := false
 var alien_instance: Node2D = null
 var abducted_fish_snapshots: Array[Dictionary] = []
 var abduct_return_origin: Vector2 = Vector2.ZERO
+var alien_escape_fx_active: bool = false
+var manager_started_unix: float = 0.0
 
 func setup(main_ref: Node) -> void:
 	main = main_ref
+	manager_started_unix = float(Time.get_unix_time_from_system())
 
 func check_alien_event_unlock() -> void:
-	if alien_event_done or alien_event_available:
+	if get_total_fish_count() < UNLOCK_FISH_COUNT:
+		alien_event_available = false
 		return
 
-	if get_total_fish_count() >= UNLOCK_FISH_COUNT:
-		alien_event_available = true
+	alien_event_available = not is_alien_minigame_on_cooldown()
 
 func try_start_alien_event() -> void:
-	if not alien_event_available:
+	if not can_trigger_alien_event():
 		return
-	if alien_event_done:
-		return
-	if alien_event_state != AlienEventState.IDLE:
+
+	if randf() > ALIEN_EVENT_TRIGGER_CHANCE:
 		return
 
 	call_deferred("start_alien_event")
 
 func start_alien_event() -> void:
 	alien_event_state = AlienEventState.ABDUCTING
+
+	if main.ui_manager != null:
+		main.ui_manager.close_all_panels()
+
+	if main.has_method("update_ui_block_state"):
+		main.update_ui_block_state()
+
 	call_deferred("_start_alien_event_flow")
 
 func _start_alien_event_flow() -> void:
@@ -117,13 +129,17 @@ func _on_alien_clicked() -> void:
 		return
 
 	alien_event_state = AlienEventState.MINIGAME
+	GlobalData.alien_last_minigame_trigger_unix = float(Time.get_unix_time_from_system())
 	main.achievements_manager.register_alien_clicked()
 
-	GlobalData.set_pending_runtime_state(main.save_manager.get_save_state())
+	var runtime_state: Dictionary = main.save_manager.get_save_state()
+
+	GlobalData.set_pending_runtime_state(runtime_state)
 	GlobalData.set_pending_abducted_fish_snapshots(abducted_fish_snapshots)
 	GlobalData.set_pending_abduct_return_origin(abduct_return_origin)
 	GlobalData.set_pending_minigame_display_fish_data(build_minigame_display_fish_data())
-
+	GlobalData.set_pending_auspezio_level(main.shop_manager.get_level("auspezio"))
+	
 	await play_alien_click_feedback()
 	await play_battle_transition()
 	get_tree().change_scene_to_file("res://scenes/alien_minigame.tscn")
@@ -369,9 +385,10 @@ func play_return_from_minigame_transition() -> void:
 	layer.queue_free()
 	
 func _resume_after_minigame_flow(result: Dictionary) -> void:
-	alien_event_done = true
 	alien_event_available = false
-	alien_event_state = AlienEventState.IDLE
+
+	if main.stats_manager != null:
+		main.stats_manager.register_alien_minigame_result(bool(result.get("won", false)))
 
 	clear_visual_fish_layer()
 	await main.get_tree().process_frame
@@ -382,17 +399,219 @@ func _resume_after_minigame_flow(result: Dictionary) -> void:
 		alien_instance.show_beam()
 
 	await play_return_from_minigame_transition()
+
+	if bool(result.get("won", false)):
+		alien_escape_fx_active = true
+	else:
+		if main != null:
+			main.start_fish_loss_debuff()
+
 	await spit_fish_back_into_aquarium()
 
 	if alien_instance != null and alien_instance.has_method("hide_beam"):
 		await alien_instance.hide_beam()
 
-	await animate_alien_exit_after_minigame()
+	if bool(result.get("won", false)):
+		await animate_alien_escape_damaged()
+	else:
+		await animate_alien_exit_after_minigame()
 
 	if alien_instance != null and is_instance_valid(alien_instance):
 		alien_instance.queue_free()
 		alien_instance = null
-	
+
+	alien_event_state = AlienEventState.IDLE
+	alien_escape_fx_active = false
+
+	main.update_ui_block_state()
+	check_alien_event_unlock()
+
+	if main.achievements_manager != null:
+		main.achievements_manager.check_achievements()
+		main.achievements_manager._try_show_next_achievement_popup()
+
+
+func animate_alien_escape_damaged() -> void:
+	if alien_instance == null or not is_instance_valid(alien_instance):
+		return
+
+	alien_escape_fx_active = true
+
+	var screen_size: Vector2 = main.get_viewport_rect().size
+
+	var fx_layer := CanvasLayer.new()
+	fx_layer.layer = 9998
+	main.add_child(fx_layer)
+
+	alien_instance.rotation = 0.0
+	alien_instance.modulate.a = 1.0
+
+	for i in range(3):
+		if alien_instance == null or not is_instance_valid(alien_instance):
+			break
+
+		var shake_t := main.create_tween()
+		shake_t.set_parallel(true)
+		shake_t.tween_property(
+			alien_instance,
+			"position",
+			alien_instance.position + Vector2(randf_range(-16.0, 16.0), randf_range(-8.0, 8.0)),
+			0.06
+		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		shake_t.tween_property(
+			alien_instance,
+			"rotation",
+			randf_range(-0.15, 0.15),
+			0.06
+		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		await shake_t.finished
+
+	var escape_target := Vector2(alien_instance.position.x + randf_range(-80.0, 80.0), -220.0)
+
+	var move_t := main.create_tween()
+	move_t.set_parallel(true)
+	move_t.tween_property(alien_instance, "position", escape_target, 1.4)\
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	move_t.tween_property(alien_instance, "rotation", randf_range(-0.35, 0.35), 1.4)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	move_t.tween_property(alien_instance, "modulate:a", 0.0, 1.2)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	var should_drop_egg := randf() < 1
+	if should_drop_egg:
+		call_deferred("_drop_egg_during_escape")
+
+	var elapsed := 0.0
+	var interval := 0.09
+
+	while elapsed < 1.25 and alien_instance != null and is_instance_valid(alien_instance):
+		spawn_alien_escape_smoke_fx(fx_layer)
+		if randf() < 0.55:
+			spawn_alien_escape_explosion_fx(fx_layer)
+
+		await main.get_tree().create_timer(interval).timeout
+		elapsed += interval
+
+	await move_t.finished
+
+	if is_instance_valid(fx_layer):
+		fx_layer.queue_free()
+
+	alien_escape_fx_active = false
+
+
+func _drop_egg_during_escape() -> void:
+	await main.get_tree().create_timer(0.28).timeout
+
+	if alien_instance == null or not is_instance_valid(alien_instance):
+		return
+
+	if main.egg_manager != null:
+		main.egg_manager.spawn_dropped_egg(alien_instance.global_position)
+
+
+func spawn_alien_escape_smoke_fx(parent: CanvasLayer) -> void:
+	if alien_instance == null or not is_instance_valid(alien_instance):
+		return
+
+	var smoke := ColorRect.new()
+	var size := randf_range(14.0, 30.0)
+	smoke.size = Vector2(size, size)
+	smoke.position = alien_instance.global_position + Vector2(
+		randf_range(-26.0, 26.0),
+		randf_range(10.0, 28.0)
+	) - smoke.size * 0.5
+	smoke.color = Color(
+		randf_range(0.20, 0.36),
+		randf_range(0.20, 0.36),
+		randf_range(0.20, 0.36),
+		0.60
+	)
+	parent.add_child(smoke)
+
+	var drift := Vector2(
+		randf_range(-18.0, 18.0),
+		randf_range(16.0, 40.0)
+	)
+
+	var t := main.create_tween()
+	t.set_parallel(true)
+	t.tween_property(smoke, "position", smoke.position + drift, 0.40)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t.tween_property(smoke, "scale", Vector2(1.5, 1.5), 0.40)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t.tween_property(smoke, "modulate:a", 0.0, 0.40)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	await t.finished
+
+	if is_instance_valid(smoke):
+		smoke.queue_free()
+
+
+func spawn_alien_escape_explosion_fx(parent: CanvasLayer) -> void:
+	if alien_instance == null or not is_instance_valid(alien_instance):
+		return
+
+	var pos := alien_instance.global_position + Vector2(
+		randf_range(-34.0, 34.0),
+		randf_range(-18.0, 24.0)
+	)
+
+	var outer := ColorRect.new()
+	var outer_size := randf_range(18.0, 36.0)
+	outer.size = Vector2(outer_size, outer_size)
+	outer.position = pos - outer.size * 0.5
+	outer.color = Color(1.0, randf_range(0.38, 0.6), 0.08, 0.75)
+	parent.add_child(outer)
+
+	var mid := ColorRect.new()
+	var mid_size := outer_size * 0.58
+	mid.size = Vector2(mid_size, mid_size)
+	mid.position = pos - mid.size * 0.5
+	mid.color = Color(1.0, randf_range(0.7, 0.9), 0.15, 0.92)
+	parent.add_child(mid)
+
+	var inner := ColorRect.new()
+	var inner_size := outer_size * 0.28
+	inner.size = Vector2(inner_size, inner_size)
+	inner.position = pos - inner.size * 0.5
+	inner.color = Color(1.0, 0.95, 0.8, 1.0)
+	parent.add_child(inner)
+
+	var t1 := main.create_tween()
+	t1.set_parallel(true)
+	t1.tween_property(outer, "scale", Vector2(1.45, 1.45), 0.18)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t1.tween_property(outer, "modulate:a", 0.0, 0.20)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	var t2 := main.create_tween()
+	t2.set_parallel(true)
+	t2.tween_property(mid, "scale", Vector2(1.30, 1.30), 0.15)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t2.tween_property(mid, "modulate:a", 0.0, 0.16)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	var t3 := main.create_tween()
+	t3.set_parallel(true)
+	t3.tween_property(inner, "scale", Vector2(1.18, 1.18), 0.12)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t3.tween_property(inner, "modulate:a", 0.0, 0.13)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	await t1.finished
+	await t2.finished
+	await t3.finished
+
+	if is_instance_valid(outer):
+		outer.queue_free()
+	if is_instance_valid(mid):
+		mid.queue_free()
+	if is_instance_valid(inner):
+		inner.queue_free()
+
+
 func spawn_alien_in_return_position() -> void:
 	alien_instance = ALIEN_SCENE.instantiate() as Node2D
 	if alien_instance == null:
@@ -413,8 +632,11 @@ func spawn_alien_in_return_position() -> void:
 	if alien_instance.has_method("set_waiting_for_click"):
 		alien_instance.set_waiting_for_click(false)
 
+
 func resume_after_minigame(result: Dictionary) -> void:
+	alien_event_state = AlienEventState.ABDUCTING
 	call_deferred("_resume_after_minigame_flow", result)
+
 
 func spit_fish_back_into_aquarium() -> void:
 	if alien_instance == null or not is_instance_valid(alien_instance):
@@ -429,6 +651,14 @@ func spit_fish_back_into_aquarium() -> void:
 			origin = alien_instance.get_abduct_target_position()
 		elif alien_instance != null:
 			origin = alien_instance.global_position
+
+	var fx_layer: CanvasLayer = null
+
+	if alien_escape_fx_active:
+		fx_layer = CanvasLayer.new()
+		fx_layer.layer = 9998
+		main.add_child(fx_layer)
+		call_deferred("_run_alien_damage_fx_loop", fx_layer)
 
 	var tweens: Array[Tween] = []
 
@@ -483,6 +713,26 @@ func spit_fish_back_into_aquarium() -> void:
 
 	for t in tweens:
 		await t.finished
+	
+	if fx_layer != null and is_instance_valid(fx_layer):
+		fx_layer.queue_free()
+
+
+func _run_alien_damage_fx_loop(fx_layer: CanvasLayer) -> void:
+	while alien_escape_fx_active and fx_layer != null and is_instance_valid(fx_layer):
+		if alien_instance == null or not is_instance_valid(alien_instance):
+			return
+
+		# Mucho más humo que explosión
+		for i in range(randi_range(2, 4)):
+			spawn_alien_escape_smoke_fx(fx_layer)
+
+		# Explosiones pequeñas y frecuentes
+		for i in range(randi_range(1, 3)):
+			spawn_alien_escape_explosion_fx(fx_layer)
+
+		await main.get_tree().create_timer(0.08).timeout
+
 
 func _find_snapshot_for_fish(fish: Node) -> Dictionary:
 	for snap in abducted_fish_snapshots:
@@ -763,3 +1013,33 @@ func resolve_fish_texture_path(fish_id: String) -> String:
 		return fallback_path
 
 	return ""
+
+
+func is_event_blocking_achievement_popups() -> bool:
+	if alien_escape_fx_active:
+		return true
+
+	return alien_event_state != AlienEventState.IDLE
+
+
+func is_alien_minigame_on_cooldown() -> bool:
+	if GlobalData.alien_last_minigame_trigger_unix < 0.0:
+		return false
+
+	var now: float = float(Time.get_unix_time_from_system())
+	return (now - GlobalData.alien_last_minigame_trigger_unix) < ALIEN_MINIGAME_COOLDOWN_SECONDS
+
+
+func can_trigger_alien_event() -> bool:
+	if not alien_event_available:
+		return false
+	if alien_event_state != AlienEventState.IDLE:
+		return false
+	if is_alien_minigame_on_cooldown():
+		return false
+
+	var now: float = float(Time.get_unix_time_from_system())
+	if now - manager_started_unix < ALIEN_EVENT_STARTUP_GRACE_SECONDS:
+		return false
+
+	return true

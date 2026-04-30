@@ -53,7 +53,7 @@ layout_mode = 2
 
 [node name="StatsList" type="VBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage" unique_id=796060481]
 layout_mode = 2
-theme_override_constants/separation = 7
+theme_override_constants/separation = 4
 
 [node name="StatRow_Clicks" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=1513966550]
 layout_mode = 2
@@ -257,6 +257,44 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="LabelStat_EventosLimpieza_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_EventosLimpieza" unique_id=51166675]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_h0ltc")
+text = "0"
+
+[node name="StatRow_AlienWin" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=1364419513]
+layout_mode = 2
+
+[node name="LabelStat_AlienWin_Name" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_AlienWin" unique_id=578448504]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_h0ltc")
+text = "Nº de veces que sobreviviste a Auspicio:"
+
+[node name="Separator_AlienWin" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_AlienWin" unique_id=1830859808]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LabelStat_AlienWin_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_AlienWin" unique_id=1107395118]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_h0ltc")
+text = "0"
+
+[node name="StatRow_AlienLose" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList" unique_id=232685340]
+layout_mode = 2
+
+[node name="LabelStat_AlienLose_Name" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_AlienLose" unique_id=980334389]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
+theme_override_fonts/font = ExtResource("2_h0ltc")
+text = "Nº de veces que Auspicio te derrotó:"
+
+[node name="Separator_AlienLose" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_AlienLose" unique_id=1770205528]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LabelStat_AlienLose_Value" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_AlienLose" unique_id=347167899]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.16862746, 0.06666667, 0.015686275, 1)
 theme_override_fonts/font = ExtResource("2_h0ltc")

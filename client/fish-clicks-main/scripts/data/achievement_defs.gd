@@ -165,7 +165,60 @@ const ACHIEVEMENT_DEFS := {
 		"condition": "Invierte X doblones en estructuras",
 		"icon": preload("res://assets/estructuras/cofre_cerrado.png")
 	},
-
+	# =========================
+	# LIMPIEZA DE LA PECERA
+	# =========================
+	"clean_aquarium_1": {
+		"title": "Menos mal que no era moho.",
+		"desc": "Las algas no te han invadido, ¡progresas!",
+		"kind": "aquarium_cleaned",
+		"target": 1,
+		"condition": "Limpia por primera vez la pecera",
+		"icon": preload("res://assets/logros/limpiar_1.png")
+	},
+	"clean_aquarium_5": {
+		"title": "Como los chorros del oro.",
+		"desc": "Deberías cambiar el estropajo a estas alturas.",
+		"kind": "aquarium_cleaned",
+		"target": 5,
+		"condition": "Limpia 5 veces la pecera",
+		"icon": preload("res://assets/logros/limpiar_5.png")
+	},
+	"clean_aquarium_10": {
+		"title": "Ya lo haces por gusto, ¿no?",
+		"desc": "Ya puedes ver los poros de los peces.",
+		"kind": "aquarium_cleaned",
+		"target": 10,
+		"condition": "Limpia 10 veces la pecera",
+		"icon": preload("res://assets/logros/limpiar_10.png")
+	},
+	"clean_aquarium_50": {
+		"title": "Tienes un problema.",
+		"desc": "Puede que sea TOC, míratelo.",
+		"kind": "aquarium_cleaned",
+		"target": 50,
+		"condition": "Limpia 50 veces la pecera",
+		"icon": preload("res://assets/logros/limpiar_50.png")
+	},
+	"clean_aquarium_100": {
+		"title": "Vas a desgastar el cristal.",
+		"desc": "Ahora los peces te ven los poros a ti.",
+		"kind": "aquarium_cleaned",
+		"target": 100,
+		"condition": "Limpia 100 veces la pecera",
+		"icon": preload("res://assets/logros/limpiar_100.png")
+	},
+	# =========================
+	# LIMPIEZA AUTOMÁTICA
+	# =========================
+	"auto_cleaning_unlocked": {
+		"title": "Trabajo en equipo.",
+		"desc": "El equipo trabaja. Tú… supervisas.",
+		"kind": "auto_cleaning_unlocked",
+		"target": 1,
+		"condition": "Consigue la limpieza automática",
+		"icon": preload("res://assets/logros/limpiar_auto.png")
+	},
 	# =========================
 	# OCULTOS
 	# =========================
@@ -266,6 +319,15 @@ const ACHIEVEMENT_DEFS := {
 		"target": 50,
 		"condition": "Molesta a los peces repetidamente en el acuario",
 		"icon": preload("res://assets/logros/huevas.png"),
+		"hidden": true
+	},
+		"dirty_aquarium_10_min": {
+		"title": "Viviendo entre las algas",
+		"desc": "Tus peces han decidido abrazar su lado más… natural.",
+		"kind": "dirty_aquarium_time",
+		"target": 600.0,
+		"condition": "Deja la pecera sucia durante 10 minutos",
+		"icon": preload("res://assets/logros/viviendo_entre_las_algas.png"),
 		"hidden": true
 	},
 }

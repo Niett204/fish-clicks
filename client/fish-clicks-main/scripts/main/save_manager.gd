@@ -40,6 +40,9 @@ func get_save_state() -> Dictionary:
 		"annoyed_fish_count": main.achievements_manager.annoyed_fish_count,
 		"total_dirt_spots_cleaned": main.cleaning_manager.total_dirt_spots_cleaned,
 		"cleaning_events_completed": main.cleaning_manager.cleaning_events_completed,
+		"alien_minigame_wins": main.alien_minigame_wins,
+		"alien_minigame_losses": main.alien_minigame_losses,
+		"alien_egg": main.egg_manager.get_save_state(),
 	}
 
 func reset_local_state() -> void:
@@ -53,7 +56,13 @@ func reset_local_state() -> void:
 	main.levels.clear()
 	main.unlocked.clear()
 	main.fish_inventory.clear()
-
+	
+	main.alien_minigame_wins = 0
+	main.alien_minigame_losses = 0
+	
+	if main.egg_manager != null:
+		main.egg_manager.clear_active_egg()
+	
 	# Re-inicializar desbloqueos gratuitos
 	for k in main.ITEMS.keys():
 		var id := String(k)
@@ -105,7 +114,6 @@ func reset_local_state() -> void:
 
 func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void:
 	if state.is_empty():
-		print("Cuenta nueva sin datos. Manteniendo progreso local.")
 		return 
 
 	reset_local_state() 
@@ -189,6 +197,8 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 	main.achievements_manager.annoyed_fish_count = int(state.get("annoyed_fish_count", 0))
 	main.cleaning_manager.total_dirt_spots_cleaned = int(state.get("total_dirt_spots_cleaned", 0))
 	main.cleaning_manager.cleaning_events_completed = int(state.get("cleaning_events_completed", 0))
+	main.alien_minigame_wins = int(state.get("alien_minigame_wins", 0))
+	main.alien_minigame_losses = int(state.get("alien_minigame_losses", 0))
 	main.cleaning_manager.try_unlock_cleaner_fish()
 
 	main.fish_inventory = state.get("fish_inventory", {})
@@ -196,6 +206,9 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 	main.shop_manager.update_cps()
 	main.ui_manager._update_ui()
 	main._actualizar_peces_desbloqueados_en_enciclopedia()
+
+	if main.egg_manager != null:
+		main.egg_manager.apply_save_state(state.get("alien_egg", {}))
 
 	main._update_algas_sprite_by_level()
 	main._update_anubia_sprite_by_level()

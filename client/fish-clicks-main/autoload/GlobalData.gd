@@ -88,18 +88,21 @@ func login(nickname: String, password: String) -> void:
 
 func _on_login_done(result, code: int, _headers, body: PackedByteArray, http: HTTPRequest, nickname: String) -> void:
 	http.queue_free()
-	var data = JSON.parse_string(body.get_string_from_utf8())
+	var raw_body = body.get_string_from_utf8()
+	var data = JSON.parse_string(raw_body)
 
 	if result == HTTPRequest.RESULT_SUCCESS and code == 200 and data is Dictionary:
 		
-		set_user_session(
-			data.get("token", ""), 
-			data.get("userId", ""), 
-			data.get("nickname", nickname),
-			data.get("email", ""),
-			data.get("foto", ""),
-			data.get("extension", "")
-		)
+		# Forzamos que los valores sean String para evitar el error de tipo Nil
+		var token = str(data.get("token", ""))
+		var uid = str(data.get("userId", ""))
+		var nick = str(data.get("nickname", nickname))
+		var email = str(data.get("email", ""))
+		var foto = str(data.get("foto", ""))
+		var ext = str(data.get("extension", "png")) # Si es nulo, ponemos "png" por defecto
+
+		set_user_session(token, uid, nick, email, foto, ext)
+		
 		login_success.emit(data)
 		load_game()
 	else:
@@ -303,30 +306,27 @@ signal ranking_received(type: String, data: Array)
 signal ranking_failed(error: String)
 
 func fetch_ranking(type: String) -> void:
-	# type: "clicks" o "money"
+	var url = BASE_URL + "/ranking?type=" + type
+	var headers = ["Content-Type: application/json"]
+	
+	# Solo añadimos el token si el usuario está logueado
+	if is_logged_in:
+		headers.append("Authorization: " + get_auth_header())
+	
+	# Realizamos la petición HTTP normal
 	var http := HTTPRequest.new()
 	add_child(http)
-
+	
 	http.request_completed.connect(func(result, code, headers, body):
 		http.queue_free()
 		if code == 200:
 			var data = JSON.parse_string(body.get_string_from_utf8())
 			if data is Array:
 				ranking_received.emit(type, data)
-			else:
-				ranking_failed.emit("Formato de ranking inválido")
 		else:
-			var msg = _build_error_message(result, code, body, "Error al obtener ranking")
-			ranking_failed.emit(msg)
+			ranking_failed.emit("Error servidor: " + str(code))
 	)
-
-	var headers := [
-		"Content-Type: application/json",
-		"Authorization: " + get_auth_header()
-	]
-
-	# Asegúrate de que las rutas en el backend coincidan (/ranking/clicks y /ranking/money)
-	http.request(BASE_URL + "/ranking/" + type, headers, HTTPClient.METHOD_GET)
+	http.request(url, headers, HTTPClient.METHOD_GET)
 
 var pending_runtime_state: Dictionary = {}
 var pending_alien_result: Dictionary = {}
@@ -357,6 +357,7 @@ func consume_pending_alien_result() -> Dictionary:
 	return out
 
 var pending_abduct_return_origin: Vector2 = Vector2.ZERO
+var alien_last_minigame_trigger_unix: float = -1.0
 
 func set_pending_abduct_return_origin(origin: Vector2) -> void:
 	pending_abduct_return_origin = origin
@@ -367,6 +368,7 @@ func consume_pending_abduct_return_origin() -> Vector2:
 	return out
 
 var pending_minigame_display_fish_data: Array[Dictionary] = []
+var pending_auspezio_level: int = 0
 
 func set_pending_minigame_display_fish_data(data: Array[Dictionary]) -> void:
 	pending_minigame_display_fish_data = data.duplicate(true)
@@ -375,3 +377,12 @@ func consume_pending_minigame_display_fish_data() -> Array[Dictionary]:
 	var data := pending_minigame_display_fish_data.duplicate(true)
 	pending_minigame_display_fish_data.clear()
 	return data
+
+func set_pending_auspezio_level(level: int) -> void:
+	pending_auspezio_level = level
+
+
+func consume_pending_auspezio_level() -> int:
+	var level := pending_auspezio_level
+	pending_auspezio_level = 0
+	return level

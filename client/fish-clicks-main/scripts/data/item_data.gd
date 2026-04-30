@@ -50,11 +50,12 @@ const ITEMS := {
 		"value_label": "DPS",
 		"habitat_ids": ["habitat_1"]
 	},
+	
 	"chupete_jr": {
 		"tab": "Únicos",
 		"title": "Chupete jr",
 		"icon": "res://assets/peces/chupete_jr.png",
-		"unlock_price": 6000,
+		"unlock_price": -1,
 		"kind": "passive",
 		"base_price": 4500.0,
 		"price_growth": 1.35,
@@ -62,12 +63,63 @@ const ITEMS := {
 		"value_label": "DPS",
 		"habitat_ids": ["habitat_1"]
 	},
+	"auspezio": {
+		"tab": "Únicos",
+		"title": "Auspezio",
+		"icon": "res://assets/peces/auspezio.png",
+		"unlock_price": -1,
+		"kind": "passive",
+		"base_price": 3500.0,
+		"price_growth": 1.35,
+		"base_value": 35.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_1", "habitat_2"]
+	},
 	
-	"tilapia": {
+	"barbacoa": {
 		"tab": "Peces",
-		"title": "Tilapia",
-		"icon": "res://assets/peces/tilapia.png",
-		"unlock_price": 0,
+		"title": "Barbacoa",
+		"icon": "res://assets/peces/barbacoa.png",
+		"unlock_price": 10,
+		"kind": "passive",
+		"base_price": 3500.0,
+		"price_growth": 1.35,
+		"base_value": 35.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
+	},
+	
+	"angeles": {
+		"tab": "Peces",
+		"title": "Angeles",
+		"icon": "res://assets/peces/angeles.png",
+		"unlock_price": 10,
+		"kind": "passive",
+		"base_price": 3500.0,
+		"price_growth": 1.35,
+		"base_value": 35.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
+	},
+
+	"jigou": {
+		"tab": "Peces",
+		"title": "Jigou",
+		"icon": "res://assets/peces/jigou.png",
+		"unlock_price": 10,
+		"kind": "passive",
+		"base_price": 3500.0,
+		"price_growth": 1.35,
+		"base_value": 35.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
+	},
+	
+	"leonardo": {
+		"tab": "Peces",
+		"title": "Leonardo",
+		"icon": "res://assets/peces/leonardo.png",
+		"unlock_price": 10,
 		"kind": "passive",
 		"base_price": 3500.0,
 		"price_growth": 1.35,
@@ -124,10 +176,49 @@ const ITEMS := {
 		"value_label": "DPS",
 		"habitat_ids": ["habitat_1"]
 	},
+	"coral": {
+		"tab": "Estructuras",
+		"title": "Coral Antartico",
+		"icon": "res://assets/estructuras/coral/coral_small.png",
+		"unlock_price": 1200,
+		"kind": "passive",
+		"base_price": 400.0,
+		"price_growth": 1.16,
+		"base_value": 12.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
+	},
+
+	"piedra": {
+		"tab": "Estructuras",
+		"title": "Piedra",
+		"icon": "res://assets/estructuras/piedra/piedra_small.png",
+		"unlock_price": 1200,
+		"kind": "passive",
+		"base_price": 400.0,
+		"price_growth": 1.16,
+		"base_value": 12.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
+	},
+	
+	"iceberg": {
+		"tab": "Estructuras",
+		"title": "Iceberg",
+		"icon": "res://assets/estructuras/iceberg/iceberg_small.png",
+		"unlock_price": 1200,
+		"kind": "passive",
+		"base_price": 400.0,
+		"price_growth": 1.16,
+		"base_value": 12.0,
+		"value_label": "DPS",
+		"habitat_ids": ["habitat_2"]
+	},
+	
 	"barco": {
 		"tab": "Estructuras",
 		"title": "Barco Hundido",
-		"icon": "res://assets/estructuras/barco/barco_1.png",
+		"icon": "res://assets/estructuras/barco/barco_small.png",
 		"unlock_price": 1200,
 		"kind": "passive",
 		"base_price": 400.0,

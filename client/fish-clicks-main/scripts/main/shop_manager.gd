@@ -19,6 +19,9 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 	if not item_belongs_to_current_habitat(id):
 		return
 
+	if id == "auspezio" and not bool(main.unlocked.get("auspezio", false)):
+		return
+
 	var def: Dictionary = main.ITEMS[id]
 	var card = main.shop_item_card_scene.instantiate()
 	card.info_panel_path = main.info_panel.get_path()
@@ -94,6 +97,12 @@ func apply_purchase(id: String) -> void:
 			main._update_tronco_visibility_by_level()
 		"anubia":
 			main._update_anubia_sprite_by_level()
+		"coral":
+			main._update_coral_sprite_by_level()
+		"piedra":
+			main._update_piedra_sprite_by_level()
+		"iceberg":
+			main._update_iceberg_sprite_by_level()
 		"barco":
 			main._update_barco_sprite_by_level()
 
@@ -113,7 +122,12 @@ func on_buy_pressed(id: String) -> void:
 
 	apply_purchase(id)
 
-	if main.fish_defs.has(id):
+	var should_spawn_fish: bool = main.fish_defs.has(id)
+
+	if is_unique_fish(id) and has_fish_anywhere(id):
+		should_spawn_fish = false
+
+	if should_spawn_fish:
 		var spawned_fish_id: String = id
 		var is_shiny := false
 
@@ -150,6 +164,9 @@ func on_buy_pressed(id: String) -> void:
 
 
 func on_unlock_pressed(id: String) -> void:
+	if id == "auspezio" || id == "chupete_jr":
+		return
+
 	if is_item_locked_by_progress(id):
 		return
 		
@@ -171,9 +188,19 @@ func on_unlock_pressed(id: String) -> void:
 			main._update_algas_sprite_by_level()
 		"tronco":
 			main._update_tronco_visibility_by_level()
+		"anubia":
+			main._update_anubia_sprite_by_level()
+		"coral":
+			main._update_coral_sprite_by_level()
+		"piedra":
+			main._update_piedra_sprite_by_level()
+		"iceberg":
+			main._update_iceberg_sprite_by_level()
 		"barco":
 			main._update_barco_sprite_by_level()
 
+	main.habitat_manager.update_habitat_unlocks()
+	main.update_world_button_visibility()
 	main.ui_manager._update_ui()
 	main._actualizar_peces_desbloqueados_en_enciclopedia()
 	main.achievements_manager.check_achievements()
@@ -291,6 +318,9 @@ func get_total_unlocked_structures_count() -> int:
 
 # Pez limpiador solo se desbloquea al progresar 
 func is_item_locked_by_progress(id: String) -> bool:
+	if id == "auspezio":
+		return not bool(main.unlocked.get("auspezio", false))
+
 	if id == "pez_limpiador":
 		if main.cleaning_manager == null:
 			return true
@@ -299,6 +329,9 @@ func is_item_locked_by_progress(id: String) -> bool:
 	return false
 	
 func get_locked_text(id: String) -> String:
+	if id == "auspezio":
+		return "Nace de un huevo alienígena"
+
 	if id == "chupete_jr":
 		var current := 0
 		var target := 5
@@ -310,3 +343,29 @@ func get_locked_text(id: String) -> String:
 		return "Limpiezas %d/%d" % [current, target]
 
 	return str(int(main.ITEMS[id].get("unlock_price", 0)))
+
+
+func get_auspezio_minigame_time_reduction() -> float:
+	var level := get_level("auspezio")
+
+	if level <= 0:
+		return 0.0
+
+	var reduction_per_level := 2.0  # segundos por nivel
+	return level * reduction_per_level
+
+
+func is_unique_fish(id: String) -> bool:
+	return id == "chupete_jr" or id == "auspezio"
+
+
+func has_fish_anywhere(fish_id: String) -> bool:
+	if int(main.fish_inventory.get(fish_id, 0)) > 0:
+		return true
+
+	for habitat_id in main.aquarium_data.keys():
+		for slot_fish_id in main.aquarium_data[habitat_id]:
+			if slot_fish_id != null and str(slot_fish_id) == fish_id:
+				return true
+
+	return false

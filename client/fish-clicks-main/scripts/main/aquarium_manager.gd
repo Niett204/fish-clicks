@@ -244,6 +244,16 @@ func get_total_shiny_fish_count() -> int:
 
 	return total
 
+func get_spawned_fish_by_id(fish_id: String) -> Node2D:
+	for child in main.fish_layer.get_children():
+		if child == null or not is_instance_valid(child):
+			continue
+
+		if String(child.get("fish_id")) == fish_id:
+			return child as Node2D
+
+	return null
+
 func has_fish_in_aquarium(fish_id: String) -> bool:
 	for habitat_id in main.aquarium_data.keys():
 		var slots: Array = main.aquarium_data[habitat_id]

@@ -15,7 +15,14 @@ const RETURN_SCENE_PATH := "res://scenes/main.tscn"
 @export var invulnerability_duration: float = 1.0
 @export var shell_full_texture: Texture2D
 @export var shell_empty_texture: Texture2D
-@export var survival_time_seconds: float = 50.0
+@export var survival_time_seconds: float = 90.0
+@export var intro_lines: Array[String] = [
+	"Has llegado lejos para ser una criatura tan inferior.",
+	"Ahora entreténme un poco antes de perder."
+]
+@export var intro_text_speed: float = 0.025
+@export var intro_hold_time: float = 1.0
+@export var defeat_shell_texture: Texture2D
 
 @onready var summons: Node2D = $Background/BattleLayer/Summons
 @onready var arena_inner: ColorRect = $Background/BattleLayer/Arena/ArenaBorder/ArenaInner
@@ -31,6 +38,9 @@ const RETURN_SCENE_PATH := "res://scenes/main.tscn"
 @onready var anger_symbol: TextureRect = $Enfado
 @onready var battle_camera: Camera2D = $Background/BattleLayer/Camera2D
 @onready var alien_sprite: Sprite2D = $Background/BattleLayer/Alien/Sprite2D
+
+const AUSPICIO_TIME_REDUCTION_PER_LEVEL := 2.0
+const MIN_SURVIVAL_TIME_SECONDS := 10.0
 
 enum BossPhase {
 	PHASE_1,
@@ -74,6 +84,15 @@ var background_fish_idle_data: Array[Dictionary] = []
 var is_timer_paused: bool = false
 var worm_phase_3_escape_started: bool = false
 const WORM_ESCAPE_BEFORE_PHASE_3_SECONDS: float = 3.0
+var intro_played: bool = false
+var enchant_font := preload("res://assets/fuentes/minecraft-enchantment.ttf")
+var boss_name_font := preload("res://assets/fuentes/extragalactic.regular.ttf")
+var alien_green := Color("5bb010")
+var bubble_bg := Color(0.03, 0.05, 0.05, 0.90)
+var intro_camera_original_zoom: Vector2 = Vector2.ONE
+var intro_camera_original_pos: Vector2 = Vector2.ZERO
+var intro_camera_initial_zoom: Vector2 = Vector2(3.2, 3.2)
+var is_winning_sequence: bool = false
 
 func _ready() -> void:
 	attack_utils = AlienAttackUtilsScript.new()
@@ -88,7 +107,6 @@ func _ready() -> void:
 	add_child(gun_patterns)
 	gun_patterns.setup(self, attack_utils)
 
-	await get_tree().process_frame
 	update_arena_rect()
 	center_player_in_arena()
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
@@ -100,6 +118,7 @@ func _ready() -> void:
 	base_alien_rotation = alien.rotation
 
 	setup_health_system()
+	apply_auspezio_survival_time_buff()
 	setup_survival_timer()
 	
 	if anger_symbol != null:
@@ -117,8 +136,219 @@ func _ready() -> void:
 		player.area_entered.connect(_on_player_area_entered)
 
 	spawn_idle_worm()
+
+	# Guardamos la vista normal
+	intro_camera_original_zoom = battle_camera.zoom
+	intro_camera_original_pos = battle_camera.position
+
+	# Forzamos la cámara cerrada ANTES del primer frame visible
+	battle_camera.zoom = intro_camera_initial_zoom
+	battle_camera.position = player.global_position
+
+	is_timer_paused = true
+
+	# Esperamos un frame ya con la cámara cerrada aplicada
+	await get_tree().process_frame
+
+	await play_intro_camera_focus()
+	await play_boss_intro()
+	is_timer_paused = false
+
 	start_attack_loop()
 
+
+func apply_auspezio_survival_time_buff() -> void:
+	var auspezio_level: int = GlobalData.consume_pending_auspezio_level()
+
+	if auspezio_level <= 0:
+		return
+
+	var reduction: float = float(auspezio_level) * AUSPICIO_TIME_REDUCTION_PER_LEVEL
+	survival_time_seconds = max(MIN_SURVIVAL_TIME_SECONDS, survival_time_seconds - reduction)
+
+
+func play_intro_camera_focus() -> void:
+	if battle_camera == null or not is_instance_valid(battle_camera):
+		return
+
+	if player == null or not is_instance_valid(player):
+		return
+
+	center_player_in_arena()
+	update_arena_rect()
+
+	var layer := CanvasLayer.new()
+	layer.layer = 9998
+	add_child(layer)
+
+	var darken := ColorRect.new()
+	darken.color = Color(0, 0, 0, 0.22)
+	darken.set_anchors_preset(Control.PRESET_FULL_RECT)
+	layer.add_child(darken)
+
+	# Reafirma el plano cerrado por si acaso
+	battle_camera.zoom = intro_camera_initial_zoom
+	battle_camera.position = player.global_position
+
+	# Mantener un poco el plano cerrado
+	await get_tree().create_timer(1.0).timeout
+
+	# Zoom out lento a la vista normal
+	var t_out := create_tween()
+	t_out.set_parallel(true)
+	t_out.tween_property(battle_camera, "zoom", intro_camera_original_zoom, 1.45)\
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	t_out.tween_property(battle_camera, "position", intro_camera_original_pos, 1.45)\
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	t_out.tween_property(darken, "color:a", 0.0, 0.95)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	await t_out.finished
+
+	battle_camera.zoom = intro_camera_original_zoom
+	battle_camera.position = intro_camera_original_pos
+
+	if is_instance_valid(layer):
+		layer.queue_free()
+
+
+func play_boss_intro() -> void:
+	if intro_played:
+		return
+
+	intro_played = true
+	update_arena_rect()
+
+	var layer := CanvasLayer.new()
+	layer.layer = 10000
+	add_child(layer)
+
+	# Oscurecer solo el área de combate
+	var arena_overlay := ColorRect.new()
+	arena_overlay.color = Color(0, 0, 0, 0.0)
+	arena_overlay.position = arena_rect_global.position
+	arena_overlay.size = arena_rect_global.size
+	layer.add_child(arena_overlay)
+
+	# Tamaño y posición del bocadillo dentro del área de combate
+	var bubble_size := Vector2(430, 115)
+	var bubble_pos := Vector2(
+		arena_rect_global.get_center().x - bubble_size.x * 0.5,
+		arena_rect_global.position.y + 28
+	)
+
+	var bubble_panel := PanelContainer.new()
+	bubble_panel.custom_minimum_size = bubble_size
+	bubble_panel.position = bubble_pos
+	bubble_panel.modulate.a = 0.0
+	layer.add_child(bubble_panel)
+
+	var style := StyleBoxFlat.new()
+	style.bg_color = bubble_bg
+	style.border_width_left = 3
+	style.border_width_top = 3
+	style.border_width_right = 3
+	style.border_width_bottom = 3
+	style.border_color = alien_green
+	style.corner_radius_top_left = 16
+	style.corner_radius_top_right = 16
+	style.corner_radius_bottom_left = 16
+	style.corner_radius_bottom_right = 16
+	style.shadow_color = Color(0.0, 0.0, 0.0, 0.45)
+	style.shadow_size = 6
+	bubble_panel.add_theme_stylebox_override("panel", style)
+
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 22)
+	margin.add_theme_constant_override("margin_right", 22)
+	margin.add_theme_constant_override("margin_top", 18)
+	margin.add_theme_constant_override("margin_bottom", 18)
+	bubble_panel.add_child(margin)
+
+	var bubble_label := Label.new()
+	bubble_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	bubble_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	bubble_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	bubble_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bubble_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	bubble_label.text = ""
+	bubble_label.add_theme_font_override("font", enchant_font)
+	bubble_label.add_theme_font_size_override("font_size", 22)
+	bubble_label.add_theme_color_override("font_color", Color(0.86, 1.0, 0.90))
+	bubble_label.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 1.0))
+	bubble_label.add_theme_constant_override("outline_size", 5)
+	margin.add_child(bubble_label)
+
+	# Tag del nombre dentro del área de combate
+	var name_tag := PanelContainer.new()
+	name_tag.position = bubble_pos + Vector2(14, -20)
+	name_tag.modulate.a = 0.0
+	layer.add_child(name_tag)
+
+	var name_style := StyleBoxFlat.new()
+	name_style.bg_color = Color(0.07, 0.11, 0.07, 0.95)
+	name_style.border_width_left = 2
+	name_style.border_width_top = 2
+	name_style.border_width_right = 2
+	name_style.border_width_bottom = 2
+	name_style.border_color = alien_green
+	name_style.corner_radius_top_left = 10
+	name_style.corner_radius_top_right = 10
+	name_style.corner_radius_bottom_left = 10
+	name_style.corner_radius_bottom_right = 10
+	name_tag.add_theme_stylebox_override("panel", name_style)
+
+	var name_margin := MarginContainer.new()
+	name_margin.add_theme_constant_override("margin_left", 10)
+	name_margin.add_theme_constant_override("margin_right", 10)
+	name_margin.add_theme_constant_override("margin_top", 4)
+	name_margin.add_theme_constant_override("margin_bottom", 4)
+	name_tag.add_child(name_margin)
+
+	var name_label := Label.new()
+	name_label.text = "AUSPICIO"
+	name_label.add_theme_font_override("font", boss_name_font)
+	name_label.add_theme_font_size_override("font_size", 18)
+	name_label.add_theme_color_override("font_color", Color(0.90, 1.0, 0.92))
+	name_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	name_label.add_theme_constant_override("outline_size", 2)
+	name_margin.add_child(name_label)
+
+	var t_in := create_tween()
+	t_in.set_parallel(true)
+	t_in.tween_property(arena_overlay, "color:a", 0.22, 0.20)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t_in.tween_property(bubble_panel, "modulate:a", 1.0, 0.20)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t_in.tween_property(name_tag, "modulate:a", 1.0, 0.20)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	await t_in.finished
+
+	for line in intro_lines:
+		await type_text(bubble_label, line, intro_text_speed)
+		await get_tree().create_timer(intro_hold_time).timeout
+		bubble_label.text = ""
+
+	var t_out := create_tween()
+	t_out.set_parallel(true)
+	t_out.tween_property(arena_overlay, "color:a", 0.0, 0.18)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	t_out.tween_property(bubble_panel, "modulate:a", 0.0, 0.18)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	t_out.tween_property(name_tag, "modulate:a", 0.0, 0.18)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	await t_out.finished
+
+	if is_instance_valid(layer):
+		layer.queue_free()
+
+
+func type_text(label: Label, full_text: String, speed: float = 0.025) -> void:
+	label.text = ""
+
+	for i in range(full_text.length()):
+		label.text += full_text[i]
+		await get_tree().create_timer(speed).timeout
+	
 
 func setup_background_display_fish() -> void:
 	var fish_data: Array = GlobalData.consume_pending_minigame_display_fish_data()
@@ -601,13 +831,20 @@ func start_phase_3() -> void:
 		
 		
 func start_phase_3_zone_loop() -> void:
-	while current_phase == BossPhase.PHASE_3 and not is_dead and not has_won:
+	while current_phase == BossPhase.PHASE_3 and not is_dead and not has_won and not is_winning_sequence:
 		await spawn_random_glitch_zone()
+
+		if is_winning_sequence or has_won or is_dead:
+			return
+
 		await get_tree().create_timer(3.8).timeout
 		
 
 func spawn_random_glitch_zone() -> void:
 	if glitch_zone_scene == null:
+		return
+
+	if is_winning_sequence or has_won or is_dead:
 		return
 
 	cleanup_dead_glitch_zones()
@@ -616,7 +853,14 @@ func spawn_random_glitch_zone() -> void:
 		return
 
 	await flash_alien_antennas_before_glitch_warning()
+
+	if is_winning_sequence or has_won or is_dead:
+		return
+
 	await get_tree().create_timer(0.6).timeout
+
+	if is_winning_sequence or has_won or is_dead:
+		return
 
 	var zone = glitch_zone_scene.instantiate()
 	summons.add_child(zone)
@@ -711,12 +955,18 @@ func flash_alien_antennas_before_glitch_warning() -> void:
 	if alien == null or not is_instance_valid(alien):
 		return
 
+	if is_winning_sequence or has_won or is_dead:
+		return
+
 	var blink_total_time: float = 0.4
 	var blink_step: float = 0.08
 	var elapsed: float = 0.0
 	var visible_white: bool = false
 
 	while elapsed < blink_total_time:
+		if is_winning_sequence or has_won or is_dead:
+			return
+
 		visible_white = not visible_white
 
 		if visible_white:
@@ -829,8 +1079,116 @@ func die() -> void:
 	set_process(false)
 	remove_phase_2_worm()
 	clear_glitch_zones()
+	clear_remaining_attacks()
 
-	await finish_minigame_and_return(false)
+	await play_lose_sequence()
+	await finish_minigame_and_return(false, true)
+
+
+func play_lose_sequence() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 10002
+	add_child(layer)
+
+	var fade_rect := ColorRect.new()
+	fade_rect.color = Color(0, 0, 0, 0.0)
+	fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	layer.add_child(fade_rect)
+
+	# 1) Fundido a negro
+	var t_fade := create_tween()
+	t_fade.tween_property(fade_rect, "color:a", 1.0, 0.35)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	await t_fade.finished
+
+	# 2) Concha en el centro
+	var shell := TextureRect.new()
+	shell.texture = defeat_shell_texture if defeat_shell_texture != null else shell_empty_texture
+	shell.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	shell.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	shell.size = Vector2(140, 140)
+
+	var viewport_size := get_viewport_rect().size
+	shell.position = viewport_size * 0.5 - shell.size * 0.5
+	shell.modulate = Color(1, 1, 1, 0.0)
+	shell.scale = Vector2(0.75, 0.75)
+	layer.add_child(shell)
+
+	var t_shell_in := create_tween()
+	t_shell_in.set_parallel(true)
+	t_shell_in.tween_property(shell, "modulate:a", 1.0, 0.20)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t_shell_in.tween_property(shell, "scale", Vector2(1.0, 1.0), 0.22)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	await t_shell_in.finished
+
+	await get_tree().create_timer(0.35).timeout
+
+	# 3) "Se apaga" lento
+	var t_shell_off := create_tween()
+	t_shell_off.set_parallel(true)
+	t_shell_off.tween_property(shell, "modulate", Color(0.10, 0.10, 0.10, 1.0), 1.15)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	t_shell_off.tween_property(shell, "scale", Vector2(0.86, 0.86), 1.15)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	await t_shell_off.finished
+
+	await get_tree().create_timer(0.22).timeout
+
+	# 4) Burst de glitches sobre negro
+	await play_lose_glitch_burst(layer)
+
+	# Asegurar negro total
+	fade_rect.color = Color(0, 0, 0, 1.0)
+	await get_tree().process_frame
+
+
+
+func play_lose_glitch_burst(parent_layer: CanvasLayer) -> void:
+	var total_duration: float = 1.45
+	var elapsed: float = 0.0
+	var interval: float = 0.055
+
+	while elapsed < total_duration:
+		var burst_count := 3
+		if elapsed > 0.35:
+			burst_count = 5
+		if elapsed > 0.75:
+			burst_count = 7
+		if elapsed > 1.05:
+			burst_count = 9
+
+		for i in range(burst_count):
+			spawn_lose_glitch(parent_layer)
+
+		elapsed += interval
+		await get_tree().create_timer(interval).timeout
+
+
+func spawn_lose_glitch(parent_layer: CanvasLayer) -> void:
+	if glitch_zone_scene == null:
+		return
+
+	var viewport_size := get_viewport_rect().size
+
+	var pos := Vector2(
+		randf_range(0.0, viewport_size.x),
+		randf_range(0.0, viewport_size.y)
+	)
+
+	var size := Vector2(
+		randf_range(70.0, 180.0),
+		randf_range(24.0, 90.0)
+	)
+
+	var glitch = glitch_zone_scene.instantiate()
+	parent_layer.add_child(glitch)
+
+	if glitch is Node2D:
+		glitch.global_position = pos
+
+	if glitch.has_method("play_visual_burst"):
+		glitch.play_visual_burst(self, size, randf_range(0.18, 0.32))
 
 
 func win() -> void:
@@ -854,9 +1212,11 @@ func _process(delta: float) -> void:
 		return
 	
 	update_background_fish_idle(delta)
-	
 	update_arena_rect()
-	handle_player_mouse_movement()
+
+	# Permitir mover al player siempre, excepto durante la intro inicial
+	if intro_played:
+		handle_player_mouse_movement()
 
 	if not is_timer_paused:
 		remaining_time = max(remaining_time - delta, 0.0)
@@ -864,10 +1224,234 @@ func _process(delta: float) -> void:
 		update_pre_phase_3_worm_escape()
 		update_phase()
 
-		if remaining_time <= 0.0:
-			win()
-			
-			
+		if remaining_time <= 0.0 and not is_winning_sequence:
+			start_win_sequence()
+
+
+func start_win_sequence() -> void:
+	if is_winning_sequence or has_won or is_dead or is_finishing:
+		return
+
+	is_winning_sequence = true
+	is_timer_paused = true
+	phase_3_zone_loop_started = false
+
+	call_deferred("_run_win_sequence")
+
+
+func _run_win_sequence() -> void:
+	await wait_until_attacks_clear(2.5)
+	clear_glitch_zones()
+	clear_remaining_attacks()
+	remove_phase_2_worm()
+
+	await play_win_explosion_sequence()
+	await finish_minigame_and_return(true, true)
+
+
+func clear_remaining_attacks() -> void:
+	if attacks == null or not is_instance_valid(attacks):
+		return
+
+	for child in attacks.get_children():
+		if child != null and is_instance_valid(child):
+			child.queue_free()
+
+
+func play_win_explosion_sequence() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 10001
+	add_child(layer)
+
+	var fade_rect := ColorRect.new()
+	fade_rect.color = Color(0, 0, 0, 0.0)
+	fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	layer.add_child(fade_rect)
+
+	if alien_sprite != null and is_instance_valid(alien_sprite):
+		alien_sprite.modulate = Color(1, 1, 1, 1)
+
+	var total_duration: float = 2.4
+	var elapsed: float = 0.0
+	var interval: float = 0.05
+
+	# El negro sube durante toda la secuencia
+	var fade_t := create_tween()
+	fade_t.tween_property(fade_rect, "color:a", 1.0, total_duration)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	while elapsed < total_duration:
+		var burst_count := 3
+		if elapsed > 0.6:
+			burst_count = 4
+		if elapsed > 1.2:
+			burst_count = 5
+
+		for i in range(burst_count):
+			spawn_win_explosion(layer)
+
+		elapsed += interval
+		await get_tree().create_timer(interval).timeout
+
+	# Asegurar negro total al final
+	fade_rect.color = Color(0, 0, 0, 1)
+
+	# Espera mínima para que el último frame visible ya sea completamente negro
+	await get_tree().process_frame
+
+
+func spawn_win_explosion(parent_layer: CanvasLayer) -> void:
+	var viewport_size := get_viewport_rect().size
+
+	# 35% cerca del alien, 65% por toda la pantalla
+	var use_alien_focus := randf() < 0.35 and alien_sprite != null and is_instance_valid(alien_sprite)
+
+	var pos: Vector2
+	if use_alien_focus:
+		pos = alien_sprite.global_position + Vector2(
+			randf_range(-180.0, 180.0),
+			randf_range(-130.0, 130.0)
+		)
+	else:
+		pos = Vector2(
+			randf_range(0.0, viewport_size.x),
+			randf_range(0.0, viewport_size.y)
+		)
+
+	# Capa exterior grande
+	var outer := ColorRect.new()
+	var outer_size := randf_range(110.0, 220.0)
+	outer.size = Vector2(outer_size, outer_size)
+	outer.position = pos - outer.size * 0.5
+	outer.color = Color(
+		1.0,
+		randf_range(0.28, 0.55),
+		0.05,
+		0.78
+	)
+	parent_layer.add_child(outer)
+
+	# Capa media
+	var mid := ColorRect.new()
+	var mid_size := outer_size * randf_range(0.55, 0.74)
+	mid.size = Vector2(mid_size, mid_size)
+	mid.position = pos - mid.size * 0.5
+	mid.color = Color(
+		1.0,
+		randf_range(0.55, 0.85),
+		0.08,
+		0.92
+	)
+	parent_layer.add_child(mid)
+
+	# Núcleo
+	var inner := ColorRect.new()
+	var inner_size := outer_size * randf_range(0.22, 0.34)
+	inner.size = Vector2(inner_size, inner_size)
+	inner.position = pos - inner.size * 0.5
+	inner.color = Color(1.0, 0.95, 0.78, 1.0)
+	parent_layer.add_child(inner)
+
+	# Chispas
+	var spark_count := randi_range(6, 10)
+	var sparks: Array[ColorRect] = []
+
+	for i in range(spark_count):
+		var spark := ColorRect.new()
+		var spark_size := randf_range(10.0, 24.0)
+		spark.size = Vector2(spark_size, spark_size)
+		spark.position = pos + Vector2(
+			randf_range(-45.0, 45.0),
+			randf_range(-45.0, 45.0)
+		) - spark.size * 0.5
+		spark.color = Color(
+			1.0,
+			randf_range(0.75, 1.0),
+			randf_range(0.15, 0.35),
+			0.95
+		)
+		parent_layer.add_child(spark)
+		sparks.append(spark)
+
+	# Flash
+	var flash := ColorRect.new()
+	var flash_size := outer_size * 1.35
+	flash.size = Vector2(flash_size, flash_size)
+	flash.position = pos - flash.size * 0.5
+	flash.color = Color(1, 1, 1, 0.25)
+	parent_layer.add_child(flash)
+
+	shake_camera_small()
+
+	var t_outer := create_tween()
+	t_outer.set_parallel(true)
+	t_outer.tween_property(outer, "scale", Vector2(2.1, 2.1), 0.36)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t_outer.tween_property(outer, "modulate:a", 0.0, 0.38)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	var t_mid := create_tween()
+	t_mid.set_parallel(true)
+	t_mid.tween_property(mid, "scale", Vector2(1.8, 1.8), 0.30)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t_mid.tween_property(mid, "modulate:a", 0.0, 0.32)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	var t_inner := create_tween()
+	t_inner.set_parallel(true)
+	t_inner.tween_property(inner, "scale", Vector2(1.45, 1.45), 0.20)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t_inner.tween_property(inner, "modulate:a", 0.0, 0.22)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	var t_flash := create_tween()
+	t_flash.set_parallel(true)
+	t_flash.tween_property(flash, "scale", Vector2(1.6, 1.6), 0.14)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t_flash.tween_property(flash, "modulate:a", 0.0, 0.16)\
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	for spark in sparks:
+		var spark_dir := Vector2(
+			randf_range(-95.0, 95.0),
+			randf_range(-95.0, 95.0)
+		)
+
+		var t_spark := create_tween()
+		t_spark.set_parallel(true)
+		t_spark.tween_property(spark, "position", spark.position + spark_dir, 0.30)\
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		t_spark.tween_property(spark, "modulate:a", 0.0, 0.30)\
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	await get_tree().create_timer(0.42).timeout
+
+	for node in [outer, mid, inner, flash]:
+		if node != null and is_instance_valid(node):
+			node.queue_free()
+
+	for spark in sparks:
+		if spark != null and is_instance_valid(spark):
+			spark.queue_free()
+
+
+func shake_camera_small() -> void:
+	if battle_camera == null or not is_instance_valid(battle_camera):
+		return
+
+	var original_pos := battle_camera.position
+	var offset := Vector2(
+		randf_range(-8.0, 8.0),
+		randf_range(-8.0, 8.0)
+	)
+
+	var t := create_tween()
+	t.tween_property(battle_camera, "position", original_pos + offset, 0.04)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	t.tween_property(battle_camera, "position", original_pos, 0.06)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+
+
 func update_background_fish_idle(delta: float) -> void:
 	if background_fish_sprites.is_empty():
 		return
@@ -923,7 +1507,7 @@ func play_return_transition() -> void:
 	await t.finished
 
 
-func finish_minigame_and_return(player_won: bool) -> void:
+func finish_minigame_and_return(player_won: bool, skip_transition: bool = false) -> void:
 	if is_finishing:
 		return
 
@@ -935,7 +1519,9 @@ func finish_minigame_and_return(player_won: bool) -> void:
 		"timestamp": Time.get_unix_time_from_system()
 	})
 
-	await play_return_transition()
+	if not skip_transition:
+		await play_return_transition()
+
 	get_tree().change_scene_to_file(RETURN_SCENE_PATH)
 
 
@@ -948,9 +1534,6 @@ func center_player_in_arena() -> void:
 
 
 func handle_player_mouse_movement() -> void:
-	if is_phase_transitioning:
-		return
-
 	var mouse_pos: Vector2 = get_viewport().get_mouse_position()
 
 	var clamped_x: float = clamp(
@@ -1003,7 +1586,7 @@ func should_hold_attacks_for_phase_transition() -> bool:
 
 func start_attack_loop() -> void:
 	while true:
-		if is_dead or has_won:
+		if is_dead or has_won or is_winning_sequence:
 			return
 
 		if pending_phase != -1 and pending_phase != current_phase and not is_attack_running:
@@ -1037,6 +1620,9 @@ func start_attack_loop() -> void:
 		
 
 func perform_next_attack() -> void:
+	if is_dead or has_won or is_winning_sequence:
+		return
+
 	is_attack_running = true
 
 	match current_phase:
@@ -1049,7 +1635,7 @@ func perform_next_attack() -> void:
 
 	is_attack_running = false
 
-	if is_dead or has_won:
+	if is_dead or has_won or is_winning_sequence:
 		return
 
 	if pending_phase != -1 and pending_phase != current_phase:

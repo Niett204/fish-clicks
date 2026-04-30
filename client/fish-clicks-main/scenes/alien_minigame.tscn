@@ -35,14 +35,22 @@ floating_gun_scene = ExtResource("3_eb0fa")
 glitch_zone_scene = ExtResource("4_knlmx")
 worm_scene = ExtResource("4_j6bht")
 shell_full_texture = ExtResource("8_0stt7")
+defeat_shell_texture = ExtResource("8_0stt7")
+
+[node name="TextureRect" type="ColorRect" parent="." unique_id=198287274]
+offset_left = -128.0
+offset_top = -96.0
+offset_right = 1278.0
+offset_bottom = 758.0
+color = Color(0, 0, 0, 1)
 
 [node name="Background" type="TextureRect" parent="." unique_id=1989996074]
 custom_minimum_size = Vector2(1, 1)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -0.5
-offset_top = -0.5
+offset_left = -4.0
+offset_top = -5.0
 offset_right = 1155.0
 offset_bottom = 650.0
 grow_horizontal = 2
