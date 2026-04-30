@@ -473,8 +473,6 @@ func has_dirt_remaining() -> bool:
 	return dirt_spots.get_child_count() > 0
 
 func _on_cleaning_finished() -> void:
-	print("Minijuego completado")
-
 	is_scrubbing = false
 	sponge_icon.visible = false
 

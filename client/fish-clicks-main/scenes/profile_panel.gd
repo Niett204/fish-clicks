@@ -41,6 +41,9 @@ func _ready() -> void:
 	GlobalData.register_failed.connect(_on_register_err)
 	GlobalData.login_success.connect(func(_d): _refresh_view())
 
+	if not GlobalData.profile_updated.is_connected(_refresh_view):
+		GlobalData.profile_updated.connect(_refresh_view)
+
 	btn_close.pressed.connect(func(): close_requested.emit())
 	btn_login.pressed.connect(_do_login)
 	btn_register.pressed.connect(_do_register)

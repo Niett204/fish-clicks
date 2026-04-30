@@ -984,7 +984,7 @@ func flash_alien_antennas_before_glitch_warning() -> void:
 		
 
 func _on_player_area_entered(area: Area2D) -> void:
-	if is_dead or is_invulnerable or has_won or is_phase_transitioning:
+	if is_dead or is_invulnerable or has_won or is_phase_transitioning or is_winning_sequence:
 		return
 
 	if area == null or not is_instance_valid(area):
@@ -999,7 +999,7 @@ func _on_player_area_entered(area: Area2D) -> void:
 
 
 func take_damage(amount: int = 1) -> void:
-	if is_dead or is_invulnerable or has_won or is_phase_transitioning:
+	if is_dead or is_invulnerable or has_won or is_phase_transitioning or is_winning_sequence:
 		return
 
 	is_invulnerable = true
@@ -1072,7 +1072,7 @@ func play_invulnerability_blink() -> void:
 
 
 func die() -> void:
-	if is_dead or has_won or is_finishing:
+	if is_dead or has_won or is_finishing or is_winning_sequence:
 		return
 
 	is_dead = true
@@ -1240,9 +1240,8 @@ func start_win_sequence() -> void:
 
 
 func _run_win_sequence() -> void:
-	await wait_until_attacks_clear(2.5)
-	clear_glitch_zones()
 	clear_remaining_attacks()
+	clear_glitch_zones()
 	remove_phase_2_worm()
 
 	await play_win_explosion_sequence()

@@ -13,7 +13,7 @@ config_version=5
 config/name="Fish&Clicks"
 run/main_scene="uid://bxcwld43d6ph0"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="uid://tn6mryah7u30"
 
 [autoload]
 
