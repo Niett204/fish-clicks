@@ -50,7 +50,6 @@ func _process(delta: float) -> void:
 # Reinicia el contador cada vez que el jugador interactua con el juego	
 func register_player_activity() -> void:
 	inactivity_time = 0.0
-	print("Actividad detectada -> contador reiniciado")
 
 # Función que dice si el tiempo de inactividad debe seguir incrementándose o no
 # El tiempo de inactividad no incrementa si estás en modo pecera o en el minijuego de limpieza	
@@ -59,6 +58,9 @@ func should_count_inactivity() -> bool:
 		return false
 
 	if fish_mode_manager != null and fish_mode_manager.is_fish_mode_active():
+		return false
+
+	if main.alien_manager != null and main.alien_manager.is_event_blocking_achievement_popups():
 		return false
 
 	return true
@@ -81,6 +83,9 @@ func can_activate_cleaning_event() -> bool:
 	# No se activa si estás en modo pecera
 	if fish_mode_manager != null and fish_mode_manager.is_fish_mode_active():
 		return false
+	# No se activa si esta el alien
+	if main.alien_manager != null and main.alien_manager.is_event_blocking_achievement_popups():
+		return false
 
 	return true
 
@@ -94,8 +99,6 @@ func activate_cleaning_event() -> void:
 
 	if cleaning_event_layer != null:
 		cleaning_event_layer.show_event()
-
-	print("Evento de limpieza disponible")
 
 func _on_cleaning_finished_successfully() -> void:
 	register_cleaning_event_completed()
@@ -160,4 +163,5 @@ func try_unlock_cleaner_fish() -> void:
 	if main.stats_panel.visible:
 		main.stats_manager.refresh_stats_panel_full()
 
-	print("Pez limpiador desbloqueado")
+func is_cleaning_event_active() -> bool:
+	return cleaning_event_available

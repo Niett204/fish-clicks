@@ -8,7 +8,7 @@ enum AlienEventState {
 	MINIGAME
 }
 
-const UNLOCK_FISH_COUNT := 10
+const UNLOCK_FISH_COUNT := 50
 const MINIGAME_DISPLAY_FISH_COUNT := 4
 const ALIEN_SCENE := preload("res://scenes/alien.tscn")
 const MAIN_SCENE_PATH := "res://scenes/main.tscn"
@@ -1036,6 +1036,12 @@ func can_trigger_alien_event() -> bool:
 	if alien_event_state != AlienEventState.IDLE:
 		return false
 	if is_alien_minigame_on_cooldown():
+		return false
+
+	if main.cleaning_manager != null and main.cleaning_manager.is_cleaning_event_active():
+		return false
+
+	if main.fish_mode_manager != null and main.fish_mode_manager.is_fish_mode_active():
 		return false
 
 	var now: float = float(Time.get_unix_time_from_system())

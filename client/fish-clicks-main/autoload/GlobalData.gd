@@ -15,6 +15,7 @@ signal login_success(data: Dictionary)
 signal login_failed(error: String)
 signal register_success
 signal register_failed(error: String)
+signal profile_updated
 
 func _http_result_to_text(result: int) -> String:
 	match result:
@@ -149,7 +150,7 @@ func set_user_session(token: String, uid: String, nickname: String, email: Strin
 	user_photo_extension = extension if not extension.is_empty() else "png"
 	is_logged_in = true
 	_save_session()
-	# No hace falta emitir aquí si ya lo haces en _on_login_done
+	profile_updated.emit()
 
 func clear_session() -> void:
 	user_token    = ""
@@ -205,7 +206,7 @@ signal load_failed(error: String)
 
 
 func save_game(state: Dictionary) -> void:
-	print("Token JWT:", user_token)
+	#print("Token JWT:", user_token)
 	if not is_logged_in:
 		save_failed.emit("Debes iniciar sesión para guardar")
 		return
@@ -300,6 +301,8 @@ func upload_user_photo(base64_data: String, extension: String) -> void:
 	user_photo_url = base64_data
 	user_photo_extension = extension # Guardamos la extensión para que BtnProfile sepa qué cargar
 	_save_session()
+	
+	profile_updated.emit()
 	
 # --- RANKING ---
 signal ranking_received(type: String, data: Array)

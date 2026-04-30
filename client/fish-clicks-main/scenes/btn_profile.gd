@@ -11,6 +11,9 @@ func _ready() -> void:
 	pressed.connect(_on_pressed)
 	GlobalData.login_success.connect(_on_auth_changed)
 	
+	if not GlobalData.profile_updated.is_connected(update_avatar):
+		GlobalData.profile_updated.connect(update_avatar)
+	
 	# 3. Intentar cargar la foto al arrancar
 	update_avatar()
 
@@ -36,33 +39,36 @@ func _on_auth_changed(_data) -> void:
 func update_avatar() -> void:
 	if nick_label:
 		nick_label.text = GlobalData.user_nickname if GlobalData.is_logged_in else "Perfil"
-	
-	if not user_image: return
-	
+
+	if not user_image:
+		return
+
 	if GlobalData.is_logged_in and not GlobalData.user_photo_url.is_empty():
-		var raw_data = Marshalls.base64_to_raw(GlobalData.user_photo_url)
-		
-		if raw_data.size() > 100: 
-			var img = Image.new()
-			var err = OK
-			
-			# --- CAMBIO AQUÍ: Usamos la extensión guardada ---
-			var ext = GlobalData.user_photo_extension.to_lower()
-			
-			if ext == "png":
-				err = img.load_png_from_buffer(raw_data)
-			elif ext == "jpg" or ext == "jpeg":
+		var base64_text := GlobalData.user_photo_url
+
+		# Si viene tipo: data:image/png;base64,AAAA...
+		if base64_text.contains(","):
+			base64_text = base64_text.split(",", false, 1)[1]
+
+		var raw_data := Marshalls.base64_to_raw(base64_text)
+
+		if raw_data.size() > 100:
+			var img := Image.new()
+
+			# Primero prueba PNG y luego JPG, sin fiarte de la extensión
+			var err := img.load_png_from_buffer(raw_data)
+
+			if err != OK:
 				err = img.load_jpg_from_buffer(raw_data)
-			else:
-				err = img.load_png_from_buffer(raw_data)
-				if err != OK: err = img.load_jpg_from_buffer(raw_data)
-			# ------------------------------------------------
-				
+
+			if err != OK:
+				err = img.load_webp_from_buffer(raw_data)
+
 			if err == OK:
 				img.convert(Image.FORMAT_RGBA8)
 				user_image.texture = ImageTexture.create_from_image(img)
 				user_image.show()
-				return 
+				return
 
-	user_image.texture = load("res://assets/ui/iconos/default_avatar.png") 
+	user_image.texture = load("res://assets/ui/iconos/default_avatar.png")
 	user_image.show()
