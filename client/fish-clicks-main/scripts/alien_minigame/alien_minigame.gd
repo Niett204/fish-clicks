@@ -15,10 +15,10 @@ const RETURN_SCENE_PATH := "res://scenes/main.tscn"
 @export var invulnerability_duration: float = 1.0
 @export var shell_full_texture: Texture2D
 @export var shell_empty_texture: Texture2D
-@export var survival_time_seconds: float = 90.0
+@export var survival_time_seconds: float = 60.0
 @export var intro_lines: Array[String] = [
 	"Has llegado lejos para ser una criatura tan inferior.",
-	"Ahora entreténme un poco antes de perder."
+	"Ahora entretenme un poco antes de perder."
 ]
 @export var intro_text_speed: float = 0.025
 @export var intro_hold_time: float = 1.0

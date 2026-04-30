@@ -38,10 +38,10 @@ func check_alien_event_unlock() -> void:
 	alien_event_available = not is_alien_minigame_on_cooldown()
 
 func try_start_alien_event() -> void:
-	if not can_trigger_alien_event():
+	if not Input.is_key_pressed(KEY_K):
 		return
 
-	if randf() > ALIEN_EVENT_TRIGGER_CHANCE:
+	if not can_trigger_alien_event():
 		return
 
 	call_deferred("start_alien_event")
