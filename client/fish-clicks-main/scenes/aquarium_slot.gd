@@ -142,6 +142,5 @@ func setup(fish_texture: Texture2D = null, slot_index: int = -1, fish_id: String
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		print("slot rect:", get_global_rect(), " slot:", my_slot_index, " fish:", my_fish_id)
 		if my_fish_id != "":
 			pressed_slot.emit(my_slot_index, my_fish_id)

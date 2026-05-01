@@ -5,7 +5,7 @@
 [ext_resource type="Shader" uid="uid://clhdnox30mfge" path="res://scenes/ProfilePanel.gdshader" id="3_6td75"]
 [ext_resource type="Texture2D" uid="uid://c5yprfiyit17s" path="res://pergamino_v2.png" id="3_ok5j1"]
 [ext_resource type="Texture2D" uid="uid://cq0j1orhhg43v" path="res://assets/ui/iconos/default_avatar.png" id="4"]
-[ext_resource type="Texture2D" uid="uid://k1grpwa1v36v" path="res://assets/ui/rarezas/tag_rareza_default.png" id="5_p6fjv"]
+[ext_resource type="Texture2D" uid="uid://cgjbjq3ublcr2" path="res://assets/ui/rarezas/tag_rareza_default.png" id="5_p6fjv"]
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="5_sthu2"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ok5j1"]
@@ -96,6 +96,7 @@ theme_override_constants/margin_bottom = 57
 layout_mode = 2
 
 [node name="ProfileView" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBox" unique_id=184129412]
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -164,10 +165,9 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_p6fjv")
 theme_override_styles/tab_unselected = SubResource("StyleBoxTexture_6td75")
 theme_override_styles/tab_hovered = SubResource("StyleBoxTexture_p6fjv")
 theme_override_styles/tab_selected = SubResource("StyleBoxTexture_da4h1")
-current_tab = 1
+current_tab = 0
 
 [node name="Login" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer" unique_id=1059425927]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -218,9 +218,12 @@ text = "Iniciar sesión"
 visible = false
 modulate = Color(1, 0.35, 0.35, 1)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_sthu2")
+horizontal_alignment = 1
 autowrap_mode = 3
 
 [node name="Registro" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer" unique_id=1197755639]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 

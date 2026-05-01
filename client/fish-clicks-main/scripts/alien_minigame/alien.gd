@@ -19,7 +19,6 @@ func _ready() -> void:
 func set_waiting_for_click(enabled: bool) -> void:
 	clickable = enabled
 	click_hint.visible = enabled
-	print("Alien clickable:", clickable)
 
 func get_abduct_target_position() -> Vector2:
 	return abduct_point.global_position
