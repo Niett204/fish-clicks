@@ -117,11 +117,17 @@ func get_egg_nest_position() -> Vector2:
 func spawn_fixed_fish_from_egg(spawn_pos: Vector2) -> void:
 	main.unlocked[HATCH_RESULT_FISH_ID] = true
 
+	if main.ui_manager != null:
+		main.ui_manager.update_shop_cards()
+
+	main._actualizar_peces_desbloqueados_en_enciclopedia()
+
 	var habitat_id: String = str(main.habitat_manager.current_habitat)
 	var slot_index: int = _find_first_free_slot(habitat_id)
 
 	if slot_index == -1:
 		main.fish_inventory[HATCH_RESULT_FISH_ID] = int(main.fish_inventory.get(HATCH_RESULT_FISH_ID, 0)) + 1
+		main.aquarium_manager.refresh_inventory_panel_data()
 		main.ui_manager._update_ui()
 		return
 
@@ -135,6 +141,7 @@ func spawn_fixed_fish_from_egg(spawn_pos: Vector2) -> void:
 		spawn_pos
 	)
 
+	main.aquarium_manager.refresh_inventory_panel_data()
 	main.ui_manager._update_ui()
 
 func _find_first_free_slot(habitat_id: String) -> int:

@@ -504,7 +504,7 @@ func update_world_button_visibility() -> void:
 	btn_world_icon.visible = habitat_manager.can_change_habitat()
 		
 func _is_item_unlocked_by_default(id: String) -> bool:
-	if id == "chupete_jr":
+	if id == "chupete_jr" or id == "auspezio":
 		return false
 
 	return int(ITEMS[id].get("unlock_price", 0)) == 0 
