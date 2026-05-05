@@ -11,14 +11,14 @@ const RETURN_SCENE_PATH := "res://scenes/main.tscn"
 @export var floating_gun_scene: PackedScene
 @export var glitch_zone_scene: PackedScene
 @export var worm_scene: PackedScene
-@export var max_health: int = 5
+@export var max_health: int = 1
 @export var invulnerability_duration: float = 1.0
 @export var shell_full_texture: Texture2D
 @export var shell_empty_texture: Texture2D
-@export var survival_time_seconds: float = 90.0
+@export var survival_time_seconds: float = 10.0
 @export var intro_lines: Array[String] = [
 	"Has llegado lejos para ser una criatura tan inferior.",
-	"Ahora entreténme un poco antes de perder."
+	"Ahora entretenme un poco antes de perder."
 ]
 @export var intro_text_speed: float = 0.025
 @export var intro_hold_time: float = 1.0
@@ -93,6 +93,7 @@ var intro_camera_original_zoom: Vector2 = Vector2.ONE
 var intro_camera_original_pos: Vector2 = Vector2.ZERO
 var intro_camera_initial_zoom: Vector2 = Vector2(3.2, 3.2)
 var is_winning_sequence: bool = false
+var damage_taken_count: int = 0
 
 func _ready() -> void:
 	attack_utils = AlienAttackUtilsScript.new()
@@ -1002,6 +1003,8 @@ func take_damage(amount: int = 1) -> void:
 	if is_dead or is_invulnerable or has_won or is_phase_transitioning or is_winning_sequence:
 		return
 
+	damage_taken_count += 1
+
 	is_invulnerable = true
 	current_health = max(current_health - amount, 0)
 	update_lives_ui()
@@ -1515,6 +1518,7 @@ func finish_minigame_and_return(player_won: bool, skip_transition: bool = false)
 
 	GlobalData.set_pending_alien_result({
 		"won": player_won,
+		"no_hit": player_won and damage_taken_count <= 0,
 		"timestamp": Time.get_unix_time_from_system()
 	})
 

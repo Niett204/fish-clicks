@@ -117,11 +117,17 @@ func get_egg_nest_position() -> Vector2:
 func spawn_fixed_fish_from_egg(spawn_pos: Vector2) -> void:
 	main.unlocked[HATCH_RESULT_FISH_ID] = true
 
+	if main.ui_manager != null:
+		main.ui_manager.update_shop_cards()
+
+	main._actualizar_peces_desbloqueados_en_enciclopedia()
+
 	var habitat_id: String = str(main.habitat_manager.current_habitat)
 	var slot_index: int = _find_first_free_slot(habitat_id)
 
 	if slot_index == -1:
 		main.fish_inventory[HATCH_RESULT_FISH_ID] = int(main.fish_inventory.get(HATCH_RESULT_FISH_ID, 0)) + 1
+		main.aquarium_manager.refresh_inventory_panel_data()
 		main.ui_manager._update_ui()
 		return
 
@@ -135,6 +141,7 @@ func spawn_fixed_fish_from_egg(spawn_pos: Vector2) -> void:
 		spawn_pos
 	)
 
+	main.aquarium_manager.refresh_inventory_panel_data()
 	main.ui_manager._update_ui()
 
 func _find_first_free_slot(habitat_id: String) -> int:
@@ -151,39 +158,47 @@ func _find_first_free_slot(habitat_id: String) -> int:
 func get_save_state() -> Dictionary:
 	if active_egg == null or not is_instance_valid(active_egg):
 		return {
-			"active": false
+			"has_egg": false
 		}
 
-	if active_egg.has_method("get_save_state"):
-		var egg_state: Dictionary = active_egg.get_save_state()
-		egg_state["active"] = true
-		return egg_state
-
 	return {
-		"active": false
+		"has_egg": true,
+		"state": int(active_egg.state),
+		"position": {
+			"x": active_egg.global_position.x,
+			"y": active_egg.global_position.y
+		},
+		"incubation_elapsed": active_egg.incubation_elapsed,
+		"incubation_total_time": active_egg.incubation_total_time
 	}
 
 
 func apply_save_state(data: Dictionary) -> void:
-	if data.is_empty() or not bool(data.get("active", false)):
-		clear_active_egg()
-		return
-
 	clear_active_egg()
 
-	var egg := ALIEN_EGG_SCENE.instantiate() as Node2D
-	if egg == null:
+	if data.is_empty() or not bool(data.get("has_egg", false)):
 		return
 
-	main.add_child(egg)
+	var egg := ALIEN_EGG_SCENE.instantiate()
+	main.content_pecera.add_child(egg)
+
 	active_egg = egg
-	egg.z_index = 1500
+	egg.egg_manager = self
 
-	if egg.has_method("setup_egg"):
-		egg.setup_egg(self)
+	var pos_data: Dictionary = data.get("position", {})
+	egg.global_position = Vector2(
+		float(pos_data.get("x", 0.0)),
+		float(pos_data.get("y", 0.0))
+	)
 
-	if egg.has_method("apply_save_state"):
-		egg.apply_save_state(data)
+	egg.state = int(data.get("state", AlienEgg.EggState.DROPPED))
+	if egg.has_method("refresh_visual_state"):
+		egg.refresh_visual_state()
+	egg.incubation_elapsed = float(data.get("incubation_elapsed", 0.0))
+	egg.incubation_total_time = float(data.get("incubation_total_time", 86400.0))
+
+	if egg.has_method("refresh_visual_state"):
+		egg.refresh_visual_state()
 
 
 func clear_active_egg() -> void:

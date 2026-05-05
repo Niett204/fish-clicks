@@ -20,6 +20,8 @@ var profile_clicks_count: int = 0
 var volume_slider_spam_unlocked: bool = false
 var annoyed_fish_count: int = 0
 var achievement_check_accum: float = 0.0
+var alien_no_hit_unlocked: bool = false
+var alien_egg_obtained: bool = false
 
 var auto_cleaning_unlocked: bool = false
 var dirty_aquarium_time_seconds: float = 0.0
@@ -135,6 +137,14 @@ func _get_achievement_current_value(kind: String) -> float:
 			return 1.0 if auto_cleaning_unlocked else 0.0
 		"dirty_aquarium_time":
 			return dirty_aquarium_time_seconds
+		"alien_wins":
+			return float(main.alien_minigame_wins)
+		"alien_losses":
+			return float(main.alien_minigame_losses)
+		"alien_no_hit":
+			return 1.0 if alien_no_hit_unlocked else 0.0
+		"alien_egg":
+			return 1.0 if alien_egg_obtained else 0.0
 		_:
 			return 0.0
 
@@ -318,3 +328,19 @@ func get_unlocked_achievements_count() -> int:
 		if bool(achievements_unlocked[k]):
 			total += 1
 	return total
+
+
+func register_alien_no_hit() -> void:
+	if alien_no_hit_unlocked:
+		return
+
+	alien_no_hit_unlocked = true
+	check_achievements()
+
+
+func register_alien_egg_obtained() -> void:
+	if alien_egg_obtained:
+		return
+
+	alien_egg_obtained = true
+	check_achievements()

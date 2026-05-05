@@ -390,6 +390,12 @@ func _resume_after_minigame_flow(result: Dictionary) -> void:
 	if main.stats_manager != null:
 		main.stats_manager.register_alien_minigame_result(bool(result.get("won", false)))
 
+	if main.achievements_manager != null:
+		if bool(result.get("no_hit", false)):
+			main.achievements_manager.register_alien_no_hit()
+
+		main.achievements_manager.check_achievements()
+
 	clear_visual_fish_layer()
 	await main.get_tree().process_frame
 
@@ -508,6 +514,9 @@ func _drop_egg_during_escape() -> void:
 
 	if main.egg_manager != null:
 		main.egg_manager.spawn_dropped_egg(alien_instance.global_position)
+
+	if main.achievements_manager != null:
+		main.achievements_manager.register_alien_egg_obtained()
 
 
 func spawn_alien_escape_smoke_fx(parent: CanvasLayer) -> void:
