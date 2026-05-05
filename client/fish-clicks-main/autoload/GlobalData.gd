@@ -209,23 +209,23 @@ signal load_failed(error: String)
 
 
 func save_game(state: Dictionary) -> void:
-	#print("Token JWT:", user_token)
 	if not is_logged_in:
 		save_failed.emit("Debes iniciar sesión para guardar")
 		return
 
+	if state.has("total_coins_earned"):
+		state["coins"] = state["total_coins_earned"]
+
 	var http := HTTPRequest.new()
-	# Necesitamos un nodo en el árbol — usamos el autoload mismo
 	add_child(http)
 	http.request_completed.connect(_on_save_done.bind(http))
 
-	var body := JSON.stringify(state)
+	var body := JSON.stringify(state) # Ahora el JSON llevará "coins"
 	var headers := [
 		"Content-Type: application/json",
 		"Authorization: " + get_auth_header()
 	]
 	http.request(BASE_URL + "/partida/guardar", headers, HTTPClient.METHOD_POST, body)
-
 
 func _on_save_done(_result, code: int, _headers, body: PackedByteArray, http: HTTPRequest) -> void:
 	http.queue_free()
