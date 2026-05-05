@@ -445,10 +445,9 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_jkv2x")
 theme_override_styles/tab_unselected = SubResource("StyleBoxTexture_0ld40")
 theme_override_styles/tab_hovered = SubResource("StyleBoxTexture_yc10j")
 theme_override_styles/tab_selected = SubResource("StyleBoxTexture_jbj1t")
-current_tab = 1
+current_tab = 0
 
 [node name="Estructuras" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1013639139]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -468,9 +467,10 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_muem4")
 [node name="ListEstructuras" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Estructuras/ScrollContainer" unique_id=669970207]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+theme_override_constants/separation = 9
 
 [node name="Peces" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1632976240]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
@@ -490,7 +490,7 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_muem4")
 [node name="ListPeces" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Peces/ScrollContainer" unique_id=1158215447]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+theme_override_constants/separation = 9
 
 [node name="Únicos" type="Control" parent="UI/Root/HUD/TiendaPanel/TabContainer" unique_id=1568699925]
 visible = false
@@ -513,7 +513,7 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_muem4")
 [node name="ListUnicos" type="VBoxContainer" parent="UI/Root/HUD/TiendaPanel/TabContainer/Únicos/ScrollContainer" unique_id=1463964786]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+theme_override_constants/separation = 9
 
 [node name="InfoExtraPanel" type="Control" parent="UI/Root/HUD" unique_id=1578223614]
 visible = false

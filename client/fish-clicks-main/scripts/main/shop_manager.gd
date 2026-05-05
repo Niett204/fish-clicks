@@ -321,7 +321,7 @@ func is_item_locked_by_progress(id: String) -> bool:
 	if id == "auspezio":
 		return not bool(main.unlocked.get("auspezio", false))
 
-	if id == "pez_limpiador":
+	if id == "chupete_jr":
 		if main.cleaning_manager == null:
 			return true
 		return not main.cleaning_manager.is_cleaner_fish_unlocked()

@@ -164,6 +164,9 @@ func clear_session() -> void:
 
 	if get_tree().has_group("main_hud_buttons"):
 		get_tree().call_group("main_hud_buttons", "update_avatar")
+	
+	if get_tree().has_group("main"):
+		get_tree().call_group("main", "reset_local_state")
 
 func get_auth_header() -> String:
 	return "Bearer " + user_token

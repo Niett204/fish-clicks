@@ -24,6 +24,12 @@ var aura_strength: float = 0.0
 var ready_jump_cooldown: float = 0.0
 var is_doing_ready_jump: bool = false
 
+var spr_base_position: Vector2 = Vector2.ZERO
+var ready_hop_active: bool = false
+var ready_hop_timer: float = 0.0
+var ready_hop_duration: float = 0.32
+var ready_hop_height: float = 14.0
+
 var aura_layers: Array[Sprite2D] = []
 var aura_offsets: Array[Vector2] = [
 	Vector2(-2, 0),
@@ -34,6 +40,7 @@ var aura_offsets: Array[Vector2] = [
 
 func _ready() -> void:
 	input_pickable = true
+	spr_base_position = spr.position
 	base_scale = scale
 	setup_aura()
 
@@ -133,12 +140,46 @@ func _process_ready_to_hatch(delta: float) -> void:
 	aura_strength = 1.0
 	ready_jump_cooldown -= delta
 
-	var pulse := 1.0 + sin(Time.get_ticks_msec() / 95.0) * 0.10
-	scale = base_scale * pulse
+	if ready_hop_active:
+		_process_ready_hop(delta)
+		return
 
-	if ready_jump_cooldown <= 0.0 and not is_doing_ready_jump:
-		ready_jump_cooldown = randf_range(0.35, 0.75)
-		_play_ready_jump()
+	var pulse := 1.0 + sin(Time.get_ticks_msec() / 160.0) * 0.035
+	scale = base_scale * pulse
+	spr.position = spr_base_position
+
+	if ready_jump_cooldown <= 0.0:
+		ready_jump_cooldown = randf_range(0.75, 1.35)
+		_start_ready_hop()
+
+func _start_ready_hop() -> void:
+	ready_hop_active = true
+	ready_hop_timer = 0.0
+
+
+func _process_ready_hop(delta: float) -> void:
+	ready_hop_timer += delta
+
+	var t := clampf(ready_hop_timer / ready_hop_duration, 0.0, 1.0)
+	var jump_y := -sin(t * PI) * ready_hop_height
+
+	var hop_offset := Vector2(0.0, jump_y)
+	spr.position = spr_base_position + hop_offset
+
+	for aura in aura_layers:
+		if aura != null and is_instance_valid(aura):
+			aura.position += hop_offset
+
+	var squash := sin(t * PI)
+	scale = base_scale * Vector2(
+		1.0 + squash * 0.04,
+		1.0 - squash * 0.03
+	)
+
+	if t >= 1.0:
+		ready_hop_active = false
+		spr.position = spr_base_position
+		scale = base_scale
 
 func _play_soft_wiggle(ratio: float) -> void:
 	if state != EggState.INCUBATING:
@@ -153,32 +194,6 @@ func _play_soft_wiggle(ratio: float) -> void:
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	t.tween_property(self, "rotation", 0.0, 0.08)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-
-func _play_ready_jump() -> void:
-	if is_doing_ready_jump:
-		return
-
-	is_doing_ready_jump = true
-
-	var start_pos := position
-	var t := create_tween()
-	t.set_parallel(true)
-	t.tween_property(self, "position:y", start_pos.y - 12.0, 0.10)\
-		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	t.tween_property(self, "scale", base_scale * Vector2(0.9, 1.08), 0.10)\
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-
-	t.chain().set_parallel(true)
-	t.tween_property(self, "position:y", start_pos.y, 0.14)\
-		.set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
-	t.tween_property(self, "scale", base_scale * Vector2(1.1, 0.85), 0.08)\
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-
-	t.chain().tween_property(self, "scale", base_scale, 0.10)\
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-
-	await t.finished
-	is_doing_ready_jump = false
 
 func setup_aura() -> void:
 	if not aura_layers.is_empty():
@@ -227,8 +242,7 @@ func _update_aura_visual() -> void:
 
 		aura.scale = spr.scale * pulse
 		aura.modulate = Color(0.18, 0.95, 0.35, alpha)
-		aura.position = base_offset.normalized() * (3.2 + extra)
-
+		aura.position = spr.position + base_offset.normalized() * (3.2 + extra)
 
 func get_save_state() -> Dictionary:
 	return {
@@ -239,7 +253,6 @@ func get_save_state() -> Dictionary:
 		"incubation_total_time": incubation_total_time,
 		"incubation_elapsed": incubation_elapsed
 	}
-
 
 func apply_save_state(data: Dictionary) -> void:
 	state = int(data.get("state", EggState.DROPPED))
@@ -264,3 +277,30 @@ func apply_save_state(data: Dictionary) -> void:
 			aura_strength = 0.85
 		EggState.HATCHING:
 			enter_dropped_state()
+
+func refresh_visual_state() -> void:
+	match state:
+		EggState.DROPPED:
+			aura_strength = 0.0
+			_set_aura_visible(false)
+
+		EggState.MOVING_TO_NEST:
+			aura_strength = 0.0
+			_set_aura_visible(false)
+
+		EggState.INCUBATING:
+			aura_strength = 0.45
+			_set_aura_visible(true)
+
+		EggState.READY_TO_HATCH:
+			aura_strength = 1.0
+			_set_aura_visible(true)
+
+		EggState.HATCHING:
+			aura_strength = 1.0
+			_set_aura_visible(true)
+
+func _set_aura_visible(value: bool) -> void:
+	for aura in aura_layers:
+		if aura != null and is_instance_valid(aura):
+			aura.visible = value

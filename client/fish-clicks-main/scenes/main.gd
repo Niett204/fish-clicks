@@ -504,7 +504,7 @@ func update_world_button_visibility() -> void:
 	btn_world_icon.visible = habitat_manager.can_change_habitat()
 		
 func _is_item_unlocked_by_default(id: String) -> bool:
-	if id == "chupete_jr":
+	if id == "chupete_jr" or id == "auspezio":
 		return false
 
 	return int(ITEMS[id].get("unlock_price", 0)) == 0 
@@ -644,6 +644,8 @@ func reset_local_state() -> void:
 	achievements_manager.profile_clicks_count = 0
 	achievements_manager.annoyed_fish_count = 0
 	achievements_manager.achievement_check_accum = 0.0
+	achievements_manager.alien_no_hit_unlocked = false
+	achievements_manager.alien_egg_obtained = false
 	
 	# 3.1. Reseteo de limpieza
 	if cleaning_manager != null:
@@ -651,6 +653,27 @@ func reset_local_state() -> void:
 		cleaning_manager.cleaning_event_available = false
 		cleaning_manager.total_dirt_spots_cleaned = 0
 		cleaning_manager.cleaning_events_completed = 0
+	
+	# 3.2 Reset del alien
+	if alien_manager != null:
+		alien_manager.alien_event_state = AlienManager.AlienEventState.IDLE
+		alien_manager.alien_event_available = false
+		alien_manager.alien_event_done = false
+		alien_manager.abducted_fish_snapshots.clear()
+		alien_manager.abduct_return_origin = Vector2.ZERO
+		alien_manager.alien_escape_fx_active = false
+
+		if alien_manager.alien_instance != null and is_instance_valid(alien_manager.alien_instance):
+			alien_manager.alien_instance.queue_free()
+
+		if egg_manager != null:
+			egg_manager.clear_active_egg()
+		
+		for child in content_pecera.get_children():
+			if child is AlienEgg:
+				child.queue_free()
+
+		alien_manager.alien_instance = null
 
 	# 4. Limpieza física de Acuarios (Peces nadando)
 	for habitat_id in aquarium_data.keys():

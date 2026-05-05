@@ -219,6 +219,57 @@ const ACHIEVEMENT_DEFS := {
 		"condition": "Consigue la limpieza automática",
 		"icon": preload("res://assets/logros/limpiar_auto.png")
 	},
+		# =========================
+	# MINIJUEGO DEL ALIEN
+	# =========================
+	"alien_lose_1": {
+		"title": "Houston, tenemos un problema.",
+		"desc": "¿Tienes un plan B?",
+		"kind": "alien_losses",
+		"target": 1,
+		"condition": "Pierde 1 vez el minijuego del alien",
+		"icon": preload("res://assets/logros/perder_1.png")
+	},
+	"alien_win_1": {
+		"title": "Contacto hostil neutralizado.",
+		"desc": "Con los peces no se juega.",
+		"kind": "alien_wins",
+		"target": 1,
+		"condition": "Gana 1 vez el minijuego del alien",
+		"icon": preload("res://assets/logros/ganar_1.png")
+	},
+	"alien_lose_10": {
+		"title": "Skill issue.",
+		"desc": "¿Y si el problema no es el alien?",
+		"kind": "alien_losses",
+		"target": 10,
+		"condition": "Pierde 10 veces el minijuego del alien",
+		"icon": preload("res://assets/logros/perder_10.png")
+	},
+	"alien_win_10": {
+		"title": "I always come back.",
+		"desc": "Has vuelto. Una y otra y otra vez.",
+		"kind": "alien_wins",
+		"target": 10,
+		"condition": "Gana 10 veces el minijuego del alien",
+		"icon": preload("res://assets/logros/ganar_10.png")
+	},
+	"alien_no_hit": {
+		"title": "No Hit / Any%",
+		"desc": "Is this your perfect victory?",
+		"kind": "alien_no_hit",
+		"target": 1,
+		"condition": "Gana el minijuego del alien sin recibir daño",
+		"icon": preload("res://assets/logros/no_hit.png")
+	},
+	"alien_egg": {
+		"title": "¿De dónde vienen los peces?",
+		"desc": "La vida se abre camino.",
+		"kind": "alien_egg",
+		"target": 1,
+		"condition": "Obtén el huevo misterioso",
+		"icon": preload("res://assets/logros/huevo_alien.png")
+	},
 	# =========================
 	# OCULTOS
 	# =========================
@@ -264,7 +315,7 @@ const ACHIEVEMENT_DEFS := {
 		"kind": "alien_clicked",
 		"target": 1,
 		"condition": "Pulsa el alien cuando aparezca, y saltará",
-		"icon": preload("res://assets/ui/iconos/icono_hud_abierto.png"),
+		"icon": preload("res://assets/logros/salta.png"),
 		"hidden": true
 	},
 	"better_luck_next_time": {

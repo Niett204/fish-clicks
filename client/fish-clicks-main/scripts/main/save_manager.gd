@@ -43,6 +43,8 @@ func get_save_state() -> Dictionary:
 		"alien_minigame_wins": main.alien_minigame_wins,
 		"alien_minigame_losses": main.alien_minigame_losses,
 		"alien_egg": main.egg_manager.get_save_state(),
+		"alien_no_hit_unlocked": main.achievements_manager.alien_no_hit_unlocked,
+		"alien_egg_obtained": main.achievements_manager.alien_egg_obtained,
 	}
 
 func reset_local_state() -> void:
@@ -143,7 +145,7 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 	main.achievements_manager.random_tick_unlocked = bool(state.get("random_tick_unlocked", false))
 	main.achievements_manager.volume_slider_spam_unlocked = bool(state.get("volume_slider_spam_unlocked", false))
 	main.habitat_manager.current_habitat = state.get("current_habitat", "habitat_1")
-
+	
 	var saved_habitats = state.get("unlocked_habitats", ["habitat_1"])
 	main.habitat_manager.unlocked_habitats.clear()
 	for h in saved_habitats:
@@ -200,6 +202,8 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 	main.alien_minigame_wins = int(state.get("alien_minigame_wins", 0))
 	main.alien_minigame_losses = int(state.get("alien_minigame_losses", 0))
 	main.cleaning_manager.try_unlock_cleaner_fish()
+	main.achievements_manager.alien_no_hit_unlocked = bool(state.get("alien_no_hit_unlocked", false))
+	main.achievements_manager.alien_egg_obtained = bool(state.get("alien_egg_obtained", false))
 
 	main.fish_inventory = state.get("fish_inventory", {})
 
