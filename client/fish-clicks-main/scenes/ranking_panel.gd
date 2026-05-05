@@ -49,6 +49,13 @@ func _close() -> void:
 	)
 
 func _on_btn_close_pressed() -> void:
+	# 1. Buscamos la referencia a la escena principal
+	var main = get_tree().get_first_node_in_group("main")
+	if main and main.ui_manager:
+		# 2. Ejecutamos la animación de salto en el botón 'btn_close'
+		main.ui_manager.play_squish(btn_close)
+	
+	# 3. Llamamos a la función de cierre que ya tienes
 	_close()
 
 func _request_ranking_data(type: String):

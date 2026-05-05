@@ -44,7 +44,7 @@ func _ready() -> void:
 	if not GlobalData.profile_updated.is_connected(_refresh_view):
 		GlobalData.profile_updated.connect(_refresh_view)
 
-	btn_close.pressed.connect(func(): close_requested.emit())
+	btn_close.pressed.connect(_on_btn_close_pressed)
 	btn_login.pressed.connect(_do_login)
 	btn_register.pressed.connect(_do_register)
 	btn_logout.pressed.connect(_do_logout)
@@ -244,6 +244,15 @@ func _on_photo_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		if avatar_dialog:
 			avatar_dialog.popup_centered_ratio(0.5)
+
+func _on_btn_close_pressed() -> void:
+	# Buscamos la escena principal (Main) para usar su ui_manager
+	var main = get_tree().get_first_node_in_group("main")
+	if main and main.ui_manager:
+		main.ui_manager.play_squish(btn_close) # <--- Aquí ocurre el "salto"
+	
+	_close() # Ejecuta tu animación de desvanecimiento
+
 
 func _on_avatar_selected(path: String) -> void:
 	var img = Image.load_from_file(path)

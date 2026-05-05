@@ -442,12 +442,10 @@ func _ready() -> void:
 	
 	profile_panel.close_requested.connect(func():
 		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
-		profile_panel._close()
 	)
 	
 	ranking_panel.close_requested.connect(func():
 		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
-		ranking_panel.visible = false
 	)
 
 	left_info_panel.bottle_clicked.connect(func():
