@@ -13,6 +13,7 @@ const ITEMS = ItemData.ITEMS
 const HABITATS = HabitatData.HABITATS
 var fish_defs = FishData.FISH_DEFS.duplicate(true)
 const FISH_LOSS_DEBUFF_DURATION: float = 120.0
+const ALIEN_EVENT_CHECK_INTERVAL: float = 30.0
 
 # ------------------- EXPORTED -------------------
 @export var floating_text_scene: PackedScene
@@ -146,7 +147,7 @@ var total_clicks: int = 0
 var session_time_seconds: float = 0.0
 var game_start_date_string: String = ""
 var dps: float = 0.0
-var coins: float = 10000.0
+var coins: float = 100000.0
 var total_coins_earned: float = 0.0
 var click_power: int = 1
 var hud_visible := true
@@ -158,6 +159,7 @@ var fish_loss_debuff_active: bool = false
 var fish_loss_debuff_time_left: float = 0.0
 var alien_minigame_wins: int = 0
 var alien_minigame_losses: int = 0
+var alien_event_check_timer: float = 0.0
 
 # ------------------- ESTADO VISUAL -------------------
 var chest_base_scale: Vector2
@@ -398,6 +400,7 @@ func _ready() -> void:
 	
 	shop_manager.update_cps()
 	ui_manager._update_ui()
+	ui_manager.update_unique_tab_visibility()
 	habitat_manager.apply_current_habitat()
 	refresh_habitat_structures()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
@@ -512,6 +515,11 @@ func _is_item_unlocked_by_default(id: String) -> bool:
 func _resume_alien_after_runtime_restore(alien_return_data: Dictionary) -> void:
 	alien_manager.resume_after_minigame(alien_return_data)
 
+	ui_manager.update_unique_tab_visibility()
+
+	if shop_open:
+		await ui_manager._refresh_current_shop_tab(tab_container.current_tab)
+
 func _on_save_loaded(save_data: Dictionary) -> void:
 	save_manager.apply_save_state(save_data)
 
@@ -521,6 +529,8 @@ func _on_save_loaded(save_data: Dictionary) -> void:
 	refresh_habitat_structures()
 	shop_manager.update_cps()
 	ui_manager._update_ui()
+	ui_manager.update_unique_tab_visibility()
+	ui_manager.update_unique_tab_visibility()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
 	
 
@@ -540,10 +550,13 @@ func _process(delta: float) -> void:
 		var item_id := String(id)
 		var def: Dictionary = ITEMS[item_id]
 
-		if String(def.get("kind", "")) == "passive":
-			lifetime_generated[item_id] += shop_manager.get_item_current_value(item_id) * delta
+		if String(def.get("kind", "")) == "fish":
+			lifetime_generated[item_id] += shop_manager.get_item_current_value(item_id) * shop_manager.get_fish_dps_multiplier() * shop_manager.get_global_coin_multiplier() * delta
 
 	ui_manager._update_currency_ui()
+
+	if shop_open:
+		ui_manager.update_shop_cards()
 
 	achievements_manager.process_achievement_timer(delta)
 
@@ -557,10 +570,15 @@ func _process(delta: float) -> void:
 			clear_fish_loss_debuff()
 
 	if alien_manager != null:
-		alien_manager.check_alien_event_unlock()
+		alien_event_check_timer += delta
 
-		if alien_manager.can_trigger_alien_event():
-			alien_manager.try_start_alien_event()
+		if alien_event_check_timer >= ALIEN_EVENT_CHECK_INTERVAL:
+			alien_event_check_timer = 0.0
+
+			alien_manager.check_alien_event_unlock()
+
+			if alien_manager.can_trigger_alien_event():
+				alien_manager.try_start_alien_event()
 
 func _input(event: InputEvent) -> void:
 	fish_mode_manager.handle_input(event)
@@ -595,11 +613,13 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 func _on_chest_clicked() -> void:
 	total_clicks += 1
 	ui_manager.play_ui_sfx(SFX_COFRE_CLICK)
+	click_power = shop_manager.get_click_income()
 	coins += click_power
 	total_coins_earned += click_power
 	lifetime_generated["cofre"] += click_power
 
 	ui_manager._update_ui()
+	ui_manager.update_unique_tab_visibility()
 	_play_click_animation()
 	_spawn_floating_text()
 	_mostrar_monedas_y_burbujas()
@@ -740,7 +760,8 @@ func _spawn_floating_text() -> void:
 	var t: Label = floating_text_scene.instantiate()
 	add_child(t)
 
-	t.text = "+" + str(click_power)
+	var current_click_income: int = shop_manager.get_click_income()
+	t.text = "+" + get_full_number_text(current_click_income)
 
 	var mouse_pos = get_viewport().get_mouse_position()
 	t.position = mouse_pos + Vector2(-5, -20)
@@ -853,9 +874,9 @@ func _update_chest_sprite_by_level() -> void:
 
 	if chest_level <= 0:
 		chest_sprite.texture = TEX_CHEST2_CLOSED if is_habitat_2 else TEX_CHEST_CLOSED
-	elif chest_level <= 3:
+	elif chest_level <= 49:
 		chest_sprite.texture = TEX_CHEST2_EMPTY if is_habitat_2 else TEX_CHEST_EMPTY
-	elif chest_level <= 7:
+	elif chest_level <= 99:
 		chest_sprite.texture = TEX_CHEST2_MID if is_habitat_2 else TEX_CHEST_MID
 	else:
 		chest_sprite.texture = TEX_CHEST2_FULL if is_habitat_2 else TEX_CHEST_FULL
@@ -871,11 +892,11 @@ func _update_algas_sprite_by_level() -> void:
 
 	vallisneria.visible = true
 
-	if algas_level <= 5:
+	if algas_level <= 24:
 		_set_vallisneria_texture(TEX_ALGAS_0)
-	elif algas_level <= 10:
+	elif algas_level <= 49:
 		_set_vallisneria_texture(TEX_ALGAS_1)
-	elif algas_level <= 15:
+	elif algas_level <= 74:
 		_set_vallisneria_texture(TEX_ALGAS_2)
 	else:
 		_set_vallisneria_texture(TEX_ALGAS_3)
@@ -890,11 +911,11 @@ func _update_anubia_sprite_by_level() -> void:
 
 	anubia.visible = true
 
-	if level <= 5:
+	if level <= 24:
 		_set_anubia_texture(TEX_ANUBIA_0, 2.0, 0.75)
-	elif level <= 10:
+	elif level <= 49:
 		_set_anubia_texture(TEX_ANUBIA_1, 6.0, 0.45)
-	elif level <= 15:
+	elif level <= 74:
 		_set_anubia_texture(TEX_ANUBIA_2, 2.0, 0.80)
 	else:
 		_set_anubia_texture(TEX_ANUBIA_3, 0.0, 1.00)
@@ -911,9 +932,9 @@ func _update_tronco_visibility_by_level() -> void:
 	if not is_current_habitat or not is_unlocked or level <= 0:
 		return
 
-	if level <= 5:
+	if level <= 25:
 		tronco_3.visible = true
-	elif level <= 10:
+	elif level <= 50:
 		tronco_2.visible = true
 	else:
 		tronco_1.visible = true
@@ -959,9 +980,9 @@ func _update_coral_sprite_by_level() -> void:
 
 	coral.visible = true
 
-	if level <= 5:
+	if level <= 29:
 		_set_coral_texture(TEX_CORAL_0, 0.8)
-	elif level <= 10:
+	elif level <= 59:
 		_set_coral_texture(TEX_CORAL_1, 1.0)
 	else:
 		_set_coral_texture(TEX_CORAL_2, 1.4)
@@ -978,9 +999,9 @@ func _update_piedra_sprite_by_level() -> void:
 
 	piedra.visible = true
 
-	if level <= 5:
+	if level <= 29:
 		piedra.texture = TEX_PIEDRA_0
-	elif level <= 10:
+	elif level <= 59:
 		piedra.texture = TEX_PIEDRA_1
 	else:
 		piedra.texture = TEX_PIEDRA_2
@@ -997,9 +1018,9 @@ func _update_iceberg_sprite_by_level() -> void:
 
 	iceberg.visible = true
 
-	if level <= 5:
+	if level <= 29:
 		iceberg.texture = TEX_ICEBERG_0
-	elif level <= 10:
+	elif level <= 59:
 		iceberg.texture = TEX_ICEBERG_1
 	else:
 		iceberg.texture = TEX_ICEBERG_2
@@ -1015,9 +1036,9 @@ func _update_barco_sprite_by_level() -> void:
 
 	barco.visible = true
 
-	if level <= 5:
+	if level <= 29:
 		_set_barco_texture(TEX_BARCO_0, 0.8, 0)
-	elif level <= 10:
+	elif level <= 59:
 		_set_barco_texture(TEX_BARCO_1, 1.2, -40)
 	else:
 		_set_barco_texture(TEX_BARCO_2, 1.7, -70)
@@ -1099,15 +1120,17 @@ func format_with_separator(n: int) -> String:
 		s = s.substr(0, s.length() - 3)
 	return s + result
 
-func get_compact_doblones_text(value: float) -> String:
+func get_compact_number_text(value: float) -> String:
 	var parts: Dictionary = format_doblones_parts(value)
-	var unit := String(parts.unit)
+	var unit: String = String(parts.unit)
 
 	unit = unit.replace(" de doblones", "")
 	unit = unit.replace(" doblones", "")
+	unit = unit.replace("doblones", "")
+	unit = unit.strip_edges()
 
-	return parts.value if unit == "" else parts.value + " " + unit
-
+	return String(parts.value) if unit == "" else String(parts.value) + " " + unit
+	
 func format_play_time(total_seconds: int) -> String:
 	@warning_ignore("integer_division")
 	var hours := total_seconds / 3600
@@ -1178,3 +1201,6 @@ func update_ui_block_state() -> void:
 	btn_shop_icon.modulate = blocked_color if blocked else normal_color
 	btn_inventory_icon.modulate = blocked_color if blocked else normal_color
 	btn_world_icon.modulate = blocked_color if blocked else normal_color
+
+func get_full_number_text(value: float) -> String:
+	return format_with_separator(int(round(value)))

@@ -14,7 +14,7 @@ const ALIEN_SCENE := preload("res://scenes/alien.tscn")
 const MAIN_SCENE_PATH := "res://scenes/main.tscn"
 const ALIEN_MINIGAME_COOLDOWN_SECONDS := 600.0
 const ALIEN_EVENT_TRIGGER_CHANCE := 0.15
-const ALIEN_EVENT_STARTUP_GRACE_SECONDS := 180.0
+const ALIEN_EVENT_STARTUP_GRACE_SECONDS := 300.0
 
 var main: Node = null
 var alien_event_state := AlienEventState.IDLE
@@ -513,7 +513,7 @@ func animate_alien_escape_damaged() -> void:
 	move_t.tween_property(alien_instance, "modulate:a", 0.0, 1.2)\
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
-	var should_drop_egg := randf() < 1
+	var should_drop_egg := randf() < 0.25
 	if should_drop_egg:
 		call_deferred("_drop_egg_during_escape")
 

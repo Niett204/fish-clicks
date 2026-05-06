@@ -643,6 +643,19 @@ func _update_auto_clean_stats() -> void:
 		return
 
 	auto_clean_enabled = true
-	auto_clean_interval = max(0.55, 2.4 - float(auto_clean_level) * 0.22)
+
+	var speed_multiplier := 1.0
+	if cleaning_manager != null:
+		speed_multiplier = cleaning_manager.get_cleaning_speed_multiplier()
+
+	# Tu lógica actual + buff del pez
+	auto_clean_interval = max(
+		0.55,
+		(2.4 - float(auto_clean_level) * 0.22) / speed_multiplier
+	)
+
 	auto_clean_scrubs_per_cycle = 1 + int(auto_clean_level / 4)
-	auto_clean_move_speed = 110.0 + float(auto_clean_level) * 18.0
+
+	auto_clean_move_speed = (
+		110.0 + float(auto_clean_level) * 18.0
+	) * speed_multiplier

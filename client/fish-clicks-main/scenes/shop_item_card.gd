@@ -70,6 +70,9 @@ func _ready() -> void:
 		_pressed = false
 		_apply_plank_tint()
 		_animate_rotation(0.0, 0.15)
+
+		if info_panel and info_panel.has_method("force_hide"):
+			info_panel.force_hide()
 	)
 
 	button_down.connect(func():
@@ -105,9 +108,7 @@ func _on_enter_info() -> void:
 		print("INFO: info_panel_path no asignado o mal: ", info_panel_path)
 		return
 
-	var owned := 0
-	if level_lbl:
-		owned = int(level_lbl.text)
+	var owned := level_lbl.text if level_lbl else "0"
 
 	info_panel.show_for_card(
 		self,
@@ -121,8 +122,9 @@ func _on_enter_info() -> void:
 
 
 func _on_exit_info() -> void:
-	if info_panel:
-		info_panel.schedule_hide(0.06)
+	_hovered = false
+	if info_panel and info_panel.has_method("force_hide"):
+		info_panel.force_hide()
 
 
 func _on_card_pressed() -> void:
@@ -201,10 +203,7 @@ func _apply_locked_visual() -> void:
 	if plank_locked_bg and plank_locked:
 		plank_locked_bg.texture = plank_locked
 
-	if locked_text != "":
-		locked_price_lbl.text = locked_text
-	else:
-		locked_price_lbl.text = "%d" % unlock_price
+	locked_price_lbl.text = locked_text
 
 
 func _apply_unlocked_visual() -> void:
@@ -277,14 +276,13 @@ func refresh_info_panel_if_hovered() -> void:
 			info_panel.schedule_hide(0.0)
 		return
 
-	if not _hovered:
+	if not is_hovered():
 		return
+		
 	if info_panel == null:
 		return
 
-	var owned := 0
-	if level_lbl:
-		owned = int(level_lbl.text)
+	var owned := level_lbl.text if level_lbl else "0"
 
 	info_panel.show_for_card(
 		self,
