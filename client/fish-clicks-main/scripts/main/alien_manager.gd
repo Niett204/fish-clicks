@@ -233,26 +233,56 @@ func start_aquarium_abduction_sequence() -> void:
 	else:
 		abduct_return_origin = alien_instance.global_position if alien_instance != null else Vector2.ZERO
 
+	_save_all_aquarium_fish_snapshots()
+
 	if fish_list.is_empty():
 		finish_abduction_sequence()
 		return
 
-	for fish in fish_list:
+	await abduct_aquarium_abduction_sequence_with_snapshots(fish_list)
+	finish_abduction_sequence()
+	
+func _save_all_aquarium_fish_snapshots() -> void:
+	var visible_snapshots := {}
+
+	for fish in main.fish_layer.get_children():
 		if not is_instance_valid(fish):
 			continue
 
-		abducted_fish_snapshots.append({
-			"fish_id": fish.fish_id if "fish_id" in fish else "",
-			"habitat_id": fish.habitat_id if "habitat_id" in fish else main.habitat_manager.current_habitat,
-			"slot_index": fish.slot_index if "slot_index" in fish else -1,
+		var key := "%s:%s" % [str(fish.habitat_id), str(fish.slot_index)]
+
+		visible_snapshots[key] = {
+			"fish_id": str(fish.fish_id),
+			"habitat_id": str(fish.habitat_id),
+			"slot_index": int(fish.slot_index),
 			"position": fish.global_position,
 			"scale": fish.scale,
 			"rotation": fish.rotation,
 			"alpha": fish.modulate.a
-		})
+		}
 
-	await abduct_aquarium_abduction_sequence_with_snapshots(fish_list)
-	finish_abduction_sequence()
+	for habitat_id in main.aquarium_data.keys():
+		var slots: Array = main.aquarium_data[habitat_id]
+
+		for i in range(slots.size()):
+			var fish_id = slots[i]
+			if fish_id == null:
+				continue
+
+			var key := "%s:%s" % [str(habitat_id), str(i)]
+
+			if visible_snapshots.has(key):
+				abducted_fish_snapshots.append(visible_snapshots[key])
+			else:
+				abducted_fish_snapshots.append({
+					"fish_id": str(fish_id),
+					"habitat_id": str(habitat_id),
+					"slot_index": i,
+					"position": Vector2.ZERO,
+					"scale": Vector2.ONE,
+					"rotation": 0.0,
+					"alpha": 1.0
+				})
 
 func abduct_aquarium_abduction_sequence_with_snapshots(fish_list: Array) -> void:
 	var tweens: Array[Tween] = []
@@ -670,7 +700,9 @@ func spit_fish_back_into_aquarium() -> void:
 		call_deferred("_run_alien_damage_fx_loop", fx_layer)
 
 	var tweens: Array[Tween] = []
+	var current_habitat: String = main.habitat_manager.current_habitat
 
+	# Recreamos TODOS los peces visuales, pero solo mostramos los del hábitat actual
 	for snap in abducted_fish_snapshots:
 		var fish_id: String = str(snap.get("fish_id", ""))
 		var habitat_id: String = str(snap.get("habitat_id", ""))
@@ -679,7 +711,7 @@ func spit_fish_back_into_aquarium() -> void:
 		if fish_id == "" or habitat_id == "" or slot_index < 0:
 			continue
 
-		main.aquarium_manager.spawn_fish(
+		var fish = main.aquarium_manager.spawn_fish(
 			fish_id,
 			habitat_id,
 			slot_index,
@@ -687,10 +719,17 @@ func spit_fish_back_into_aquarium() -> void:
 			origin
 		)
 
+		if fish != null and is_instance_valid(fish):
+			fish.visible = habitat_id == current_habitat
+
 	await main.get_tree().process_frame
 
+	# Animamos solo los peces del hábitat actual
 	for fish in main.fish_layer.get_children():
 		if not is_instance_valid(fish):
+			continue
+
+		if str(fish.habitat_id) != current_habitat:
 			continue
 
 		var snap := _find_snapshot_for_fish(fish)
@@ -722,7 +761,11 @@ func spit_fish_back_into_aquarium() -> void:
 
 	for t in tweens:
 		await t.finished
-	
+
+	# Por si tu manager tiene método de refresco por hábitat
+	if main.aquarium_manager.has_method("refresh_visible_fish_by_habitat"):
+		main.aquarium_manager.refresh_visible_fish_by_habitat()
+
 	if fx_layer != null and is_instance_valid(fx_layer):
 		fx_layer.queue_free()
 
