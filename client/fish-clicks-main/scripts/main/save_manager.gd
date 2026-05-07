@@ -59,6 +59,13 @@ func reset_local_state() -> void:
 	main.unlocked.clear()
 	main.fish_inventory.clear()
 	
+	# Reseteo de habitats
+	main.habitat_manager.unlocked_habitats.clear()
+	main.habitat_manager.unlocked_habitats.append("habitat_1")
+
+	main.habitat_manager.current_habitat = "habitat_1"
+	main.habitat_manager.inventory_habitat = "habitat_1"
+	
 	main.alien_minigame_wins = 0
 	main.alien_minigame_losses = 0
 	
@@ -112,6 +119,7 @@ func reset_local_state() -> void:
 	main._update_tronco_visibility_by_level()
 	main._update_anubia_sprite_by_level()
 	main.ui_manager._update_ui()
+	main.habitat_manager.apply_current_habitat()
 	GlobalData.user_photo_url = ""
 
 func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void:

@@ -624,6 +624,14 @@ func reset_local_state() -> void:
 	levels.clear()
 	unlocked.clear()
 	fish_inventory.clear()
+	
+	# Reset de habitats al cerrar sesión
+	habitat_manager.unlocked_habitats.clear()
+	habitat_manager.unlocked_habitats.append("habitat_1")
+	habitat_manager.current_habitat = "habitat_1"
+	habitat_manager.inventory_habitat = "habitat_1"
+	# Ocultar botón de worlds
+	btn_world_icon.visible = false
 
 	# Re-inicializamos los objetos gratuitos según la base de datos (como el cofre)
 	for k in ITEMS.keys():
@@ -701,6 +709,7 @@ func reset_local_state() -> void:
 	
 	# Actualizar la interfaz de usuario completa (etiquetas de doblones, botellas, etc.)
 	ui_manager._update_ui()
+	habitat_manager.apply_current_habitat()
 	
 	if stats_panel.visible:
 		stats_manager.refresh_stats_panel_full()
