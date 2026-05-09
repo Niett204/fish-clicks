@@ -4,31 +4,8 @@
 [ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="3_8fxpn"]
 [ext_resource type="Texture2D" uid="uid://6rnifsb2i5ph" path="res://assets/ui/marco_small.png" id="3_54ti7"]
 [ext_resource type="AudioStream" uid="uid://dppop12h3li5s" path="res://assets/audio/peces/bubble.WAV" id="4_hblyp"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8hq2b"]
-content_margin_left = 15.0
-content_margin_top = 8.0
-content_margin_right = 15.0
-content_margin_bottom = 8.0
-bg_color = Color(0.5882353, 0.4862745, 0.3764706, 1)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bcnpr"]
-bg_color = Color(0.47843137, 0.38431373, 0.29803923, 1)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hblyp"]
-bg_color = Color(0.6392157, 0.5411765, 0.43529412, 1)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
+[ext_resource type="Texture2D" uid="uid://d1h3xsm418jol" path="res://assets/ui/pergamino_v2.png" id="5_bcnpr"]
+[ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="6_yfe3d"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8fxpn"]
 content_margin_left = 15.0
@@ -101,6 +78,36 @@ corner_radius_bottom_left = 5
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5nai8"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8hq2b"]
+content_margin_left = 15.0
+content_margin_top = 8.0
+content_margin_right = 15.0
+content_margin_bottom = 8.0
+bg_color = Color(0.5882353, 0.4862745, 0.3764706, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bcnpr"]
+bg_color = Color(0.47843137, 0.38431373, 0.29803923, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hblyp"]
+bg_color = Color(0.6392157, 0.5411765, 0.43529412, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="LabelSettings" id="LabelSettings_3b240"]
+font = ExtResource("6_yfe3d")
+font_size = 41
+font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
+
 [node name="OptionsPannel" type="Control" unique_id=1316162174]
 layout_mode = 3
 anchors_preset = 15
@@ -162,23 +169,6 @@ theme_override_font_sizes/font_size = 35
 text = "Ajustes"
 horizontal_alignment = 1
 vertical_alignment = 1
-
-[node name="BtnModoPecera" type="Button" parent="CenterContainer/PanelRoot" unique_id=872771878]
-custom_minimum_size = Vector2(150, 40)
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -75.0
-offset_top = 110.0
-offset_right = 75.0
-offset_bottom = 150.0
-grow_horizontal = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxFlat_8hq2b")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_bcnpr")
-theme_override_styles/hover = SubResource("StyleBoxFlat_hblyp")
-text = "Modo Pecera"
 
 [node name="ButtonsRowBottom" type="HBoxContainer" parent="CenterContainer/PanelRoot" unique_id=1470787434]
 layout_mode = 1
@@ -432,6 +422,136 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/slider = SubResource("StyleBoxEmpty_5nai8")
 
+[node name="BtnsArriba" type="HBoxContainer" parent="CenterContainer/PanelRoot" unique_id=728496074]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -152.0
+offset_top = 107.0
+offset_right = 152.0
+offset_bottom = 147.0
+grow_horizontal = 2
+
+[node name="BtnModoPecera" type="Button" parent="CenterContainer/PanelRoot/BtnsArriba" unique_id=872771878]
+custom_minimum_size = Vector2(150, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_8hq2b")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_bcnpr")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hblyp")
+text = "Modo Pecera"
+
+[node name="BtnTutorial" type="Button" parent="CenterContainer/PanelRoot/BtnsArriba" unique_id=910301642]
+custom_minimum_size = Vector2(150, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_8hq2b")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_bcnpr")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hblyp")
+text = "Tutorial
+"
+
 [node name="FishPreviewPlayer" type="AudioStreamPlayer" parent="." unique_id=2134295761]
 stream = ExtResource("4_hblyp")
 bus = &"Efectos"
+
+[node name="TutorialOverlay" type="Control" parent="." unique_id=1784877545]
+anchors_preset = 0
+offset_left = 238.0
+offset_top = 61.0
+offset_right = 278.0
+offset_bottom = 101.0
+scale = Vector2(17.091331, 13.007181)
+
+[node name="CenterContainer" type="CenterContainer" parent="TutorialOverlay" unique_id=1489781633]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.994186, 0.9831663)
+
+[node name="PanelTutorial" type="Control" parent="TutorialOverlay/CenterContainer" unique_id=1360844962]
+layout_mode = 2
+
+[node name="Pergamino" type="TextureRect" parent="TutorialOverlay/CenterContainer/PanelTutorial" unique_id=1934944361]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 0.068312585
+offset_top = 0.4875995
+offset_right = 0.068312585
+offset_bottom = 0.4875995
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.01311846, 0.016744334)
+texture = ExtResource("5_bcnpr")
+expand_mode = 2
+stretch_mode = 3
+
+[node name="BtnCerrarTutorial" type="TextureButton" parent="TutorialOverlay/CenterContainer/PanelTutorial" unique_id=1986853598]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 15.605069
+offset_top = -16.481138
+offset_right = 55.60507
+offset_bottom = 23.518862
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.049054764, 0.059418045)
+texture_normal = ExtResource("3_8fxpn")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="TituloTutorial" type="Label" parent="TutorialOverlay/CenterContainer/PanelTutorial" unique_id=1318067207]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -3.168511
+offset_top = -15.542775
+offset_right = 106.83149
+offset_bottom = 38.457226
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.052742694, 0.06513489)
+theme_override_colors/font_color = Color(0.6507289, 0.29337206, 0.12315822, 0.9620001)
+theme_override_font_sizes/font_size = 28
+text = "Tutorial"
+label_settings = SubResource("LabelSettings_3b240")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TutorialOverlay/CenterContainer/PanelTutorial" unique_id=2037025099]
+custom_minimum_size = Vector2(500, 320)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -15.762702
+offset_top = -12.102109
+offset_right = 484.2373
+offset_bottom = 307.8979
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.06212146, 0.082807325)
+horizontal_scroll_mode = 0
+
+[node name="ContenidoTutorial" type="VBoxContainer" parent="TutorialOverlay/CenterContainer/PanelTutorial/ScrollContainer" unique_id=505469009]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0

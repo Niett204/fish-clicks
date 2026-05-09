@@ -3,10 +3,22 @@ extends Control
 signal close_requested
 signal volume_slider_spam_detected
 signal modo_pecera_requested
+const TutorialData = preload("res://scripts/data/bloques_tutorial.gd")
+const FONT_TITLE = preload("res://assets/fuentes/PirataOne-Regular.ttf")
+const FONT_BODY = preload("res://assets/fuentes/PirataOne-Regular.ttf")
 
 @onready var btn_close: TextureButton = $CenterContainer/PanelRoot/BtnCerrar
-@onready var btn_modo_pecera: Button = $CenterContainer/PanelRoot/BtnModoPecera
+@onready var btn_modo_pecera: Button = $CenterContainer/PanelRoot/BtnsArriba/BtnModoPecera
+@onready var btn_tutorial: Button = $CenterContainer/PanelRoot/BtnsArriba/BtnTutorial
 @onready var btn_salir: Button = $CenterContainer/PanelRoot/ButtonsRowBottom/BtnSalir
+@onready var panel_sonido: Control = $CenterContainer/PanelRoot/PanelSonido
+
+# Panel Tutorial
+@onready var tutorial_overlay: Control = $TutorialOverlay
+@onready var btn_cerrar_tutorial: TextureButton = $TutorialOverlay/CenterContainer/PanelTutorial/BtnCerrarTutorial
+@onready var contenido_tutorial: VBoxContainer = $TutorialOverlay/CenterContainer/PanelTutorial/ScrollContainer/ContenidoTutorial
+@onready var scroll_tutorial: ScrollContainer = $TutorialOverlay/CenterContainer/PanelTutorial/ScrollContainer
+var tutorial_blocks: Array = TutorialData.TUTORIAL_BLOCKS
 
 # Barra Sonido General
 @onready var SliderGeneral: HSlider = $CenterContainer/PanelRoot/PanelSonido/MarginContainer/Content/RowGeneral/SliderWrapGeneral/SliderGeneral
@@ -121,6 +133,12 @@ func _ready() -> void:
 	btn_guardar.pressed.connect(_on_btn_guardar_pressed)
 	GlobalData.save_success.connect(_on_save_ok)
 	GlobalData.save_failed.connect(_on_save_err)
+	
+	# Botón Tutorial
+	tutorial_overlay.visible = false
+	btn_tutorial.pressed.connect(_on_btn_tutorial_pressed)
+	btn_cerrar_tutorial.pressed.connect(_on_btn_cerrar_tutorial_pressed)
+	_build_tutorial()
 
 func _on_slider_value_changed(_value: float, item: Dictionary) -> void:
 	_update_slider_visuals(item)
@@ -240,6 +258,7 @@ func _play_fish_volume_preview() -> void:
 		
 # Funciones Botón X Close
 func _on_btn_close_pressed() -> void:
+	tutorial_overlay.visible = false
 	close_requested.emit()
 
 func _on_btn_close_mouse_entered() -> void:
@@ -362,3 +381,63 @@ func _show_save_status(msg: String) -> void:
 	# Si no, simplemente imprime por ahora
 	print(msg)
 	# lbl_save_status.text = msg  # descomenta si añades el Label
+	
+# Panel Tutorial
+func _on_btn_tutorial_pressed() -> void:
+	tutorial_overlay.visible = true
+	tutorial_overlay.move_to_front()
+	scroll_tutorial.scroll_vertical = 0
+
+func _on_btn_cerrar_tutorial_pressed() -> void:
+	tutorial_overlay.visible = false
+
+func _build_tutorial() -> void:
+	for child in contenido_tutorial.get_children():
+		child.queue_free()
+
+	for block in tutorial_blocks:
+		contenido_tutorial.add_child(_create_tutorial_block(block))
+
+
+func _create_tutorial_block(block: Dictionary) -> VBoxContainer:
+	var container := VBoxContainer.new()
+	container.custom_minimum_size = Vector2(420, 0)
+	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	container.add_theme_constant_override("separation", 10)
+
+	var image := TextureRect.new()
+	if block.has("image") and block["image"] != null:
+		image.texture = block["image"]
+
+	image.custom_minimum_size = Vector2(460, 230)
+	image.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
+	var title := Label.new()
+	title.text = block["title"]
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_override("font", FONT_TITLE)
+	title.add_theme_font_size_override("font_size", 24)
+	title.add_theme_color_override("font_color", Color("#a9502b"))
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var text := RichTextLabel.new()
+	text.text = block["text"]
+	text.fit_content = true
+	text.scroll_active = false
+	text.custom_minimum_size = Vector2(420, 0)
+	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text.add_theme_font_override("normal_font", FONT_BODY)
+	text.add_theme_font_size_override("normal_font_size", 18)
+	text.add_theme_color_override("default_color", Color("#6f4a2d"))
+
+	var spacer := Control.new()
+	spacer.custom_minimum_size = Vector2(0, 35)
+
+	container.add_child(image)
+	container.add_child(title)
+	container.add_child(text)
+	container.add_child(spacer)
+
+	return container
