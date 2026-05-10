@@ -213,6 +213,10 @@ func _update_currency_ui() -> void:
 
 
 func _update_dps_ui() -> void:
+	if main.dps < 1000.0:
+		main.dps_label.text = "+" + ("%.2f" % main.dps).replace(".", ",") + " d/s"
+		return
+
 	var parts: Dictionary = main.format_doblones_parts(main.dps)
 	main.dps_label.text = "+" + parts.value + " " + parts.unit.replace(" de doblones", "").replace(" doblones", "") + "/s"
 
@@ -277,32 +281,35 @@ func update_shop_cards() -> void:
 func _refresh_card(card) -> void:
 	var id: String = String(card.item_id)
 	var p: int = main.shop_manager.get_price(id)
+	var level: int = main.shop_manager.get_level(id)
+	var max_level: int = main.shop_manager.get_max_level(id)
 
-	card.set_unlocked(bool(main.unlocked.get(id, true)))
-	card.set_dynamic(
-		p,
-		"%d" % p,
-		main.shop_manager.get_item_effect_text(id),
-		str(main.shop_manager.get_level(id))
-	)
-	card.update_state(main.coins)
+	var formatted_price: String = main.get_full_number_text(p)
+	var level_text: String = str(level)
 
-	card.extra_b1 = main.shop_manager.get_tooltip_line_1(id)
-	card.extra_b2 = main.shop_manager.get_tooltip_line_2(id)
-	card.extra_b3 = main.shop_manager.get_tooltip_line_3(id)
+	if max_level > 0 and level >= max_level:
+		formatted_price = "MAX"
+		level_text = "MAX"
 
 	card.set_unlocked(bool(main.unlocked.get(id, true)))
 
 	if card.has_method("set_locked_text"):
 		card.set_locked_text(main.shop_manager.get_locked_text(id))
 
+	card.extra_b1 = main.shop_manager.get_tooltip_line_1(id)
+	card.extra_b2 = main.shop_manager.get_tooltip_line_2(id)
+	card.extra_b3 = main.shop_manager.get_tooltip_line_3(id)
+
 	card.set_dynamic(
 		p,
-		"%d" % p,
+		formatted_price,
 		main.shop_manager.get_item_effect_text(id),
-		str(main.shop_manager.get_level(id))
+		level_text
 	)
-		
+
+	card.update_state(main.coins)
+
+
 func toggle_ranking() -> void:
 	var will_open: bool = not main.ranking_panel.visible
 
@@ -320,3 +327,19 @@ func toggle_ranking() -> void:
 	else:
 		main.ranking_panel.visible = false
 		play_ui_sfx(main.SFX_ICON_CLOSE)
+
+
+func update_unique_tab_visibility() -> void:
+	var should_show: bool = false
+
+	if main.cleaning_manager != null:
+		should_show = main.cleaning_manager.has_enough_unlocked_structures()
+
+	should_show = should_show or bool(main.unlocked.get("auspezio", false))
+
+	var unicos_tab_index: int = main.tab_container.get_tab_idx_from_control(
+		main.tab_container.get_node("Únicos")
+	)
+
+	if unicos_tab_index != -1:
+		main.tab_container.set_tab_hidden(unicos_tab_index, not should_show)

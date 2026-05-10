@@ -11,11 +11,11 @@ const RETURN_SCENE_PATH := "res://scenes/main.tscn"
 @export var floating_gun_scene: PackedScene
 @export var glitch_zone_scene: PackedScene
 @export var worm_scene: PackedScene
-@export var max_health: int = 1
+@export var max_health: int = 5
 @export var invulnerability_duration: float = 1.0
 @export var shell_full_texture: Texture2D
 @export var shell_empty_texture: Texture2D
-@export var survival_time_seconds: float = 10.0
+@export var survival_time_seconds: float = 90.0
 @export var intro_lines: Array[String] = [
 	"Has llegado lejos para ser una criatura tan inferior.",
 	"Ahora entretenme un poco antes de perder."

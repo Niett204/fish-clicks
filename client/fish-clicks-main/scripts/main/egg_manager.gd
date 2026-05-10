@@ -3,7 +3,7 @@ class_name EggManager
 
 const ALIEN_EGG_SCENE := preload("res://scenes/alien_egg.tscn")
 
-const INCUBATION_TOTAL_TIME := 60.0 #86400.0 # 24 horas
+const INCUBATION_TOTAL_TIME := 18000.0 # 5 horas
 const HATCH_RESULT_FISH_ID := "auspezio"
 
 var main: Node = null

@@ -19,6 +19,9 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 	if not item_belongs_to_current_habitat(id):
 		return
 
+	if is_item_locked_by_progress(id):
+		return
+
 	if id == "auspezio" and not bool(main.unlocked.get("auspezio", false)):
 		return
 
@@ -30,12 +33,23 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 	var unlock_price: int = int(def.get("unlock_price", 0))
 	var icon_texture: Texture2D = load(String(def.get("icon", "")))
 
+	var level_text := str(get_level(id))
+	var max_level := get_max_level(id)
+
+	if max_level > 0 and get_level(id) >= max_level:
+		level_text = "MAX"
+	
+	var price_text: String = main.get_full_number_text(get_price(id))
+
+	if max_level > 0 and get_level(id) >= max_level:
+		price_text = "MAX"
+
 	card.setup(
 		id,
 		String(def.get("title", id)),
-		"%d" % get_price(id),
+		price_text,
 		get_item_effect_text(id),
-		str(get_level(id)),
+		level_text,
 		icon_texture,
 		get_price(id),
 		unlock_price
@@ -44,7 +58,7 @@ func add_item_card_to_list(id: String, list: VBoxContainer) -> void:
 	card.set_locked_text(get_locked_text(id))
 
 	card.extra_title = String(def.get("title", id))
-	card.extra_desc = "\"Mejora tu producción.\""
+	card.extra_desc = "\"" + get_flavor_text(id) + "\""
 	card.extra_b1 = get_tooltip_line_1(id)
 	card.extra_b2 = get_tooltip_line_2(id)
 	card.extra_b3 = get_tooltip_line_3(id)
@@ -61,20 +75,94 @@ func update_cps() -> void:
 
 
 func get_total_passive_dps() -> float:
-	var total: float = 0.0
+	# Solo los peces generan DPS base. Las estructuras multiplican ese valor.
+	var fish_dps: float = 0.0
 
 	for key in main.ITEMS.keys():
 		var id := String(key)
 		var def: Dictionary = main.ITEMS[id]
 
-		if String(def.get("kind", "")) == "passive":
-			total += get_item_current_value(id)
+		if String(def.get("kind", "")) == "fish":
+			fish_dps += get_item_current_value(id)
 
-	return total
+	return fish_dps * get_fish_dps_multiplier() * get_global_coin_multiplier()
+
+
+func get_fish_dps_multiplier() -> float:
+	var multiplier := 1.0
+
+	for key in main.ITEMS.keys():
+		var id := String(key)
+		var def: Dictionary = main.ITEMS[id]
+
+		if String(def.get("kind", "")) != "structure_buff":
+			continue
+		if String(def.get("buff_type", "")) != "fish_dps_multiplier":
+			continue
+
+		multiplier += float(get_level(id)) * float(def.get("base_value", 0.0))
+
+	return multiplier
+
+
+func get_global_coin_multiplier() -> float:
+	var multiplier := 1.0
+
+	for key in main.ITEMS.keys():
+		var id := String(key)
+		var def: Dictionary = main.ITEMS[id]
+
+		if String(def.get("kind", "")) != "structure_buff":
+			continue
+		if String(def.get("buff_type", "")) != "global_coin_multiplier":
+			continue
+
+		multiplier += float(get_level(id)) * float(def.get("base_value", 0.0))
+
+	return multiplier
+
+
+func get_shiny_chance() -> float:
+	var chance := 0.01
+
+	for key in main.ITEMS.keys():
+		var id := String(key)
+		var def: Dictionary = main.ITEMS[id]
+
+		if String(def.get("kind", "")) != "structure_buff":
+			continue
+		if String(def.get("buff_type", "")) != "shiny_chance_bonus":
+			continue
+
+		chance += float(get_level(id)) * float(def.get("base_value", 0.0))
+
+	# Cap para que no se vaya de madre: 1% base + hasta 5% extra = 6%.
+	return min(chance, 0.06)
+
+
+func get_click_income() -> int:
+	var base_click := 1.0
+
+	for key in main.ITEMS.keys():
+		var id := String(key)
+		var def: Dictionary = main.ITEMS[id]
+
+		if String(def.get("kind", "")) != "structure_buff":
+			continue
+		if String(def.get("buff_type", "")) != "click_flat":
+			continue
+
+		base_click += float(get_level(id)) * float(def.get("base_value", 0.0))
+
+	return max(1, int(round(base_click * get_global_coin_multiplier())))
 
 
 func get_level(id: String) -> int:
 	return int(main.levels.get(id, 0))
+
+
+func get_max_level(id: String) -> int:
+	return int(main.ITEMS[id].get("max_level", -1))
 
 
 func get_price(id: String) -> int:
@@ -89,7 +177,7 @@ func apply_purchase(id: String) -> void:
 
 	match id:
 		"cofre":
-			main.click_power = int(round(get_item_current_value("cofre")))
+			main.click_power = get_click_income()
 			main._update_chest_sprite_by_level()
 		"vallisneria":
 			main._update_algas_sprite_by_level()
@@ -107,10 +195,17 @@ func apply_purchase(id: String) -> void:
 			main._update_barco_sprite_by_level()
 
 	update_cps()
+	main.ui_manager.update_unique_tab_visibility()
 
 
 func on_buy_pressed(id: String) -> void:
+	var max_level := get_max_level(id)
+
+	if max_level > 0 and get_level(id) >= max_level:
+		return
+
 	var price: int = get_price(id)
+
 	if main.coins < price:
 		return
 
@@ -131,7 +226,7 @@ func on_buy_pressed(id: String) -> void:
 		var spawned_fish_id: String = id
 		var is_shiny := false
 
-		if randf() < 0.01 and main.fish_defs.has(id + "_shiny"):
+		if randf() < get_shiny_chance() and main.fish_defs.has(id + "_shiny"):
 			spawned_fish_id = id + "_shiny"
 			is_shiny = true
 			main.achievements_manager.register_shiny_obtained()
@@ -182,6 +277,7 @@ func on_unlock_pressed(id: String) -> void:
 		main.achievements_manager.register_structure_spent(unlock_price)
 
 	main.unlocked[id] = true
+	main.ui_manager.update_unique_tab_visibility()
 
 	match id:
 		"vallisneria":
@@ -201,7 +297,11 @@ func on_unlock_pressed(id: String) -> void:
 
 	main.habitat_manager.update_habitat_unlocks()
 	main.update_world_button_visibility()
-	main.ui_manager._update_ui()
+
+	if main.shop_open:
+		await main.ui_manager._refresh_current_shop_tab(main.tab_container.current_tab)
+	else:
+		main.ui_manager._update_ui()
 	main._actualizar_peces_desbloqueados_en_enciclopedia()
 	main.achievements_manager.check_achievements()
 
@@ -216,28 +316,157 @@ func get_item_effect_text(id: String) -> String:
 	var value_label: String = String(def.get("value_label", ""))
 
 	match kind:
-		"passive":
-			return "%s +%d" % [value_label, int(round(base_value))]
-		"click":
-			return "+%d %s" % [int(round(base_value)), value_label]
+		"fish":
+			return "DPS +%d" % int(round(base_value))
+
+		"structure_buff":
+			var buff_type := String(def.get("buff_type", ""))
+
+			match buff_type:
+				"click_flat":
+					return "+%.2f %s" % [base_value, value_label]
+
+				"shiny_chance_bonus":
+					return "+%.2f%% shiny" % (base_value * 100.0)
+
+				_:
+					return "+%.1f%s" % [base_value * 100.0, value_label]
+
+
+		"unique_buff":
+			var buff_type := String(def.get("buff_type", ""))
+
+			match buff_type:
+				"cleaning_speed":
+					return "+15% limpieza"
+
+				"alien_time_reduction":
+					return "-2s alien"
+
+				_:
+					return "Buff único"
+
+
 		_:
 			return ""
 
 
 func get_tooltip_line_1(id: String) -> String:
-	if id == "cofre":
-		return "Potencia de clic: %d" % main.click_power
+	var def: Dictionary = main.ITEMS[id]
+	var kind := String(def.get("kind", ""))
+
+	if kind == "structure_buff":
+		return get_structure_buff_current_text(id)
+
+	if kind == "unique_buff":
+		return get_unique_buff_current_text(id)
+
 	return "Produce ahora: %s" % get_current_production_text(id)
 
 
 func get_tooltip_line_2(id: String) -> String:
-	if id == "cofre":
-		return "Aporte pasivo: ninguno"
+	var def: Dictionary = main.ITEMS[id]
+	var kind := String(def.get("kind", ""))
+
+	if kind == "structure_buff":
+		return get_structure_buff_next_text(id)
+
+	if kind == "unique_buff":
+		return get_unique_buff_next_text(id)
+
 	return "Aporta al DPS total: %.1f%%" % get_current_dps_contribution(id)
 
 
+func get_structure_buff_next_text(id: String) -> String:
+	var def: Dictionary = main.ITEMS[id]
+	var buff_type := String(def.get("buff_type", ""))
+	var base_value := float(def.get("base_value", 0.0))
+
+	match buff_type:
+		"click_flat":
+			return "Siguiente nivel: +%.2f doblones/clic" % base_value
+		"fish_dps_multiplier":
+			return "Siguiente nivel: +%.1f%% peces" % (base_value * 100.0)
+		"global_coin_multiplier":
+			return "Siguiente nivel: +%.1f%% general" % (base_value * 100.0)
+		"shiny_chance_bonus":
+			return "Siguiente nivel: +%.3f%% shiny" % (base_value * 100.0)
+		_:
+			return "Nivel infinito"
+
+
 func get_tooltip_line_3(id: String) -> String:
+	var def: Dictionary = main.ITEMS[id]
+	var kind := String(def.get("kind", ""))
+
+	if kind == "structure_buff":
+		return get_structure_buff_impact_text(id)
+
+	if kind == "unique_buff":
+		return get_unique_buff_impact_text(id)
+
 	return "Generado total: %s" % get_lifetime_generated_text(id)
+
+
+func get_unique_buff_current_text(id: String) -> String:
+	var level := get_level(id)
+
+	match id:
+		"chupete_jr":
+			return "Limpieza x%.2f" % (1.0 + level * 0.15)
+
+		"auspezio":
+			return "Supervivencia -%ds" % int(level * 2)
+
+		_:
+			return "Buff activo"
+
+
+func get_unique_buff_next_text(id: String) -> String:
+	match id:
+		"chupete_jr":
+			return "Siguiente nivel: +15%"
+
+		"auspezio":
+			return "Siguiente nivel: -2s"
+
+		_:
+			return "Mejora única"
+
+
+func get_unique_buff_impact_text(id: String) -> String:
+	var level := get_level(id)
+
+	match id:
+		"chupete_jr":
+			return "Bonus total: +%d%%" % int(level * 15)
+
+		"auspezio":
+			return "Tiempo reducido: %ds" % int(level * 2)
+
+		_:
+			return "Buff activo"
+
+func get_structure_buff_impact_text(id: String) -> String:
+	var def: Dictionary = main.ITEMS[id]
+	var buff_type := String(def.get("buff_type", ""))
+	var level := get_level(id)
+	var value := float(def.get("base_value", 0.0))
+	var total_bonus := float(level) * value
+
+	match buff_type:
+		"click_flat":
+			return "Bonus total: +%s/clic" % main.get_full_number_text(total_bonus)
+		"fish_dps_multiplier":
+			return "Multiplicador peces: x%.2f" % (1.0 + total_bonus)
+		"global_coin_multiplier":
+			return "Multiplicador global: x%.2f" % (1.0 + total_bonus)
+		"shiny_chance_bonus":
+			return "Bonus shiny total: +%.2f%%" % (total_bonus * 100.0)
+		"alien_minigame_time_reduction":
+			return "Reduce minijuego: %.0fs" % total_bonus
+		_:
+			return "Buff activo"
 
 
 func get_current_production_text(id: String) -> String:
@@ -254,31 +483,57 @@ func get_item_current_value(id: String) -> float:
 	var level: int = get_level(id)
 
 	match kind:
-		"passive":
+		"fish":
 			return float(level) * base_value
-		"click":
-			if level <= 0:
-				return 1.0
-			return 1.0 + level * base_value
+		"structure_buff":
+			return float(level) * base_value
 		_:
 			return 0.0
 
 
-func get_current_dps_contribution(id: String) -> float:
-	var total_dps: float = get_total_passive_dps()
-	if total_dps <= 0.0:
-		return 0.0
-
+func get_structure_buff_current_text(id: String) -> String:
 	var def: Dictionary = main.ITEMS[id]
-	if String(def.get("kind", "")) != "passive":
+	var buff_type := String(def.get("buff_type", ""))
+	var value := get_item_current_value(id)
+
+	match buff_type:
+		"click_flat":
+			return "Clic actual: +%d doblones" % get_click_income()
+		"fish_dps_multiplier":
+			return "Buff peces: +%.1f%%" % (value * 100.0)
+		"global_coin_multiplier":
+			return "Buff general: +%.1f%%" % (value * 100.0)
+		"shiny_chance_bonus":
+			return "Prob. shiny: %.2f%%" % (get_shiny_chance() * 100.0)
+		_:
+			return "Buff activo"
+
+
+func get_current_dps_contribution(id: String) -> float:
+	var def: Dictionary = main.ITEMS[id]
+	if String(def.get("kind", "")) != "fish":
 		return 0.0
 
-	return (get_item_current_value(id) / total_dps) * 100.0
+	var total_base_fish_dps := 0.0
+
+	for key in main.ITEMS.keys():
+		var fish_id := String(key)
+		var fish_def: Dictionary = main.ITEMS[fish_id]
+
+		if String(fish_def.get("kind", "")) != "fish":
+			continue
+
+		total_base_fish_dps += get_item_current_value(fish_id)
+
+	if total_base_fish_dps <= 0.0:
+		return 0.0
+
+	return (get_item_current_value(id) / total_base_fish_dps) * 100.0
 
 
 func get_lifetime_generated_text(id: String) -> String:
 	var amount: float = float(main.lifetime_generated.get(id, 0.0))
-	return "%s doblones" % main.format_with_separator(int(amount))
+	return main.get_full_number_text(amount)
 
 
 func get_total_structures_count() -> int:
@@ -316,15 +571,35 @@ func get_total_unlocked_structures_count() -> int:
 
 	return total
 
-# Pez limpiador solo se desbloquea al progresar 
+# Progresión por cadenas de desbloqueo.
 func is_item_locked_by_progress(id: String) -> bool:
 	if id == "auspezio":
 		return not bool(main.unlocked.get("auspezio", false))
 
 	if id == "chupete_jr":
-		if main.cleaning_manager == null:
-			return true
-		return not main.cleaning_manager.is_cleaner_fish_unlocked()
+		return false
+
+	# Mundo 1
+	if id in ["doblon", "vallisneria"]:
+		return not bool(main.unlocked.get("cofre", false))
+	if id in ["sobrasada", "tronco"]:
+		return not bool(main.unlocked.get("vallisneria", false))
+	if id in ["espuma", "anubia"]:
+		return not bool(main.unlocked.get("tronco", false))
+	if id == "rufinus":
+		return not bool(main.unlocked.get("anubia", false))
+
+	# Mundo 2
+	if id == "coral":
+		return not bool(main.unlocked.get("cofre", false))
+	if id in ["piedra", "barbacoa"]:
+		return not bool(main.unlocked.get("coral", false))
+	if id in ["angeles", "iceberg"]:
+		return not bool(main.unlocked.get("piedra", false))
+	if id in ["jigou", "barco"]:
+		return not bool(main.unlocked.get("iceberg", false))
+	if id == "leonardo":
+		return not bool(main.unlocked.get("barco", false))
 
 	return false
 	
@@ -342,8 +617,9 @@ func get_locked_text(id: String) -> String:
 
 		return "Limpiezas %d/%d" % [current, target]
 
-	return str(int(main.ITEMS[id].get("unlock_price", 0)))
-
+	var unlock_price := float(main.ITEMS[id].get("unlock_price", 0))
+	return main.get_compact_number_text(unlock_price)
+	
 
 func get_auspezio_minigame_time_reduction() -> float:
 	var level := get_level("auspezio")
@@ -369,3 +645,55 @@ func has_fish_anywhere(fish_id: String) -> bool:
 				return true
 
 	return false
+
+
+func get_flavor_text(id: String) -> String:
+	match id:
+
+		# --- PECES MUNDO 1 ---
+		"doblon":
+			return "Tu primer generador."
+		"sobrasada":
+			return "Más carne, más monedas."
+		"espuma":
+			return "La producción despega."
+		"rufinus":
+			return "Poder económico puro."
+
+		# --- PECES MUNDO 2 ---
+		"barbacoa":
+			return "Las aguas se calientan."
+		"angeles":
+			return "Elegancia con beneficios."
+		"jigou":
+			return "Producción a otro nivel."
+		"leonardo":
+			return "El rey del acuario."
+
+		# --- ESTRUCTURAS ---
+		"cofre":
+			return "Cada clic vale más."
+		"vallisneria":
+			return "Los peces crecen mejor."
+		"tronco":
+			return "Todo produce más."
+		"anubia":
+			return "Raíces del progreso."
+
+		"coral":
+			return "Vida entre el hielo."
+		"piedra":
+			return "Economía sólida."
+		"iceberg":
+			return "Frío, pero rentable."
+		"barco":
+			return "Más suerte exótica."
+
+		# --- ÚNICOS ---
+		"chupete_jr":
+			return "Siempre deja todo limpio."
+		"auspezio":
+			return "No debería existir."
+
+		_:
+			return "Una nueva mejora."

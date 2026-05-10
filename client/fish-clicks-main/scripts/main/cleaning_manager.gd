@@ -165,3 +165,11 @@ func try_unlock_cleaner_fish() -> void:
 
 func is_cleaning_event_active() -> bool:
 	return cleaning_event_available
+
+func get_cleaning_speed_multiplier() -> float:
+	var level := shop_manager.get_level("chupete_jr")
+
+	if level <= 0:
+		return 1.0
+
+	return 1.0 + (level * 0.15)

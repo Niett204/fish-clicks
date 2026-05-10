@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://dinpoywkt4vsq"]
 
+[ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="1_fc4js"]
 [ext_resource type="Script" uid="uid://djcsisw87mens" path="res://scenes/floating_text.gd" id="1_iwtc3"]
 
 [node name="FloatingText" type="Label" unique_id=479251101]
 offset_right = 40.0
 offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("1_fc4js")
 script = ExtResource("1_iwtc3")
