@@ -441,3 +441,7 @@ func _create_tutorial_block(block: Dictionary) -> VBoxContainer:
 	container.add_child(spacer)
 
 	return container
+
+func close_panel() -> void:
+	tutorial_overlay.visible = false
+	visible = false

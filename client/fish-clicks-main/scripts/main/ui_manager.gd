@@ -48,6 +48,9 @@ func _close_overlay_panels(except_panel: Control = null) -> void:
 	if main.ranking_panel != except_panel:
 		main.ranking_panel.visible = false
 
+	if main.options_panel != except_panel:
+		main.options_panel.close_panel()
+
 
 func _toggle_hud() -> void:
 	main.hud_visible = !main.hud_visible
@@ -62,8 +65,14 @@ func _toggle_hud() -> void:
 func toggle_shop() -> void:
 	main.shop_open = !main.shop_open
 
+	if main.shop_open:
+		_close_overlay_panels()
+
 	if not main.shop_open and main.info_panel:
 		main.info_panel.request_hide()
+
+	if main.shop_tween:
+		main.shop_tween.kill()
 
 	main.shop_tween = main.create_tween()
 	main.shop_tween.set_trans(Tween.TRANS_QUAD)
@@ -120,10 +129,12 @@ func toggle_inventario() -> void:
 
 
 func toggle_options() -> void:
-	main.options_panel.visible = !main.options_panel.visible
+	var will_open: bool = not main.options_panel.visible
 
-	if main.options_panel.visible:
+	if will_open:
+		_close_overlay_panels(main.options_panel)
 		play_ui_sfx(main.SFX_ICON_OPEN)
+		main.options_panel.visible = true
 		main.shop_open = false
 
 		if main.info_panel:
@@ -134,6 +145,7 @@ func toggle_options() -> void:
 
 		main.shop_panel.position.x = main.shop_x_closed
 	else:
+		main.options_panel.visible = false
 		play_ui_sfx(main.SFX_ICON_CLOSE)
 
 
@@ -187,7 +199,7 @@ func close_all_panels() -> void:
 		main.profile_panel.visible = false
 	
 	if main.options_panel.visible:
-		main.options_panel.visible = false
+		main.options_panel.close_panel()
 	
 	if main.encyclopedia_panel.visible:
 		main.encyclopedia_panel.visible = false
