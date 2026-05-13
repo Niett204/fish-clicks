@@ -119,6 +119,11 @@ func get_coin_penalty_multiplier() -> float:
 	return 1.0
 
 # Funciones para actualizar las estadísticas y logros
+
+# Las estadísticas solo aparecerán en el panel una vez desbloqueado el evento de limpieza
+func is_cleaning_feature_unlocked() -> bool:
+	return has_enough_unlocked_structures()
+	
 func register_dirt_spot_cleaned() -> void:
 	total_dirt_spots_cleaned += 1
 

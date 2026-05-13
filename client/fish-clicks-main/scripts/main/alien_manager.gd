@@ -1081,7 +1081,10 @@ func is_alien_minigame_on_cooldown() -> bool:
 	var now: float = float(Time.get_unix_time_from_system())
 	return (now - GlobalData.alien_last_minigame_trigger_unix) < ALIEN_MINIGAME_COOLDOWN_SECONDS
 
-
+# En el panel de stats solo aparecerán los del alien si tienes el minijuego desbloqueado
+func is_alien_feature_unlocked() -> bool:
+	return get_total_fish_count() >= UNLOCK_FISH_COUNT
+	
 func can_trigger_alien_event() -> bool:
 	if not alien_event_available:
 		return false
