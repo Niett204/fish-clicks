@@ -40,6 +40,11 @@ const RETURN_SCENE_PATH := "res://scenes/main.tscn"
 @onready var alien_sprite: Sprite2D = $Background/BattleLayer/Alien/Sprite2D
 
 const AUSPICIO_TIME_REDUCTION_PER_LEVEL := 2.0
+const AUSPICIO_VOICE_1 := preload("res://assets/audio/alien/auspi_1.ogg")
+const AUSPICIO_VOICE_2 := preload("res://assets/audio/alien/auspi_2.ogg")
+const SFX_GLITCH := preload("res://assets/audio/alien/glitch.wav")
+const SFX_WIN_EXPLOSION := preload("res://assets/audio/alien/win_explosion.wav")
+const MUSIC_ALIEN_MINIGAME := preload("res://assets/audio/alien/boss_alien.ogg")
 const MIN_SURVIVAL_TIME_SECONDS := 10.0
 
 enum BossPhase {
@@ -49,6 +54,10 @@ enum BossPhase {
 }
 
 var current_phase: int = BossPhase.PHASE_1
+var intro_voice_player: AudioStreamPlayer
+var global_sfx_player: AudioStreamPlayer
+var battle_music_player: AudioStreamPlayer
+
 var arena_rect_global: Rect2
 
 var current_health: int = 0
@@ -96,6 +105,18 @@ var is_winning_sequence: bool = false
 var damage_taken_count: int = 0
 
 func _ready() -> void:
+	battle_music_player = AudioStreamPlayer.new()
+	add_child(battle_music_player)
+
+	battle_music_player.stream = MUSIC_ALIEN_MINIGAME
+	battle_music_player.play()
+
+	intro_voice_player = AudioStreamPlayer.new()
+	add_child(intro_voice_player)
+	
+	global_sfx_player = AudioStreamPlayer.new()
+	add_child(global_sfx_player)
+
 	attack_utils = AlienAttackUtilsScript.new()
 	add_child(attack_utils)
 	attack_utils.setup(self)
@@ -324,7 +345,11 @@ func play_boss_intro() -> void:
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	await t_in.finished
 
-	for line in intro_lines:
+	for i in range(intro_lines.size()):
+		var line: String = intro_lines[i]
+
+		play_intro_voice_line(i)
+
 		await type_text(bubble_label, line, intro_text_speed)
 		await get_tree().create_timer(intro_hold_time).timeout
 		bubble_label.text = ""
@@ -350,7 +375,25 @@ func type_text(label: Label, full_text: String, speed: float = 0.025) -> void:
 		label.text += full_text[i]
 		await get_tree().create_timer(speed).timeout
 	
+func play_intro_voice_line(index: int) -> void:
+	if intro_voice_player == null:
+		return
 
+	var stream: AudioStream = null
+
+	match index:
+		0:
+			stream = AUSPICIO_VOICE_1
+		1:
+			stream = AUSPICIO_VOICE_2
+
+	if stream == null:
+		return
+
+	intro_voice_player.stop()
+	intro_voice_player.stream = stream
+	intro_voice_player.play()
+	
 func setup_background_display_fish() -> void:
 	var fish_data: Array = GlobalData.consume_pending_minigame_display_fish_data()
 
@@ -1079,6 +1122,8 @@ func die() -> void:
 		return
 
 	is_dead = true
+	play_glitch_sfx()
+	
 	set_process(false)
 	remove_phase_2_worm()
 	clear_glitch_zones()
@@ -1148,6 +1193,8 @@ func play_lose_sequence() -> void:
 
 
 func play_lose_glitch_burst(parent_layer: CanvasLayer) -> void:
+	play_glitch_sfx()
+	
 	var total_duration: float = 1.45
 	var elapsed: float = 0.0
 	var interval: float = 0.055
@@ -1193,6 +1240,15 @@ func spawn_lose_glitch(parent_layer: CanvasLayer) -> void:
 	if glitch.has_method("play_visual_burst"):
 		glitch.play_visual_burst(self, size, randf_range(0.18, 0.32))
 
+func play_glitch_sfx() -> void:
+	global_sfx_player.stop()
+	global_sfx_player.stream = SFX_GLITCH
+	global_sfx_player.play()
+	
+func play_win_explosion_sfx() -> void:
+	global_sfx_player.stop()
+	global_sfx_player.stream = SFX_WIN_EXPLOSION
+	global_sfx_player.play()
 
 func win() -> void:
 	if has_won or is_dead or is_finishing:
@@ -1208,6 +1264,9 @@ func win() -> void:
 
 func _exit_tree() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	
+	if battle_music_player != null:
+		battle_music_player.stop()
 
 
 func _process(delta: float) -> void:
@@ -1261,6 +1320,8 @@ func clear_remaining_attacks() -> void:
 
 
 func play_win_explosion_sequence() -> void:
+	play_win_explosion_sfx()
+	
 	var layer := CanvasLayer.new()
 	layer.layer = 10001
 	add_child(layer)

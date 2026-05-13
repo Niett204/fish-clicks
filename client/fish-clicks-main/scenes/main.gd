@@ -82,6 +82,11 @@ const ALIEN_EVENT_CHECK_INTERVAL: float = 30.0
 @onready var ui_sfx_player: AudioStreamPlayer = $UiSfxPlayer
 @onready var achievement_sfx_player: AudioStreamPlayer = $AchievementSfxPlayer
 
+const HABITAT_MUSIC := {
+	"habitat_1": preload("res://assets/audio/fondo/fondo1.ogg"),
+	"habitat_2": preload("res://assets/audio/fondo/fondo2.ogg")
+}
+
 const SFX_ICON_OPEN := preload("res://assets/audio/UI/abrir_icono.wav")
 const SFX_ICON_CLOSE := preload("res://assets/audio/UI/cerrar_icono.wav")
 const SFX_COFRE_CLICK := preload("res://assets/audio/UI/pulsar_cofre.wav")
@@ -90,8 +95,13 @@ const SFX_SHINY := preload("res://assets/audio/UI/shiny.wav")
 const SFX_CAMBIAR_TAB := preload("res://assets/audio/UI/cambiar_tab.wav")
 const SFX_PASA_PAGINA := preload("res://assets/audio/UI/pasa_pagina.wav")
 const SFX_CAMBIAR_CATEGORIA := preload("res://assets/audio/UI/cambiar_tab.wav")
-const SFX_ACHIEVEMENT := preload("res://assets/audio/UI/shiny.wav")
+const SFX_ACHIEVEMENT := preload("res://assets/audio/UI/logro.wav")
 const SFX_BOTTLE := preload("res://assets/audio/UI/cambiar_tab.wav")
+const SFX_SCRUB = preload("res://assets/audio/UI/fotado.WAV")
+
+const SFX_ALIEN_ABDUCT := preload("res://assets/audio/alien/abduct.wav")
+const SFX_ALIEN_ENTER := preload("res://assets/audio/alien/landing.wav")
+const SFX_ALIEN_EXIT := preload("res://assets/audio/alien/landing.wav")
 
 # ------------------- ASSETS VISUALES -------------------
 const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado_arena.png")
@@ -266,9 +276,8 @@ func _ready() -> void:
 	var url := "https://fish-clicks.onrender.com/api/test"
 	http_request.request(url)
 
-	# Cargar sonidos música y efectos
-	music_player.stream = preload("res://assets/audio/fondo/fondo1.ogg")
-	music_player.play()
+	# Cargar sonido de fondo según el hábitat
+	update_habitat_music()
 
 	for k in ITEMS.keys():
 		var id := String(k)
@@ -352,6 +361,7 @@ func _ready() -> void:
 
 		refresh_habitat_structures()
 		_update_chest_sprite_by_level()
+		update_habitat_music()
 	)
 	btn_options_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_options_icon)
@@ -527,6 +537,7 @@ func _on_save_loaded(save_data: Dictionary) -> void:
 	update_world_button_visibility()
 	_update_chest_sprite_by_level()
 	refresh_habitat_structures()
+	update_habitat_music()
 	shop_manager.update_cps()
 	ui_manager._update_ui()
 	ui_manager.update_unique_tab_visibility()
@@ -730,6 +741,7 @@ func reset_local_state() -> void:
 	# Actualizar la interfaz de usuario completa (etiquetas de doblones, botellas, etc.)
 	ui_manager._update_ui()
 	habitat_manager.apply_current_habitat()
+	update_habitat_music()
 	
 	if stats_panel.visible:
 		stats_manager.refresh_stats_panel_full()
@@ -858,6 +870,23 @@ func _actualizar_peces_desbloqueados_en_enciclopedia() -> void:
 		encyclopedia_panel.set_pez_ids_desbloqueados(ids_desbloqueados)
 
 # --------- Escenario ---------
+func update_habitat_music() -> void:
+	if habitat_manager == null:
+		return
+
+	var habitat_id: String = habitat_manager.current_habitat
+
+	if not HABITAT_MUSIC.has(habitat_id):
+		return
+
+	var new_music: AudioStream = HABITAT_MUSIC[habitat_id]
+
+	if music_player.stream == new_music:
+		return
+
+	music_player.stream = new_music
+	music_player.play()
+	
 func refresh_habitat_structures() -> void:
 	_update_algas_sprite_by_level()
 	_update_anubia_sprite_by_level()

@@ -616,7 +616,6 @@ visible = false
 layout_mode = 1
 
 [node name="OptionsPannel" parent="UI/Root/HUD" unique_id=1316162174 instance=ExtResource("22_pm3ni")]
-visible = false
 layout_mode = 1
 script = ExtResource("25_2f3dj")
 
