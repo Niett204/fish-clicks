@@ -19,12 +19,12 @@
 [ext_resource type="Texture2D" uid="uid://rljxhda6odwj" path="res://assets/ui/iconos/icono_enciclopedia.png" id="11_yc10j"]
 [ext_resource type="Texture2D" uid="uid://21q76o4ppybq" path="res://assets/ui/iconos/icono_tienda.png" id="12_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://csi3purv5anh3" path="res://assets/estructuras/piedra/piedra_large.png" id="12_nvyfr"]
-[ext_resource type="Texture2D" uid="uid://cdi0rx08m5at3" path="res://assets/ui/inventario/pecera_vacia2.png" id="12_qkpxi"]
+[ext_resource type="Texture2D" uid="uid://etiyc1qlnhhy" path="res://assets/ui/inventario/pecera_vacia2.png" id="12_qkpxi"]
 [ext_resource type="Texture2D" uid="uid://b3dmql08os7g0" path="res://assets/estructuras/iceberg/iceberg_large.png" id="12_vc5cj"]
 [ext_resource type="Texture2D" uid="uid://b33wxaxja8jx0" path="res://assets/ui/red.png" id="13_jkv2x"]
 [ext_resource type="Texture2D" uid="uid://c5ht6q767emx5" path="res://assets/ui/botella_mensaje.png" id="13_muem4"]
 [ext_resource type="Script" uid="uid://gmyjxeo8kray" path="res://scenes/btn_profile.gd" id="13_qkpxi"]
-[ext_resource type="Shader" uid="uid://clhdnox30mfge" path="res://scenes/ProfilePanel.gdshader" id="14_5q0nq"]
+[ext_resource type="Shader" path="res://scenes/ProfilePanel.gdshader" id="14_5q0nq"]
 [ext_resource type="Texture2D" uid="uid://cn5n3a2h1n5m3" path="res://assets/misc/doblon_frontal.png" id="14_dp3eg"]
 [ext_resource type="Texture2D" uid="uid://dyttmjwyi13od" path="res://assets/ui/iconos/icono_ranking.png" id="18_fuf3a"]
 [ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="18_og1vs"]
@@ -39,7 +39,7 @@
 [ext_resource type="PackedScene" uid="uid://csohusujfqgej" path="res://scenes/stats_panel.tscn" id="23_y6deb"]
 [ext_resource type="Script" uid="uid://dq5rdt0gb7n50" path="res://scenes/options_panel.gd" id="25_2f3dj"]
 [ext_resource type="PackedScene" uid="uid://buvdg6kk8oju2" path="res://scenes/ProfilePanel.tscn" id="25_2wyq8"]
-[ext_resource type="Texture2D" uid="uid://simg5b7itmvf" path="res://assets/ui/ampliar.png" id="33_5q0nq"]
+[ext_resource type="Texture2D" uid="uid://bpgxqk77y7lih" path="res://assets/ui/ampliar.png" id="33_5q0nq"]
 [ext_resource type="PackedScene" uid="uid://dj8jfr82fffsq" path="res://scenes/ranking_panel.tscn" id="36_pibwh"]
 [ext_resource type="Script" uid="uid://bn6sp33ncncs" path="res://scenes/cleaning_event_layer.gd" id="39_c6pm6"]
 [ext_resource type="PackedScene" uid="uid://bqr5662a2ybqw" path="res://scenes/dirt_spot.tscn" id="40_5he1u"]
@@ -616,7 +616,6 @@ visible = false
 layout_mode = 1
 
 [node name="OptionsPannel" parent="UI/Root/HUD" unique_id=1316162174 instance=ExtResource("22_pm3ni")]
-visible = false
 layout_mode = 1
 script = ExtResource("25_2f3dj")
 

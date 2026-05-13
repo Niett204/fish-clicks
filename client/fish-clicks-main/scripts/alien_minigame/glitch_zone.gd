@@ -1,6 +1,8 @@
 extends Area2D
 class_name GlitchZone
 
+const SFX_GLITCH := preload("res://assets/audio/alien/glitch.wav")
+
 @export var warning_time: float = 0.9
 @export var active_time: float = 2.6
 @export var blink_interval: float = 0.10
@@ -16,6 +18,7 @@ class_name GlitchZone
 @onready var warning_rect: ColorRect = $WarningRect
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
+var glitch_sfx_player: AudioStreamPlayer
 var main_ref: Node2D = null
 var zone_size: Vector2 = Vector2.ZERO
 var player_inside: bool = false
@@ -30,6 +33,13 @@ var glitch_hold_offset: Vector2 = Vector2.ZERO
 var glitch_hold_scale: Vector2 = Vector2.ONE
 var glitch_hold_rotation: float = 0.0
 
+func _ready() -> void:
+	glitch_sfx_player = AudioStreamPlayer.new()
+	add_child(glitch_sfx_player)
+
+	glitch_sfx_player.stream = SFX_GLITCH
+	glitch_sfx_player.play()
+	
 func setup(main_owner: Node2D, size: Vector2) -> void:
 	main_ref = main_owner
 	zone_size = size

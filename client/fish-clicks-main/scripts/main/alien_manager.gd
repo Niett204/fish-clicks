@@ -83,6 +83,9 @@ func spawn_and_enter_alien() -> void:
 
 	# Empieza fuera de pantalla, arriba
 	alien_instance.position = Vector2(final_pos.x, -180)
+	
+	if main != null and main.ui_manager != null:
+		main.ui_manager.play_ui_sfx(main.SFX_ALIEN_ENTER)
 
 	await animate_alien_zigzag_entry(final_pos)
 	
@@ -238,6 +241,9 @@ func start_aquarium_abduction_sequence() -> void:
 	if fish_list.is_empty():
 		finish_abduction_sequence()
 		return
+	
+	if main != null and main.ui_manager != null:
+		main.ui_manager.play_ui_sfx(main.SFX_ALIEN_ABDUCT)
 
 	await abduct_aquarium_abduction_sequence_with_snapshots(fish_list)
 	finish_abduction_sequence()
@@ -470,6 +476,9 @@ func _resume_after_minigame_flow(result: Dictionary) -> void:
 func animate_alien_escape_damaged() -> void:
 	if alien_instance == null or not is_instance_valid(alien_instance):
 		return
+	
+	if main != null and main.ui_manager != null:
+		main.ui_manager.play_ui_sfx(main.SFX_ALIEN_EXIT)
 
 	alien_escape_fx_active = true
 
@@ -691,6 +700,9 @@ func spit_fish_back_into_aquarium() -> void:
 		elif alien_instance != null:
 			origin = alien_instance.global_position
 
+	if main != null and main.ui_manager != null:
+		main.ui_manager.play_ui_sfx(main.SFX_ALIEN_ABDUCT)
+		
 	var fx_layer: CanvasLayer = null
 
 	if alien_escape_fx_active:
@@ -794,9 +806,12 @@ func _find_snapshot_for_fish(fish: Node) -> Dictionary:
 			return snap
 	return {}
 		
-func animate_alien_exit_after_minigame() -> void:
+func animate_alien_exit_after_minigame() -> void:	
 	if alien_instance == null or not is_instance_valid(alien_instance):
 		return
+	
+	if main != null and main.ui_manager != null:
+		main.ui_manager.play_ui_sfx(main.SFX_ALIEN_EXIT)
 
 	var screen_size: Vector2 = main.get_viewport_rect().size
 	var final_pos: Vector2 = Vector2(screen_size.x * 0.5, 100)
@@ -1081,7 +1096,10 @@ func is_alien_minigame_on_cooldown() -> bool:
 	var now: float = float(Time.get_unix_time_from_system())
 	return (now - GlobalData.alien_last_minigame_trigger_unix) < ALIEN_MINIGAME_COOLDOWN_SECONDS
 
-
+# En el panel de stats solo aparecerán los del alien si tienes el minijuego desbloqueado
+func is_alien_feature_unlocked() -> bool:
+	return get_total_fish_count() >= UNLOCK_FISH_COUNT
+	
 func can_trigger_alien_event() -> bool:
 	if not alien_event_available:
 		return false
