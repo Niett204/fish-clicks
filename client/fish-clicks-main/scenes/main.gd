@@ -289,12 +289,19 @@ func _ready() -> void:
 	encyclopedia_panel.visible = false
 	profile_panel.visible = false
 	btn_world_icon.visible = false
+	inventory_panel.visible = false
+	stats_panel.visible = false
+	ranking_panel.visible = false
+	options_panel.visible = false
 	chest_base_scale = chest_sprite.scale
 	
 	shop_panel.z_index = 1
 	encyclopedia_panel.z_index = 20
 	inventory_panel.z_index = 20
 	stats_panel.z_index = 20
+	profile_panel.z_index = 20
+	ranking_panel.z_index = 20
+	options_panel.z_index = 30
 	barco_base_scale = barco.scale
 	barco_base_position = barco.position
 	bg.z_index = -100
@@ -319,28 +326,17 @@ func _ready() -> void:
 
 	btn_ranking_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_ranking_icon)
-		# Si el panel está oculto, lo abrimos y cargamos datos
-		if not ranking_panel.visible:
-			ranking_panel._open() 
-		else:
-			ranking_panel._close() # O simplemente ranking_panel.visible = false
+		ui_manager.toggle_ranking()
 	)
 
 	btn_encyclopedia_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_encyclopedia_icon)
 		ui_manager.toggle_encyclopedia()
 	)
-	
-	#btn_profile_icon.pressed.connect(func():
-		#achievements_manager.register_profile_click()
-		#ui_manager.play_squish(btn_profile_icon)
-		#ui_manager.toggle_profile()
-	#)
 
 	btn_inventory_icon.pressed.connect(func():
 		if alien_manager.is_event_blocking_achievement_popups():
 			return
-
 		ui_manager.play_squish(btn_inventory_icon)
 		ui_manager.toggle_inventario()
 	)
@@ -363,6 +359,13 @@ func _ready() -> void:
 		_update_chest_sprite_by_level()
 		update_habitat_music()
 	)
+	
+	btn_profile_icon.pressed.connect(func():
+		achievements_manager.register_profile_click()
+		ui_manager.play_squish(btn_profile_icon)
+		ui_manager.toggle_profile()
+	)
+
 	btn_options_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_options_icon)
 		ui_manager.toggle_options()

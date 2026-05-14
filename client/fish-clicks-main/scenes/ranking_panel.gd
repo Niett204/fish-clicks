@@ -114,9 +114,8 @@ func _on_btn_close_pressed() -> void:
 	_close()
 
 func _close() -> void:
-	var tw := create_tween()
-	tw.tween_property(self, "modulate:a", 0.0, 0.12)
-	tw.finished.connect(func(): hide(); close_requested.emit())
+	hide()
+	close_requested.emit()
 
 func _on_btn_close_mouse_entered() -> void:
 	var tween := create_tween()

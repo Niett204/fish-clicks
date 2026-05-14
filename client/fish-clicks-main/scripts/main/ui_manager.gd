@@ -33,24 +33,39 @@ func play_squish(node: Control) -> void:
 
 
 func _close_overlay_panels(except_panel: Control = null) -> void:
+	if main.shop_panel != except_panel:
+		main.shop_open = false
+
+		if main.shop_tween:
+			main.shop_tween.kill()
+
+		main.shop_panel.position.x = main.shop_x_closed
+
 	if main.encyclopedia_panel != except_panel:
 		main.encyclopedia_panel.visible = false
 
 	if main.inventory_panel != except_panel:
 		main.inventory_panel.visible = false
 
-	if main.profile_panel != except_panel:
-		main.profile_panel.visible = false
-
 	if main.stats_panel != except_panel:
 		main.stats_panel.visible = false
-		
+
+	if main.profile_panel != except_panel:
+		if main.profile_panel.has_method("force_close"):
+			main.profile_panel.force_close()
+		else:
+			main.profile_panel.visible = false
+
 	if main.ranking_panel != except_panel:
+		if main.ranking_panel.has_method("_close"):
+			main.ranking_panel._close()
 		main.ranking_panel.visible = false
 
 	if main.options_panel != except_panel:
-		main.options_panel.close_panel()
-
+		if main.options_panel.has_method("close_panel"):
+			main.options_panel.close_panel()
+		else:
+			main.options_panel.visible = false
 
 func _toggle_hud() -> void:
 	main.hud_visible = !main.hud_visible
@@ -66,7 +81,7 @@ func toggle_shop() -> void:
 	main.shop_open = !main.shop_open
 
 	if main.shop_open:
-		_close_overlay_panels()
+		_close_overlay_panels(main.shop_panel)
 
 	if not main.shop_open and main.info_panel:
 		main.info_panel.request_hide()
@@ -170,8 +185,10 @@ func toggle_profile() -> void:
 	var will_open: bool = not main.profile_panel.visible
 
 	if will_open:
-		_close_overlay_panels(main.profile_panel)
+		close_all_panels()
+
 		play_ui_sfx(main.SFX_ICON_OPEN)
+
 		main.profile_panel._open()
 
 		if main.info_panel:
@@ -184,7 +201,7 @@ func close_all_panels() -> void:
 	if main.info_panel:
 		main.info_panel.request_hide()
 
-	if main.shop_panel.visible:
+	if main.shop_open:
 		main.shop_open = false
 
 		if main.shop_tween:
@@ -196,7 +213,10 @@ func close_all_panels() -> void:
 		main.stats_panel.visible = false
 	
 	if main.profile_panel.visible:
-		main.profile_panel.visible = false
+		if main.profile_panel.has_method("_close"):
+			main.profile_panel._close()
+		else:
+			main.profile_panel.visible = false
 	
 	if main.options_panel.visible:
 		main.options_panel.close_panel()
@@ -208,7 +228,10 @@ func close_all_panels() -> void:
 		main.inventory_panel.visible = false
 	
 	if main.ranking_panel.visible:
-		main.ranking_panel.visible = false
+		if main.ranking_panel.has_method("_close"):
+			main.ranking_panel._close()
+		else:
+			main.ranking_panel.visible = false
 	
 func _update_ui() -> void:
 	_update_currency_ui()
@@ -328,19 +351,22 @@ func toggle_ranking() -> void:
 	if will_open:
 		_close_overlay_panels(main.ranking_panel)
 		play_ui_sfx(main.SFX_ICON_OPEN)
-		main.ranking_panel.visible = true
 
 		if main.info_panel:
 			main.info_panel.request_hide()
-		
-		# Llamamos al método de apertura del panel si existe
+
 		if main.ranking_panel.has_method("_open"):
 			main.ranking_panel._open()
+		else:
+			main.ranking_panel.visible = true
 	else:
-		main.ranking_panel.visible = false
 		play_ui_sfx(main.SFX_ICON_CLOSE)
 
-
+		if main.ranking_panel.has_method("_close"):
+			main.ranking_panel._close()
+		else:
+			main.ranking_panel.visible = false
+			
 func update_unique_tab_visibility() -> void:
 	var should_show: bool = false
 
@@ -428,3 +454,11 @@ func has_any_panel_open() -> bool:
 		   main.inventory_panel.visible or \
 		   main.options_panel.visible or \
 		   main.shop_open # En tu script la tienda usa esta variable
+
+func has_exclusive_panel_open() -> bool:
+	return main.shop_open or \
+		   main.stats_panel.visible or \
+		   main.ranking_panel.visible or \
+		   main.profile_panel.visible or \
+		   main.encyclopedia_panel.visible or \
+		   main.inventory_panel.visible

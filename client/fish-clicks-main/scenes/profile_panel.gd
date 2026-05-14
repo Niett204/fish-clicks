@@ -92,23 +92,26 @@ func toggle() -> void:
 
 func _open() -> void:
 	_refresh_view()
-	btn_close.position.y = 96.0 if tab_container.current_tab == 0 else 116.0
+
 	show()
 	modulate.a = 0.0
+
 	var tw := create_tween()
 	tw.tween_property(self, "modulate:a", 1.0, 0.15)
 
 func _close() -> void:
-	var tw := create_tween()
-	tw.tween_property(self, "modulate:a", 0.0, 0.12)
-	tw.finished.connect(hide)
+	hide()
+	close_requested.emit()
 
 # ── Lógica de Visualización ────────────────────────────────────────────────
 func _refresh_view() -> void:
 	if GlobalData.is_logged_in:
-		nick_label.text  = "Hola, %s!" % GlobalData.user_nickname
+		nick_label.text = "Hola, %s!" % GlobalData.user_nickname
 		email_label.text = GlobalData.user_email
-		_load_user_photo(GlobalData.user_photo_url) 
+
+		var photo := "" if GlobalData.user_photo_url == null else str(GlobalData.user_photo_url)
+		_load_user_photo(photo)
+
 		profile_view.show()
 		auth_view.hide()
 	else:
