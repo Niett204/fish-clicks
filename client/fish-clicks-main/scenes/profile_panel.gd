@@ -40,6 +40,9 @@ func _ready() -> void:
 	GlobalData.register_success.connect(_on_register_ok)
 	GlobalData.register_failed.connect(_on_register_err)
 	GlobalData.login_success.connect(func(_d): _refresh_view())
+	
+	tab_container.tab_changed.connect(_on_tab_changed)
+	btn_close.position.y = 96.0 if tab_container.current_tab == 0 else 116.0
 
 	if not GlobalData.profile_updated.is_connected(_refresh_view):
 		GlobalData.profile_updated.connect(_refresh_view)
@@ -89,6 +92,7 @@ func toggle() -> void:
 
 func _open() -> void:
 	_refresh_view()
+	btn_close.position.y = 96.0 if tab_container.current_tab == 0 else 116.0
 	show()
 	modulate.a = 0.0
 	var tw := create_tween()
@@ -285,3 +289,7 @@ func _on_btn_close_mouse_exited() -> void:
 	tween.set_ease(Tween.EASE_OUT)
 	tween.parallel().tween_property(btn_close, "scale", Vector2.ONE, 0.08)
 	tween.parallel().tween_property(btn_close, "modulate", Color(1, 1, 1, 1), 0.08)
+
+func _on_tab_changed(tab: int) -> void:
+	# 0 es Login, 1 es Registro
+	btn_close.position.y = 96.0 if tab == 0 else 116.0
