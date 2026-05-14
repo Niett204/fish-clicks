@@ -603,10 +603,6 @@ func _input(event: InputEvent) -> void:
 			if cleaning_manager != null and cleaning_manager.should_count_inactivity():
 				cleaning_manager.register_player_activity()
 
-	if event is InputEventKey and event.pressed and event.keycode == KEY_K:
-		if alien_manager != null:
-			alien_manager.start_alien_event()
-
 func _unhandled_input(event: InputEvent) -> void:
 	# --- 1. LÓGICA DE TECLADO ---
 	if event is InputEventKey and event.pressed:
