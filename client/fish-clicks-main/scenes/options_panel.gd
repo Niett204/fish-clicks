@@ -4,8 +4,12 @@ signal close_requested
 signal volume_slider_spam_detected
 signal modo_pecera_requested
 const TutorialData = preload("res://scripts/data/bloques_tutorial.gd")
+
 const FONT_TITLE = preload("res://assets/fuentes/PirataOne-Regular.ttf")
 const FONT_BODY = preload("res://assets/fuentes/PirataOne-Regular.ttf")
+const DEFAULT_MASTER_VOLUME := 15.0
+const DEFAULT_MUSIC_VOLUME := 20.0
+const DEFAULT_EFFECTS_VOLUME := 25.0
 
 @onready var btn_close: TextureButton = $CenterContainer/PanelRoot/BtnCerrar
 @onready var btn_modo_pecera: Button = $CenterContainer/PanelRoot/BtnsArriba/BtnModoPecera
@@ -67,9 +71,11 @@ func _ready() -> void:
 	_configure_slider(SliderEfectos)
 	
 	# Inicializar las Sliders a un valor predeterminado
-	SliderGeneral.value = 15
-	SliderMusica.value = 20
-	SliderEfectos.value = 25
+	if not GlobalData.has_audio_settings_been_initialized:
+		_apply_default_audio_values()
+		GlobalData.has_audio_settings_been_initialized = true
+	else:
+		sync_from_audio_server()
 
 	_apply_all_slider_audio()
 	
@@ -482,6 +488,34 @@ func _on_btn_cerrar_tutorial_mouse_exited() -> void:
 	
 	tween.parallel().tween_property(btn_cerrar_tutorial, "scale", base_scale, 0.08)
 	tween.parallel().tween_property(btn_cerrar_tutorial, "modulate", Color.WHITE, 0.08)
+
+func sync_from_audio_server() -> void:
+	_set_slider_from_bus(SliderGeneral, "Master")
+	_set_slider_from_bus(SliderMusica, "Musica")
+	_set_slider_from_bus(SliderEfectos, "Efectos")
+
+	await get_tree().process_frame
+
+	for item in slider_items:
+		_update_slider_visuals(item)
+
+
+func _set_slider_from_bus(slider: HSlider, bus_name: String) -> void:
+	var bus_index := AudioServer.get_bus_index(bus_name)
+	if bus_index < 0:
+		return
+
+	var db := AudioServer.get_bus_volume_db(bus_index)
+	var linear_value := db_to_linear(db)
+
+	slider.set_value_no_signal(clamp(linear_value * 100.0, 0.0, 100.0))
+
+func _apply_default_audio_values() -> void:
+	SliderGeneral.set_value_no_signal(DEFAULT_MASTER_VOLUME)
+	SliderMusica.set_value_no_signal(DEFAULT_MUSIC_VOLUME)
+	SliderEfectos.set_value_no_signal(DEFAULT_EFFECTS_VOLUME)
+
+	_apply_all_slider_audio()
 
 func setup_tutorial_scrollbar() -> void:
 	var style_grabber := StyleBoxFlat.new()

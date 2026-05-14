@@ -9,6 +9,7 @@ const SFX_LASER := preload("res://assets/audio/alien/laser.wav")
 
 func _ready() -> void:
 	sfx_player = AudioStreamPlayer2D.new()
+	sfx_player.bus = "Efectos"
 	add_child(sfx_player)
 
 	sfx_player.stream = SFX_LASER

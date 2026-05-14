@@ -35,6 +35,7 @@ var glitch_hold_rotation: float = 0.0
 
 func _ready() -> void:
 	glitch_sfx_player = AudioStreamPlayer.new()
+	glitch_sfx_player.bus = "Efectos"
 	add_child(glitch_sfx_player)
 
 	glitch_sfx_player.stream = SFX_GLITCH

@@ -84,7 +84,7 @@ const ALIEN_EVENT_CHECK_INTERVAL: float = 30.0
 
 const HABITAT_MUSIC := {
 	"habitat_1": preload("res://assets/audio/fondo/fondo1.ogg"),
-	"habitat_2": preload("res://assets/audio/fondo/fondo2.ogg")
+	"habitat_2": preload("res://assets/audio/fondo/fondo2.wav")
 }
 
 const SFX_ICON_OPEN := preload("res://assets/audio/UI/abrir_icono.wav")
@@ -97,7 +97,7 @@ const SFX_PASA_PAGINA := preload("res://assets/audio/UI/pasa_pagina.wav")
 const SFX_CAMBIAR_CATEGORIA := preload("res://assets/audio/UI/cambiar_tab.wav")
 const SFX_ACHIEVEMENT := preload("res://assets/audio/UI/logro.wav")
 const SFX_BOTTLE := preload("res://assets/audio/UI/cambiar_tab.wav")
-const SFX_SCRUB = preload("res://assets/audio/UI/fotado.WAV")
+const SFX_SCRUB = preload("res://assets/audio/UI/fotado.wav")
 
 const SFX_ALIEN_ABDUCT := preload("res://assets/audio/alien/abduct.wav")
 const SFX_ALIEN_ENTER := preload("res://assets/audio/alien/landing.wav")
@@ -524,6 +524,8 @@ func _is_item_unlocked_by_default(id: String) -> bool:
 	return int(ITEMS[id].get("unlock_price", 0)) == 0 
 	
 func _resume_alien_after_runtime_restore(alien_return_data: Dictionary) -> void:
+	update_habitat_music()
+	
 	alien_manager.resume_after_minigame(alien_return_data)
 
 	ui_manager.update_unique_tab_visibility()
@@ -600,10 +602,6 @@ func _input(event: InputEvent) -> void:
 		if event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]:
 			if cleaning_manager != null and cleaning_manager.should_count_inactivity():
 				cleaning_manager.register_player_activity()
-
-	if event is InputEventKey and event.pressed and event.keycode == KEY_K:
-		if alien_manager != null:
-			alien_manager.start_alien_event()
 
 func _unhandled_input(event: InputEvent) -> void:
 	# --- 1. LÓGICA DE TECLADO ---
@@ -914,11 +912,12 @@ func update_habitat_music() -> void:
 
 	var new_music: AudioStream = HABITAT_MUSIC[habitat_id]
 
-	if music_player.stream == new_music:
-		return
+	if music_player.stream != new_music:
+		music_player.stop()
+		music_player.stream = new_music
 
-	music_player.stream = new_music
-	music_player.play()
+	if not music_player.playing:
+		music_player.play()
 	
 func refresh_habitat_structures() -> void:
 	_update_algas_sprite_by_level()
