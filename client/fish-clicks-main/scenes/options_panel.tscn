@@ -483,7 +483,6 @@ stream = ExtResource("4_hblyp")
 bus = &"Efectos"
 
 [node name="TutorialOverlay" type="Control" parent="." unique_id=1784877545]
-visible = false
 anchors_preset = 0
 offset_left = 238.0
 offset_top = 61.0
@@ -530,19 +529,15 @@ stretch_mode = 3
 [node name="BtnCerrarTutorial" type="TextureButton" parent="TutorialOverlay/CenterContainer/PanelTutorial" unique_id=1986853598]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 15.605069
-offset_top = -16.481138
-offset_right = 55.60507
-offset_bottom = 23.518862
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.049054764, 0.059418045)
+offset_left = -2.697701
+offset_top = -35.092014
+offset_right = 37.3023
+offset_bottom = 4.9079857
+scale = Vector2(0.05, 0.06)
+pivot_offset = Vector2(20, 20)
 texture_normal = ExtResource("3_8fxpn")
 ignore_texture_size = true
-stretch_mode = 0
+stretch_mode = 5
 
 [node name="TituloTutorial" type="Label" parent="TutorialOverlay/CenterContainer/PanelTutorial" unique_id=1318067207]
 layout_mode = 1

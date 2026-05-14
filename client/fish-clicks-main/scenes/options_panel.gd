@@ -122,6 +122,10 @@ func _ready() -> void:
 	btn_close.mouse_exited.connect(_on_btn_close_mouse_exited)
 	btn_close.button_down.connect(_on_btn_close_button_down)
 	btn_close.button_up.connect(_on_btn_close_button_up)
+	
+	btn_cerrar_tutorial.pivot_offset = btn_cerrar_tutorial.size / 2 
+	btn_cerrar_tutorial.mouse_entered.connect(_on_btn_cerrar_tutorial_mouse_entered)
+	btn_cerrar_tutorial.mouse_exited.connect(_on_btn_cerrar_tutorial_mouse_exited)
 
 	# Botón modo pecera
 	btn_modo_pecera.pressed.connect(_on_btn_modo_pecera_pressed)
@@ -389,6 +393,9 @@ func _on_btn_tutorial_pressed() -> void:
 	scroll_tutorial.scroll_vertical = 0
 
 func _on_btn_cerrar_tutorial_pressed() -> void:
+	var main_node = get_tree().get_first_node_in_group("main")
+	if main_node and main_node.ui_manager:
+		main_node.ui_manager.play_squish(btn_cerrar_tutorial)
 	tutorial_overlay.visible = false
 
 func _build_tutorial() -> void:
@@ -445,3 +452,28 @@ func _create_tutorial_block(block: Dictionary) -> VBoxContainer:
 func close_panel() -> void:
 	tutorial_overlay.visible = false
 	visible = false
+
+func _on_btn_cerrar_tutorial_mouse_entered() -> void:
+	# Tu escala base del inspector
+	var base_scale := Vector2(0.05, 0.06)
+	
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	
+	# Escalamos un 8% sobre tu base actual
+	var target_scale := base_scale * 1.08
+	
+	tween.parallel().tween_property(btn_cerrar_tutorial, "scale", target_scale, 0.08)
+	tween.parallel().tween_property(btn_cerrar_tutorial, "modulate", Color(0.85, 0.85, 0.85, 1.0), 0.08)
+
+func _on_btn_cerrar_tutorial_mouse_exited() -> void:
+	# Volvemos exactamente a lo que tienes en el inspector
+	var base_scale := Vector2(0.05, 0.06)
+	
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	
+	tween.parallel().tween_property(btn_cerrar_tutorial, "scale", base_scale, 0.08)
+	tween.parallel().tween_property(btn_cerrar_tutorial, "modulate", Color.WHITE, 0.08)
