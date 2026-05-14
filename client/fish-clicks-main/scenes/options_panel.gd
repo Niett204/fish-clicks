@@ -388,14 +388,16 @@ func _show_save_status(msg: String) -> void:
 	
 # Panel Tutorial
 func _on_btn_tutorial_pressed() -> void:
+	btn_cerrar_tutorial.scale = Vector2(0.05, 0.06)
 	tutorial_overlay.visible = true
 	tutorial_overlay.move_to_front()
 	scroll_tutorial.scroll_vertical = 0
 
 func _on_btn_cerrar_tutorial_pressed() -> void:
-	var main_node = get_tree().get_first_node_in_group("main")
-	if main_node and main_node.ui_manager:
-		main_node.ui_manager.play_squish(btn_cerrar_tutorial)
+	# En lugar de play_squish del manager, hacemos uno manual que respete tu 0.05
+	var base_s := Vector2(0.05, 0.06)
+	var tw := create_tween()
+	tw.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tutorial_overlay.visible = false
 
 func _build_tutorial() -> void:
