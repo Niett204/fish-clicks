@@ -45,6 +45,14 @@ func get_save_state() -> Dictionary:
 		"alien_egg": main.egg_manager.get_save_state(),
 		"alien_no_hit_unlocked": main.achievements_manager.alien_no_hit_unlocked,
 		"alien_egg_obtained": main.achievements_manager.alien_egg_obtained,
+		"audio": {
+			"master_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")),
+			"music_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Musica")),
+			"sfx_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Efectos")),
+			"master_muted": AudioServer.is_bus_mute(AudioServer.get_bus_index("Master")),
+			"music_muted": AudioServer.is_bus_mute(AudioServer.get_bus_index("Musica")),
+			"sfx_muted": AudioServer.is_bus_mute(AudioServer.get_bus_index("Efectos"))
+		}
 	}
 
 func reset_local_state() -> void:
@@ -195,6 +203,17 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 			AudioServer.get_bus_index("Master"),
 			state["sound_volume"]
 		)
+	
+	if state.has("audio"):
+		var audio: Dictionary = state["audio"]
+
+		_set_bus_volume("Master", float(audio.get("master_volume", 0.0)))
+		_set_bus_volume("Musica", float(audio.get("music_volume", 0.0)))
+		_set_bus_volume("Efectos", float(audio.get("sfx_volume", 0.0)))
+
+		_set_bus_mute("Master", bool(audio.get("master_muted", false)))
+		_set_bus_mute("Musica", bool(audio.get("music_muted", false)))
+		_set_bus_mute("Efectos", bool(audio.get("sfx_muted", false)))
 
 	main.total_clicks = int(state.get("total_clicks", 0))
 	main.total_coins_earned = float(state.get("total_coins_earned", 0.0))
@@ -228,3 +247,14 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 	main._update_chest_sprite_by_level()
 	main.alien_manager.check_alien_event_unlock()
 	main.habitat_manager.apply_current_habitat()
+
+func _set_bus_volume(bus_name: String, volume_db: float) -> void:
+	var bus_index := AudioServer.get_bus_index(bus_name)
+	if bus_index >= 0:
+		AudioServer.set_bus_volume_db(bus_index, volume_db)
+
+
+func _set_bus_mute(bus_name: String, muted: bool) -> void:
+	var bus_index := AudioServer.get_bus_index(bus_name)
+	if bus_index >= 0:
+		AudioServer.set_bus_mute(bus_index, muted)

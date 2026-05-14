@@ -40,11 +40,11 @@ const RETURN_SCENE_PATH := "res://scenes/main.tscn"
 @onready var alien_sprite: Sprite2D = $Background/BattleLayer/Alien/Sprite2D
 
 const AUSPICIO_TIME_REDUCTION_PER_LEVEL := 2.0
-const AUSPICIO_VOICE_1 := preload("res://assets/audio/alien/auspi_1.ogg")
-const AUSPICIO_VOICE_2 := preload("res://assets/audio/alien/auspi_2.ogg")
+const AUSPICIO_VOICE_1 := preload("res://assets/audio/alien/auspi_1.wav")
+const AUSPICIO_VOICE_2 := preload("res://assets/audio/alien/auspi_2.wav")
 const SFX_GLITCH := preload("res://assets/audio/alien/glitch.wav")
 const SFX_WIN_EXPLOSION := preload("res://assets/audio/alien/win_explosion.wav")
-const MUSIC_ALIEN_MINIGAME := preload("res://assets/audio/alien/boss_alien.ogg")
+const MUSIC_ALIEN_MINIGAME := preload("res://assets/audio/alien/boss_alien.wav")
 const MIN_SURVIVAL_TIME_SECONDS := 10.0
 
 enum BossPhase {
@@ -106,15 +106,18 @@ var damage_taken_count: int = 0
 
 func _ready() -> void:
 	battle_music_player = AudioStreamPlayer.new()
+	battle_music_player.bus = "Musica"
 	add_child(battle_music_player)
 
 	battle_music_player.stream = MUSIC_ALIEN_MINIGAME
 	battle_music_player.play()
 
 	intro_voice_player = AudioStreamPlayer.new()
+	intro_voice_player.bus = "Efectos"
 	add_child(intro_voice_player)
 	
 	global_sfx_player = AudioStreamPlayer.new()
+	global_sfx_player.bus= "Efectos"
 	add_child(global_sfx_player)
 
 	attack_utils = AlienAttackUtilsScript.new()
@@ -1257,14 +1260,28 @@ func spawn_lose_glitch(parent_layer: CanvasLayer) -> void:
 		glitch.play_visual_burst(self, size, randf_range(0.18, 0.32))
 
 func play_glitch_sfx() -> void:
-	global_sfx_player.stop()
-	global_sfx_player.stream = SFX_GLITCH
-	global_sfx_player.play()
+	var sfx := AudioStreamPlayer.new()
+	sfx.bus = "Efectos"
+	sfx.stream = SFX_GLITCH
+	get_tree().root.add_child(sfx)
+	sfx.play()
+
+	sfx.finished.connect(func():
+		if is_instance_valid(sfx):
+			sfx.queue_free()
+	)
 	
 func play_win_explosion_sfx() -> void:
-	global_sfx_player.stop()
-	global_sfx_player.stream = SFX_WIN_EXPLOSION
-	global_sfx_player.play()
+	var sfx := AudioStreamPlayer.new()
+	sfx.bus = "Efectos"
+	sfx.stream = SFX_WIN_EXPLOSION
+	get_tree().root.add_child(sfx)
+	sfx.play()
+
+	sfx.finished.connect(func():
+		if is_instance_valid(sfx):
+			sfx.queue_free()
+	)
 
 func win() -> void:
 	if has_won or is_dead or is_finishing:

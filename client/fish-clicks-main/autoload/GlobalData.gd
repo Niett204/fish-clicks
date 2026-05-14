@@ -6,6 +6,7 @@ var user_id: String = ""      # UUID del backend (era int, cambiado a String)
 var user_email: String = ""
 var user_nickname: String = ""
 var is_logged_in: bool = false
+var has_audio_settings_been_initialized: bool = false
 
 const SESSION_FILE = "user://fish_clicks_session.save"
 #const BASE_URL = "http://127.0.0.1:8080"
