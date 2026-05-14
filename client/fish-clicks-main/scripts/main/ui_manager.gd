@@ -392,7 +392,7 @@ func show_save_notification() -> void:
 	label.add_theme_color_override("font_color", Color("#ab4b1d"))
 	
 	# Cargamos la fuente Pirata One (asegúrate de que la ruta sea correcta)
-	var custom_font = load("res://assets/ui/fuentes/PirataOne-Regular.ttf")
+	var custom_font = load("res://assets/fuentes/PirataOne-Regular.ttf")
 	if custom_font:
 		label.add_theme_font_override("font", custom_font)
 	
