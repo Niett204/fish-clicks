@@ -413,3 +413,18 @@ func show_save_notification() -> void:
 	# 4. Limpieza de memoria
 	tw.set_parallel(false)
 	tw.finished.connect(label.queue_free)
+	
+# Comprueba si el usuario está en la pantalla de Login/Registro
+func is_auth_panel_open() -> bool:
+	# Verificamos si el panel de perfil está visible y si está mostrando la vista de autenticación
+	return main.profile_panel.visible and main.profile_panel.auth_view.visible
+
+# Comprueba si hay CUALQUIER cosa abierta para la lógica del ESC
+func has_any_panel_open() -> bool:
+	return main.stats_panel.visible or \
+		   main.ranking_panel.visible or \
+		   main.profile_panel.visible or \
+		   main.encyclopedia_panel.visible or \
+		   main.inventory_panel.visible or \
+		   main.options_panel.visible or \
+		   main.shop_open # En tu script la tienda usa esta variable
