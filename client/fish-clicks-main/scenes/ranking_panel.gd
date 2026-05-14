@@ -15,6 +15,10 @@ var default_avatar = load("res://assets/ui/iconos/default_avatar.png")
 	3: {"photo": $MarginContainer/MarginContainer/VBoxMain/PodiumSection/Winner3/Photo3, "name": $MarginContainer/MarginContainer/VBoxMain/PodiumSection/Winner3/Name3}
 }
 
+@onready var btn_tab_money: TextureButton = $BtnTabMoney
+@onready var btn_tab_clicks: TextureButton = $BtnTabClicks
+@onready var header_value_label: Label = $MarginContainer/MarginContainer/VBoxMain/ListSection/Header/ValueLabel
+
 @onready var items_container: VBoxContainer = $MarginContainer/MarginContainer/VBoxMain/ListSection/ScrollContainer/ItemsContainer
 @onready var scroll_container: ScrollContainer = $MarginContainer/MarginContainer/VBoxMain/ListSection/ScrollContainer
 
@@ -22,6 +26,8 @@ func _ready() -> void:
 	visible = false
 	if GlobalData.has_signal("ranking_received"):
 		GlobalData.ranking_received.connect(_on_ranking_data)
+	btn_close.mouse_entered.connect(_on_btn_close_mouse_entered)
+	btn_close.mouse_exited.connect(_on_btn_close_mouse_exited)
 	btn_close.pressed.connect(_on_btn_close_pressed)
 	my_user_row.hide()
 	# IMPORTANTE: Haz que MyUserRow ignore el ratón para que no bloquee el scroll
@@ -131,3 +137,17 @@ func _load_external_photo(base64_str: String, rect: TextureRect):
 	if raw_data.size() > 4 and raw_data[0] == 137: err = image.load_png_from_buffer(raw_data)
 	elif raw_data.size() > 2 and raw_data[0] == 255: err = image.load_jpg_from_buffer(raw_data)
 	if err == OK: rect.texture = ImageTexture.create_from_image(image)
+
+func _on_btn_close_mouse_entered() -> void:
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(btn_close, "scale", Vector2(1.08, 1.08), 0.08)
+	tween.parallel().tween_property(btn_close, "modulate", Color(0.85, 0.85, 0.85, 1.0), 0.08)
+
+func _on_btn_close_mouse_exited() -> void:
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(btn_close, "scale", Vector2.ONE, 0.08)
+	tween.parallel().tween_property(btn_close, "modulate", Color(1, 1, 1, 1), 0.08)

@@ -28,7 +28,7 @@ signal close_requested
 @onready var reg_ok:       Label         = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/OkLabel
 
 # Común (Botón cerrar - ahora con cruz.jpg)
-@onready var btn_close: TextureButton = $PanelContainer/MarginContainer2/BtnClose
+@onready var btn_close: TextureButton = $BtnClose
 
 # Foto de perfil
 @onready var avatar_dialog: FileDialog = $AvatarDialog
@@ -45,6 +45,8 @@ func _ready() -> void:
 		GlobalData.profile_updated.connect(_refresh_view)
 
 	btn_close.pressed.connect(_on_btn_close_pressed)
+	btn_close.mouse_entered.connect(_on_btn_close_mouse_entered)
+	btn_close.mouse_exited.connect(_on_btn_close_mouse_exited)
 	btn_login.pressed.connect(_do_login)
 	btn_register.pressed.connect(_do_register)
 	btn_logout.pressed.connect(_do_logout)
@@ -269,3 +271,17 @@ func _on_avatar_selected(path: String) -> void:
 		
 		# Enviamos ambos datos al servidor
 		GlobalData.upload_user_photo(b64, ext)
+
+func _on_btn_close_mouse_entered() -> void:
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(btn_close, "scale", Vector2(1.08, 1.08), 0.08)
+	tween.parallel().tween_property(btn_close, "modulate", Color(0.85, 0.85, 0.85, 1.0), 0.08)
+
+func _on_btn_close_mouse_exited() -> void:
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(btn_close, "scale", Vector2.ONE, 0.08)
+	tween.parallel().tween_property(btn_close, "modulate", Color(1, 1, 1, 1), 0.08)

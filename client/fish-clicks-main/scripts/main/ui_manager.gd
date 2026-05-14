@@ -355,3 +355,61 @@ func update_unique_tab_visibility() -> void:
 
 	if unicos_tab_index != -1:
 		main.tab_container.set_tab_hidden(unicos_tab_index, not should_show)
+		
+		
+func show_save_notification() -> void:
+	var label = Label.new()
+	label.text = "¡Partida guardada!"
+	
+	# --- Configuración Visual ---
+	# Aplicamos tu color personalizado #ab4b1d
+	label.add_theme_color_override("font_color", Color("#ab4b1d"))
+	
+	# Cargamos la fuente Pirata One (asegúrate de que la ruta sea correcta)
+	var custom_font = load("res://assets/ui/fuentes/PirataOne-Regular.ttf")
+	if custom_font:
+		label.add_theme_font_override("font", custom_font)
+	
+	label.add_theme_font_size_override("font_size", 42)
+	
+	# Contorno para mejorar legibilidad sobre el fondo
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 4)
+	
+	# --- Alineación y Posición ---
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	label.grow_vertical = Control.GROW_DIRECTION_BOTH
+	
+	# Capa superior
+	label.z_index = 4000 
+	
+	main.ui_root.add_child(label)
+	
+	# --- Animación de desvanecimiento ---
+	var tw = label.create_tween()
+	
+	# 1. Aparece y sube un poco (Squish effect)
+	label.modulate.a = 0
+	label.scale = Vector2(0.5, 0.5) # Empieza pequeño
+	label.pivot_offset = label.size / 2 # Centro para el escalado
+	
+	tw.set_parallel(true)
+	tw.tween_property(label, "modulate:a", 1.0, 0.2)
+	tw.tween_property(label, "scale", Vector2.ONE, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(label, "position:y", label.position.y - 40, 0.3)
+	
+	# 2. Pausa de 1 segundo (Lectura)
+	tw.set_parallel(false)
+	tw.tween_interval(1.0)
+	
+	# 3. Desaparece flotando hacia arriba
+	tw.set_parallel(true)
+	tw.tween_property(label, "modulate:a", 0.0, 0.7)
+	tw.tween_property(label, "position:y", label.position.y - 60, 0.7)
+	
+	# 4. Limpieza de memoria
+	tw.set_parallel(false)
+	tw.finished.connect(label.queue_free)

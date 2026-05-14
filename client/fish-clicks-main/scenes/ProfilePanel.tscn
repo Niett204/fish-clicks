@@ -315,25 +315,31 @@ theme_override_fonts/font = ExtResource("5_sthu2")
 autowrap_mode = 3
 
 [node name="MarginContainer2" type="MarginContainer" parent="PanelContainer" unique_id=97327227]
+visible = false
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 30
-theme_override_constants/margin_top = 41
+theme_override_constants/margin_top = 57
 theme_override_constants/margin_right = 55
 theme_override_constants/margin_bottom = 2
 
-[node name="BtnClose" type="TextureButton" parent="PanelContainer/MarginContainer2" unique_id=652982793]
+[node name="AvatarDialog" type="FileDialog" parent="." unique_id=1123868673]
+oversampling_override = 1.0
+title = "Open a File"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.png", "*.jpg", "*.jpeg")
+
+[node name="BtnClose" type="TextureButton" parent="." unique_id=652982793]
 z_index = 1
 custom_minimum_size = Vector2(22, 22)
-layout_mode = 2
+layout_mode = 0
+offset_left = 401.0
+offset_top = 106.0
+offset_right = 423.0
+offset_bottom = 128.0
 size_flags_horizontal = 8
 size_flags_vertical = 0
 texture_normal = ExtResource("3")
 ignore_texture_size = true
 stretch_mode = 5
-
-[node name="AvatarDialog" type="FileDialog" parent="." unique_id=1123868673]
-title = "Open a File"
-file_mode = 0
-access = 2
-filters = PackedStringArray("*.png", "*.jpg", "*.jpeg")

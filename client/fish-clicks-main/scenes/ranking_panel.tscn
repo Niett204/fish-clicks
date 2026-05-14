@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://7raka7aipend" path="res://assets/misc/ranking_sin_peces.png" id="3_kiu8h"]
 [ext_resource type="Texture2D" uid="uid://4js67mc3pou0" path="res://assets/ui/cruz.png" id="4_peu1r"]
 [ext_resource type="Texture2D" uid="uid://cq0j1orhhg43v" path="res://assets/ui/iconos/default_avatar.png" id="4_w8rbo"]
-[ext_resource type="Shader" path="res://scenes/ranking_panel_shader.gdshader" id="5_w8rbo"]
+[ext_resource type="Shader" uid="uid://blxo6we1g8o25" path="res://scenes/ranking_panel_shader.gdshader" id="5_w8rbo"]
 [ext_resource type="Texture2D" uid="uid://cdby5ig42c3fy" path="res://assets/misc/corona.png" id="8_yjatq"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yjatq"]
@@ -201,6 +201,9 @@ theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
 theme_override_fonts/font = ExtResource("2_mtvgp")
 text = "Doblones"
 
+[node name="ValueLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxMain/ListSection/Header" unique_id=1765631171]
+layout_mode = 2
+
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/MarginContainer/VBoxMain/ListSection" unique_id=544477573]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
@@ -250,3 +253,13 @@ offset_bottom = -84.0
 grow_vertical = 0
 size_flags_horizontal = 4
 mouse_filter = 2
+
+[node name="BtnTabMoney" type="TextureButton" parent="." unique_id=776746357]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BtnTabClicks" type="TextureButton" parent="." unique_id=36901282]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
