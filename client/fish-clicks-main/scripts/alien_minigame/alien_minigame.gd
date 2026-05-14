@@ -439,10 +439,26 @@ func setup_background_display_fish() -> void:
 		fish_sprite.texture = tex
 		fish_sprite.visible = true
 
+		var final_rotation := fish_sprite.rotation
+		var final_scale := fish_sprite.scale
+
+		# Caso especial: Leonardo es muy grande
+		if texture_path.to_lower().contains("leonardo"):
+			final_scale *= 0.65
+
+			# Peces de la izquierda: Pez y Pez3 normalmente son índice 0 y 2
+			if i == 0 or i == 2:
+				final_rotation += deg_to_rad(53)
+			else:
+				final_rotation -= deg_to_rad(53)
+
+		fish_sprite.rotation = final_rotation
+		fish_sprite.scale = final_scale
+
 		background_fish_idle_data.append({
 			"base_position": fish_sprite.position,
-			"base_rotation": fish_sprite.rotation,
-			"base_scale": fish_sprite.scale,
+			"base_rotation": final_rotation,
+			"base_scale": final_scale,
 			"is_capsule": is_capsule
 		})
 		

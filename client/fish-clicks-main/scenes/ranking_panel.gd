@@ -23,6 +23,9 @@ var default_avatar = load("res://assets/ui/iconos/default_avatar.png")
 
 func _ready() -> void:
 	visible = false
+
+	setup_ranking_scrollbar()
+
 	if GlobalData.has_signal("ranking_received"):
 		GlobalData.ranking_received.connect(_on_ranking_data)
 	
@@ -160,3 +163,43 @@ func _load_external_photo(base64_str: String, rect: TextureRect):
 	if raw_data.size() > 4 and raw_data[0] == 137: err = image.load_png_from_buffer(raw_data)
 	elif raw_data.size() > 2 and raw_data[0] == 255: err = image.load_jpg_from_buffer(raw_data)
 	if err == OK: rect.texture = ImageTexture.create_from_image(image)
+
+func setup_ranking_scrollbar() -> void:
+	var style_grabber := StyleBoxFlat.new()
+	style_grabber.bg_color = Color("#aa4b21")
+	style_grabber.border_color = Color("#7b4a24")
+	style_grabber.border_width_left = 2
+	style_grabber.border_width_top = 2
+	style_grabber.border_width_right = 2
+	style_grabber.border_width_bottom = 2
+	style_grabber.corner_radius_top_left = 6
+	style_grabber.corner_radius_top_right = 6
+	style_grabber.corner_radius_bottom_left = 6
+	style_grabber.corner_radius_bottom_right = 6
+
+	var style_grabber_highlight := StyleBoxFlat.new()
+	style_grabber_highlight.bg_color = Color("#d89252")
+	style_grabber_highlight.border_color = Color("#7b4a24")
+	style_grabber_highlight.border_width_left = 2
+	style_grabber_highlight.border_width_top = 2
+	style_grabber_highlight.border_width_right = 2
+	style_grabber_highlight.border_width_bottom = 2
+	style_grabber_highlight.corner_radius_top_left = 6
+	style_grabber_highlight.corner_radius_top_right = 6
+	style_grabber_highlight.corner_radius_bottom_left = 6
+	style_grabber_highlight.corner_radius_bottom_right = 6
+
+	var style_bg := StyleBoxFlat.new()
+	style_bg.bg_color = Color(0.25, 0.16, 0.08, 0.35)
+	style_bg.corner_radius_top_left = 6
+	style_bg.corner_radius_top_right = 6
+	style_bg.corner_radius_bottom_left = 6
+	style_bg.corner_radius_bottom_right = 6
+
+	var v_scroll: VScrollBar = scroll_container.get_v_scroll_bar()
+	v_scroll.custom_minimum_size.x = 12
+
+	v_scroll.add_theme_stylebox_override("grabber", style_grabber)
+	v_scroll.add_theme_stylebox_override("grabber_highlight", style_grabber_highlight)
+	v_scroll.add_theme_stylebox_override("grabber_pressed", style_grabber_highlight)
+	v_scroll.add_theme_stylebox_override("scroll", style_bg)

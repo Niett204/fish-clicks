@@ -59,6 +59,8 @@ const VOLUME_SPAM_MIN_DELTA: float = 3.0
 func _ready() -> void:
 	visible = false
 
+	setup_tutorial_scrollbar()
+
 	fish_preview_player.stream = preload("res://assets/audio/peces/bubble.WAV")
 	_configure_slider(SliderGeneral)
 	_configure_slider(SliderMusica)
@@ -394,11 +396,12 @@ func _on_btn_tutorial_pressed() -> void:
 	scroll_tutorial.scroll_vertical = 0
 
 func _on_btn_cerrar_tutorial_pressed() -> void:
-	# En lugar de play_squish del manager, hacemos uno manual que respete tu 0.05
-	var base_s := Vector2(0.05, 0.06)
 	var tw := create_tween()
-	tw.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(tutorial_overlay, "modulate:a", 0.0, 0.12)
+	await tw.finished
+
 	tutorial_overlay.visible = false
+	tutorial_overlay.modulate.a = 1.0
 
 func _build_tutorial() -> void:
 	for child in contenido_tutorial.get_children():
@@ -479,3 +482,43 @@ func _on_btn_cerrar_tutorial_mouse_exited() -> void:
 	
 	tween.parallel().tween_property(btn_cerrar_tutorial, "scale", base_scale, 0.08)
 	tween.parallel().tween_property(btn_cerrar_tutorial, "modulate", Color.WHITE, 0.08)
+
+func setup_tutorial_scrollbar() -> void:
+	var style_grabber := StyleBoxFlat.new()
+	style_grabber.bg_color = Color("#aa4b21")
+	style_grabber.border_color = Color("#7b4a24")
+	style_grabber.border_width_left = 2
+	style_grabber.border_width_top = 2
+	style_grabber.border_width_right = 2
+	style_grabber.border_width_bottom = 2
+	style_grabber.corner_radius_top_left = 6
+	style_grabber.corner_radius_top_right = 6
+	style_grabber.corner_radius_bottom_left = 6
+	style_grabber.corner_radius_bottom_right = 6
+
+	var style_grabber_highlight := StyleBoxFlat.new()
+	style_grabber_highlight.bg_color = Color("#d89252")
+	style_grabber_highlight.border_color = Color("#7b4a24")
+	style_grabber_highlight.border_width_left = 2
+	style_grabber_highlight.border_width_top = 2
+	style_grabber_highlight.border_width_right = 2
+	style_grabber_highlight.border_width_bottom = 2
+	style_grabber_highlight.corner_radius_top_left = 6
+	style_grabber_highlight.corner_radius_top_right = 6
+	style_grabber_highlight.corner_radius_bottom_left = 6
+	style_grabber_highlight.corner_radius_bottom_right = 6
+
+	var style_bg := StyleBoxFlat.new()
+	style_bg.bg_color = Color(0.25, 0.16, 0.08, 0.35)
+	style_bg.corner_radius_top_left = 6
+	style_bg.corner_radius_top_right = 6
+	style_bg.corner_radius_bottom_left = 6
+	style_bg.corner_radius_bottom_right = 6
+
+	var v_scroll: VScrollBar = scroll_tutorial.get_v_scroll_bar()
+	v_scroll.custom_minimum_size.x = 12
+
+	v_scroll.add_theme_stylebox_override("grabber", style_grabber)
+	v_scroll.add_theme_stylebox_override("grabber_highlight", style_grabber_highlight)
+	v_scroll.add_theme_stylebox_override("grabber_pressed", style_grabber_highlight)
+	v_scroll.add_theme_stylebox_override("scroll", style_bg)

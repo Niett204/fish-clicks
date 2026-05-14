@@ -69,7 +69,7 @@ const ITEMS := {
 		"base_price": 4500.0,
 		"price_growth": 1.18,
 		"base_value": 0.15,
-		"habitat_ids": ["habitat_1"]
+		"habitat_ids": ["habitat_1", "habitat_2"]
 	},
 
 	"auspezio": {
