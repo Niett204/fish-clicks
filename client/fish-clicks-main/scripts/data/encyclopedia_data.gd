@@ -6,7 +6,7 @@ const ENCYCLOPEDIA_FISH_IDS := {
 	"sobrasada": 2,
 	"espuma": 3,
 	"rufinus": 4,
-	"chupete jr": 5,
+	"chupete_jr": 5,
 	"auspezio": 6,
 	"barbacoa": 7,
 	"angeles": 8,

@@ -13,6 +13,7 @@ const ITEMS = ItemData.ITEMS
 const HABITATS = HabitatData.HABITATS
 var fish_defs = FishData.FISH_DEFS.duplicate(true)
 const FISH_LOSS_DEBUFF_DURATION: float = 120.0
+const ALIEN_EVENT_CHECK_INTERVAL: float = 30.0
 
 # ------------------- EXPORTED -------------------
 @export var floating_text_scene: PackedScene
@@ -81,6 +82,11 @@ const FISH_LOSS_DEBUFF_DURATION: float = 120.0
 @onready var ui_sfx_player: AudioStreamPlayer = $UiSfxPlayer
 @onready var achievement_sfx_player: AudioStreamPlayer = $AchievementSfxPlayer
 
+const HABITAT_MUSIC := {
+	"habitat_1": preload("res://assets/audio/fondo/fondo1.ogg"),
+	"habitat_2": preload("res://assets/audio/fondo/fondo2.wav")
+}
+
 const SFX_ICON_OPEN := preload("res://assets/audio/UI/abrir_icono.wav")
 const SFX_ICON_CLOSE := preload("res://assets/audio/UI/cerrar_icono.wav")
 const SFX_COFRE_CLICK := preload("res://assets/audio/UI/pulsar_cofre.wav")
@@ -89,8 +95,13 @@ const SFX_SHINY := preload("res://assets/audio/UI/shiny.wav")
 const SFX_CAMBIAR_TAB := preload("res://assets/audio/UI/cambiar_tab.wav")
 const SFX_PASA_PAGINA := preload("res://assets/audio/UI/pasa_pagina.wav")
 const SFX_CAMBIAR_CATEGORIA := preload("res://assets/audio/UI/cambiar_tab.wav")
-const SFX_ACHIEVEMENT := preload("res://assets/audio/UI/shiny.wav")
+const SFX_ACHIEVEMENT := preload("res://assets/audio/UI/logro.wav")
 const SFX_BOTTLE := preload("res://assets/audio/UI/cambiar_tab.wav")
+const SFX_SCRUB = preload("res://assets/audio/UI/fotado.wav")
+
+const SFX_ALIEN_ABDUCT := preload("res://assets/audio/alien/abduct.wav")
+const SFX_ALIEN_ENTER := preload("res://assets/audio/alien/landing.wav")
+const SFX_ALIEN_EXIT := preload("res://assets/audio/alien/landing.wav")
 
 # ------------------- ASSETS VISUALES -------------------
 const TEX_CHEST_CLOSED := preload("res://assets/estructuras/cofre_cerrado_arena.png")
@@ -146,7 +157,7 @@ var total_clicks: int = 0
 var session_time_seconds: float = 0.0
 var game_start_date_string: String = ""
 var dps: float = 0.0
-var coins: float = 10000.0
+var coins: float = 1000000000000.0
 var total_coins_earned: float = 0.0
 var click_power: int = 1
 var hud_visible := true
@@ -158,6 +169,7 @@ var fish_loss_debuff_active: bool = false
 var fish_loss_debuff_time_left: float = 0.0
 var alien_minigame_wins: int = 0
 var alien_minigame_losses: int = 0
+var alien_event_check_timer: float = 0.0
 
 # ------------------- ESTADO VISUAL -------------------
 var chest_base_scale: Vector2
@@ -264,9 +276,8 @@ func _ready() -> void:
 	var url := "https://fish-clicks.onrender.com/api/test"
 	http_request.request(url)
 
-	# Cargar sonidos música y efectos
-	music_player.stream = preload("res://assets/audio/fondo/fondo1.ogg")
-	music_player.play()
+	# Cargar sonido de fondo según el hábitat
+	update_habitat_music()
 
 	for k in ITEMS.keys():
 		var id := String(k)
@@ -278,12 +289,19 @@ func _ready() -> void:
 	encyclopedia_panel.visible = false
 	profile_panel.visible = false
 	btn_world_icon.visible = false
+	inventory_panel.visible = false
+	stats_panel.visible = false
+	ranking_panel.visible = false
+	options_panel.visible = false
 	chest_base_scale = chest_sprite.scale
 	
 	shop_panel.z_index = 1
 	encyclopedia_panel.z_index = 20
 	inventory_panel.z_index = 20
 	stats_panel.z_index = 20
+	profile_panel.z_index = 20
+	ranking_panel.z_index = 20
+	options_panel.z_index = 30
 	barco_base_scale = barco.scale
 	barco_base_position = barco.position
 	bg.z_index = -100
@@ -308,28 +326,17 @@ func _ready() -> void:
 
 	btn_ranking_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_ranking_icon)
-		# Si el panel está oculto, lo abrimos y cargamos datos
-		if not ranking_panel.visible:
-			ranking_panel._open() 
-		else:
-			ranking_panel._close() # O simplemente ranking_panel.visible = false
+		ui_manager.toggle_ranking()
 	)
 
 	btn_encyclopedia_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_encyclopedia_icon)
 		ui_manager.toggle_encyclopedia()
 	)
-	
-	#btn_profile_icon.pressed.connect(func():
-		#achievements_manager.register_profile_click()
-		#ui_manager.play_squish(btn_profile_icon)
-		#ui_manager.toggle_profile()
-	#)
 
 	btn_inventory_icon.pressed.connect(func():
 		if alien_manager.is_event_blocking_achievement_popups():
 			return
-
 		ui_manager.play_squish(btn_inventory_icon)
 		ui_manager.toggle_inventario()
 	)
@@ -350,7 +357,15 @@ func _ready() -> void:
 
 		refresh_habitat_structures()
 		_update_chest_sprite_by_level()
+		update_habitat_music()
 	)
+	
+	btn_profile_icon.pressed.connect(func():
+		achievements_manager.register_profile_click()
+		ui_manager.play_squish(btn_profile_icon)
+		ui_manager.toggle_profile()
+	)
+
 	btn_options_icon.pressed.connect(func():
 		ui_manager.play_squish(btn_options_icon)
 		ui_manager.toggle_options()
@@ -398,6 +413,7 @@ func _ready() -> void:
 	
 	shop_manager.update_cps()
 	ui_manager._update_ui()
+	ui_manager.update_unique_tab_visibility()
 	habitat_manager.apply_current_habitat()
 	refresh_habitat_structures()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
@@ -442,12 +458,10 @@ func _ready() -> void:
 	
 	profile_panel.close_requested.connect(func():
 		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
-		profile_panel._close()
 	)
 	
 	ranking_panel.close_requested.connect(func():
 		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
-		ranking_panel.visible = false
 	)
 
 	left_info_panel.bottle_clicked.connect(func():
@@ -504,13 +518,20 @@ func update_world_button_visibility() -> void:
 	btn_world_icon.visible = habitat_manager.can_change_habitat()
 		
 func _is_item_unlocked_by_default(id: String) -> bool:
-	if id == "chupete_jr":
+	if id == "chupete_jr" or id == "auspezio":
 		return false
 
 	return int(ITEMS[id].get("unlock_price", 0)) == 0 
 	
 func _resume_alien_after_runtime_restore(alien_return_data: Dictionary) -> void:
+	update_habitat_music()
+	
 	alien_manager.resume_after_minigame(alien_return_data)
+
+	ui_manager.update_unique_tab_visibility()
+
+	if shop_open:
+		await ui_manager._refresh_current_shop_tab(tab_container.current_tab)
 
 func _on_save_loaded(save_data: Dictionary) -> void:
 	save_manager.apply_save_state(save_data)
@@ -519,8 +540,11 @@ func _on_save_loaded(save_data: Dictionary) -> void:
 	update_world_button_visibility()
 	_update_chest_sprite_by_level()
 	refresh_habitat_structures()
+	update_habitat_music()
 	shop_manager.update_cps()
 	ui_manager._update_ui()
+	ui_manager.update_unique_tab_visibility()
+	ui_manager.update_unique_tab_visibility()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
 	
 
@@ -540,10 +564,13 @@ func _process(delta: float) -> void:
 		var item_id := String(id)
 		var def: Dictionary = ITEMS[item_id]
 
-		if String(def.get("kind", "")) == "passive":
-			lifetime_generated[item_id] += shop_manager.get_item_current_value(item_id) * delta
+		if String(def.get("kind", "")) == "fish":
+			lifetime_generated[item_id] += shop_manager.get_item_current_value(item_id) * shop_manager.get_fish_dps_multiplier() * shop_manager.get_global_coin_multiplier() * delta
 
 	ui_manager._update_currency_ui()
+
+	if shop_open:
+		ui_manager.update_shop_cards()
 
 	achievements_manager.process_achievement_timer(delta)
 
@@ -557,10 +584,15 @@ func _process(delta: float) -> void:
 			clear_fish_loss_debuff()
 
 	if alien_manager != null:
-		alien_manager.check_alien_event_unlock()
+		alien_event_check_timer += delta
 
-		if alien_manager.can_trigger_alien_event():
-			alien_manager.try_start_alien_event()
+		if alien_event_check_timer >= ALIEN_EVENT_CHECK_INTERVAL:
+			alien_event_check_timer = 0.0
+
+			alien_manager.check_alien_event_unlock()
+
+			if alien_manager.can_trigger_alien_event():
+				alien_manager.try_start_alien_event()
 
 func _input(event: InputEvent) -> void:
 	fish_mode_manager.handle_input(event)
@@ -571,21 +603,49 @@ func _input(event: InputEvent) -> void:
 			if cleaning_manager != null and cleaning_manager.should_count_inactivity():
 				cleaning_manager.register_player_activity()
 
-	if event is InputEventKey and event.pressed and event.keycode == KEY_K:
-		if alien_manager != null:
-			alien_manager.start_alien_event()
-
 func _unhandled_input(event: InputEvent) -> void:
+	# --- 1. LÓGICA DE TECLADO ---
+	if event is InputEventKey and event.pressed:
+		if not ui_manager: return
+
+		# Tecla ESC: Si hay algo abierto lo cierra, si no, abre opciones
+		if event.is_action_pressed("menu_ajustes"):
+			if ui_manager.has_any_panel_open():
+				ui_manager.close_all_panels()
+			else:
+				ui_manager.toggle_options()
+			return
+
+		# Si está escribiendo en el Login/Registro, bloqueamos el resto de atajos
+		if ui_manager.is_auth_panel_open(): 
+			return
+
+		# Mapeo de teclas según tu lista
+		if event.is_action_pressed("abrir_tienda"):
+			ui_manager.toggle_shop()
+		elif event.is_action_pressed("abrir_perfil"):
+			ui_manager.toggle_profile()
+		elif event.is_action_pressed("abrir_ranking"):
+			ui_manager.toggle_ranking()
+		elif event.is_action_pressed("abrir_enciclopedia"):
+			ui_manager.toggle_encyclopedia()
+		elif event.is_action_pressed("abrir_inventario"):
+			ui_manager.toggle_inventario() # Coincide con tu script
+		elif event.is_action_pressed("abrir_estadisticas"):
+			ui_manager.toggle_stats_panel() # Coincide con tu script
+		
+		return
+
+	# --- 2. LÓGICA DE RATÓN (Asustar peces) ---
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var click_pos: Vector2 = get_viewport().get_mouse_position()
-
-		# Asusta peces cercanos al click
 		for fish in fish_layer.get_children():
 			if fish.has_method("scare_from"):
 				if fish.global_position.distance_to(click_pos) < 120:
 					fish.scare_from(click_pos)
-					achievements_manager.register_fish_annoyed()
-
+					if achievements_manager: 
+						achievements_manager.register_fish_annoyed()
+						
 # --------- Callbacks/Requests ---------
 @warning_ignore("unused_parameter")
 func _on_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
@@ -595,11 +655,13 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 func _on_chest_clicked() -> void:
 	total_clicks += 1
 	ui_manager.play_ui_sfx(SFX_COFRE_CLICK)
+	click_power = shop_manager.get_click_income()
 	coins += click_power
 	total_coins_earned += click_power
 	lifetime_generated["cofre"] += click_power
 
 	ui_manager._update_ui()
+	ui_manager.update_unique_tab_visibility()
 	_play_click_animation()
 	_spawn_floating_text()
 	_mostrar_monedas_y_burbujas()
@@ -624,6 +686,14 @@ func reset_local_state() -> void:
 	levels.clear()
 	unlocked.clear()
 	fish_inventory.clear()
+	
+	# Reset de habitats al cerrar sesión
+	habitat_manager.unlocked_habitats.clear()
+	habitat_manager.unlocked_habitats.append("habitat_1")
+	habitat_manager.current_habitat = "habitat_1"
+	habitat_manager.inventory_habitat = "habitat_1"
+	# Ocultar botón de worlds
+	btn_world_icon.visible = false
 
 	# Re-inicializamos los objetos gratuitos según la base de datos (como el cofre)
 	for k in ITEMS.keys():
@@ -644,6 +714,8 @@ func reset_local_state() -> void:
 	achievements_manager.profile_clicks_count = 0
 	achievements_manager.annoyed_fish_count = 0
 	achievements_manager.achievement_check_accum = 0.0
+	achievements_manager.alien_no_hit_unlocked = false
+	achievements_manager.alien_egg_obtained = false
 	
 	# 3.1. Reseteo de limpieza
 	if cleaning_manager != null:
@@ -651,6 +723,27 @@ func reset_local_state() -> void:
 		cleaning_manager.cleaning_event_available = false
 		cleaning_manager.total_dirt_spots_cleaned = 0
 		cleaning_manager.cleaning_events_completed = 0
+	
+	# 3.2 Reset del alien
+	if alien_manager != null:
+		alien_manager.alien_event_state = AlienManager.AlienEventState.IDLE
+		alien_manager.alien_event_available = false
+		alien_manager.alien_event_done = false
+		alien_manager.abducted_fish_snapshots.clear()
+		alien_manager.abduct_return_origin = Vector2.ZERO
+		alien_manager.alien_escape_fx_active = false
+
+		if alien_manager.alien_instance != null and is_instance_valid(alien_manager.alien_instance):
+			alien_manager.alien_instance.queue_free()
+
+		if egg_manager != null:
+			egg_manager.clear_active_egg()
+		
+		for child in content_pecera.get_children():
+			if child is AlienEgg:
+				child.queue_free()
+
+		alien_manager.alien_instance = null
 
 	# 4. Limpieza física de Acuarios (Peces nadando)
 	for habitat_id in aquarium_data.keys():
@@ -678,6 +771,8 @@ func reset_local_state() -> void:
 	
 	# Actualizar la interfaz de usuario completa (etiquetas de doblones, botellas, etc.)
 	ui_manager._update_ui()
+	habitat_manager.apply_current_habitat()
+	update_habitat_music()
 	
 	if stats_panel.visible:
 		stats_manager.refresh_stats_panel_full()
@@ -708,7 +803,8 @@ func _spawn_floating_text() -> void:
 	var t: Label = floating_text_scene.instantiate()
 	add_child(t)
 
-	t.text = "+" + str(click_power)
+	var current_click_income: int = shop_manager.get_click_income()
+	t.text = "+" + get_full_number_text(current_click_income)
 
 	var mouse_pos = get_viewport().get_mouse_position()
 	t.position = mouse_pos + Vector2(-5, -20)
@@ -805,6 +901,24 @@ func _actualizar_peces_desbloqueados_en_enciclopedia() -> void:
 		encyclopedia_panel.set_pez_ids_desbloqueados(ids_desbloqueados)
 
 # --------- Escenario ---------
+func update_habitat_music() -> void:
+	if habitat_manager == null:
+		return
+
+	var habitat_id: String = habitat_manager.current_habitat
+
+	if not HABITAT_MUSIC.has(habitat_id):
+		return
+
+	var new_music: AudioStream = HABITAT_MUSIC[habitat_id]
+
+	if music_player.stream != new_music:
+		music_player.stop()
+		music_player.stream = new_music
+
+	if not music_player.playing:
+		music_player.play()
+	
 func refresh_habitat_structures() -> void:
 	_update_algas_sprite_by_level()
 	_update_anubia_sprite_by_level()
@@ -821,9 +935,9 @@ func _update_chest_sprite_by_level() -> void:
 
 	if chest_level <= 0:
 		chest_sprite.texture = TEX_CHEST2_CLOSED if is_habitat_2 else TEX_CHEST_CLOSED
-	elif chest_level <= 3:
+	elif chest_level <= 49:
 		chest_sprite.texture = TEX_CHEST2_EMPTY if is_habitat_2 else TEX_CHEST_EMPTY
-	elif chest_level <= 7:
+	elif chest_level <= 99:
 		chest_sprite.texture = TEX_CHEST2_MID if is_habitat_2 else TEX_CHEST_MID
 	else:
 		chest_sprite.texture = TEX_CHEST2_FULL if is_habitat_2 else TEX_CHEST_FULL
@@ -839,11 +953,11 @@ func _update_algas_sprite_by_level() -> void:
 
 	vallisneria.visible = true
 
-	if algas_level <= 5:
+	if algas_level <= 24:
 		_set_vallisneria_texture(TEX_ALGAS_0)
-	elif algas_level <= 10:
+	elif algas_level <= 49:
 		_set_vallisneria_texture(TEX_ALGAS_1)
-	elif algas_level <= 15:
+	elif algas_level <= 74:
 		_set_vallisneria_texture(TEX_ALGAS_2)
 	else:
 		_set_vallisneria_texture(TEX_ALGAS_3)
@@ -858,11 +972,11 @@ func _update_anubia_sprite_by_level() -> void:
 
 	anubia.visible = true
 
-	if level <= 5:
+	if level <= 24:
 		_set_anubia_texture(TEX_ANUBIA_0, 2.0, 0.75)
-	elif level <= 10:
+	elif level <= 49:
 		_set_anubia_texture(TEX_ANUBIA_1, 6.0, 0.45)
-	elif level <= 15:
+	elif level <= 74:
 		_set_anubia_texture(TEX_ANUBIA_2, 2.0, 0.80)
 	else:
 		_set_anubia_texture(TEX_ANUBIA_3, 0.0, 1.00)
@@ -879,9 +993,9 @@ func _update_tronco_visibility_by_level() -> void:
 	if not is_current_habitat or not is_unlocked or level <= 0:
 		return
 
-	if level <= 5:
+	if level <= 25:
 		tronco_3.visible = true
-	elif level <= 10:
+	elif level <= 50:
 		tronco_2.visible = true
 	else:
 		tronco_1.visible = true
@@ -927,9 +1041,9 @@ func _update_coral_sprite_by_level() -> void:
 
 	coral.visible = true
 
-	if level <= 5:
+	if level <= 29:
 		_set_coral_texture(TEX_CORAL_0, 0.8)
-	elif level <= 10:
+	elif level <= 59:
 		_set_coral_texture(TEX_CORAL_1, 1.0)
 	else:
 		_set_coral_texture(TEX_CORAL_2, 1.4)
@@ -946,9 +1060,9 @@ func _update_piedra_sprite_by_level() -> void:
 
 	piedra.visible = true
 
-	if level <= 5:
+	if level <= 29:
 		piedra.texture = TEX_PIEDRA_0
-	elif level <= 10:
+	elif level <= 59:
 		piedra.texture = TEX_PIEDRA_1
 	else:
 		piedra.texture = TEX_PIEDRA_2
@@ -965,9 +1079,9 @@ func _update_iceberg_sprite_by_level() -> void:
 
 	iceberg.visible = true
 
-	if level <= 5:
+	if level <= 29:
 		iceberg.texture = TEX_ICEBERG_0
-	elif level <= 10:
+	elif level <= 59:
 		iceberg.texture = TEX_ICEBERG_1
 	else:
 		iceberg.texture = TEX_ICEBERG_2
@@ -983,9 +1097,9 @@ func _update_barco_sprite_by_level() -> void:
 
 	barco.visible = true
 
-	if level <= 5:
+	if level <= 29:
 		_set_barco_texture(TEX_BARCO_0, 0.8, 0)
-	elif level <= 10:
+	elif level <= 59:
 		_set_barco_texture(TEX_BARCO_1, 1.2, -40)
 	else:
 		_set_barco_texture(TEX_BARCO_2, 1.7, -70)
@@ -1067,15 +1181,17 @@ func format_with_separator(n: int) -> String:
 		s = s.substr(0, s.length() - 3)
 	return s + result
 
-func get_compact_doblones_text(value: float) -> String:
+func get_compact_number_text(value: float) -> String:
 	var parts: Dictionary = format_doblones_parts(value)
-	var unit := String(parts.unit)
+	var unit: String = String(parts.unit)
 
 	unit = unit.replace(" de doblones", "")
 	unit = unit.replace(" doblones", "")
+	unit = unit.replace("doblones", "")
+	unit = unit.strip_edges()
 
-	return parts.value if unit == "" else parts.value + " " + unit
-
+	return String(parts.value) if unit == "" else String(parts.value) + " " + unit
+	
 func format_play_time(total_seconds: int) -> String:
 	@warning_ignore("integer_division")
 	var hours := total_seconds / 3600
@@ -1146,3 +1262,14 @@ func update_ui_block_state() -> void:
 	btn_shop_icon.modulate = blocked_color if blocked else normal_color
 	btn_inventory_icon.modulate = blocked_color if blocked else normal_color
 	btn_world_icon.modulate = blocked_color if blocked else normal_color
+
+func get_full_number_text(value: float) -> String:
+	return format_with_separator(int(round(value)))
+		
+func _handle_esc_logic() -> void:
+	# 1. Si hay algún panel abierto, lo cerramos primero
+	if ui_manager.has_any_panel_open():
+		ui_manager.close_all_panels()
+	else:
+		# 2. Si todo está cerrado, abrimos Ajustes
+		ui_manager.toggle_settings()

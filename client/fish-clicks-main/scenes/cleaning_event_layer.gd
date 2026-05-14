@@ -25,6 +25,8 @@ var last_mouse_pos: Vector2 = Vector2.ZERO
 var scrub_movement_accum: float = 0.0
 
 # Movimiento de frotado de la esponja
+var scrub_sfx_cooldown: float = 0.0 # Cooldown para el sonido de frotado
+
 var scrub_anim_time: float = 0.0
 @export var scrub_shake_intensity: float = 5.0
 @export var scrub_rotation_intensity: float = 0.1
@@ -87,6 +89,9 @@ func _ready() -> void:
 	fish_icon.position = fish_corner_hidden_position
 
 func _process(_delta: float) -> void:
+	
+	scrub_sfx_cooldown = maxf(0.0, scrub_sfx_cooldown - _delta)
+	
 	if not visible:
 		return
 
@@ -442,6 +447,12 @@ func _apply_scrub_to_nearby_spots() -> void:
 			var changed: bool = dirt_spot.apply_scrub()
 
 			if changed:
+				if scrub_sfx_cooldown <= 0.0:
+					cleaning_manager.main.ui_manager.play_ui_sfx(
+						cleaning_manager.main.SFX_SCRUB
+					)
+					scrub_sfx_cooldown = 0.12
+
 				_reduce_green_overlay()
 				_check_if_clean_finished()
 				
@@ -643,6 +654,19 @@ func _update_auto_clean_stats() -> void:
 		return
 
 	auto_clean_enabled = true
-	auto_clean_interval = max(0.55, 2.4 - float(auto_clean_level) * 0.22)
+
+	var speed_multiplier := 1.0
+	if cleaning_manager != null:
+		speed_multiplier = cleaning_manager.get_cleaning_speed_multiplier()
+
+	# Tu lógica actual + buff del pez
+	auto_clean_interval = max(
+		0.55,
+		(2.4 - float(auto_clean_level) * 0.22) / speed_multiplier
+	)
+
 	auto_clean_scrubs_per_cycle = 1 + int(auto_clean_level / 4)
-	auto_clean_move_speed = 110.0 + float(auto_clean_level) * 18.0
+
+	auto_clean_move_speed = (
+		110.0 + float(auto_clean_level) * 18.0
+	) * speed_multiplier

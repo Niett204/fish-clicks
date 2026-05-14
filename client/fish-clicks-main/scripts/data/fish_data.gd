@@ -47,9 +47,9 @@ const FISH_DEFS := {
 	},
 	
 	"chupete_jr": {
-	"name": "Chupete Jr",
-	"icon": preload("res://assets/peces/chupete_jr.png"),
-	"habitat": "habitat_1"
+		"name": "Chupete Jr",
+		"icon": preload("res://assets/peces/chupete_jr.png"),
+		"habitat": ["habitat_1", "habitat_2"]
 	},
 	
 	"auspezio": {

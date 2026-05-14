@@ -33,21 +33,39 @@ func play_squish(node: Control) -> void:
 
 
 func _close_overlay_panels(except_panel: Control = null) -> void:
+	if main.shop_panel != except_panel:
+		main.shop_open = false
+
+		if main.shop_tween:
+			main.shop_tween.kill()
+
+		main.shop_panel.position.x = main.shop_x_closed
+
 	if main.encyclopedia_panel != except_panel:
 		main.encyclopedia_panel.visible = false
 
 	if main.inventory_panel != except_panel:
 		main.inventory_panel.visible = false
 
-	if main.profile_panel != except_panel:
-		main.profile_panel.visible = false
-
 	if main.stats_panel != except_panel:
 		main.stats_panel.visible = false
-		
+
+	if main.profile_panel != except_panel:
+		if main.profile_panel.has_method("force_close"):
+			main.profile_panel.force_close()
+		else:
+			main.profile_panel.visible = false
+
 	if main.ranking_panel != except_panel:
+		if main.ranking_panel.has_method("_close"):
+			main.ranking_panel._close()
 		main.ranking_panel.visible = false
 
+	if main.options_panel != except_panel:
+		if main.options_panel.has_method("close_panel"):
+			main.options_panel.close_panel()
+		else:
+			main.options_panel.visible = false
 
 func _toggle_hud() -> void:
 	main.hud_visible = !main.hud_visible
@@ -62,8 +80,14 @@ func _toggle_hud() -> void:
 func toggle_shop() -> void:
 	main.shop_open = !main.shop_open
 
+	if main.shop_open:
+		_close_overlay_panels(main.shop_panel)
+
 	if not main.shop_open and main.info_panel:
 		main.info_panel.request_hide()
+
+	if main.shop_tween:
+		main.shop_tween.kill()
 
 	main.shop_tween = main.create_tween()
 	main.shop_tween.set_trans(Tween.TRANS_QUAD)
@@ -120,10 +144,12 @@ func toggle_inventario() -> void:
 
 
 func toggle_options() -> void:
-	main.options_panel.visible = !main.options_panel.visible
+	var will_open: bool = not main.options_panel.visible
 
-	if main.options_panel.visible:
+	if will_open:
+		_close_overlay_panels(main.options_panel)
 		play_ui_sfx(main.SFX_ICON_OPEN)
+		main.options_panel.visible = true
 		main.shop_open = false
 
 		if main.info_panel:
@@ -134,6 +160,7 @@ func toggle_options() -> void:
 
 		main.shop_panel.position.x = main.shop_x_closed
 	else:
+		main.options_panel.visible = false
 		play_ui_sfx(main.SFX_ICON_CLOSE)
 
 
@@ -158,8 +185,10 @@ func toggle_profile() -> void:
 	var will_open: bool = not main.profile_panel.visible
 
 	if will_open:
-		_close_overlay_panels(main.profile_panel)
+		close_all_panels()
+
 		play_ui_sfx(main.SFX_ICON_OPEN)
+
 		main.profile_panel._open()
 
 		if main.info_panel:
@@ -172,7 +201,7 @@ func close_all_panels() -> void:
 	if main.info_panel:
 		main.info_panel.request_hide()
 
-	if main.shop_panel.visible:
+	if main.shop_open:
 		main.shop_open = false
 
 		if main.shop_tween:
@@ -184,10 +213,13 @@ func close_all_panels() -> void:
 		main.stats_panel.visible = false
 	
 	if main.profile_panel.visible:
-		main.profile_panel.visible = false
+		if main.profile_panel.has_method("_close"):
+			main.profile_panel._close()
+		else:
+			main.profile_panel.visible = false
 	
 	if main.options_panel.visible:
-		main.options_panel.visible = false
+		main.options_panel.close_panel()
 	
 	if main.encyclopedia_panel.visible:
 		main.encyclopedia_panel.visible = false
@@ -196,7 +228,10 @@ func close_all_panels() -> void:
 		main.inventory_panel.visible = false
 	
 	if main.ranking_panel.visible:
-		main.ranking_panel.visible = false
+		if main.ranking_panel.has_method("_close"):
+			main.ranking_panel._close()
+		else:
+			main.ranking_panel.visible = false
 	
 func _update_ui() -> void:
 	_update_currency_ui()
@@ -213,6 +248,10 @@ func _update_currency_ui() -> void:
 
 
 func _update_dps_ui() -> void:
+	if main.dps < 1000.0:
+		main.dps_label.text = "+" + ("%.2f" % main.dps).replace(".", ",") + " d/s"
+		return
+
 	var parts: Dictionary = main.format_doblones_parts(main.dps)
 	main.dps_label.text = "+" + parts.value + " " + parts.unit.replace(" de doblones", "").replace(" doblones", "") + "/s"
 
@@ -277,46 +316,149 @@ func update_shop_cards() -> void:
 func _refresh_card(card) -> void:
 	var id: String = String(card.item_id)
 	var p: int = main.shop_manager.get_price(id)
+	var level: int = main.shop_manager.get_level(id)
+	var max_level: int = main.shop_manager.get_max_level(id)
 
-	card.set_unlocked(bool(main.unlocked.get(id, true)))
-	card.set_dynamic(
-		p,
-		"%d" % p,
-		main.shop_manager.get_item_effect_text(id),
-		str(main.shop_manager.get_level(id))
-	)
-	card.update_state(main.coins)
+	var formatted_price: String = main.get_full_number_text(p)
+	var level_text: String = str(level)
 
-	card.extra_b1 = main.shop_manager.get_tooltip_line_1(id)
-	card.extra_b2 = main.shop_manager.get_tooltip_line_2(id)
-	card.extra_b3 = main.shop_manager.get_tooltip_line_3(id)
+	if max_level > 0 and level >= max_level:
+		formatted_price = "MAX"
+		level_text = "MAX"
 
 	card.set_unlocked(bool(main.unlocked.get(id, true)))
 
 	if card.has_method("set_locked_text"):
 		card.set_locked_text(main.shop_manager.get_locked_text(id))
 
+	card.extra_b1 = main.shop_manager.get_tooltip_line_1(id)
+	card.extra_b2 = main.shop_manager.get_tooltip_line_2(id)
+	card.extra_b3 = main.shop_manager.get_tooltip_line_3(id)
+
 	card.set_dynamic(
 		p,
-		"%d" % p,
+		formatted_price,
 		main.shop_manager.get_item_effect_text(id),
-		str(main.shop_manager.get_level(id))
+		level_text
 	)
-		
+
+	card.update_state(main.coins)
+
+
 func toggle_ranking() -> void:
 	var will_open: bool = not main.ranking_panel.visible
 
 	if will_open:
 		_close_overlay_panels(main.ranking_panel)
 		play_ui_sfx(main.SFX_ICON_OPEN)
-		main.ranking_panel.visible = true
 
 		if main.info_panel:
 			main.info_panel.request_hide()
-		
-		# Llamamos al método de apertura del panel si existe
+
 		if main.ranking_panel.has_method("_open"):
 			main.ranking_panel._open()
+		else:
+			main.ranking_panel.visible = true
 	else:
-		main.ranking_panel.visible = false
 		play_ui_sfx(main.SFX_ICON_CLOSE)
+
+		if main.ranking_panel.has_method("_close"):
+			main.ranking_panel._close()
+		else:
+			main.ranking_panel.visible = false
+			
+func update_unique_tab_visibility() -> void:
+	var should_show: bool = false
+
+	if main.cleaning_manager != null:
+		should_show = main.cleaning_manager.has_enough_unlocked_structures()
+
+	should_show = should_show or bool(main.unlocked.get("auspezio", false))
+
+	var unicos_tab_index: int = main.tab_container.get_tab_idx_from_control(
+		main.tab_container.get_node("Únicos")
+	)
+
+	if unicos_tab_index != -1:
+		main.tab_container.set_tab_hidden(unicos_tab_index, not should_show)
+		
+		
+func show_save_notification() -> void:
+	var label = Label.new()
+	label.text = "¡Partida guardada!"
+	
+	# --- Configuración Visual ---
+	# Aplicamos tu color personalizado #ab4b1d
+	label.add_theme_color_override("font_color", Color("#ab4b1d"))
+	
+	# Cargamos la fuente Pirata One (asegúrate de que la ruta sea correcta)
+	var custom_font = load("res://assets/fuentes/PirataOne-Regular.ttf")
+	if custom_font:
+		label.add_theme_font_override("font", custom_font)
+	
+	label.add_theme_font_size_override("font_size", 42)
+	
+	# Contorno para mejorar legibilidad sobre el fondo
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 4)
+	
+	# --- Alineación y Posición ---
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	label.grow_vertical = Control.GROW_DIRECTION_BOTH
+	
+	# Capa superior
+	label.z_index = 4000 
+	
+	main.ui_root.add_child(label)
+	
+	# --- Animación de desvanecimiento ---
+	var tw = label.create_tween()
+	
+	# 1. Aparece y sube un poco (Squish effect)
+	label.modulate.a = 0
+	label.scale = Vector2(0.5, 0.5) # Empieza pequeño
+	label.pivot_offset = label.size / 2 # Centro para el escalado
+	
+	tw.set_parallel(true)
+	tw.tween_property(label, "modulate:a", 1.0, 0.2)
+	tw.tween_property(label, "scale", Vector2.ONE, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(label, "position:y", label.position.y - 40, 0.3)
+	
+	# 2. Pausa de 1 segundo (Lectura)
+	tw.set_parallel(false)
+	tw.tween_interval(1.0)
+	
+	# 3. Desaparece flotando hacia arriba
+	tw.set_parallel(true)
+	tw.tween_property(label, "modulate:a", 0.0, 0.7)
+	tw.tween_property(label, "position:y", label.position.y - 60, 0.7)
+	
+	# 4. Limpieza de memoria
+	tw.set_parallel(false)
+	tw.finished.connect(label.queue_free)
+	
+# Comprueba si el usuario está en la pantalla de Login/Registro
+func is_auth_panel_open() -> bool:
+	# Verificamos si el panel de perfil está visible y si está mostrando la vista de autenticación
+	return main.profile_panel.visible and main.profile_panel.auth_view.visible
+
+# Comprueba si hay CUALQUIER cosa abierta para la lógica del ESC
+func has_any_panel_open() -> bool:
+	return main.stats_panel.visible or \
+		   main.ranking_panel.visible or \
+		   main.profile_panel.visible or \
+		   main.encyclopedia_panel.visible or \
+		   main.inventory_panel.visible or \
+		   main.options_panel.visible or \
+		   main.shop_open # En tu script la tienda usa esta variable
+
+func has_exclusive_panel_open() -> bool:
+	return main.shop_open or \
+		   main.stats_panel.visible or \
+		   main.ranking_panel.visible or \
+		   main.profile_panel.visible or \
+		   main.encyclopedia_panel.visible or \
+		   main.inventory_panel.visible

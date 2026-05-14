@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://buvdg6kk8oju2"]
 
 [ext_resource type="Script" uid="uid://buyotjgv07gsh" path="res://scenes/profile_panel.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://4js67mc3pou0" path="res://assets/ui/cruz.png" id="3"]
 [ext_resource type="Shader" uid="uid://clhdnox30mfge" path="res://scenes/ProfilePanel.gdshader" id="3_6td75"]
 [ext_resource type="Texture2D" uid="uid://c5yprfiyit17s" path="res://pergamino_v2.png" id="3_ok5j1"]
 [ext_resource type="Texture2D" uid="uid://cq0j1orhhg43v" path="res://assets/ui/iconos/default_avatar.png" id="4"]
-[ext_resource type="Texture2D" uid="uid://cgjbjq3ublcr2" path="res://assets/ui/rarezas/tag_rareza_default.png" id="5_p6fjv"]
-[ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="5_sthu2"]
+[ext_resource type="Texture2D" uid="uid://dsq4vibgcwjl6" path="res://assets/ui/rarezas/tag_rareza_default.png" id="5_p6fjv"]
+[ext_resource type="FontFile" uid="uid://dkkmqm6p1jj0p" path="res://assets/fuentes/PirataOne-Regular.ttf" id="5_sthu2"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ok5j1"]
 
@@ -147,6 +147,7 @@ theme_override_styles/separator = SubResource("StyleBoxEmpty_6td75")
 custom_minimum_size = Vector2(150, 40)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("5_sthu2")
 theme_override_styles/normal = SubResource("StyleBoxFlat_p6fjv")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_6td75")
 theme_override_styles/hover = SubResource("StyleBoxFlat_da4h1")
@@ -303,34 +304,42 @@ text = "Crear cuenta"
 visible = false
 modulate = Color(1, 0.35, 0.35, 1)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_sthu2")
 autowrap_mode = 3
 
 [node name="OkLabel" type="Label" parent="PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields" unique_id=499346475]
 visible = false
 modulate = Color(0.35, 1, 0.35, 1)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_sthu2")
 autowrap_mode = 3
 
 [node name="MarginContainer2" type="MarginContainer" parent="PanelContainer" unique_id=97327227]
+visible = false
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 30
-theme_override_constants/margin_top = 41
+theme_override_constants/margin_top = 57
 theme_override_constants/margin_right = 55
 theme_override_constants/margin_bottom = 2
 
-[node name="BtnClose" type="TextureButton" parent="PanelContainer/MarginContainer2" unique_id=652982793]
+[node name="AvatarDialog" type="FileDialog" parent="." unique_id=1123868673]
+oversampling_override = 1.0
+title = "Open a File"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.png", "*.jpg", "*.jpeg")
+
+[node name="BtnClose" type="TextureButton" parent="." unique_id=652982793]
 z_index = 1
 custom_minimum_size = Vector2(22, 22)
-layout_mode = 2
+layout_mode = 0
+offset_left = 401.0
+offset_top = 96.0
+offset_right = 423.0
+offset_bottom = 118.00012
 size_flags_horizontal = 8
 size_flags_vertical = 0
 texture_normal = ExtResource("3")
 ignore_texture_size = true
 stretch_mode = 5
-
-[node name="AvatarDialog" type="FileDialog" parent="." unique_id=1123868673]
-title = "Open a File"
-file_mode = 0
-access = 2
-filters = PackedStringArray("*.png", "*.jpg", "*.jpeg")

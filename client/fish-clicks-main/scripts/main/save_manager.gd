@@ -43,6 +43,16 @@ func get_save_state() -> Dictionary:
 		"alien_minigame_wins": main.alien_minigame_wins,
 		"alien_minigame_losses": main.alien_minigame_losses,
 		"alien_egg": main.egg_manager.get_save_state(),
+		"alien_no_hit_unlocked": main.achievements_manager.alien_no_hit_unlocked,
+		"alien_egg_obtained": main.achievements_manager.alien_egg_obtained,
+		"audio": {
+			"master_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")),
+			"music_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Musica")),
+			"sfx_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Efectos")),
+			"master_muted": AudioServer.is_bus_mute(AudioServer.get_bus_index("Master")),
+			"music_muted": AudioServer.is_bus_mute(AudioServer.get_bus_index("Musica")),
+			"sfx_muted": AudioServer.is_bus_mute(AudioServer.get_bus_index("Efectos"))
+		}
 	}
 
 func reset_local_state() -> void:
@@ -56,6 +66,13 @@ func reset_local_state() -> void:
 	main.levels.clear()
 	main.unlocked.clear()
 	main.fish_inventory.clear()
+	
+	# Reseteo de habitats
+	main.habitat_manager.unlocked_habitats.clear()
+	main.habitat_manager.unlocked_habitats.append("habitat_1")
+
+	main.habitat_manager.current_habitat = "habitat_1"
+	main.habitat_manager.inventory_habitat = "habitat_1"
 	
 	main.alien_minigame_wins = 0
 	main.alien_minigame_losses = 0
@@ -110,6 +127,7 @@ func reset_local_state() -> void:
 	main._update_tronco_visibility_by_level()
 	main._update_anubia_sprite_by_level()
 	main.ui_manager._update_ui()
+	main.habitat_manager.apply_current_habitat()
 	GlobalData.user_photo_url = ""
 
 func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void:
@@ -143,7 +161,7 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 	main.achievements_manager.random_tick_unlocked = bool(state.get("random_tick_unlocked", false))
 	main.achievements_manager.volume_slider_spam_unlocked = bool(state.get("volume_slider_spam_unlocked", false))
 	main.habitat_manager.current_habitat = state.get("current_habitat", "habitat_1")
-
+	
 	var saved_habitats = state.get("unlocked_habitats", ["habitat_1"])
 	main.habitat_manager.unlocked_habitats.clear()
 	for h in saved_habitats:
@@ -185,6 +203,17 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 			AudioServer.get_bus_index("Master"),
 			state["sound_volume"]
 		)
+	
+	if state.has("audio"):
+		var audio: Dictionary = state["audio"]
+
+		_set_bus_volume("Master", float(audio.get("master_volume", 0.0)))
+		_set_bus_volume("Musica", float(audio.get("music_volume", 0.0)))
+		_set_bus_volume("Efectos", float(audio.get("sfx_volume", 0.0)))
+
+		_set_bus_mute("Master", bool(audio.get("master_muted", false)))
+		_set_bus_mute("Musica", bool(audio.get("music_muted", false)))
+		_set_bus_mute("Efectos", bool(audio.get("sfx_muted", false)))
 
 	main.total_clicks = int(state.get("total_clicks", 0))
 	main.total_coins_earned = float(state.get("total_coins_earned", 0.0))
@@ -200,6 +229,8 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 	main.alien_minigame_wins = int(state.get("alien_minigame_wins", 0))
 	main.alien_minigame_losses = int(state.get("alien_minigame_losses", 0))
 	main.cleaning_manager.try_unlock_cleaner_fish()
+	main.achievements_manager.alien_no_hit_unlocked = bool(state.get("alien_no_hit_unlocked", false))
+	main.achievements_manager.alien_egg_obtained = bool(state.get("alien_egg_obtained", false))
 
 	main.fish_inventory = state.get("fish_inventory", {})
 
@@ -216,3 +247,14 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 	main._update_chest_sprite_by_level()
 	main.alien_manager.check_alien_event_unlock()
 	main.habitat_manager.apply_current_habitat()
+
+func _set_bus_volume(bus_name: String, volume_db: float) -> void:
+	var bus_index := AudioServer.get_bus_index(bus_name)
+	if bus_index >= 0:
+		AudioServer.set_bus_volume_db(bus_index, volume_db)
+
+
+func _set_bus_mute(bus_name: String, muted: bool) -> void:
+	var bus_index := AudioServer.get_bus_index(bus_name)
+	if bus_index >= 0:
+		AudioServer.set_bus_mute(bus_index, muted)

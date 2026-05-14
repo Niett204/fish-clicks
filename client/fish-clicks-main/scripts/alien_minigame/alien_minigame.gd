@@ -18,7 +18,7 @@ const RETURN_SCENE_PATH := "res://scenes/main.tscn"
 @export var survival_time_seconds: float = 90.0
 @export var intro_lines: Array[String] = [
 	"Has llegado lejos para ser una criatura tan inferior.",
-	"Ahora entreténme un poco antes de perder."
+	"Ahora entretenme un poco antes de perder."
 ]
 @export var intro_text_speed: float = 0.025
 @export var intro_hold_time: float = 1.0
@@ -40,6 +40,11 @@ const RETURN_SCENE_PATH := "res://scenes/main.tscn"
 @onready var alien_sprite: Sprite2D = $Background/BattleLayer/Alien/Sprite2D
 
 const AUSPICIO_TIME_REDUCTION_PER_LEVEL := 2.0
+const AUSPICIO_VOICE_1 := preload("res://assets/audio/alien/auspi_1.wav")
+const AUSPICIO_VOICE_2 := preload("res://assets/audio/alien/auspi_2.wav")
+const SFX_GLITCH := preload("res://assets/audio/alien/glitch.wav")
+const SFX_WIN_EXPLOSION := preload("res://assets/audio/alien/win_explosion.wav")
+const MUSIC_ALIEN_MINIGAME := preload("res://assets/audio/alien/boss_alien.wav")
 const MIN_SURVIVAL_TIME_SECONDS := 10.0
 
 enum BossPhase {
@@ -49,6 +54,10 @@ enum BossPhase {
 }
 
 var current_phase: int = BossPhase.PHASE_1
+var intro_voice_player: AudioStreamPlayer
+var global_sfx_player: AudioStreamPlayer
+var battle_music_player: AudioStreamPlayer
+
 var arena_rect_global: Rect2
 
 var current_health: int = 0
@@ -93,8 +102,24 @@ var intro_camera_original_zoom: Vector2 = Vector2.ONE
 var intro_camera_original_pos: Vector2 = Vector2.ZERO
 var intro_camera_initial_zoom: Vector2 = Vector2(3.2, 3.2)
 var is_winning_sequence: bool = false
+var damage_taken_count: int = 0
 
 func _ready() -> void:
+	battle_music_player = AudioStreamPlayer.new()
+	battle_music_player.bus = "Musica"
+	add_child(battle_music_player)
+
+	battle_music_player.stream = MUSIC_ALIEN_MINIGAME
+	battle_music_player.play()
+
+	intro_voice_player = AudioStreamPlayer.new()
+	intro_voice_player.bus = "Efectos"
+	add_child(intro_voice_player)
+	
+	global_sfx_player = AudioStreamPlayer.new()
+	global_sfx_player.bus= "Efectos"
+	add_child(global_sfx_player)
+
 	attack_utils = AlienAttackUtilsScript.new()
 	add_child(attack_utils)
 	attack_utils.setup(self)
@@ -323,7 +348,11 @@ func play_boss_intro() -> void:
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	await t_in.finished
 
-	for line in intro_lines:
+	for i in range(intro_lines.size()):
+		var line: String = intro_lines[i]
+
+		play_intro_voice_line(i)
+
 		await type_text(bubble_label, line, intro_text_speed)
 		await get_tree().create_timer(intro_hold_time).timeout
 		bubble_label.text = ""
@@ -349,7 +378,25 @@ func type_text(label: Label, full_text: String, speed: float = 0.025) -> void:
 		label.text += full_text[i]
 		await get_tree().create_timer(speed).timeout
 	
+func play_intro_voice_line(index: int) -> void:
+	if intro_voice_player == null:
+		return
 
+	var stream: AudioStream = null
+
+	match index:
+		0:
+			stream = AUSPICIO_VOICE_1
+		1:
+			stream = AUSPICIO_VOICE_2
+
+	if stream == null:
+		return
+
+	intro_voice_player.stop()
+	intro_voice_player.stream = stream
+	intro_voice_player.play()
+	
 func setup_background_display_fish() -> void:
 	var fish_data: Array = GlobalData.consume_pending_minigame_display_fish_data()
 
@@ -395,10 +442,26 @@ func setup_background_display_fish() -> void:
 		fish_sprite.texture = tex
 		fish_sprite.visible = true
 
+		var final_rotation := fish_sprite.rotation
+		var final_scale := fish_sprite.scale
+
+		# Caso especial: Leonardo es muy grande
+		if texture_path.to_lower().contains("leonardo"):
+			final_scale *= 0.65
+
+			# Peces de la izquierda: Pez y Pez3 normalmente son índice 0 y 2
+			if i == 0 or i == 2:
+				final_rotation += deg_to_rad(53)
+			else:
+				final_rotation -= deg_to_rad(53)
+
+		fish_sprite.rotation = final_rotation
+		fish_sprite.scale = final_scale
+
 		background_fish_idle_data.append({
 			"base_position": fish_sprite.position,
-			"base_rotation": fish_sprite.rotation,
-			"base_scale": fish_sprite.scale,
+			"base_rotation": final_rotation,
+			"base_scale": final_scale,
 			"is_capsule": is_capsule
 		})
 		
@@ -1002,6 +1065,8 @@ func take_damage(amount: int = 1) -> void:
 	if is_dead or is_invulnerable or has_won or is_phase_transitioning or is_winning_sequence:
 		return
 
+	damage_taken_count += 1
+
 	is_invulnerable = true
 	current_health = max(current_health - amount, 0)
 	update_lives_ui()
@@ -1076,6 +1141,8 @@ func die() -> void:
 		return
 
 	is_dead = true
+	play_glitch_sfx()
+	
 	set_process(false)
 	remove_phase_2_worm()
 	clear_glitch_zones()
@@ -1145,6 +1212,8 @@ func play_lose_sequence() -> void:
 
 
 func play_lose_glitch_burst(parent_layer: CanvasLayer) -> void:
+	play_glitch_sfx()
+	
 	var total_duration: float = 1.45
 	var elapsed: float = 0.0
 	var interval: float = 0.055
@@ -1190,6 +1259,29 @@ func spawn_lose_glitch(parent_layer: CanvasLayer) -> void:
 	if glitch.has_method("play_visual_burst"):
 		glitch.play_visual_burst(self, size, randf_range(0.18, 0.32))
 
+func play_glitch_sfx() -> void:
+	var sfx := AudioStreamPlayer.new()
+	sfx.bus = "Efectos"
+	sfx.stream = SFX_GLITCH
+	get_tree().root.add_child(sfx)
+	sfx.play()
+
+	sfx.finished.connect(func():
+		if is_instance_valid(sfx):
+			sfx.queue_free()
+	)
+	
+func play_win_explosion_sfx() -> void:
+	var sfx := AudioStreamPlayer.new()
+	sfx.bus = "Efectos"
+	sfx.stream = SFX_WIN_EXPLOSION
+	get_tree().root.add_child(sfx)
+	sfx.play()
+
+	sfx.finished.connect(func():
+		if is_instance_valid(sfx):
+			sfx.queue_free()
+	)
 
 func win() -> void:
 	if has_won or is_dead or is_finishing:
@@ -1205,6 +1297,9 @@ func win() -> void:
 
 func _exit_tree() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	
+	if battle_music_player != null:
+		battle_music_player.stop()
 
 
 func _process(delta: float) -> void:
@@ -1258,6 +1353,8 @@ func clear_remaining_attacks() -> void:
 
 
 func play_win_explosion_sequence() -> void:
+	play_win_explosion_sfx()
+	
 	var layer := CanvasLayer.new()
 	layer.layer = 10001
 	add_child(layer)
@@ -1515,6 +1612,7 @@ func finish_minigame_and_return(player_won: bool, skip_transition: bool = false)
 
 	GlobalData.set_pending_alien_result({
 		"won": player_won,
+		"no_hit": player_won and damage_taken_count <= 0,
 		"timestamp": Time.get_unix_time_from_system()
 	})
 

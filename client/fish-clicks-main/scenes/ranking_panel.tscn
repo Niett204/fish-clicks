@@ -1,14 +1,15 @@
 [gd_scene format=3 uid="uid://dj8jfr82fffsq"]
 
 [ext_resource type="Script" uid="uid://dermeorsaodof" path="res://scenes/ranking_panel.gd" id="1_mtvgp"]
-[ext_resource type="Texture2D" uid="uid://bicarrylo3grx" path="res://assets/ui/pergamino_v2.png" id="1_x87ak"]
-[ext_resource type="FontFile" uid="uid://dkkmqm6p1jj0p" path="res://assets/fuentes/PirataOne-Regular.ttf" id="2_mtvgp"]
+[ext_resource type="Texture2D" uid="uid://d1h3xsm418jol" path="res://assets/ui/pergamino_v2.png" id="1_x87ak"]
+[ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="2_mtvgp"]
 [ext_resource type="PackedScene" uid="uid://c26glntfrei7b" path="res://scenes/UI/RankingRow.tscn" id="2_peu1r"]
-[ext_resource type="Texture2D" uid="uid://7raka7aipend" path="res://assets/misc/ranking_sin_peces.png" id="3_kiu8h"]
-[ext_resource type="Texture2D" uid="uid://4js67mc3pou0" path="res://assets/ui/cruz.png" id="4_peu1r"]
+[ext_resource type="Texture2D" uid="uid://c1dsnqd6fj4t7" path="res://assets/misc/ranking_sin_peces.png" id="3_kiu8h"]
+[ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="4_peu1r"]
 [ext_resource type="Texture2D" uid="uid://cq0j1orhhg43v" path="res://assets/ui/iconos/default_avatar.png" id="4_w8rbo"]
-[ext_resource type="Shader" path="res://scenes/ranking_panel_shader.gdshader" id="5_w8rbo"]
-[ext_resource type="Texture2D" uid="uid://cdby5ig42c3fy" path="res://assets/misc/corona.png" id="8_yjatq"]
+[ext_resource type="Shader" uid="uid://blxo6we1g8o25" path="res://scenes/ranking_panel_shader.gdshader" id="5_w8rbo"]
+[ext_resource type="Texture2D" uid="uid://ba1n5j0cvhvlw" path="res://assets/misc/corona.png" id="8_yjatq"]
+[ext_resource type="Texture2D" uid="uid://bva22m6ipd063" path="res://assets/ui/tabla.png" id="10_uc5be"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yjatq"]
 shader = ExtResource("5_w8rbo")
@@ -80,9 +81,9 @@ stretch_mode = 5
 
 [node name="Winner1" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection" unique_id=1823520202]
 layout_mode = 0
-offset_left = 136.33
+offset_left = 83.33
 offset_top = -13.93
-offset_right = 176.33
+offset_right = 232.33
 offset_bottom = 53.07
 alignment = 1
 
@@ -106,9 +107,9 @@ stretch_mode = 5
 
 [node name="Winner2" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxMain/PodiumSection" unique_id=1270651399]
 layout_mode = 0
-offset_left = 84.975
+offset_left = 25.0
 offset_top = 21.48
-offset_right = 124.975006
+offset_right = 125.0
 offset_bottom = 88.479996
 alignment = 1
 
@@ -136,7 +137,7 @@ stretch_mode = 5
 layout_mode = 0
 offset_left = 182.465
 offset_top = 58.275
-offset_right = 222.465
+offset_right = 282.465
 offset_bottom = 125.275
 alignment = 1
 
@@ -194,7 +195,7 @@ theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
 theme_override_fonts/font = ExtResource("2_mtvgp")
 text = "Nombre"
 
-[node name="Doblones" type="Label" parent="MarginContainer/MarginContainer/VBoxMain/ListSection/Header" unique_id=2057099603]
+[node name="ValueLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxMain/ListSection/Header" unique_id=2057099603]
 custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.67058825, 0.29411766, 0.11372549, 1)
@@ -250,3 +251,47 @@ offset_bottom = -84.0
 grow_vertical = 0
 size_flags_horizontal = 4
 mouse_filter = 2
+
+[node name="BtnTabMoney" type="TextureButton" parent="." unique_id=776746357]
+layout_mode = 0
+offset_left = 285.0
+offset_top = 569.0
+offset_right = 365.0
+offset_bottom = 609.0
+texture_normal = ExtResource("10_uc5be")
+ignore_texture_size = true
+stretch_mode = 6
+
+[node name="Label" type="Label" parent="BtnTabMoney" unique_id=561405023]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 9.0
+offset_right = 66.0
+offset_bottom = 32.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "Doblones"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BtnTabClicks" type="TextureButton" parent="." unique_id=36901282]
+layout_mode = 0
+offset_left = 196.0
+offset_top = 569.0
+offset_right = 276.0
+offset_bottom = 609.0
+texture_normal = ExtResource("10_uc5be")
+ignore_texture_size = true
+stretch_mode = 6
+
+[node name="Label" type="Label" parent="BtnTabClicks" unique_id=283932756]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 10.0
+offset_right = 59.0
+offset_bottom = 33.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_mtvgp")
+text = "Clicks"
+horizontal_alignment = 1
+vertical_alignment = 1

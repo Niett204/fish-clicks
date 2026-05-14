@@ -119,6 +119,11 @@ func get_coin_penalty_multiplier() -> float:
 	return 1.0
 
 # Funciones para actualizar las estadísticas y logros
+
+# Las estadísticas solo aparecerán en el panel una vez desbloqueado el evento de limpieza
+func is_cleaning_feature_unlocked() -> bool:
+	return has_enough_unlocked_structures()
+	
 func register_dirt_spot_cleaned() -> void:
 	total_dirt_spots_cleaned += 1
 
@@ -165,3 +170,11 @@ func try_unlock_cleaner_fish() -> void:
 
 func is_cleaning_event_active() -> bool:
 	return cleaning_event_available
+
+func get_cleaning_speed_multiplier() -> float:
+	var level := shop_manager.get_level("chupete_jr")
+
+	if level <= 0:
+		return 1.0
+
+	return 1.0 + (level * 0.15)

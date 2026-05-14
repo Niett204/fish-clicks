@@ -13,9 +13,15 @@ signal close_requested
 @onready var label_fecha_inicio_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_FechaInicio/LabelStat_FechaInicio_Value
 @onready var label_dps_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_DPS/LabelStat_DPS_Value
 @onready var label_dpc_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_DPC/LabelStat_DPC_Value
+
+@onready var stat_row_dirt_cleaned: Control = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Manchas
 @onready var label_dirt_cleaned_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_Manchas/LabelStat_Manchas_Value
+@onready var stat_row_cleaning_events: Control = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_EventosLimpieza
 @onready var label_cleaning_events_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_EventosLimpieza/LabelStat_EventosLimpieza_Value
+
+@onready var stat_row_alien_wins: Control = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_AlienWin
 @onready var label_alien_wins_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_AlienWin/LabelStat_AlienWin_Value
+@onready var stat_row_alien_losses: Control = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_AlienLose
 @onready var label_alien_losses_value: Label = $MarginContainer/MarginContainer/HBoxContainer/LeftPage/StatsList/StatRow_AlienLose/LabelStat_AlienLose_Value
 
 @onready var label_count: Label = $AchievementsHeader/LabelCount
@@ -111,10 +117,20 @@ func set_stats_data(data: Dictionary) -> void:
 	label_fecha_inicio_value.text = str(data.get("start_date", "DD/MM/AAAA"))
 	label_dps_value.text = str(data.get("dps", "0 d/s"))
 	label_dpc_value.text = str(data.get("dpc", "0 d/c"))
+	
 	label_dirt_cleaned_value.text = str(data.get("total_dirt_cleaned", 0))
 	label_cleaning_events_value.text = str(data.get("cleaning_events_completed", 0))
+	# Solo se verán los stats de limpieza una vez se desbloquea el minijuego
+	var show_cleaning_stats: bool = bool(data.get("show_cleaning_stats", false))
+	stat_row_dirt_cleaned.visible = show_cleaning_stats
+	stat_row_cleaning_events.visible = show_cleaning_stats
+	
 	label_alien_wins_value.text = str(data.get("alien_minigame_wins", 0))
 	label_alien_losses_value.text = str(data.get("alien_minigame_losses", 0))
+	# Solo se verán los stats del alien una vez se desbloquea el minijuego
+	var show_alien_stats: bool = bool(data.get("show_alien_stats", false))
+	stat_row_alien_wins.visible = show_alien_stats
+	stat_row_alien_losses.visible = show_alien_stats
 
 func set_achievements_progress(unlocked_count: int, total_count: int) -> void:
 	label_count.text = "%d/%d" % [unlocked_count, total_count]

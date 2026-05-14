@@ -18,11 +18,14 @@ public class JwtService {
     }
 
     public String generateToken(UUID userId, String email) {
+        // 30 días en milisegundos: 1000ms * 60s * 60m * 24h * 30d
+        long thirtyDays = 2592000000L;
+
         return Jwts.builder()
                 .subject(userId.toString())
                 .claim("email", email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 86400000))
+                .expiration(new Date(System.currentTimeMillis() + thirtyDays))
                 .signWith(getSigningKey())
                 .compact();
     }

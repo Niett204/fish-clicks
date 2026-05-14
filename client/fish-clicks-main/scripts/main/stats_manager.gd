@@ -14,14 +14,20 @@ func refresh_stats_panel() -> void:
 			"total_clicks": main.total_clicks,
 			"total_fish": main.aquarium_manager.get_total_fish_count(),
 			"total_structures": main.shop_manager.get_total_unlocked_structures_count(),
-			"total_doblones": main.get_compact_doblones_text(main.total_coins_earned),
+			"total_doblones": main.get_compact_number_text(main.total_coins_earned),
 			"total_special_fish": main.aquarium_manager.get_total_shiny_fish_count(),
 			"play_time": main.format_play_time(int(main.session_time_seconds)),
 			"start_date": main.game_start_date_string,
-			"dps": main.get_compact_doblones_text(main.dps) + " d/s",
-			"dpc": main.get_compact_doblones_text(main.click_power) + " d/c",
+			"dps": main.get_compact_number_text(main.dps) + " d/s",
+			"dpc": main.get_compact_number_text(main.click_power) + " d/c",
+			# Stats minijuego limpieza, solo se muestran al desbloquearse el minijuego
 			"total_dirt_cleaned": main.cleaning_manager.total_dirt_spots_cleaned,
-			"cleaning_events_completed": main.cleaning_manager.cleaning_events_completed
+			"cleaning_events_completed": main.cleaning_manager.cleaning_events_completed,
+			"show_cleaning_stats": main.cleaning_manager.is_cleaning_feature_unlocked(),
+			# Stats minijuego alien, solo se muestran al desbloquearse el minijuego
+			"alien_minigame_wins": main.alien_minigame_wins,
+			"alien_minigame_losses": main.alien_minigame_losses,
+			"show_alien_stats": main.alien_manager.is_alien_feature_unlocked()
 		})
 
 	if main.stats_panel.has_method("set_achievements_progress"):
@@ -40,16 +46,20 @@ func refresh_stats_values_only() -> void:
 			"total_clicks": main.total_clicks,
 			"total_fish": main.aquarium_manager.get_total_fish_count(),
 			"total_structures": main.shop_manager.get_total_unlocked_structures_count(),
-			"total_doblones": main.get_compact_doblones_text(main.total_coins_earned),
+			"total_doblones": main.get_compact_number_text(main.total_coins_earned),
 			"total_special_fish": main.aquarium_manager.get_total_shiny_fish_count(),
 			"play_time": main.format_play_time(int(main.session_time_seconds)),
 			"start_date": main.game_start_date_string,
-			"dps": main.get_compact_doblones_text(main.dps) + " d/s",
-			"dpc": main.get_compact_doblones_text(main.click_power) + " d/c",
+			"dps": main.get_compact_number_text(main.dps) + " d/s",
+			"dpc": main.get_compact_number_text(main.click_power) + " d/c",
+			# Stats minijuego limpieza, solo se muestran al desbloquearse el minijuego
 			"total_dirt_cleaned": main.cleaning_manager.total_dirt_spots_cleaned,
 			"cleaning_events_completed": main.cleaning_manager.cleaning_events_completed,
+			"show_cleaning_stats": main.cleaning_manager.is_cleaning_feature_unlocked(),
+			# Stats minijuego alien, solo se muestran al desbloquearse el minijuego
 			"alien_minigame_wins": main.alien_minigame_wins,
-			"alien_minigame_losses": main.alien_minigame_losses
+			"alien_minigame_losses": main.alien_minigame_losses,
+			"show_alien_stats": main.alien_manager.is_alien_feature_unlocked()
 		})
 
 

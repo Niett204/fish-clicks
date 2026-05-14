@@ -14,7 +14,7 @@ const ALIEN_SCENE := preload("res://scenes/alien.tscn")
 const MAIN_SCENE_PATH := "res://scenes/main.tscn"
 const ALIEN_MINIGAME_COOLDOWN_SECONDS := 600.0
 const ALIEN_EVENT_TRIGGER_CHANCE := 0.15
-const ALIEN_EVENT_STARTUP_GRACE_SECONDS := 180.0
+const ALIEN_EVENT_STARTUP_GRACE_SECONDS := 300.0
 
 var main: Node = null
 var alien_event_state := AlienEventState.IDLE
@@ -83,6 +83,9 @@ func spawn_and_enter_alien() -> void:
 
 	# Empieza fuera de pantalla, arriba
 	alien_instance.position = Vector2(final_pos.x, -180)
+	
+	if main != null and main.ui_manager != null:
+		main.ui_manager.play_ui_sfx(main.SFX_ALIEN_ENTER)
 
 	await animate_alien_zigzag_entry(final_pos)
 	
@@ -233,26 +236,59 @@ func start_aquarium_abduction_sequence() -> void:
 	else:
 		abduct_return_origin = alien_instance.global_position if alien_instance != null else Vector2.ZERO
 
+	_save_all_aquarium_fish_snapshots()
+
 	if fish_list.is_empty():
 		finish_abduction_sequence()
 		return
+	
+	if main != null and main.ui_manager != null:
+		main.ui_manager.play_ui_sfx(main.SFX_ALIEN_ABDUCT)
 
-	for fish in fish_list:
+	await abduct_aquarium_abduction_sequence_with_snapshots(fish_list)
+	finish_abduction_sequence()
+	
+func _save_all_aquarium_fish_snapshots() -> void:
+	var visible_snapshots := {}
+
+	for fish in main.fish_layer.get_children():
 		if not is_instance_valid(fish):
 			continue
 
-		abducted_fish_snapshots.append({
-			"fish_id": fish.fish_id if "fish_id" in fish else "",
-			"habitat_id": fish.habitat_id if "habitat_id" in fish else main.habitat_manager.current_habitat,
-			"slot_index": fish.slot_index if "slot_index" in fish else -1,
+		var key := "%s:%s" % [str(fish.habitat_id), str(fish.slot_index)]
+
+		visible_snapshots[key] = {
+			"fish_id": str(fish.fish_id),
+			"habitat_id": str(fish.habitat_id),
+			"slot_index": int(fish.slot_index),
 			"position": fish.global_position,
 			"scale": fish.scale,
 			"rotation": fish.rotation,
 			"alpha": fish.modulate.a
-		})
+		}
 
-	await abduct_aquarium_abduction_sequence_with_snapshots(fish_list)
-	finish_abduction_sequence()
+	for habitat_id in main.aquarium_data.keys():
+		var slots: Array = main.aquarium_data[habitat_id]
+
+		for i in range(slots.size()):
+			var fish_id = slots[i]
+			if fish_id == null:
+				continue
+
+			var key := "%s:%s" % [str(habitat_id), str(i)]
+
+			if visible_snapshots.has(key):
+				abducted_fish_snapshots.append(visible_snapshots[key])
+			else:
+				abducted_fish_snapshots.append({
+					"fish_id": str(fish_id),
+					"habitat_id": str(habitat_id),
+					"slot_index": i,
+					"position": Vector2.ZERO,
+					"scale": Vector2.ONE,
+					"rotation": 0.0,
+					"alpha": 1.0
+				})
 
 func abduct_aquarium_abduction_sequence_with_snapshots(fish_list: Array) -> void:
 	var tweens: Array[Tween] = []
@@ -390,6 +426,12 @@ func _resume_after_minigame_flow(result: Dictionary) -> void:
 	if main.stats_manager != null:
 		main.stats_manager.register_alien_minigame_result(bool(result.get("won", false)))
 
+	if main.achievements_manager != null:
+		if bool(result.get("no_hit", false)):
+			main.achievements_manager.register_alien_no_hit()
+
+		main.achievements_manager.check_achievements()
+
 	clear_visual_fish_layer()
 	await main.get_tree().process_frame
 
@@ -434,6 +476,9 @@ func _resume_after_minigame_flow(result: Dictionary) -> void:
 func animate_alien_escape_damaged() -> void:
 	if alien_instance == null or not is_instance_valid(alien_instance):
 		return
+	
+	if main != null and main.ui_manager != null:
+		main.ui_manager.play_ui_sfx(main.SFX_ALIEN_EXIT)
 
 	alien_escape_fx_active = true
 
@@ -477,7 +522,7 @@ func animate_alien_escape_damaged() -> void:
 	move_t.tween_property(alien_instance, "modulate:a", 0.0, 1.2)\
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
-	var should_drop_egg := randf() < 1
+	var should_drop_egg := randf() < 0.25
 	if should_drop_egg:
 		call_deferred("_drop_egg_during_escape")
 
@@ -508,6 +553,9 @@ func _drop_egg_during_escape() -> void:
 
 	if main.egg_manager != null:
 		main.egg_manager.spawn_dropped_egg(alien_instance.global_position)
+
+	if main.achievements_manager != null:
+		main.achievements_manager.register_alien_egg_obtained()
 
 
 func spawn_alien_escape_smoke_fx(parent: CanvasLayer) -> void:
@@ -652,6 +700,9 @@ func spit_fish_back_into_aquarium() -> void:
 		elif alien_instance != null:
 			origin = alien_instance.global_position
 
+	if main != null and main.ui_manager != null:
+		main.ui_manager.play_ui_sfx(main.SFX_ALIEN_ABDUCT)
+		
 	var fx_layer: CanvasLayer = null
 
 	if alien_escape_fx_active:
@@ -661,7 +712,9 @@ func spit_fish_back_into_aquarium() -> void:
 		call_deferred("_run_alien_damage_fx_loop", fx_layer)
 
 	var tweens: Array[Tween] = []
+	var current_habitat: String = main.habitat_manager.current_habitat
 
+	# Recreamos TODOS los peces visuales, pero solo mostramos los del hábitat actual
 	for snap in abducted_fish_snapshots:
 		var fish_id: String = str(snap.get("fish_id", ""))
 		var habitat_id: String = str(snap.get("habitat_id", ""))
@@ -670,7 +723,7 @@ func spit_fish_back_into_aquarium() -> void:
 		if fish_id == "" or habitat_id == "" or slot_index < 0:
 			continue
 
-		main.aquarium_manager.spawn_fish(
+		var fish = main.aquarium_manager.spawn_fish(
 			fish_id,
 			habitat_id,
 			slot_index,
@@ -678,10 +731,17 @@ func spit_fish_back_into_aquarium() -> void:
 			origin
 		)
 
+		if fish != null and is_instance_valid(fish):
+			fish.visible = habitat_id == current_habitat
+
 	await main.get_tree().process_frame
 
+	# Animamos solo los peces del hábitat actual
 	for fish in main.fish_layer.get_children():
 		if not is_instance_valid(fish):
+			continue
+
+		if str(fish.habitat_id) != current_habitat:
 			continue
 
 		var snap := _find_snapshot_for_fish(fish)
@@ -713,7 +773,11 @@ func spit_fish_back_into_aquarium() -> void:
 
 	for t in tweens:
 		await t.finished
-	
+
+	# Por si tu manager tiene método de refresco por hábitat
+	if main.aquarium_manager.has_method("refresh_visible_fish_by_habitat"):
+		main.aquarium_manager.refresh_visible_fish_by_habitat()
+
 	if fx_layer != null and is_instance_valid(fx_layer):
 		fx_layer.queue_free()
 
@@ -742,9 +806,12 @@ func _find_snapshot_for_fish(fish: Node) -> Dictionary:
 			return snap
 	return {}
 		
-func animate_alien_exit_after_minigame() -> void:
+func animate_alien_exit_after_minigame() -> void:	
 	if alien_instance == null or not is_instance_valid(alien_instance):
 		return
+	
+	if main != null and main.ui_manager != null:
+		main.ui_manager.play_ui_sfx(main.SFX_ALIEN_EXIT)
 
 	var screen_size: Vector2 = main.get_viewport_rect().size
 	var final_pos: Vector2 = Vector2(screen_size.x * 0.5, 100)
@@ -1029,7 +1096,10 @@ func is_alien_minigame_on_cooldown() -> bool:
 	var now: float = float(Time.get_unix_time_from_system())
 	return (now - GlobalData.alien_last_minigame_trigger_unix) < ALIEN_MINIGAME_COOLDOWN_SECONDS
 
-
+# En el panel de stats solo aparecerán los del alien si tienes el minijuego desbloqueado
+func is_alien_feature_unlocked() -> bool:
+	return get_total_fish_count() >= UNLOCK_FISH_COUNT
+	
 func can_trigger_alien_event() -> bool:
 	if not alien_event_available:
 		return false

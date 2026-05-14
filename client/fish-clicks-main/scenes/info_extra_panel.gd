@@ -30,7 +30,7 @@ func _ready() -> void:
 func show_for_card(
 	card: Control,
 	title: String,
-	owned: int,
+	owned,
 	desc: String,
 	b1: String,
 	b2: String,
@@ -40,7 +40,7 @@ func show_for_card(
 	_cancel_hide()
 
 	$Banner/CardBox/VBox/Header/Title.text = title
-	$Banner/CardBox/VBox/Header/Owned.text = "LVL: %d" % owned
+	$Banner/CardBox/VBox/Header/Owned.text = "LVL: %s" % str(owned)
 
 	$Banner/CardBox/VBox/Desc.text = desc
 
@@ -80,29 +80,41 @@ func show_for_card(
 
 	_slide_in()
 
+func force_hide() -> void:
+	_show_token += 1
+	_showing = false
+	_hover_panel = false
+
+	if _tw and _tw.is_running():
+		_tw.kill()
+
+	visible = false
+
 func schedule_hide(delay := 0.06) -> void:
-	_cancel_hide()
+	_show_token += 1
 	var token := _show_token
 
 	_hide_timer = get_tree().create_timer(delay)
 	_hide_timer.timeout.connect(func():
-		# ❗ si desde que se programó el hide se ha vuelto a mostrar, ignóralo
 		if token != _show_token:
 			return
+
 		if _hover_panel:
 			return
+
 		if not _showing:
 			return
 
 		_slide_out()
 		_showing = false
 	)
-
+	
 func request_hide() -> void:
 	schedule_hide(0.06)
 
 func _cancel_hide() -> void:
-	_hide_timer = null  # (no se puede matar, pero el token lo invalida)
+	_show_token += 1
+	_hide_timer = null
 
 func _slide_in() -> void:
 	if _tw and _tw.is_running(): _tw.kill()

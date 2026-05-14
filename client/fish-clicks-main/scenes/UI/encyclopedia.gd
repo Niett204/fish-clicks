@@ -141,9 +141,6 @@ func hacer_request_peces(rareza: String = "") -> void:
 	var body_json := JSON.stringify(body_dict)
 	var headers := ["Content-Type: application/json"]
 	
-	if GlobalData.is_logged_in:
-		headers.append("Authorization: " + GlobalData.get_auth_header())
-
 	request_en_curso = true
 
 	var err := http_request.request(

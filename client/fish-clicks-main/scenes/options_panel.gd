@@ -3,10 +3,26 @@ extends Control
 signal close_requested
 signal volume_slider_spam_detected
 signal modo_pecera_requested
+const TutorialData = preload("res://scripts/data/bloques_tutorial.gd")
+
+const FONT_TITLE = preload("res://assets/fuentes/PirataOne-Regular.ttf")
+const FONT_BODY = preload("res://assets/fuentes/PirataOne-Regular.ttf")
+const DEFAULT_MASTER_VOLUME := 15.0
+const DEFAULT_MUSIC_VOLUME := 20.0
+const DEFAULT_EFFECTS_VOLUME := 25.0
 
 @onready var btn_close: TextureButton = $CenterContainer/PanelRoot/BtnCerrar
-@onready var btn_modo_pecera: Button = $CenterContainer/PanelRoot/BtnModoPecera
+@onready var btn_modo_pecera: Button = $CenterContainer/PanelRoot/BtnsArriba/BtnModoPecera
+@onready var btn_tutorial: Button = $CenterContainer/PanelRoot/BtnsArriba/BtnTutorial
 @onready var btn_salir: Button = $CenterContainer/PanelRoot/ButtonsRowBottom/BtnSalir
+@onready var panel_sonido: Control = $CenterContainer/PanelRoot/PanelSonido
+
+# Panel Tutorial
+@onready var tutorial_overlay: Control = $TutorialOverlay
+@onready var btn_cerrar_tutorial: TextureButton = $TutorialOverlay/CenterContainer/PanelTutorial/BtnCerrarTutorial
+@onready var contenido_tutorial: VBoxContainer = $TutorialOverlay/CenterContainer/PanelTutorial/ScrollContainer/ContenidoTutorial
+@onready var scroll_tutorial: ScrollContainer = $TutorialOverlay/CenterContainer/PanelTutorial/ScrollContainer
+var tutorial_blocks: Array = TutorialData.TUTORIAL_BLOCKS
 
 # Barra Sonido General
 @onready var SliderGeneral: HSlider = $CenterContainer/PanelRoot/PanelSonido/MarginContainer/Content/RowGeneral/SliderWrapGeneral/SliderGeneral
@@ -47,15 +63,19 @@ const VOLUME_SPAM_MIN_DELTA: float = 3.0
 func _ready() -> void:
 	visible = false
 
+	setup_tutorial_scrollbar()
+
 	fish_preview_player.stream = preload("res://assets/audio/peces/bubble.WAV")
 	_configure_slider(SliderGeneral)
 	_configure_slider(SliderMusica)
 	_configure_slider(SliderEfectos)
 	
 	# Inicializar las Sliders a un valor predeterminado
-	SliderGeneral.value = 15
-	SliderMusica.value = 20
-	SliderEfectos.value = 25
+	if not GlobalData.has_audio_settings_been_initialized:
+		_apply_default_audio_values()
+		GlobalData.has_audio_settings_been_initialized = true
+	else:
+		sync_from_audio_server()
 
 	_apply_all_slider_audio()
 	
@@ -110,6 +130,10 @@ func _ready() -> void:
 	btn_close.mouse_exited.connect(_on_btn_close_mouse_exited)
 	btn_close.button_down.connect(_on_btn_close_button_down)
 	btn_close.button_up.connect(_on_btn_close_button_up)
+	
+	btn_cerrar_tutorial.pivot_offset = btn_cerrar_tutorial.size / 2 
+	btn_cerrar_tutorial.mouse_entered.connect(_on_btn_cerrar_tutorial_mouse_entered)
+	btn_cerrar_tutorial.mouse_exited.connect(_on_btn_cerrar_tutorial_mouse_exited)
 
 	# Botón modo pecera
 	btn_modo_pecera.pressed.connect(_on_btn_modo_pecera_pressed)
@@ -121,6 +145,12 @@ func _ready() -> void:
 	btn_guardar.pressed.connect(_on_btn_guardar_pressed)
 	GlobalData.save_success.connect(_on_save_ok)
 	GlobalData.save_failed.connect(_on_save_err)
+	
+	# Botón Tutorial
+	tutorial_overlay.visible = false
+	btn_tutorial.pressed.connect(_on_btn_tutorial_pressed)
+	btn_cerrar_tutorial.pressed.connect(_on_btn_cerrar_tutorial_pressed)
+	_build_tutorial()
 
 func _on_slider_value_changed(_value: float, item: Dictionary) -> void:
 	_update_slider_visuals(item)
@@ -240,6 +270,7 @@ func _play_fish_volume_preview() -> void:
 		
 # Funciones Botón X Close
 func _on_btn_close_pressed() -> void:
+	tutorial_overlay.visible = false
 	close_requested.emit()
 
 func _on_btn_close_mouse_entered() -> void:
@@ -362,3 +393,166 @@ func _show_save_status(msg: String) -> void:
 	# Si no, simplemente imprime por ahora
 	print(msg)
 	# lbl_save_status.text = msg  # descomenta si añades el Label
+	
+# Panel Tutorial
+func _on_btn_tutorial_pressed() -> void:
+	btn_cerrar_tutorial.scale = Vector2(0.05, 0.06)
+	tutorial_overlay.visible = true
+	tutorial_overlay.move_to_front()
+	scroll_tutorial.scroll_vertical = 0
+
+func _on_btn_cerrar_tutorial_pressed() -> void:
+	var tw := create_tween()
+	tw.tween_property(tutorial_overlay, "modulate:a", 0.0, 0.12)
+	await tw.finished
+
+	tutorial_overlay.visible = false
+	tutorial_overlay.modulate.a = 1.0
+
+func _build_tutorial() -> void:
+	for child in contenido_tutorial.get_children():
+		child.queue_free()
+
+	for block in tutorial_blocks:
+		contenido_tutorial.add_child(_create_tutorial_block(block))
+
+
+func _create_tutorial_block(block: Dictionary) -> VBoxContainer:
+	var container := VBoxContainer.new()
+	container.custom_minimum_size = Vector2(420, 0)
+	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	container.add_theme_constant_override("separation", 10)
+
+	var image := TextureRect.new()
+	if block.has("image") and block["image"] != null:
+		image.texture = block["image"]
+
+	image.custom_minimum_size = Vector2(460, 230)
+	image.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
+	var title := Label.new()
+	title.text = block["title"]
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_override("font", FONT_TITLE)
+	title.add_theme_font_size_override("font_size", 24)
+	title.add_theme_color_override("font_color", Color("#a9502b"))
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var text := RichTextLabel.new()
+	text.text = block["text"]
+	text.fit_content = true
+	text.scroll_active = false
+	text.custom_minimum_size = Vector2(420, 0)
+	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text.add_theme_font_override("normal_font", FONT_BODY)
+	text.add_theme_font_size_override("normal_font_size", 18)
+	text.add_theme_color_override("default_color", Color("#6f4a2d"))
+
+	var spacer := Control.new()
+	spacer.custom_minimum_size = Vector2(0, 35)
+
+	container.add_child(image)
+	container.add_child(title)
+	container.add_child(text)
+	container.add_child(spacer)
+
+	return container
+
+func close_panel() -> void:
+	tutorial_overlay.visible = false
+	visible = false
+
+func _on_btn_cerrar_tutorial_mouse_entered() -> void:
+	# Tu escala base del inspector
+	var base_scale := Vector2(0.05, 0.06)
+	
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	
+	# Escalamos un 8% sobre tu base actual
+	var target_scale := base_scale * 1.08
+	
+	tween.parallel().tween_property(btn_cerrar_tutorial, "scale", target_scale, 0.08)
+	tween.parallel().tween_property(btn_cerrar_tutorial, "modulate", Color(0.85, 0.85, 0.85, 1.0), 0.08)
+
+func _on_btn_cerrar_tutorial_mouse_exited() -> void:
+	# Volvemos exactamente a lo que tienes en el inspector
+	var base_scale := Vector2(0.05, 0.06)
+	
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	
+	tween.parallel().tween_property(btn_cerrar_tutorial, "scale", base_scale, 0.08)
+	tween.parallel().tween_property(btn_cerrar_tutorial, "modulate", Color.WHITE, 0.08)
+
+func sync_from_audio_server() -> void:
+	_set_slider_from_bus(SliderGeneral, "Master")
+	_set_slider_from_bus(SliderMusica, "Musica")
+	_set_slider_from_bus(SliderEfectos, "Efectos")
+
+	await get_tree().process_frame
+
+	for item in slider_items:
+		_update_slider_visuals(item)
+
+
+func _set_slider_from_bus(slider: HSlider, bus_name: String) -> void:
+	var bus_index := AudioServer.get_bus_index(bus_name)
+	if bus_index < 0:
+		return
+
+	var db := AudioServer.get_bus_volume_db(bus_index)
+	var linear_value := db_to_linear(db)
+
+	slider.set_value_no_signal(clamp(linear_value * 100.0, 0.0, 100.0))
+
+func _apply_default_audio_values() -> void:
+	SliderGeneral.set_value_no_signal(DEFAULT_MASTER_VOLUME)
+	SliderMusica.set_value_no_signal(DEFAULT_MUSIC_VOLUME)
+	SliderEfectos.set_value_no_signal(DEFAULT_EFFECTS_VOLUME)
+
+	_apply_all_slider_audio()
+
+func setup_tutorial_scrollbar() -> void:
+	var style_grabber := StyleBoxFlat.new()
+	style_grabber.bg_color = Color("#aa4b21")
+	style_grabber.border_color = Color("#7b4a24")
+	style_grabber.border_width_left = 2
+	style_grabber.border_width_top = 2
+	style_grabber.border_width_right = 2
+	style_grabber.border_width_bottom = 2
+	style_grabber.corner_radius_top_left = 6
+	style_grabber.corner_radius_top_right = 6
+	style_grabber.corner_radius_bottom_left = 6
+	style_grabber.corner_radius_bottom_right = 6
+
+	var style_grabber_highlight := StyleBoxFlat.new()
+	style_grabber_highlight.bg_color = Color("#d89252")
+	style_grabber_highlight.border_color = Color("#7b4a24")
+	style_grabber_highlight.border_width_left = 2
+	style_grabber_highlight.border_width_top = 2
+	style_grabber_highlight.border_width_right = 2
+	style_grabber_highlight.border_width_bottom = 2
+	style_grabber_highlight.corner_radius_top_left = 6
+	style_grabber_highlight.corner_radius_top_right = 6
+	style_grabber_highlight.corner_radius_bottom_left = 6
+	style_grabber_highlight.corner_radius_bottom_right = 6
+
+	var style_bg := StyleBoxFlat.new()
+	style_bg.bg_color = Color(0.25, 0.16, 0.08, 0.35)
+	style_bg.corner_radius_top_left = 6
+	style_bg.corner_radius_top_right = 6
+	style_bg.corner_radius_bottom_left = 6
+	style_bg.corner_radius_bottom_right = 6
+
+	var v_scroll: VScrollBar = scroll_tutorial.get_v_scroll_bar()
+	v_scroll.custom_minimum_size.x = 12
+
+	v_scroll.add_theme_stylebox_override("grabber", style_grabber)
+	v_scroll.add_theme_stylebox_override("grabber_highlight", style_grabber_highlight)
+	v_scroll.add_theme_stylebox_override("grabber_pressed", style_grabber_highlight)
+	v_scroll.add_theme_stylebox_override("scroll", style_bg)
