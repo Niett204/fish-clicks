@@ -28,7 +28,7 @@ signal close_requested
 @onready var reg_ok:       Label         = $PanelContainer/MarginContainer/VBox/AuthView/TabContainer/Registro/MarginReg/Fields/OkLabel
 
 # Común (Botón cerrar - ahora con cruz.jpg)
-@onready var btn_close: TextureButton = $PanelContainer/MarginContainer2/BtnClose
+@onready var btn_close: TextureButton = $BtnClose
 
 # Foto de perfil
 @onready var avatar_dialog: FileDialog = $AvatarDialog
@@ -40,11 +40,16 @@ func _ready() -> void:
 	GlobalData.register_success.connect(_on_register_ok)
 	GlobalData.register_failed.connect(_on_register_err)
 	GlobalData.login_success.connect(func(_d): _refresh_view())
+	
+	tab_container.tab_changed.connect(_on_tab_changed)
+	btn_close.position.y = 96.0 if tab_container.current_tab == 0 else 116.0
 
 	if not GlobalData.profile_updated.is_connected(_refresh_view):
 		GlobalData.profile_updated.connect(_refresh_view)
 
-	btn_close.pressed.connect(func(): close_requested.emit())
+	btn_close.pressed.connect(_on_btn_close_pressed)
+	btn_close.mouse_entered.connect(_on_btn_close_mouse_entered)
+	btn_close.mouse_exited.connect(_on_btn_close_mouse_exited)
 	btn_login.pressed.connect(_do_login)
 	btn_register.pressed.connect(_do_register)
 	btn_logout.pressed.connect(_do_logout)
@@ -87,6 +92,7 @@ func toggle() -> void:
 
 func _open() -> void:
 	_refresh_view()
+	btn_close.position.y = 96.0 if tab_container.current_tab == 0 else 116.0
 	show()
 	modulate.a = 0.0
 	var tw := create_tween()
@@ -245,6 +251,15 @@ func _on_photo_gui_input(event: InputEvent) -> void:
 		if avatar_dialog:
 			avatar_dialog.popup_centered_ratio(0.5)
 
+func _on_btn_close_pressed() -> void:
+	# Buscamos la escena principal (Main) para usar su ui_manager
+	var main = get_tree().get_first_node_in_group("main")
+	if main and main.ui_manager:
+		main.ui_manager.play_squish(btn_close) # <--- Aquí ocurre el "salto"
+	
+	_close() # Ejecuta tu animación de desvanecimiento
+
+
 func _on_avatar_selected(path: String) -> void:
 	var img = Image.load_from_file(path)
 	if img:
@@ -260,3 +275,21 @@ func _on_avatar_selected(path: String) -> void:
 		
 		# Enviamos ambos datos al servidor
 		GlobalData.upload_user_photo(b64, ext)
+
+func _on_btn_close_mouse_entered() -> void:
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(btn_close, "scale", Vector2(1.08, 1.08), 0.08)
+	tween.parallel().tween_property(btn_close, "modulate", Color(0.85, 0.85, 0.85, 1.0), 0.08)
+
+func _on_btn_close_mouse_exited() -> void:
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(btn_close, "scale", Vector2.ONE, 0.08)
+	tween.parallel().tween_property(btn_close, "modulate", Color(1, 1, 1, 1), 0.08)
+
+func _on_tab_changed(tab: int) -> void:
+	# 0 es Login, 1 es Registro
+	btn_close.position.y = 96.0 if tab == 0 else 116.0

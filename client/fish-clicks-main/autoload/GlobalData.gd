@@ -8,8 +8,8 @@ var user_nickname: String = ""
 var is_logged_in: bool = false
 
 const SESSION_FILE = "user://fish_clicks_session.save"
-#const BASE_URL = "http://127.0.0.1:8080"
-const BASE_URL = "https://fish-clicks.onrender.com"
+const BASE_URL = "http://127.0.0.1:8080"
+#const BASE_URL = "https://fish-clicks.onrender.com"
 
 signal login_success(data: Dictionary)
 signal login_failed(error: String)
@@ -44,7 +44,6 @@ func _build_error_message(result: int, code: int, body: PackedByteArray, default
 	var server_detail = ""
 	
 	if data is Dictionary:
-		# Buscamos en las claves comunes de error de los frameworks de backend
 		server_detail = data.get("message", data.get("error", data.get("detail", "")))
 
 	# 3) Mapeo de errores por Código HTTP
@@ -52,20 +51,21 @@ func _build_error_message(result: int, code: int, body: PackedByteArray, default
 		400:
 			return "Solicitud inválida. Revisa los datos introducidos."
 		401:
-			return "La contraseña es incorrecta."
+			# --- NUEVA LÓGICA DE CADUCIDAD ---
+			if is_logged_in:
+				print("JWT caducado o inválido. Limpiando sesión local...")
+				clear_session() # Esto borra el archivo .save y resetea las variables
+			return "Tu sesión ha caducado. Por favor, inicia sesión de nuevo."
+			# ---------------------------------
 		403:
 			return "No tienes permiso para acceder a este recurso."
 		404:
-			return "El nombre de usuario no existe."
+			return "El recurso no existe."
 		409:
-			# Generalmente usado en el registro para duplicados
 			return "El nombre de usuario o el email ya están en uso."
-		422:
-			return "Datos no procesables (posible formato de email incorrecto)."
 		500, 502, 503, 504:
 			return "El servidor tiene problemas técnicos. Inténtalo más tarde."
 	
-	# 4) Fallback: Si el servidor envió un texto útil, lo usamos, si no, el default
 	if server_detail != "":
 		return str(server_detail)
 		
@@ -209,28 +209,32 @@ signal load_failed(error: String)
 
 
 func save_game(state: Dictionary) -> void:
-	#print("Token JWT:", user_token)
 	if not is_logged_in:
 		save_failed.emit("Debes iniciar sesión para guardar")
 		return
 
+	# IMPORTANTE: No toques nada del diccionario 'state' aquí.
+	# El diccionario ya viene con 'coins' y 'total_coins_earned' por separado 
+	# desde el SaveManager.
+
 	var http := HTTPRequest.new()
-	# Necesitamos un nodo en el árbol — usamos el autoload mismo
 	add_child(http)
 	http.request_completed.connect(_on_save_done.bind(http))
 
-	var body := JSON.stringify(state)
+	var body := JSON.stringify(state) 
 	var headers := [
 		"Content-Type: application/json",
 		"Authorization: " + get_auth_header()
 	]
 	http.request(BASE_URL + "/partida/guardar", headers, HTTPClient.METHOD_POST, body)
 
-
 func _on_save_done(_result, code: int, _headers, body: PackedByteArray, http: HTTPRequest) -> void:
 	http.queue_free()
 	if code in [200, 201]:
 		save_success.emit()
+		var main = get_tree().get_first_node_in_group("main")
+		if main and main.ui_manager:
+			main.ui_manager.show_save_notification()
 	else:
 		print("HTTP Error Code: ", code)
 		print("Response body: ", body.get_string_from_utf8())

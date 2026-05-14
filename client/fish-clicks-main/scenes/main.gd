@@ -455,12 +455,10 @@ func _ready() -> void:
 	
 	profile_panel.close_requested.connect(func():
 		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
-		profile_panel._close()
 	)
 	
 	ranking_panel.close_requested.connect(func():
 		ui_manager.play_ui_sfx(SFX_ICON_CLOSE)
-		ranking_panel.visible = false
 	)
 
 	left_info_panel.bottle_clicked.connect(func():
@@ -605,16 +603,48 @@ func _input(event: InputEvent) -> void:
 			alien_manager.start_alien_event()
 
 func _unhandled_input(event: InputEvent) -> void:
+	# --- 1. LÓGICA DE TECLADO ---
+	if event is InputEventKey and event.pressed:
+		if not ui_manager: return
+
+		# Tecla ESC: Si hay algo abierto lo cierra, si no, abre opciones
+		if event.is_action_pressed("menu_ajustes"):
+			if ui_manager.has_any_panel_open():
+				ui_manager.close_all_panels()
+			else:
+				ui_manager.toggle_options()
+			return
+
+		# Si está escribiendo en el Login/Registro, bloqueamos el resto de atajos
+		if ui_manager.is_auth_panel_open(): 
+			return
+
+		# Mapeo de teclas según tu lista
+		if event.is_action_pressed("abrir_tienda"):
+			ui_manager.toggle_shop()
+		elif event.is_action_pressed("abrir_perfil"):
+			ui_manager.toggle_profile()
+		elif event.is_action_pressed("abrir_ranking"):
+			ui_manager.toggle_ranking()
+		elif event.is_action_pressed("abrir_enciclopedia"):
+			ui_manager.toggle_encyclopedia()
+		elif event.is_action_pressed("abrir_inventario"):
+			ui_manager.toggle_inventario() # Coincide con tu script
+		elif event.is_action_pressed("abrir_estadisticas"):
+			ui_manager.toggle_stats_panel() # Coincide con tu script
+		
+		return
+
+	# --- 2. LÓGICA DE RATÓN (Asustar peces) ---
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var click_pos: Vector2 = get_viewport().get_mouse_position()
-
-		# Asusta peces cercanos al click
 		for fish in fish_layer.get_children():
 			if fish.has_method("scare_from"):
 				if fish.global_position.distance_to(click_pos) < 120:
 					fish.scare_from(click_pos)
-					achievements_manager.register_fish_annoyed()
-
+					if achievements_manager: 
+						achievements_manager.register_fish_annoyed()
+						
 # --------- Callbacks/Requests ---------
 @warning_ignore("unused_parameter")
 func _on_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
@@ -1233,3 +1263,11 @@ func update_ui_block_state() -> void:
 
 func get_full_number_text(value: float) -> String:
 	return format_with_separator(int(round(value)))
+		
+func _handle_esc_logic() -> void:
+	# 1. Si hay algún panel abierto, lo cerramos primero
+	if ui_manager.has_any_panel_open():
+		ui_manager.close_all_panels()
+	else:
+		# 2. Si todo está cerrado, abrimos Ajustes
+		ui_manager.toggle_settings()
