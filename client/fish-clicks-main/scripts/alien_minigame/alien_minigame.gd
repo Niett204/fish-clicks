@@ -400,6 +400,11 @@ func play_intro_voice_line(index: int) -> void:
 func setup_background_display_fish() -> void:
 	var fish_data: Array = GlobalData.consume_pending_minigame_display_fish_data()
 
+	fish_data.shuffle()
+
+	if fish_data.size() > background_fish_sprites.size():
+		fish_data = fish_data.slice(0, background_fish_sprites.size())
+
 	if background_fish_sprites.is_empty():
 		return
 

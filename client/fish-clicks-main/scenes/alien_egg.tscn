@@ -7,6 +7,7 @@
 radius = 31.06445
 
 [node name="AlienEgg" type="Area2D" unique_id=912955258]
+z_index = 1000
 script = ExtResource("1_ca31h")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1452110621]
