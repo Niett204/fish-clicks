@@ -167,6 +167,7 @@ var shop_x_open: float
 var shop_x_closed: float
 var fish_loss_debuff_active: bool = false
 var fish_loss_debuff_time_left: float = 0.0
+var alien_coin_debuff_multiplier: float = 1.0
 var alien_minigame_wins: int = 0
 var alien_minigame_losses: int = 0
 var alien_event_check_timer: float = 0.0
@@ -556,7 +557,7 @@ func _process(delta: float) -> void:
 		# Los ingresos pasivos se ven afectados durante el minijuego de limpieza
 		passive_multiplier = cleaning_manager.get_coin_penalty_multiplier()
 
-	var total_generated: float = shop_manager.get_total_passive_dps() * passive_multiplier * delta
+	var total_generated: float = shop_manager.get_total_passive_dps() * get_total_coin_debuff_multiplier() * delta
 	coins += total_generated
 	total_coins_earned += total_generated
 
@@ -568,6 +569,7 @@ func _process(delta: float) -> void:
 			lifetime_generated[item_id] += shop_manager.get_item_current_value(item_id) * shop_manager.get_fish_dps_multiplier() * shop_manager.get_global_coin_multiplier() * delta
 
 	ui_manager._update_currency_ui()
+	ui_manager._update_dps_ui()
 
 	if shop_open:
 		ui_manager.update_shop_cards()
@@ -606,9 +608,9 @@ func _input(event: InputEvent) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	# --- 1. LÓGICA DE TECLADO ---
 	if event is InputEventKey and event.pressed:
-		if not ui_manager: return
+		if not ui_manager:
+			return
 
-		# Tecla ESC: Si hay algo abierto lo cierra, si no, abre opciones
 		if event.is_action_pressed("menu_ajustes"):
 			if ui_manager.has_any_panel_open():
 				ui_manager.close_all_panels()
@@ -616,35 +618,21 @@ func _unhandled_input(event: InputEvent) -> void:
 				ui_manager.toggle_options()
 			return
 
-		# Si está escribiendo en el Login/Registro, bloqueamos el resto de atajos
-		if ui_manager.is_auth_panel_open(): 
+		if ui_manager.is_auth_panel_open():
 			return
-
-		# Mapeo de teclas según tu lista
-		if event.is_action_pressed("abrir_tienda"):
-			ui_manager.toggle_shop()
-		elif event.is_action_pressed("abrir_perfil"):
-			ui_manager.toggle_profile()
-		elif event.is_action_pressed("abrir_ranking"):
-			ui_manager.toggle_ranking()
-		elif event.is_action_pressed("abrir_enciclopedia"):
-			ui_manager.toggle_encyclopedia()
-		elif event.is_action_pressed("abrir_inventario"):
-			ui_manager.toggle_inventario() # Coincide con tu script
-		elif event.is_action_pressed("abrir_estadisticas"):
-			ui_manager.toggle_stats_panel() # Coincide con tu script
-		
-		return
 
 	# --- 2. LÓGICA DE RATÓN (Asustar peces) ---
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var click_pos: Vector2 = get_viewport().get_mouse_position()
 		for fish in fish_layer.get_children():
-			if fish.has_method("scare_from"):
-				if fish.global_position.distance_to(click_pos) < 120:
-					fish.scare_from(click_pos)
-					if achievements_manager: 
-						achievements_manager.register_fish_annoyed()
+			if fish == null or not is_instance_valid(fish):
+				continue
+			if not fish.has_method("scare_from"):
+				continue
+			if fish.global_position.distance_to(click_pos) < 120:
+				fish.scare_from(click_pos)
+				if achievements_manager:
+					achievements_manager.register_fish_annoyed()
 						
 # --------- Callbacks/Requests ---------
 @warning_ignore("unused_parameter")
@@ -664,14 +652,11 @@ func _on_chest_clicked() -> void:
 	var is_critical_click := false
 
 	if randf() < shop_manager.get_critical_click_chance():
-		final_click_power = int(
-			round(
-				click_power * shop_manager.get_critical_click_multiplier()
-			)
-		)
+		final_click_power = int(round(final_click_power * get_total_coin_debuff_multiplier()))
 
 		is_critical_click = true
 
+	final_click_power = int(round(final_click_power * alien_coin_debuff_multiplier))
 	coins += final_click_power
 	total_coins_earned += final_click_power
 	lifetime_generated["cofre"] += final_click_power
@@ -721,6 +706,7 @@ func reset_local_state() -> void:
 	total_clicks = 0
 	session_time_seconds = 0.0
 	click_power = 1
+	alien_coin_debuff_multiplier = 1.0
 	alien_minigame_wins = 0
 	alien_minigame_losses = 0
 	# El DPS se pondrá a 0 automáticamente al llamar a update_cps() más abajo
@@ -1293,15 +1279,38 @@ func hide_fish_mode_overlay() -> void:
 func start_fish_loss_debuff(duration: float = FISH_LOSS_DEBUFF_DURATION) -> void:
 	fish_loss_debuff_active = true
 	fish_loss_debuff_time_left = duration
+	
+	alien_coin_debuff_multiplier = 0.75
+	ui_manager._update_dps_ui()
+	
 	_refresh_all_fish_debuff_visuals()
 
 func clear_fish_loss_debuff() -> void:
 	fish_loss_debuff_active = false
 	fish_loss_debuff_time_left = 0.0
+	
+	alien_coin_debuff_multiplier = 1.0
+	
+	ui_manager._update_dps_ui()
+	ui_manager._update_currency_ui()
+	
 	_refresh_all_fish_debuff_visuals()
 
 func is_fish_loss_debuff_active() -> bool:
 	return fish_loss_debuff_active
+	
+func get_total_coin_debuff_multiplier() -> float:
+	var penalty: float = 0.0
+
+	if fish_loss_debuff_active:
+		penalty += 0.25
+
+	if cleaning_manager != null and cleaning_manager.get_coin_penalty_multiplier() < 1.0:
+		penalty += 1.0 - cleaning_manager.get_coin_penalty_multiplier()
+
+	penalty = min(penalty, 0.90)
+
+	return 1.0 - penalty
 
 func _refresh_all_fish_debuff_visuals() -> void:
 	for fish in fish_layer.get_children():
