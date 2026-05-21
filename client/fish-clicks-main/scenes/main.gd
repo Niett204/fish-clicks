@@ -659,15 +659,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			ui_manager.toggle_inventario() # Coincide con tu script
 		elif event.is_action_pressed("abrir_estadisticas"):
 			ui_manager.toggle_stats_panel() # Coincide con tu script
-		
-		
-		# DEBUG: spawnear alien manualmente con K
-		elif event.keycode == KEY_K:
-			if alien_manager != null:
-				if alien_manager.alien_event_state == AlienManager.AlienEventState.IDLE:
-					alien_manager.alien_event_available = true
-					alien_manager.start_alien_event()
-				
 		return
 
 	# --- 2. LÓGICA DE RATÓN (Asustar peces) ---
