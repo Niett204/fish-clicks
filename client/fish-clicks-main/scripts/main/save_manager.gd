@@ -45,6 +45,7 @@ func get_save_state() -> Dictionary:
 		"alien_egg": main.egg_manager.get_save_state(),
 		"alien_no_hit_unlocked": main.achievements_manager.alien_no_hit_unlocked,
 		"alien_egg_obtained": main.achievements_manager.alien_egg_obtained,
+		"alien_coin_debuff_multiplier": main.alien_coin_debuff_multiplier,
 		"audio": {
 			"master_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")),
 			"music_volume": AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Musica")),
@@ -76,6 +77,7 @@ func reset_local_state() -> void:
 	
 	main.alien_minigame_wins = 0
 	main.alien_minigame_losses = 0
+	main.alien_coin_debuff_multiplier = 1.0
 	
 	if main.egg_manager != null:
 		main.egg_manager.clear_active_egg()
@@ -228,6 +230,7 @@ func apply_save_state(state: Dictionary, spawn_visual_fish: bool = true) -> void
 	main.cleaning_manager.cleaning_events_completed = int(state.get("cleaning_events_completed", 0))
 	main.alien_minigame_wins = int(state.get("alien_minigame_wins", 0))
 	main.alien_minigame_losses = int(state.get("alien_minigame_losses", 0))
+	main.alien_coin_debuff_multiplier = float(state.get("alien_coin_debuff_multiplier", 1.0))
 	main.cleaning_manager.try_unlock_cleaner_fish()
 	main.achievements_manager.alien_no_hit_unlocked = bool(state.get("alien_no_hit_unlocked", false))
 	main.achievements_manager.alien_egg_obtained = bool(state.get("alien_egg_obtained", false))

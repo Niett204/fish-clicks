@@ -246,14 +246,42 @@ func _update_currency_ui() -> void:
 	main.coins_label.text = parts.value
 	main.unidades_label.text = parts.unit
 
-
 func _update_dps_ui() -> void:
-	if main.dps < 1000.0:
-		main.dps_label.text = "+" + ("%.2f" % main.dps).replace(".", ",") + " d/s"
-		return
+	var total_multiplier: float = main.get_total_coin_debuff_multiplier()
+	var display_dps: float = main.dps * total_multiplier
+	var is_penalized: bool = total_multiplier < 1.0
 
-	var parts: Dictionary = main.format_doblones_parts(main.dps)
-	main.dps_label.text = "+" + parts.value + " " + parts.unit.replace(" de doblones", "").replace(" doblones", "") + "/s"
+	if is_penalized:
+		display_dps *= main.alien_coin_debuff_multiplier
+		main.dps_label.add_theme_color_override("font_color", Color("#317308"))
+	else:
+		main.dps_label.add_theme_color_override("font_color", Color.BLACK)
+
+	var final_text: String
+
+	if display_dps < 1000.0:
+		final_text = "+" + ("%.2f" % display_dps).replace(".", ",") + " d/s"
+	else:
+		var parts: Dictionary = main.format_doblones_parts(display_dps)
+
+		final_text = (
+			"+"
+			+ parts.value
+			+ " "
+			+ parts.unit.replace(" de doblones", "").replace(" doblones", "")
+			+ "/s"
+		)
+
+	if is_penalized:
+		var debuff_percent: int = int(
+			round(
+				(1.0 - total_multiplier) * 100.0
+			)
+		)
+
+		final_text += "  (-%d%%)" % debuff_percent
+
+	main.dps_label.text = final_text
 
 
 func _refresh_current_shop_tab(tab: int) -> void:

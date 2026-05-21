@@ -91,7 +91,7 @@ const ITEMS := {
 		"title": "Piranha",
 		"icon": "res://assets/peces/piranha.png",
 		"unlock_price": -1,
-		"unlock_clicks": 100,
+		"unlock_clicks": 10000,
 		"kind": "unique_buff",
 		"buff_type": "critical_click",
 		"max_level": 10,
