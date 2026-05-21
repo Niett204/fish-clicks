@@ -57,6 +57,10 @@ func _ready() -> void:
 	pass_field.secret   = true
 	reg_pass.secret     = true
 	reg_confirm.secret  = true
+	
+	_setup_password_field(pass_field)
+	_setup_password_field(reg_pass)
+	_setup_password_field(reg_confirm)
 
 	login_error.hide()
 	reg_error.hide()
@@ -84,6 +88,27 @@ func _ready() -> void:
 
 	if avatar_dialog:
 		avatar_dialog.file_selected.connect(_on_avatar_selected)
+
+func _setup_password_field(field: LineEdit) -> void:
+	field.focus_entered.connect(func():
+		_temporarily_show_password(field)
+	)
+
+	field.gui_input.connect(func(event):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			_temporarily_show_password(field)
+	)
+
+	field.focus_exited.connect(func():
+		field.secret = true
+	)
+
+func _temporarily_show_password(field: LineEdit) -> void:
+	field.secret = false
+
+	await get_tree().create_timer(2.0).timeout
+
+	field.secret = true
 
 # ── Abrir / cerrar ─────────────────────────────────────────────────────────
 func toggle() -> void:

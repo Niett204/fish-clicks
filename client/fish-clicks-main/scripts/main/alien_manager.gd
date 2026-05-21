@@ -135,6 +135,39 @@ func _on_alien_clicked() -> void:
 	GlobalData.alien_last_minigame_trigger_unix = float(Time.get_unix_time_from_system())
 	main.achievements_manager.register_alien_clicked()
 
+	if should_auspezio_destroy_alien():
+		alien_escape_fx_active = true
+
+		if alien_instance != null and alien_instance.has_method("set_waiting_for_click"):
+			alien_instance.set_waiting_for_click(false)
+
+		await play_alien_click_feedback()
+
+		if alien_instance != null and alien_instance.has_method("show_beam"):
+			alien_instance.show_beam()
+
+		await spit_fish_back_into_aquarium()
+
+		if alien_instance != null and alien_instance.has_method("hide_beam"):
+			await alien_instance.hide_beam()
+
+		await animate_alien_escape_damaged()
+
+		if alien_instance != null and is_instance_valid(alien_instance):
+			alien_instance.queue_free()
+			alien_instance = null
+
+		alien_event_state = AlienEventState.IDLE
+		alien_escape_fx_active = false
+		main.update_ui_block_state()
+		check_alien_event_unlock()
+
+		if main.achievements_manager != null:
+			main.achievements_manager.check_achievements()
+			await main.get_tree().create_timer(0.25).timeout
+			main.achievements_manager._try_show_next_achievement_popup()
+		return
+
 	var runtime_state: Dictionary = main.save_manager.get_save_state()
 
 	GlobalData.set_pending_runtime_state(runtime_state)
@@ -146,6 +179,18 @@ func _on_alien_clicked() -> void:
 	await play_alien_click_feedback()
 	await play_battle_transition()
 	get_tree().change_scene_to_file("res://scenes/alien_minigame.tscn")
+
+func should_auspezio_destroy_alien() -> bool:
+	if main == null:
+		return false
+
+	var auspezio_level := int(main.shop_manager.get_level("auspezio"))
+	var auspezio_max_level := int(main.ITEMS["auspezio"].get("max_level", 0))
+	var auspezio_in_inventory := int(main.fish_inventory.get("auspezio", 0)) > 0
+
+	return auspezio_max_level > 0 \
+		and auspezio_level >= auspezio_max_level \
+		and not auspezio_in_inventory
 
 func play_alien_click_feedback() -> void:
 	if alien_instance == null or not is_instance_valid(alien_instance):
@@ -470,6 +515,7 @@ func _resume_after_minigame_flow(result: Dictionary) -> void:
 
 	if main.achievements_manager != null:
 		main.achievements_manager.check_achievements()
+		await main.get_tree().create_timer(0.25).timeout
 		main.achievements_manager._try_show_next_achievement_popup()
 
 
@@ -866,8 +912,11 @@ func build_minigame_display_fish_data(max_count: int = MINIGAME_DISPLAY_FISH_COU
 	# Guardamos cuántos peces hay por tipo disponibles para mostrar
 	var available_count_by_type := {}
 
-	# 1) Peces abducidos visibles de la pecera (prioridad)
-	for snap in abducted_fish_snapshots:
+	# 1) Peces abducidos visibles de la pecera (random)
+	var shuffled_snapshots := abducted_fish_snapshots.duplicate(true)
+	shuffled_snapshots.shuffle()
+
+	for snap in shuffled_snapshots:
 		var fish_id := str(snap.get("fish_id", ""))
 		var fish_type := normalize_fish_type_id(fish_id)
 
@@ -885,7 +934,10 @@ func build_minigame_display_fish_data(max_count: int = MINIGAME_DISPLAY_FISH_COU
 	# 2) Peces del inventario: suman disponibilidad y sirven para rellenar con tipos únicos
 	var inventory_candidates: Array[String] = []
 
-	for raw_fish_id in main.fish_inventory.keys():
+	var inventory_keys: Array = main.fish_inventory.keys()
+	inventory_keys.shuffle()
+
+	for raw_fish_id in inventory_keys:
 		var fish_id := str(raw_fish_id)
 		var amount := int(main.fish_inventory[raw_fish_id])
 
@@ -1083,6 +1135,10 @@ func resolve_fish_texture_path(fish_id: String) -> String:
 
 
 func is_event_blocking_achievement_popups() -> bool:
+	return false
+
+
+func is_event_blocking_hud_interaction() -> bool:
 	if alien_escape_fx_active:
 		return true
 

@@ -219,15 +219,26 @@ func _wander_step(delta: float) -> void:
 	_update_flip()
 
 func _pick_new_target() -> void:
+	var clean_id := fish_id.replace("_shiny", "")
+
 	match movement_pattern:
 		MovementPattern.CRAB:
 			_pick_crab_target()
+
 		MovementPattern.SEAL:
 			_pick_seal_target()
+
 		_:
+			var min_y := swim_rect.position.y
+			var max_y := swim_rect.position.y + swim_rect.size.y
+
+			# Sobrasada y Chupete Jr solo usan el tercio inferior
+			if clean_id == "sobrasada" or clean_id == "chupete_jr":
+				min_y = swim_rect.position.y + swim_rect.size.y * (2.0 / 3.0)
+
 			target = Vector2(
 				randf_range(swim_rect.position.x, swim_rect.position.x + swim_rect.size.x),
-				randf_range(swim_rect.position.y, swim_rect.position.y + swim_rect.size.y)
+				randf_range(min_y, max_y)
 			)
 
 func scare_from(point: Vector2) -> void:

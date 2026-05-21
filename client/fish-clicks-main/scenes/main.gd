@@ -97,7 +97,7 @@ const SFX_PASA_PAGINA := preload("res://assets/audio/UI/pasa_pagina.wav")
 const SFX_CAMBIAR_CATEGORIA := preload("res://assets/audio/UI/cambiar_tab.wav")
 const SFX_ACHIEVEMENT := preload("res://assets/audio/UI/logro.wav")
 const SFX_BOTTLE := preload("res://assets/audio/UI/cambiar_tab.wav")
-const SFX_SCRUB = preload("res://assets/audio/UI/fotado.wav")
+const SFX_SCRUB = preload("res://assets/audio/UI/fotado.WAV")
 
 const SFX_ALIEN_ABDUCT := preload("res://assets/audio/alien/abduct.wav")
 const SFX_ALIEN_ENTER := preload("res://assets/audio/alien/landing.wav")
@@ -157,7 +157,7 @@ var total_clicks: int = 0
 var session_time_seconds: float = 0.0
 var game_start_date_string: String = ""
 var dps: float = 0.0
-var coins: float = 1000000000000.0
+var coins: float = 0.0
 var total_coins_earned: float = 0.0
 var click_power: int = 1
 var hud_visible := true
@@ -317,6 +317,9 @@ func _ready() -> void:
 	)
 
 	btn_shop_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+
 		if alien_manager.is_event_blocking_achievement_popups():
 			return
 
@@ -325,23 +328,37 @@ func _ready() -> void:
 	)
 
 	btn_ranking_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+
 		ui_manager.play_squish(btn_ranking_icon)
 		ui_manager.toggle_ranking()
 	)
 
+
 	btn_encyclopedia_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+
 		ui_manager.play_squish(btn_encyclopedia_icon)
 		ui_manager.toggle_encyclopedia()
 	)
 
 	btn_inventory_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+
 		if alien_manager.is_event_blocking_achievement_popups():
 			return
+
 		ui_manager.play_squish(btn_inventory_icon)
 		ui_manager.toggle_inventario()
 	)
 
 	btn_world_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+
 		if alien_manager.is_event_blocking_achievement_popups():
 			return
 
@@ -361,12 +378,18 @@ func _ready() -> void:
 	)
 	
 	btn_profile_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+
 		achievements_manager.register_profile_click()
 		ui_manager.play_squish(btn_profile_icon)
 		ui_manager.toggle_profile()
 	)
 
 	btn_options_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+
 		ui_manager.play_squish(btn_options_icon)
 		ui_manager.toggle_options()
 	)
@@ -374,6 +397,9 @@ func _ready() -> void:
 	options_panel.modo_pecera_requested.connect(fish_mode_manager.toggle_fish_mode)
 	
 	btn_stats_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+
 		ui_manager.play_squish(btn_stats_icon)
 		ui_manager.toggle_stats_panel()
 	)
@@ -634,6 +660,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.is_action_pressed("abrir_estadisticas"):
 			ui_manager.toggle_stats_panel() # Coincide con tu script
 		
+		
+		# DEBUG: spawnear alien manualmente con K
+		elif event.keycode == KEY_K:
+			if alien_manager != null:
+				if alien_manager.alien_event_state == AlienManager.AlienEventState.IDLE:
+					alien_manager.alien_event_available = true
+					alien_manager.start_alien_event()
+				
 		return
 
 	# --- 2. LÓGICA DE RATÓN (Asustar peces) ---
@@ -1273,3 +1307,6 @@ func _handle_esc_logic() -> void:
 	else:
 		# 2. Si todo está cerrado, abrimos Ajustes
 		ui_manager.toggle_settings()
+
+func is_cleaning_event_active() -> bool:
+	return cleaning_manager != null and cleaning_manager.is_cleaning_event_active()
