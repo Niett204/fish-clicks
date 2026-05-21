@@ -26,9 +26,12 @@ func toggle_fish_mode() -> void:
 	var w := main.get_window()
 	var id := w.get_window_id()
 
+	var master_bus := AudioServer.get_bus_index("Master")
 	var size_pequeno := Vector2i(368, 207)
 
 	if modo_pecera:
+		AudioServer.set_bus_mute(master_bus, false)
+
 		main.hide_fish_mode_overlay()
 		main.hud.visible = true
 		main.btn_hide.visible = true
@@ -48,18 +51,17 @@ func toggle_fish_mode() -> void:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED, id)
 			DisplayServer.window_set_size(Vector2i(1152, 648), id)
 
-			var screen := DisplayServer.screen_get_usable_rect()
-			var pos := Vector2i(
-				int((screen.size.x - 1152) / 2.0),
-				int((screen.size.y - 648) / 2.0)
+			var pos_restore := Vector2i(
+				int((DisplayServer.screen_get_usable_rect().size.x - 1152) / 2.0),
+				int((DisplayServer.screen_get_usable_rect().size.y - 648) / 2.0)
 			)
-			DisplayServer.window_set_position(pos, id)
+			DisplayServer.window_set_position(pos_restore, id)
 
 	else:
 		if main.options_panel.visible:
 			main.options_panel.hide()
 
-		# Guardamos estado actual ANTES de pasar a modo pecera
+		# Guardamos estado actual antes de pasar a modo pecera
 		normal_window_mode = DisplayServer.window_get_mode(id)
 		normal_window_borderless = w.borderless
 		normal_window_always_on_top = w.always_on_top
@@ -69,6 +71,9 @@ func toggle_fish_mode() -> void:
 		if normal_window_mode == DisplayServer.WINDOW_MODE_WINDOWED:
 			normal_window_size = DisplayServer.window_get_size(id)
 			normal_window_position = DisplayServer.window_get_position(id)
+
+		# Mutear el juego
+		AudioServer.set_bus_mute(master_bus, true)
 
 		# Entramos en modo pecera
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED, id)

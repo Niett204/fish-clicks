@@ -14,6 +14,7 @@ var default_avatar = load("res://assets/ui/iconos/default_avatar.png")
 @onready var items_container: VBoxContainer = $MarginContainer/MarginContainer/VBoxMain/ListSection/ScrollContainer/ItemsContainer
 @onready var scroll_container: ScrollContainer = $MarginContainer/MarginContainer/VBoxMain/ListSection/ScrollContainer
 @onready var header_value_label: Label = $MarginContainer/MarginContainer/VBoxMain/ListSection/Header/ValueLabel
+@onready var list_section: VBoxContainer = $MarginContainer/MarginContainer/VBoxMain/ListSection
 
 @onready var podium_nodes = {
 	1: {"photo": $MarginContainer/MarginContainer/VBoxMain/PodiumSection/Winner1/Photo1, "name": $MarginContainer/MarginContainer/VBoxMain/PodiumSection/Winner1/Name1},
@@ -23,6 +24,8 @@ var default_avatar = load("res://assets/ui/iconos/default_avatar.png")
 
 func _ready() -> void:
 	visible = false
+	list_section.position.y -= 30
+	my_user_row.position.y -= 20
 
 	setup_ranking_scrollbar()
 
@@ -58,13 +61,26 @@ func _cambiar_categoria(tipo: String):
 	if main and main.ui_manager:
 		var btn = btn_tab_money if tipo == "money" else btn_tab_clicks
 		main.ui_manager.play_squish(btn)
-	
+
+	_update_tab_visuals(tipo)
+
 	# Actualizamos el texto de la cabecera del ranking
 	if header_value_label:
 		header_value_label.text = "Doblones" if tipo == "money" else "Clicks"
-	
-	_request_ranking_data(tipo)
 
+	_request_ranking_data(tipo)
+	
+func _update_tab_visuals(tipo: String) -> void:
+	var active_color := Color("#ffffff")
+	var inactive_color := Color("#b78e6a")
+
+	if tipo == "money":
+		btn_tab_money.modulate = active_color
+		btn_tab_clicks.modulate = inactive_color
+	else:
+		btn_tab_money.modulate = inactive_color
+		btn_tab_clicks.modulate = active_color
+		
 func _request_ranking_data(type: String):
 	_clear_ui()
 	GlobalData.fetch_ranking(type)

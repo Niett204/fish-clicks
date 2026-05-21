@@ -66,8 +66,8 @@ const ITEMS := {
 		"kind": "unique_buff",
 		"buff_type": "cleaning_speed",
 		"max_level": 10,
-		"base_price": 4500.0,
-		"price_growth": 1.18,
+		"base_price": 50000.0,
+		"price_growth": 3.0,
 		"base_value": 0.15,
 		"habitat_ids": ["habitat_1", "habitat_2"]
 	},
@@ -80,9 +80,26 @@ const ITEMS := {
 		"kind": "unique_buff",
 		"buff_type": "alien_time_reduction",
 		"max_level": 30,
-		"base_price": 3500.0,
-		"price_growth": 1.22,
+		"base_price": 500000.0,
+		"price_growth": 1.6,
 		"base_value": 2.0,
+		"habitat_ids": ["habitat_1", "habitat_2"]
+	},
+	
+	"piranha": {
+		"tab": "Únicos",
+		"title": "Piranha",
+		"icon": "res://assets/peces/piranha.png",
+		"unlock_price": -1,
+		"unlock_clicks": 100,
+		"kind": "unique_buff",
+		"buff_type": "critical_click",
+		"max_level": 10,
+		"base_price": 100000.0,
+		"price_growth": 2.0,
+		"base_value": 0.02,
+		"critical_multiplier": 5.0,
+		"value_label": "crítico",
 		"habitat_ids": ["habitat_1", "habitat_2"]
 	},
 

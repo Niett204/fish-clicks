@@ -38,7 +38,7 @@ func process_achievement_timer(delta: float) -> void:
 	achievement_check_accum += delta
 	if achievement_check_accum >= 0.5:
 		achievement_check_accum = 0.0
-		if not random_tick_unlocked and randf() < 0.0001:
+		if not random_tick_unlocked and randf() < 0.00000067:
 			random_tick_unlocked = true
 
 		check_achievements()

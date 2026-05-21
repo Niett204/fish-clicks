@@ -654,16 +654,35 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 	
 func _on_chest_clicked() -> void:
 	total_clicks += 1
+	check_click_unlocks()
+
 	ui_manager.play_ui_sfx(SFX_COFRE_CLICK)
+
 	click_power = shop_manager.get_click_income()
-	coins += click_power
-	total_coins_earned += click_power
-	lifetime_generated["cofre"] += click_power
+
+	var final_click_power: int = click_power
+	var is_critical_click := false
+
+	if randf() < shop_manager.get_critical_click_chance():
+		final_click_power = int(
+			round(
+				click_power * shop_manager.get_critical_click_multiplier()
+			)
+		)
+
+		is_critical_click = true
+
+	coins += final_click_power
+	total_coins_earned += final_click_power
+	lifetime_generated["cofre"] += final_click_power
 
 	ui_manager._update_ui()
 	ui_manager.update_unique_tab_visibility()
+
 	_play_click_animation()
-	_spawn_floating_text()
+
+	_spawn_floating_text(final_click_power, is_critical_click)
+
 	_mostrar_monedas_y_burbujas()
 
 	achievements_manager.check_achievements()
@@ -671,6 +690,30 @@ func _on_chest_clicked() -> void:
 	if stats_panel.visible:
 		stats_manager.refresh_stats_values_only()
 		
+func check_click_unlocks() -> void:
+	for key in ITEMS.keys():
+		var id := String(key)
+		var def: Dictionary = ITEMS[id]
+
+		if not def.has("unlock_clicks"):
+			continue
+
+		if bool(unlocked.get(id, false)):
+			continue
+
+		var required_clicks: int = int(def.get("unlock_clicks", 0))
+
+		if total_clicks >= required_clicks:
+			unlocked[id] = true
+
+			if shop_open:
+				await ui_manager._refresh_current_shop_tab(tab_container.current_tab)
+			else:
+				ui_manager._update_ui()
+
+			_actualizar_peces_desbloqueados_en_enciclopedia()
+			achievements_manager.check_achievements()
+					
 func reset_local_state() -> void:
 	# 1. Reseteo de variables numéricas y progreso
 	coins = 0.0
@@ -799,17 +842,29 @@ func _play_click_animation() -> void:
 	tween.tween_property(chest_sprite, "scale", chest_base_scale * 1.08, 0.06)
 	tween.tween_property(chest_sprite, "scale", chest_base_scale, 0.08)
 	
-func _spawn_floating_text() -> void:
+func _spawn_floating_text(amount: int = -1, is_critical: bool = false) -> void:
 	var t: Label = floating_text_scene.instantiate()
 	add_child(t)
 
-	var current_click_income: int = shop_manager.get_click_income()
-	t.text = "+" + get_full_number_text(current_click_income)
+	var text_amount: int = amount
+	if text_amount < 0:
+		text_amount = shop_manager.get_click_income()
+		
+	t.scale = Vector2.ONE * 1.50
+
+	if is_critical:
+		t.text = "+" + get_full_number_text(text_amount)
+
+		t.scale = Vector2.ONE * 2.0
+		t.modulate = Color("#ffda00")
+		t.rotation = randf_range(-0.08, 0.08)
+	else:
+		t.text = "+" + get_full_number_text(text_amount)
 
 	var mouse_pos = get_viewport().get_mouse_position()
 	t.position = mouse_pos + Vector2(-5, -20)
 	t.z_index = 1000
-
+	
 func _mostrar_monedas_y_burbujas() -> void:
 	# Carga imágenes
 	var coin_tex: Texture2D = load("res://assets/misc/doblon_tres_cuartos.png")

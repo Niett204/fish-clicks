@@ -124,7 +124,6 @@ func hacer_request_peces(rareza: String = "") -> void:
 		return
 	
 	var url := "https://fish-clicks.onrender.com/enciclopedia/peces"
-	#var url := "http://127.0.0.1:8080/enciclopedia/peces"
 
 	var query_params: Array[String] = []
 
@@ -507,6 +506,8 @@ func get_fish_texture(fish_id: int) -> Texture2D:
 			return load("res://assets/peces/jigou.png")
 		10:
 			return load("res://assets/peces/leonardo.png")
+		11:
+			return load("res://assets/peces/piranha.png")
 		_:
 			return null
 			

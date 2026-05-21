@@ -373,7 +373,9 @@ func update_unique_tab_visibility() -> void:
 	if main.cleaning_manager != null:
 		should_show = main.cleaning_manager.has_enough_unlocked_structures()
 
-	should_show = should_show or bool(main.unlocked.get("auspezio", false))
+	should_show = should_show \
+	or bool(main.unlocked.get("auspezio", false)) \
+	or bool(main.unlocked.get("piranha", false))
 
 	var unicos_tab_index: int = main.tab_container.get_tab_idx_from_control(
 		main.tab_container.get_node("Únicos")

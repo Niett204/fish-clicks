@@ -11,5 +11,6 @@ const ENCYCLOPEDIA_FISH_IDS := {
 	"barbacoa": 7,
 	"angeles": 8,
 	"jigou": 9,
-	"leonardo": 10
+	"leonardo": 10,
+	"piranha": 11
 }
