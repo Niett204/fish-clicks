@@ -101,4 +101,10 @@ const FISH_DEFS := {
 		"icon": preload("res://assets/peces/leonardo_shiny.png"),
 		"habitat": "habitat_2"
 	},	
+	
+	"piranha": {
+		"name": "Piranha",
+		"icon": preload("res://assets/peces/piranha.png"),
+		"habitat": ["habitat_1", "habitat_2"]
+	},
 }
