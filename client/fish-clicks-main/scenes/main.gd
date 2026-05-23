@@ -14,6 +14,7 @@ const HABITATS = HabitatData.HABITATS
 var fish_defs = FishData.FISH_DEFS.duplicate(true)
 const FISH_LOSS_DEBUFF_DURATION: float = 120.0
 const ALIEN_EVENT_CHECK_INTERVAL: float = 30.0
+const AUTOSAVE_INTERVAL: float = 60.0
 
 # ------------------- EXPORTED -------------------
 @export var floating_text_scene: PackedScene
@@ -171,6 +172,8 @@ var alien_coin_debuff_multiplier: float = 1.0
 var alien_minigame_wins: int = 0
 var alien_minigame_losses: int = 0
 var alien_event_check_timer: float = 0.0
+var autosave_timer: float = 0.0
+var autosave_in_progress: bool = false
 
 # ------------------- ESTADO VISUAL -------------------
 var chest_base_scale: Vector2
@@ -485,6 +488,10 @@ func _ready() -> void:
 	# Guardado
 	# Guardado: Solo conectamos el éxito de carga
 	GlobalData.load_success.connect(_on_save_loaded)
+	
+	GlobalData.save_success.connect(_on_autosave_finished)
+	GlobalData.save_failed.connect(_on_autosave_failed)
+
 	alien_manager.check_alien_event_unlock()
 
 	var runtime_state := GlobalData.consume_pending_runtime_state()
@@ -547,7 +554,12 @@ func _on_save_loaded(save_data: Dictionary) -> void:
 	ui_manager.update_unique_tab_visibility()
 	ui_manager.update_unique_tab_visibility()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
-	
+
+func _on_autosave_finished() -> void:
+	autosave_in_progress = false
+
+func _on_autosave_failed(_error: String) -> void:
+	autosave_in_progress = false
 
 func _process(delta: float) -> void:
 	session_time_seconds += delta
@@ -595,6 +607,25 @@ func _process(delta: float) -> void:
 
 			if alien_manager.can_trigger_alien_event():
 				alien_manager.try_start_alien_event()
+				
+	_process_autosave(delta)
+
+func _process_autosave(delta: float) -> void:
+	if not GlobalData.is_logged_in:
+		return
+
+	if autosave_in_progress:
+		return
+
+	autosave_timer += delta
+
+	if autosave_timer < AUTOSAVE_INTERVAL:
+		return
+
+	autosave_timer = 0.0
+	autosave_in_progress = true
+
+	GlobalData.save_game(save_manager.get_save_state())
 
 func _input(event: InputEvent) -> void:
 	fish_mode_manager.handle_input(event)
