@@ -85,7 +85,7 @@ const AUTOSAVE_INTERVAL: float = 60.0
 
 const HABITAT_MUSIC := {
 	"habitat_1": preload("res://assets/audio/fondo/fondo1.ogg"),
-	"habitat_2": preload("res://assets/audio/fondo/fondo2.wav")
+	"habitat_2": preload("res://assets/audio/fondo/fondo2.ogg")
 }
 
 const SFX_ICON_OPEN := preload("res://assets/audio/UI/abrir_icono.wav")

@@ -44,7 +44,7 @@ const AUSPICIO_VOICE_1 := preload("res://assets/audio/alien/auspi_1.wav")
 const AUSPICIO_VOICE_2 := preload("res://assets/audio/alien/auspi_2.wav")
 const SFX_GLITCH := preload("res://assets/audio/alien/glitch.wav")
 const SFX_WIN_EXPLOSION := preload("res://assets/audio/alien/win_explosion.wav")
-const MUSIC_ALIEN_MINIGAME := preload("res://assets/audio/alien/boss_alien.wav")
+const MUSIC_ALIEN_MINIGAME := preload("res://assets/audio/alien/boss_alien.ogg")
 const MIN_SURVIVAL_TIME_SECONDS := 10.0
 
 enum BossPhase {
@@ -1268,6 +1268,8 @@ func play_glitch_sfx() -> void:
 	var sfx := AudioStreamPlayer.new()
 	sfx.bus = "Efectos"
 	sfx.stream = SFX_GLITCH
+	sfx.volume_db = -15
+
 	get_tree().root.add_child(sfx)
 	sfx.play()
 
