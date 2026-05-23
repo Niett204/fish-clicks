@@ -281,9 +281,12 @@ func _is_all_current_aquarium_shiny() -> bool:
 
 
 func _has_all_species_in_current_aquarium() -> bool:
-	var required_species := {}
-	for fish_id in main.ENCYCLOPEDIA_FISH_IDS.keys():
-		required_species[String(fish_id)] = true
+	var required_species := {
+		"doblon": true,
+		"sobrasada": true,
+		"espuma": true,
+		"rufinus": true
+	}
 
 	var present_species := {}
 
