@@ -443,15 +443,22 @@ func get_unique_buff_current_text(id: String) -> String:
 
 
 func get_unique_buff_next_text(id: String) -> String:
+	var level: int = get_level(id)
+	var max_level: int = get_max_level(id)
+
+	if max_level > 0 and level >= max_level:
+		return "Nivel máximo alcanzado"
+
 	match id:
 		"chupete_jr":
 			return "Siguiente nivel: +15%"
 
 		"auspezio":
 			return "Siguiente nivel: -2s"
-			
+
 		"piranha":
 			return "Siguiente nivel: +2% crítico"
+
 		_:
 			return "Mejora única"
 
