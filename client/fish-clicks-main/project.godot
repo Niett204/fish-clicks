@@ -21,6 +21,7 @@ GlobalData="*res://autoload/GlobalData.gd"
 
 [display]
 
+window/subwindows/embed_subwindows=false
 window/stretch/mode="canvas_items"
 mouse_cursor/custom_image="res://assets/misc/puntero.png"
 mouse_cursor/custom_image_hotspot=Vector2(11, 10)

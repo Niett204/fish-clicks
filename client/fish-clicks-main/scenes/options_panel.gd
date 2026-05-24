@@ -15,6 +15,7 @@ const DEFAULT_EFFECTS_VOLUME := 25.0
 @onready var btn_modo_pecera: Button = $CenterContainer/PanelRoot/BtnsArriba/BtnModoPecera
 @onready var btn_tutorial: Button = $CenterContainer/PanelRoot/BtnsArriba/BtnTutorial
 @onready var btn_salir: Button = $CenterContainer/PanelRoot/ButtonsRowBottom/BtnSalir
+@onready var btn_fullscreen: Button = $CenterContainer/PanelRoot/ButtonsRowBottom/BtnFullscreen
 @onready var panel_sonido: Control = $CenterContainer/PanelRoot/PanelSonido
 
 # Panel Tutorial
@@ -141,6 +142,11 @@ func _ready() -> void:
 	# Botón salir
 	btn_salir.pressed.connect(_on_btn_salir_pressed)
 	
+	# Botón pantalla completa
+	if btn_fullscreen:
+		btn_fullscreen.pressed.connect(_on_btn_fullscreen_pressed)
+		_update_fullscreen_button_text()
+		
 	# Botón guardado
 	btn_guardar.pressed.connect(_on_btn_guardar_pressed)
 	GlobalData.save_success.connect(_on_save_ok)
@@ -556,3 +562,44 @@ func setup_tutorial_scrollbar() -> void:
 	v_scroll.add_theme_stylebox_override("grabber_highlight", style_grabber_highlight)
 	v_scroll.add_theme_stylebox_override("grabber_pressed", style_grabber_highlight)
 	v_scroll.add_theme_stylebox_override("scroll", style_bg)
+
+# ==========================================
+# --- MODO PANTALLA COMPLETA ---
+# ==========================================
+func _on_btn_fullscreen_pressed() -> void:
+	print("¡Se ha pulsado el botón de Pantalla Completa!")
+	
+	# Efecto de salto al pulsar
+	var main_node = get_tree().get_first_node_in_group("main")
+	if main_node and main_node.ui_manager:
+		main_node.ui_manager.play_squish(btn_fullscreen)
+
+	var current_mode = DisplayServer.window_get_mode()
+	
+	if current_mode == DisplayServer.WINDOW_MODE_FULLSCREEN or current_mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN:
+		print("Cambiando a modo ventana...")
+		# Pasamos a modo ventana
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		
+		# Centramos la ventana en la pantalla actual
+		var screen = DisplayServer.window_get_current_screen()
+		var screen_center = DisplayServer.screen_get_position(screen) + DisplayServer.screen_get_size(screen) / 2
+		var window_size = DisplayServer.window_get_size()
+		DisplayServer.window_set_position(screen_center - window_size / 2)
+	else:
+		print("Cambiando a pantalla completa exclusiva...")
+		# Pasamos a pantalla completa EXCLUSIVA (fuerza al sistema operativo)
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		
+	# Actualizamos el texto después de hacer el cambio
+	_update_fullscreen_button_text()
+
+func _update_fullscreen_button_text() -> void:
+	if not btn_fullscreen: return
+	
+	var current_mode = DisplayServer.window_get_mode()
+	
+	if current_mode == DisplayServer.WINDOW_MODE_FULLSCREEN or current_mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN:
+		btn_fullscreen.text = "Modo ventana"
+	else:
+		btn_fullscreen.text = "Pantalla completa"
