@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://cbbihh5ocgssr"]
 
-[ext_resource type="Texture2D" uid="uid://bkva8pb62ymh5" path="res://assets/ui/pergamino.png" id="2_54ti7"]
-[ext_resource type="Texture2D" uid="uid://gsstlwiuecw6" path="res://assets/ui/cruz.png" id="3_8fxpn"]
-[ext_resource type="Texture2D" uid="uid://6rnifsb2i5ph" path="res://assets/ui/marco_small.png" id="3_54ti7"]
-[ext_resource type="AudioStream" uid="uid://dppop12h3li5s" path="res://assets/audio/peces/bubble.WAV" id="4_hblyp"]
-[ext_resource type="Texture2D" uid="uid://d1h3xsm418jol" path="res://assets/ui/pergamino_v2.png" id="5_bcnpr"]
-[ext_resource type="FontFile" uid="uid://blwqct8vf4mt8" path="res://assets/fuentes/PirataOne-Regular.ttf" id="6_yfe3d"]
+[ext_resource type="Texture2D" uid="uid://c5o7gnhwf4utp" path="res://assets/ui/pergamino.png" id="2_54ti7"]
+[ext_resource type="Texture2D" uid="uid://4js67mc3pou0" path="res://assets/ui/cruz.png" id="3_8fxpn"]
+[ext_resource type="Texture2D" uid="uid://nfpc2q2isogl" path="res://assets/ui/marco_small.png" id="3_54ti7"]
+[ext_resource type="AudioStream" uid="uid://bbji8luitt87k" path="res://assets/audio/peces/bubble.WAV" id="4_hblyp"]
+[ext_resource type="Texture2D" uid="uid://bicarrylo3grx" path="res://assets/ui/pergamino_v2.png" id="5_bcnpr"]
+[ext_resource type="FontFile" uid="uid://dkkmqm6p1jj0p" path="res://assets/fuentes/PirataOne-Regular.ttf" id="6_yfe3d"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8fxpn"]
 content_margin_left = 15.0
@@ -189,13 +189,13 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -175.0
+offset_left = -200.0
 offset_top = -100.0
-offset_right = 175.0
+offset_right = 350.0
 offset_bottom = -60.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_constants/separation = 50
+theme_override_constants/separation = 10
 
 [node name="BtnGuardar" type="Button" parent="CenterContainer/PanelRoot/ButtonsRowBottom" unique_id=1271060344]
 custom_minimum_size = Vector2(150, 40)
@@ -210,7 +210,7 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_rjeyn")
 text = "Guardar"
 
 [node name="BtnSalir" type="Button" parent="CenterContainer/PanelRoot/ButtonsRowBottom" unique_id=2104089026]
-custom_minimum_size = Vector2(150, 40)
+custom_minimum_size = Vector2(90, 40)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("6_yfe3d")
@@ -218,6 +218,17 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_70r2r")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_6busr")
 theme_override_styles/hover = SubResource("StyleBoxFlat_3hsfm")
 text = "Salir"
+
+[node name="BtnFullscreen" type="Button" parent="CenterContainer/PanelRoot/ButtonsRowBottom" unique_id=1406528285]
+custom_minimum_size = Vector2(150, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("6_yfe3d")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_8fxpn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_yfe3d")
+theme_override_styles/hover = SubResource("StyleBoxFlat_3b240")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_rjeyn")
 
 [node name="PanelSonido" type="Control" parent="CenterContainer/PanelRoot" unique_id=760801778]
 custom_minimum_size = Vector2(420, 180)
@@ -483,6 +494,7 @@ stream = ExtResource("4_hblyp")
 bus = &"Efectos"
 
 [node name="TutorialOverlay" type="Control" parent="." unique_id=1784877545]
+visible = false
 anchors_preset = 0
 offset_left = 238.0
 offset_top = 61.0

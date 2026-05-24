@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://cq0j1orhhg43v" path="res://assets/ui/iconos/default_avatar.png" id="4_w8rbo"]
 [ext_resource type="Shader" uid="uid://blxo6we1g8o25" path="res://scenes/ranking_panel_shader.gdshader" id="5_w8rbo"]
 [ext_resource type="Texture2D" uid="uid://ba1n5j0cvhvlw" path="res://assets/misc/corona.png" id="8_yjatq"]
-[ext_resource type="Texture2D" uid="uid://bva22m6ipd063" path="res://assets/ui/tabla.png" id="10_uc5be"]
+[ext_resource type="Texture2D" uid="uid://ddynsf231cada" path="res://assets/ui/tabla.png" id="10_uc5be"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yjatq"]
 shader = ExtResource("5_w8rbo")
@@ -203,7 +203,6 @@ theme_override_fonts/font = ExtResource("2_mtvgp")
 text = "Doblones"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/MarginContainer/VBoxMain/ListSection" unique_id=544477573]
-custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
@@ -252,12 +251,20 @@ grow_vertical = 0
 size_flags_horizontal = 4
 mouse_filter = 2
 
+[node name="MyUserRow" parent="MyUserRow" unique_id=1680218124 instance=ExtResource("2_peu1r")]
+visible = false
+modulate = Color(0.999999, 0.9985619, 0.46379966, 1)
+z_index = 100
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+
 [node name="BtnTabMoney" type="TextureButton" parent="." unique_id=776746357]
 layout_mode = 0
-offset_left = 285.0
-offset_top = 569.0
-offset_right = 365.0
-offset_bottom = 609.0
+offset_left = 199.0
+offset_top = 538.0
+offset_right = 279.0
+offset_bottom = 578.0
 texture_normal = ExtResource("10_uc5be")
 ignore_texture_size = true
 stretch_mode = 6
@@ -276,10 +283,10 @@ vertical_alignment = 1
 
 [node name="BtnTabClicks" type="TextureButton" parent="." unique_id=36901282]
 layout_mode = 0
-offset_left = 196.0
-offset_top = 569.0
-offset_right = 276.0
-offset_bottom = 609.0
+offset_left = 287.0
+offset_top = 537.0
+offset_right = 367.0
+offset_bottom = 577.0
 texture_normal = ExtResource("10_uc5be")
 ignore_texture_size = true
 stretch_mode = 6

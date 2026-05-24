@@ -154,7 +154,18 @@ func get_click_income() -> int:
 
 		base_click += float(get_level(id)) * float(def.get("base_value", 0.0))
 
-	return max(1, int(round(base_click * get_global_coin_multiplier())))
+	var click_multiplier := 1.0
+
+	for key in main.ITEMS.keys():
+		var id := String(key)
+		var def: Dictionary = main.ITEMS[id]
+
+		if String(def.get("buff_type", "")) != "click_multiplier":
+			continue
+
+		click_multiplier += float(get_level(id)) * float(def.get("base_value", 0.0))
+
+	return max(1, int(round(base_click * click_multiplier * get_global_coin_multiplier())))
 
 
 func get_level(id: String) -> int:
@@ -262,6 +273,9 @@ func on_unlock_pressed(id: String) -> void:
 	if id == "auspezio" || id == "chupete_jr":
 		return
 
+	if main.ITEMS[id].has("unlock_clicks"):
+		return
+
 	if is_item_locked_by_progress(id):
 		return
 		
@@ -338,15 +352,16 @@ func get_item_effect_text(id: String) -> String:
 
 			match buff_type:
 				"cleaning_speed":
-					return "+15% limpieza"
+					return "+15% de velocidad en limpieza."
 
 				"alien_time_reduction":
-					return "-2s alien"
+					return "-2s en la batalla del alien."
 
+				"critical_click":
+					return "Clics críticos +2%."
 				_:
 					return "Buff único"
-
-
+					
 		_:
 			return ""
 
@@ -418,17 +433,31 @@ func get_unique_buff_current_text(id: String) -> String:
 		"auspezio":
 			return "Supervivencia -%ds" % int(level * 2)
 
+		"piranha":
+			return "%d%% de clic crítico" % int(
+				get_critical_click_chance() * 100.0
+			)
+	
 		_:
 			return "Buff activo"
 
 
 func get_unique_buff_next_text(id: String) -> String:
+	var level: int = get_level(id)
+	var max_level: int = get_max_level(id)
+
+	if max_level > 0 and level >= max_level:
+		return "Nivel máximo alcanzado"
+
 	match id:
 		"chupete_jr":
 			return "Siguiente nivel: +15%"
 
 		"auspezio":
 			return "Siguiente nivel: -2s"
+
+		"piranha":
+			return "Siguiente nivel: +2% crítico"
 
 		_:
 			return "Mejora única"
@@ -444,6 +473,11 @@ func get_unique_buff_impact_text(id: String) -> String:
 		"auspezio":
 			return "Tiempo reducido: %ds" % int(level * 2)
 
+		"piranha":
+			return "Los críticos hacen x%.0f daño" % (
+				get_critical_click_multiplier()
+			)
+	
 		_:
 			return "Buff activo"
 
@@ -604,6 +638,12 @@ func is_item_locked_by_progress(id: String) -> bool:
 	return false
 	
 func get_locked_text(id: String) -> String:
+	
+	if main.ITEMS[id].has("unlock_clicks"):
+		var current: int = int(main.total_clicks)
+		var required := int(main.ITEMS[id].get("unlock_clicks", 0))
+		return "Clicks %d/%d" % [current, required]
+	
 	if id == "auspezio":
 		return "Nace de un huevo alienígena"
 
@@ -632,7 +672,9 @@ func get_auspezio_minigame_time_reduction() -> float:
 
 
 func is_unique_fish(id: String) -> bool:
-	return id == "chupete_jr" or id == "auspezio"
+	return id == "chupete_jr" \
+		or id == "auspezio" \
+		or id == "piranha"
 
 
 func has_fish_anywhere(fish_id: String) -> bool:
@@ -694,6 +736,16 @@ func get_flavor_text(id: String) -> String:
 			return "Siempre deja todo limpio."
 		"auspezio":
 			return "No debería existir."
-
+		"piranha":
+			return "A veces muerde el cofre."
 		_:
 			return "Una nueva mejora."
+
+func get_critical_click_chance() -> float:
+	var level := get_level("piranha")
+	var base_value := float(main.ITEMS["piranha"].get("base_value", 0.0))
+	return min(float(level) * base_value, 0.25)
+
+
+func get_critical_click_multiplier() -> float:
+	return float(main.ITEMS["piranha"].get("critical_multiplier", 5.0))

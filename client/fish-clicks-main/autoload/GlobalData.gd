@@ -9,7 +9,6 @@ var is_logged_in: bool = false
 var has_audio_settings_been_initialized: bool = false
 
 const SESSION_FILE = "user://fish_clicks_session.save"
-#const BASE_URL = "http://127.0.0.1:8080"
 const BASE_URL = "https://fish-clicks.onrender.com"
 
 signal login_success(data: Dictionary)

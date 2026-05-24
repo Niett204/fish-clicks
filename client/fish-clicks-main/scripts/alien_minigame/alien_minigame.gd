@@ -44,7 +44,7 @@ const AUSPICIO_VOICE_1 := preload("res://assets/audio/alien/auspi_1.wav")
 const AUSPICIO_VOICE_2 := preload("res://assets/audio/alien/auspi_2.wav")
 const SFX_GLITCH := preload("res://assets/audio/alien/glitch.wav")
 const SFX_WIN_EXPLOSION := preload("res://assets/audio/alien/win_explosion.wav")
-const MUSIC_ALIEN_MINIGAME := preload("res://assets/audio/alien/boss_alien.wav")
+const MUSIC_ALIEN_MINIGAME := preload("res://assets/audio/alien/boss_alien.ogg")
 const MIN_SURVIVAL_TIME_SECONDS := 10.0
 
 enum BossPhase {
@@ -399,6 +399,11 @@ func play_intro_voice_line(index: int) -> void:
 	
 func setup_background_display_fish() -> void:
 	var fish_data: Array = GlobalData.consume_pending_minigame_display_fish_data()
+
+	fish_data.shuffle()
+
+	if fish_data.size() > background_fish_sprites.size():
+		fish_data = fish_data.slice(0, background_fish_sprites.size())
 
 	if background_fish_sprites.is_empty():
 		return
@@ -1263,6 +1268,8 @@ func play_glitch_sfx() -> void:
 	var sfx := AudioStreamPlayer.new()
 	sfx.bus = "Efectos"
 	sfx.stream = SFX_GLITCH
+	sfx.volume_db = -15
+
 	get_tree().root.add_child(sfx)
 	sfx.play()
 

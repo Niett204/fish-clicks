@@ -14,6 +14,7 @@ const HABITATS = HabitatData.HABITATS
 var fish_defs = FishData.FISH_DEFS.duplicate(true)
 const FISH_LOSS_DEBUFF_DURATION: float = 120.0
 const ALIEN_EVENT_CHECK_INTERVAL: float = 30.0
+const AUTOSAVE_INTERVAL: float = 60.0
 
 # ------------------- EXPORTED -------------------
 @export var floating_text_scene: PackedScene
@@ -84,7 +85,7 @@ const ALIEN_EVENT_CHECK_INTERVAL: float = 30.0
 
 const HABITAT_MUSIC := {
 	"habitat_1": preload("res://assets/audio/fondo/fondo1.ogg"),
-	"habitat_2": preload("res://assets/audio/fondo/fondo2.wav")
+	"habitat_2": preload("res://assets/audio/fondo/fondo2.ogg")
 }
 
 const SFX_ICON_OPEN := preload("res://assets/audio/UI/abrir_icono.wav")
@@ -97,7 +98,7 @@ const SFX_PASA_PAGINA := preload("res://assets/audio/UI/pasa_pagina.wav")
 const SFX_CAMBIAR_CATEGORIA := preload("res://assets/audio/UI/cambiar_tab.wav")
 const SFX_ACHIEVEMENT := preload("res://assets/audio/UI/logro.wav")
 const SFX_BOTTLE := preload("res://assets/audio/UI/cambiar_tab.wav")
-const SFX_SCRUB = preload("res://assets/audio/UI/fotado.wav")
+const SFX_SCRUB = preload("res://assets/audio/UI/fotado.WAV")
 
 const SFX_ALIEN_ABDUCT := preload("res://assets/audio/alien/abduct.wav")
 const SFX_ALIEN_ENTER := preload("res://assets/audio/alien/landing.wav")
@@ -157,7 +158,7 @@ var total_clicks: int = 0
 var session_time_seconds: float = 0.0
 var game_start_date_string: String = ""
 var dps: float = 0.0
-var coins: float = 1000000000000.0
+var coins: float = 0.0
 var total_coins_earned: float = 0.0
 var click_power: int = 1
 var hud_visible := true
@@ -167,9 +168,12 @@ var shop_x_open: float
 var shop_x_closed: float
 var fish_loss_debuff_active: bool = false
 var fish_loss_debuff_time_left: float = 0.0
+var alien_coin_debuff_multiplier: float = 1.0
 var alien_minigame_wins: int = 0
 var alien_minigame_losses: int = 0
 var alien_event_check_timer: float = 0.0
+var autosave_timer: float = 0.0
+var autosave_in_progress: bool = false
 
 # ------------------- ESTADO VISUAL -------------------
 var chest_base_scale: Vector2
@@ -317,6 +321,9 @@ func _ready() -> void:
 	)
 
 	btn_shop_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		if alien_manager.is_event_blocking_achievement_popups():
 			return
 
@@ -325,23 +332,37 @@ func _ready() -> void:
 	)
 
 	btn_ranking_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		ui_manager.play_squish(btn_ranking_icon)
 		ui_manager.toggle_ranking()
 	)
 
 	btn_encyclopedia_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		ui_manager.play_squish(btn_encyclopedia_icon)
 		ui_manager.toggle_encyclopedia()
 	)
 
 	btn_inventory_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		if alien_manager.is_event_blocking_achievement_popups():
 			return
+
 		ui_manager.play_squish(btn_inventory_icon)
 		ui_manager.toggle_inventario()
 	)
 
+
 	btn_world_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		if alien_manager.is_event_blocking_achievement_popups():
 			return
 
@@ -361,19 +382,29 @@ func _ready() -> void:
 	)
 	
 	btn_profile_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		achievements_manager.register_profile_click()
 		ui_manager.play_squish(btn_profile_icon)
 		ui_manager.toggle_profile()
 	)
-
+	
 	btn_options_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		ui_manager.play_squish(btn_options_icon)
 		ui_manager.toggle_options()
 	)
 	
 	options_panel.modo_pecera_requested.connect(fish_mode_manager.toggle_fish_mode)
 	
+
 	btn_stats_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		ui_manager.play_squish(btn_stats_icon)
 		ui_manager.toggle_stats_panel()
 	)
@@ -484,6 +515,10 @@ func _ready() -> void:
 	# Guardado
 	# Guardado: Solo conectamos el éxito de carga
 	GlobalData.load_success.connect(_on_save_loaded)
+	
+	GlobalData.save_success.connect(_on_autosave_finished)
+	GlobalData.save_failed.connect(_on_autosave_failed)
+
 	alien_manager.check_alien_event_unlock()
 
 	var runtime_state := GlobalData.consume_pending_runtime_state()
@@ -546,7 +581,12 @@ func _on_save_loaded(save_data: Dictionary) -> void:
 	ui_manager.update_unique_tab_visibility()
 	ui_manager.update_unique_tab_visibility()
 	_actualizar_peces_desbloqueados_en_enciclopedia()
-	
+
+func _on_autosave_finished() -> void:
+	autosave_in_progress = false
+
+func _on_autosave_failed(_error: String) -> void:
+	autosave_in_progress = false
 
 func _process(delta: float) -> void:
 	session_time_seconds += delta
@@ -556,7 +596,7 @@ func _process(delta: float) -> void:
 		# Los ingresos pasivos se ven afectados durante el minijuego de limpieza
 		passive_multiplier = cleaning_manager.get_coin_penalty_multiplier()
 
-	var total_generated: float = shop_manager.get_total_passive_dps() * passive_multiplier * delta
+	var total_generated: float = shop_manager.get_total_passive_dps() * get_total_coin_debuff_multiplier() * delta
 	coins += total_generated
 	total_coins_earned += total_generated
 
@@ -568,6 +608,7 @@ func _process(delta: float) -> void:
 			lifetime_generated[item_id] += shop_manager.get_item_current_value(item_id) * shop_manager.get_fish_dps_multiplier() * shop_manager.get_global_coin_multiplier() * delta
 
 	ui_manager._update_currency_ui()
+	ui_manager._update_dps_ui()
 
 	if shop_open:
 		ui_manager.update_shop_cards()
@@ -593,6 +634,25 @@ func _process(delta: float) -> void:
 
 			if alien_manager.can_trigger_alien_event():
 				alien_manager.try_start_alien_event()
+				
+	_process_autosave(delta)
+
+func _process_autosave(delta: float) -> void:
+	if not GlobalData.is_logged_in:
+		return
+
+	if autosave_in_progress:
+		return
+
+	autosave_timer += delta
+
+	if autosave_timer < AUTOSAVE_INTERVAL:
+		return
+
+	autosave_timer = 0.0
+	autosave_in_progress = true
+
+	GlobalData.save_game(save_manager.get_save_state())
 
 func _input(event: InputEvent) -> void:
 	fish_mode_manager.handle_input(event)
@@ -604,11 +664,14 @@ func _input(event: InputEvent) -> void:
 				cleaning_manager.register_player_activity()
 
 func _unhandled_input(event: InputEvent) -> void:
+	if is_cleaning_event_active():
+		return
+	
 	# --- 1. LÓGICA DE TECLADO ---
 	if event is InputEventKey and event.pressed:
-		if not ui_manager: return
+		if not ui_manager:
+			return
 
-		# Tecla ESC: Si hay algo abierto lo cierra, si no, abre opciones
 		if event.is_action_pressed("menu_ajustes"):
 			if ui_manager.has_any_panel_open():
 				ui_manager.close_all_panels()
@@ -616,8 +679,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				ui_manager.toggle_options()
 			return
 
-		# Si está escribiendo en el Login/Registro, bloqueamos el resto de atajos
-		if ui_manager.is_auth_panel_open(): 
+		if ui_manager.is_auth_panel_open():
 			return
 
 		# Mapeo de teclas según tu lista
@@ -633,18 +695,20 @@ func _unhandled_input(event: InputEvent) -> void:
 			ui_manager.toggle_inventario() # Coincide con tu script
 		elif event.is_action_pressed("abrir_estadisticas"):
 			ui_manager.toggle_stats_panel() # Coincide con tu script
-		
 		return
 
 	# --- 2. LÓGICA DE RATÓN (Asustar peces) ---
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var click_pos: Vector2 = get_viewport().get_mouse_position()
 		for fish in fish_layer.get_children():
-			if fish.has_method("scare_from"):
-				if fish.global_position.distance_to(click_pos) < 120:
-					fish.scare_from(click_pos)
-					if achievements_manager: 
-						achievements_manager.register_fish_annoyed()
+			if fish == null or not is_instance_valid(fish):
+				continue
+			if not fish.has_method("scare_from"):
+				continue
+			if fish.global_position.distance_to(click_pos) < 120:
+				fish.scare_from(click_pos)
+				if achievements_manager:
+					achievements_manager.register_fish_annoyed()
 						
 # --------- Callbacks/Requests ---------
 @warning_ignore("unused_parameter")
@@ -654,16 +718,35 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 	
 func _on_chest_clicked() -> void:
 	total_clicks += 1
+	check_click_unlocks()
+
 	ui_manager.play_ui_sfx(SFX_COFRE_CLICK)
+
 	click_power = shop_manager.get_click_income()
-	coins += click_power
-	total_coins_earned += click_power
-	lifetime_generated["cofre"] += click_power
+
+	var final_click_power: int = click_power
+	var is_critical_click := false
+
+	if randf() < shop_manager.get_critical_click_chance():
+		final_click_power = int(
+			round(
+				click_power * shop_manager.get_critical_click_multiplier()
+			)
+		)
+
+		is_critical_click = true
+
+	coins += final_click_power
+	total_coins_earned += final_click_power
+	lifetime_generated["cofre"] += final_click_power
 
 	ui_manager._update_ui()
 	ui_manager.update_unique_tab_visibility()
+
 	_play_click_animation()
-	_spawn_floating_text()
+
+	_spawn_floating_text(final_click_power, is_critical_click)
+
 	_mostrar_monedas_y_burbujas()
 
 	achievements_manager.check_achievements()
@@ -671,6 +754,30 @@ func _on_chest_clicked() -> void:
 	if stats_panel.visible:
 		stats_manager.refresh_stats_values_only()
 		
+func check_click_unlocks() -> void:
+	for key in ITEMS.keys():
+		var id := String(key)
+		var def: Dictionary = ITEMS[id]
+
+		if not def.has("unlock_clicks"):
+			continue
+
+		if bool(unlocked.get(id, false)):
+			continue
+
+		var required_clicks: int = int(def.get("unlock_clicks", 0))
+
+		if total_clicks >= required_clicks:
+			unlocked[id] = true
+
+			if shop_open:
+				await ui_manager._refresh_current_shop_tab(tab_container.current_tab)
+			else:
+				ui_manager._update_ui()
+
+			_actualizar_peces_desbloqueados_en_enciclopedia()
+			achievements_manager.check_achievements()
+					
 func reset_local_state() -> void:
 	# 1. Reseteo de variables numéricas y progreso
 	coins = 0.0
@@ -678,6 +785,7 @@ func reset_local_state() -> void:
 	total_clicks = 0
 	session_time_seconds = 0.0
 	click_power = 1
+	alien_coin_debuff_multiplier = 1.0
 	alien_minigame_wins = 0
 	alien_minigame_losses = 0
 	# El DPS se pondrá a 0 automáticamente al llamar a update_cps() más abajo
@@ -799,17 +907,29 @@ func _play_click_animation() -> void:
 	tween.tween_property(chest_sprite, "scale", chest_base_scale * 1.08, 0.06)
 	tween.tween_property(chest_sprite, "scale", chest_base_scale, 0.08)
 	
-func _spawn_floating_text() -> void:
+func _spawn_floating_text(amount: int = -1, is_critical: bool = false) -> void:
 	var t: Label = floating_text_scene.instantiate()
 	add_child(t)
 
-	var current_click_income: int = shop_manager.get_click_income()
-	t.text = "+" + get_full_number_text(current_click_income)
+	var text_amount: int = amount
+	if text_amount < 0:
+		text_amount = shop_manager.get_click_income()
+		
+	t.scale = Vector2.ONE * 1.50
+
+	if is_critical:
+		t.text = "+" + get_full_number_text(text_amount)
+
+		t.scale = Vector2.ONE * 2.0
+		t.modulate = Color("#ffda00")
+		t.rotation = randf_range(-0.08, 0.08)
+	else:
+		t.text = "+" + get_full_number_text(text_amount)
 
 	var mouse_pos = get_viewport().get_mouse_position()
 	t.position = mouse_pos + Vector2(-5, -20)
 	t.z_index = 1000
-
+	
 func _mostrar_monedas_y_burbujas() -> void:
 	# Carga imágenes
 	var coin_tex: Texture2D = load("res://assets/misc/doblon_tres_cuartos.png")
@@ -1238,15 +1358,38 @@ func hide_fish_mode_overlay() -> void:
 func start_fish_loss_debuff(duration: float = FISH_LOSS_DEBUFF_DURATION) -> void:
 	fish_loss_debuff_active = true
 	fish_loss_debuff_time_left = duration
+
+	alien_coin_debuff_multiplier = 0.75
+	ui_manager._update_dps_ui()
+
 	_refresh_all_fish_debuff_visuals()
 
 func clear_fish_loss_debuff() -> void:
 	fish_loss_debuff_active = false
 	fish_loss_debuff_time_left = 0.0
+
+	alien_coin_debuff_multiplier = 1.0
+
+	ui_manager._update_dps_ui()
+	ui_manager._update_currency_ui()
+
 	_refresh_all_fish_debuff_visuals()
 
 func is_fish_loss_debuff_active() -> bool:
 	return fish_loss_debuff_active
+
+func get_total_coin_debuff_multiplier() -> float:
+	var penalty: float = 0.0
+
+	if fish_loss_debuff_active:
+		penalty += 0.25
+
+	if cleaning_manager != null and cleaning_manager.get_coin_penalty_multiplier() < 1.0:
+		penalty += 1.0 - cleaning_manager.get_coin_penalty_multiplier()
+
+	penalty = min(penalty, 0.90)
+
+	return 1.0 - penalty
 
 func _refresh_all_fish_debuff_visuals() -> void:
 	for fish in fish_layer.get_children():
@@ -1273,3 +1416,6 @@ func _handle_esc_logic() -> void:
 	else:
 		# 2. Si todo está cerrado, abrimos Ajustes
 		ui_manager.toggle_settings()
+
+func is_cleaning_event_active() -> bool:
+	return cleaning_manager != null and cleaning_manager.is_cleaning_event_active()

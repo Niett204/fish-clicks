@@ -323,7 +323,7 @@ const ACHIEVEMENT_DEFS := {
 		"desc": "Ahora toca. No… ¡ahora! Venga, ahora seguro que sí…",
 		"kind": "random_tick",
 		"target": 1,
-		"condition": "Obtenido con una probabilidad del 0,01% en cada tick del juego",
+		"condition": "Obtenido con una probabilidad del 0,000067% en cada tick del juego",
 		"icon": preload("res://assets/logros/luck.png"),
 		"hidden": true
 	},

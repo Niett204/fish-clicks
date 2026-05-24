@@ -7,12 +7,17 @@ import com.fishclicks.api.repository.PasswordRepository;
 import com.fishclicks.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,6 +34,9 @@ public class AuthService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired(required = false)
+    private JavaMailSender mailSender;
 
     public LoginResponse login(String identifier, String password){
 
@@ -102,6 +110,8 @@ public class AuthService {
         newPassword.setCreatedAt(now);
         passwordRepository.save(newPassword);
 
+        sendWelcomeEmail(email, nickname);
+
         String token = jwtService.generateToken(createdUser.getUid(), createdUser.getEmail());
         return new LoginResponse(
                 token,
@@ -111,5 +121,46 @@ public class AuthService {
                 createdUser.getFoto(),
                 user.getFotoExtension()
         );
+    }
+
+    private void sendWelcomeEmail(String toEmail, String nickname) {
+        if (mailSender == null) return;
+
+        try {
+            SimpleMailMessage mensaje = new SimpleMailMessage();
+            // Usa aquí el email que aparece como "Sender" en tu cuenta de Brevo
+            mensaje.setFrom("fish.clicks.oficial@gmail.com");
+            mensaje.setTo(toEmail);
+            mensaje.setSubject("¡Bienvenido a Fish&Clicks!");
+            mensaje.setText("¡Bienvenido/a a Fish&Clicks, " + nickname + "!\n\n" +
+                    "Estamos muy emocionados de tenerte a bordo. Te damos la bienvenida a este pequeño océano virtual donde tu misión principal es gestionar tu pecera, recolectar doblones y descubrir todos los secretos marinos que hemos preparado para ti.\n\n" +
+                    "Actualmente, Fish&Clicks se encuentra en una fase activa de desarrollo. Tu opinión es nuestra herramienta más valiosa.\n\n" +
+                    "Si te encuentras con algún bug, error o tienes una idea para mejorar, por favor, háznoslo saber en este cuestionario:\n\n" +
+                    "https://docs.google.com/forms/d/e/1FAIpQLSeqxJEQUSS3DzaGipzq1D3xsrB7McNHNjgw3gKbA3TYBTj0NQ/viewform?usp=header\n\n" +
+                    "¡Gracias por ayudarnos a hacer de Fish&Clicks un juego mejor! Nos vemos dentro del acuario.");
+
+            mailSender.send(mensaje);
+        } catch (Exception e) {
+            System.err.println("Error enviando el correo: " + e.getMessage());
+        }
+    }
+
+
+    @Async
+    public void enviarAvisoMasivo(String asunto, String cuerpo) {
+        List<String> emails = userRepository.findAllEmails();
+
+        for (String email : emails) {
+            try {
+                SimpleMailMessage mensaje = new SimpleMailMessage();
+                mensaje.setFrom("fish.clicks.oficial@gmail.com");
+                mensaje.setTo(email);
+                mensaje.setSubject(asunto);
+                mensaje.setText(cuerpo);
+                mailSender.send(mensaje);
+            } catch (Exception e) {
+                System.err.println("Error enviando a " + email + ": " + e.getMessage());
+            }
+        }
     }
 }
