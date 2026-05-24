@@ -64,7 +64,14 @@ Aplicación de escritorio en **Godot (GdScript)** que proporciona:
 mvn clean install
 mvn spring-boot:run
 ```
-**Cliente**: Ejecutar directamente desde Godot o el `.exe` incluido en `client/fish-clicks-main/`.
+
+**Cliente**:
+
+El juego puede descargarse desde el siguiente enlace:
+
+[Descargar Fish Clicks](https://drive.google.com/file/d/1_2vkAejqDt2rbm-gX-USC3k7Fh3T4N6R/view?usp=sharing)
+
+Una vez descargado, basta con ejecutar el `.exe` incluido.
 
 ## Configuración con Docker
 
