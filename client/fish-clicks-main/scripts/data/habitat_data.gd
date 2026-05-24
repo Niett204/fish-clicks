@@ -3,7 +3,7 @@ class_name HabitatData
 
 const HABITATS := {
 	"habitat_1": {
-		"name": "Acuario",
+		"name": "Tropical",
 		"background": preload("res://assets/fondos/fondo1.png")
 	},
 	"habitat_2": {
