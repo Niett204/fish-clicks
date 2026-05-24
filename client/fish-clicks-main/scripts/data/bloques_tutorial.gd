@@ -3,8 +3,8 @@ class_name TutorialData
 
 const TUTORIAL_BLOCKS := [
 	{
-		"title": "Haz crecer tu acuario",
-		"text": "Haz click para conseguir doblones y empieza a llenar tu acuario.\nCuantos más peces tengas, más crecerá tu producción.",
+		"title": "Haz crecer tu colección",
+		"text": "Haz click para conseguir doblones y empieza a conseguir nuevos peces.\nCuantos más tengas en total, más crecerá tu producción.",
 		"image": preload("res://assets/tutorial/tutorial_1.png")
 	},
 	{
@@ -14,7 +14,7 @@ const TUTORIAL_BLOCKS := [
 	},
 	{
 		"title": "Organiza tus hábitats",
-		"text": "Mueve peces entre el inventario y tus hábitats para organizar tu colección como quieras.",
+		"text": "Mueve peces entre el inventario y la pecera. ¡La pecera es puramente decorativa!\nTus peces seguirán generando doblones aunque estén guardados, así que pon a la vista solo tus favoritos.",
 		"image": preload("res://assets/tutorial/tutorial_3.png")
 	},
 	{

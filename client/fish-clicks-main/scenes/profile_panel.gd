@@ -289,20 +289,59 @@ func _on_btn_close_pressed() -> void:
 
 
 func _on_avatar_selected(path: String) -> void:
+	var ext = path.get_extension().to_lower()
+	
+	# 1. Comprobar que sea una extensión de imagen válida
+	if ext not in ["png", "jpg", "jpeg", "webp"]:
+		_mostrar_error_perfil("Formato inválido (Usa PNG o JPG)")
+		return
+
+	# 2. Intentar cargar la imagen
 	var img = Image.load_from_file(path)
-	if img:
-		img.convert(Image.FORMAT_RGBA8)
-		img.resize(128, 128, Image.INTERPOLATE_LANCZOS)
+	
+	# 3. Comprobar si el archivo está corrupto o no se pudo leer
+	if img == null or img.is_empty():
+		_mostrar_error_perfil("Error al leer la imagen")
+		return
+
+	# Si todo está bien, procesamos y subimos
+	img.convert(Image.FORMAT_RGBA8)
+	img.resize(128, 128, Image.INTERPOLATE_LANCZOS)
+	
+	if ext != "png" and ext != "jpg" and ext != "jpeg":
+		ext = "png" # Fallback por seguridad
 		
-		var ext = path.get_extension().to_lower()
-		if ext != "png" and ext != "jpg" and ext != "jpeg":
-			ext = "png" # Fallback por seguridad
-			
-		var buffer = img.save_png_to_buffer() if ext == "png" else img.save_jpg_to_buffer()
-		var b64 = Marshalls.raw_to_base64(buffer)
-		
-		# Enviamos ambos datos al servidor
-		GlobalData.upload_user_photo(b64, ext)
+	var buffer = img.save_png_to_buffer() if ext == "png" else img.save_jpg_to_buffer()
+	var b64 = Marshalls.raw_to_base64(buffer)
+	
+	# Enviamos ambos datos al servidor
+	GlobalData.upload_user_photo(b64, ext)
+
+# ── Feedback de Error en Perfil ────────────────────────────────────────────
+func _mostrar_error_perfil(msg: String) -> void:
+	if not nick_label: return
+	
+	# Guardamos el estado original para restaurarlo después
+	var texto_original = nick_label.text
+	var color_original = nick_label.modulate
+	
+	nick_label.text = msg
+	nick_label.modulate = Color.INDIAN_RED # Cambia a un rojo suave
+	
+	# Pequeña animación de "sacudida" aprovechando tu lógica de login
+	var tw = create_tween()
+	var original_pos = nick_label.position
+	tw.tween_property(nick_label, "position:x", original_pos.x + 5, 0.05)
+	tw.tween_property(nick_label, "position:x", original_pos.x - 5, 0.1)
+	tw.tween_property(nick_label, "position:x", original_pos.x, 0.05)
+	
+	# Esperamos 2.5 segundos y devolvemos todo a la normalidad
+	await get_tree().create_timer(2.5).timeout
+	
+	# Solo restauramos si el panel sigue visible y no ha cambiado el texto por otro lado
+	if nick_label.text == msg:
+		nick_label.text = texto_original
+		nick_label.modulate = color_original
 
 func _on_btn_close_mouse_entered() -> void:
 	var tween := create_tween()
