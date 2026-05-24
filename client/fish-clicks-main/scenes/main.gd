@@ -158,7 +158,7 @@ var total_clicks: int = 0
 var session_time_seconds: float = 0.0
 var game_start_date_string: String = ""
 var dps: float = 0.0
-var coins: float = 1000000000000.0
+var coins: float = 0.0
 var total_coins_earned: float = 0.0
 var click_power: int = 1
 var hud_visible := true
@@ -321,6 +321,9 @@ func _ready() -> void:
 	)
 
 	btn_shop_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		if alien_manager.is_event_blocking_achievement_popups():
 			return
 
@@ -329,23 +332,37 @@ func _ready() -> void:
 	)
 
 	btn_ranking_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		ui_manager.play_squish(btn_ranking_icon)
 		ui_manager.toggle_ranking()
 	)
 
 	btn_encyclopedia_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		ui_manager.play_squish(btn_encyclopedia_icon)
 		ui_manager.toggle_encyclopedia()
 	)
 
 	btn_inventory_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		if alien_manager.is_event_blocking_achievement_popups():
 			return
+
 		ui_manager.play_squish(btn_inventory_icon)
 		ui_manager.toggle_inventario()
 	)
 
+
 	btn_world_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		if alien_manager.is_event_blocking_achievement_popups():
 			return
 
@@ -365,19 +382,29 @@ func _ready() -> void:
 	)
 	
 	btn_profile_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		achievements_manager.register_profile_click()
 		ui_manager.play_squish(btn_profile_icon)
 		ui_manager.toggle_profile()
 	)
-
+	
 	btn_options_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		ui_manager.play_squish(btn_options_icon)
 		ui_manager.toggle_options()
 	)
 	
 	options_panel.modo_pecera_requested.connect(fish_mode_manager.toggle_fish_mode)
 	
+
 	btn_stats_icon.pressed.connect(func():
+		if is_cleaning_event_active():
+			return
+			
 		ui_manager.play_squish(btn_stats_icon)
 		ui_manager.toggle_stats_panel()
 	)
@@ -637,6 +664,9 @@ func _input(event: InputEvent) -> void:
 				cleaning_manager.register_player_activity()
 
 func _unhandled_input(event: InputEvent) -> void:
+	if is_cleaning_event_active():
+		return
+	
 	# --- 1. LÓGICA DE TECLADO ---
 	if event is InputEventKey and event.pressed:
 		if not ui_manager:
@@ -698,11 +728,14 @@ func _on_chest_clicked() -> void:
 	var is_critical_click := false
 
 	if randf() < shop_manager.get_critical_click_chance():
-		final_click_power = int(round(final_click_power * get_total_coin_debuff_multiplier()))
+		final_click_power = int(
+			round(
+				click_power * shop_manager.get_critical_click_multiplier()
+			)
+		)
 
 		is_critical_click = true
 
-	final_click_power = int(round(final_click_power * alien_coin_debuff_multiplier))
 	coins += final_click_power
 	total_coins_earned += final_click_power
 	lifetime_generated["cofre"] += final_click_power
