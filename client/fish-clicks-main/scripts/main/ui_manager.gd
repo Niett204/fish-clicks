@@ -370,7 +370,8 @@ func _refresh_card(card) -> void:
 		level_text
 	)
 
-	card.update_state(main.coins)
+	var is_maxed := max_level > 0 and level >= max_level
+	card.update_state(main.coins, is_maxed)
 
 
 func toggle_ranking() -> void:

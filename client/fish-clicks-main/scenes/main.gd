@@ -692,9 +692,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.is_action_pressed("abrir_enciclopedia"):
 			ui_manager.toggle_encyclopedia()
 		elif event.is_action_pressed("abrir_inventario"):
-			ui_manager.toggle_inventario() # Coincide con tu script
+			ui_manager.toggle_inventario() 
 		elif event.is_action_pressed("abrir_estadisticas"):
-			ui_manager.toggle_stats_panel() # Coincide con tu script
+			ui_manager.toggle_stats_panel() 
 		return
 
 	# --- 2. LÓGICA DE RATÓN (Asustar peces) ---
