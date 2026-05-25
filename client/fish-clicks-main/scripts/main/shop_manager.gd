@@ -141,18 +141,7 @@ func get_shiny_chance() -> float:
 
 
 func get_click_income() -> int:
-	var base_click := 1.0
-
-	for key in main.ITEMS.keys():
-		var id := String(key)
-		var def: Dictionary = main.ITEMS[id]
-
-		if String(def.get("kind", "")) != "structure_buff":
-			continue
-		if String(def.get("buff_type", "")) != "click_flat":
-			continue
-
-		base_click += float(get_level(id)) * float(def.get("base_value", 0.0))
+	var click_ratio := 0.25 # 1/4 del DPS
 
 	var click_multiplier := 1.0
 
@@ -165,7 +154,10 @@ func get_click_income() -> int:
 
 		click_multiplier += float(get_level(id)) * float(def.get("base_value", 0.0))
 
-	return max(1, int(round(base_click * click_multiplier * get_global_coin_multiplier())))
+	return max(
+		1,
+		int(round(main.dps * click_ratio * click_multiplier))
+	)
 
 
 func get_level(id: String) -> int:
@@ -358,7 +350,7 @@ func get_item_effect_text(id: String) -> String:
 					return "-2s en la batalla del alien."
 
 				"critical_click":
-					return "Clics críticos +2%."
+					return "Clicks críticos +2%."
 				_:
 					return "Buff único"
 					
@@ -399,7 +391,7 @@ func get_structure_buff_next_text(id: String) -> String:
 
 	match buff_type:
 		"click_flat":
-			return "Siguiente nivel: +%.2f doblones/clic" % base_value
+			return "Siguiente nivel: +%.2f doblones/click" % base_value
 		"fish_dps_multiplier":
 			return "Siguiente nivel: +%.1f%% peces" % (base_value * 100.0)
 		"global_coin_multiplier":
@@ -434,7 +426,7 @@ func get_unique_buff_current_text(id: String) -> String:
 			return "Supervivencia -%ds" % int(level * 2)
 
 		"piranha":
-			return "%d%% de clic crítico" % int(
+			return "%d%% de click crítico" % int(
 				get_critical_click_chance() * 100.0
 			)
 	
@@ -490,7 +482,7 @@ func get_structure_buff_impact_text(id: String) -> String:
 
 	match buff_type:
 		"click_flat":
-			return "Bonus total: +%s/clic" % main.get_full_number_text(total_bonus)
+			return "Bonus total: +%s/click" % main.get_full_number_text(total_bonus)
 		"fish_dps_multiplier":
 			return "Multiplicador peces: x%.2f" % (1.0 + total_bonus)
 		"global_coin_multiplier":
@@ -532,7 +524,7 @@ func get_structure_buff_current_text(id: String) -> String:
 
 	match buff_type:
 		"click_flat":
-			return "Clic actual: +%d doblones" % get_click_income()
+			return "Click actual: +%d doblones" % get_click_income()
 		"fish_dps_multiplier":
 			return "Buff peces: +%.1f%%" % (value * 100.0)
 		"global_coin_multiplier":
@@ -714,7 +706,7 @@ func get_flavor_text(id: String) -> String:
 
 		# --- ESTRUCTURAS ---
 		"cofre":
-			return "Cada clic vale más."
+			return "Cada click vale más."
 		"vallisneria":
 			return "Los peces crecen mejor."
 		"tronco":

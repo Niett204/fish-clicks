@@ -81,7 +81,7 @@ const ITEMS := {
 		"buff_type": "alien_time_reduction",
 		"max_level": 30,
 		"base_price": 500000.0,
-		"price_growth": 1.6,
+		"price_growth": 1.5,
 		"base_value": 2.0,
 		"habitat_ids": ["habitat_1", "habitat_2"]
 	},
