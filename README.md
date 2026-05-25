@@ -69,7 +69,7 @@ mvn spring-boot:run
 
 El juego puede descargarse desde el siguiente enlace:
 
-[Descargar Fish Clicks](https://drive.google.com/file/d/1_2vkAejqDt2rbm-gX-USC3k7Fh3T4N6R/view?usp=sharing)
+[Descargar Fish Clicks](https://drive.google.com/file/d/1hb8xi3c5i1HBAREEgz3oAXwgdtc4MEpL/view?usp=drive_link)
 
 Una vez descargado, basta con ejecutar el `.exe` incluido.
 
