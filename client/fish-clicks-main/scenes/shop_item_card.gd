@@ -185,9 +185,16 @@ func set_unlocked(v: bool) -> void:
 		info_panel.schedule_hide(0.0)
 
 
-func update_state(coins: float) -> void:
+func update_state(coins: float, is_maxed: bool = false) -> void:
 	var needed := price if is_unlocked else unlock_price
 	_can_afford = coins >= needed
+
+	if is_maxed:
+		_can_afford = false
+		modulate = Color(0.45, 0.45, 0.45, 1)
+	else:
+		modulate = Color.WHITE
+
 	_apply_plank_tint()
 
 var locked_text: String = ""
